@@ -1,0 +1,131 @@
+[[ActionMappingService]]
+=== ActionMappingService
+アクションの定義（メタデータ）と、アクションがリクエストされた時に呼び出されるインターセプターを管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.web.actionmapping.ActionMappingService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.web.actionmapping.ActionMappingService
+----
+
+==== ActionMappingServiceの設定
+ブラウザからのリクエスト時に呼び出されるインターセプターを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| interceptor | <<RequestInterceptor>>、複数指定可 | リクエスト用のインターセプター。
+|===
+
+[[RequestInterceptor]]
+.RequestInterceptor
+classはorg.iplass.mtp.web.interceptor.RequestInterceptorの実装クラスを指定します。
+
+標準で、以下のRequestInterceptorを提供します。
+
+- <<InitialInterceptor_ri, InitialInterceptor>>
+- <<ActionCacheInterceptor>>
+- <<AuthInterceptor>>
+- <<ExceptionInterceptor>>
+- <<LoggingInterceptor>>
+- <<UnavailableInterceptor_ri, [.eeonly]#UnavailableInterceptor#>>
+- <<ActionMetricsInterceptor>>
+
+[[InitialInterceptor_ri]]
+.InitialInterceptor
+classはorg.iplass.mtp.impl.web.interceptors.InitialInterceptorを指定します。
+
+リクエストの初期処理として言語とプレビュー時刻を設定するインターセプターです。設定変更可能な項目はありません。
+
+[[ActionCacheInterceptor]]
+.ActionCacheInterceptor
+classはorg.iplass.mtp.impl.web.interceptors.ActionCacheInterceptorを指定します。
+
+キャッシュを行うインターセプターです。設定変更可能な項目はありません。
+
+[[AuthInterceptor]]
+.AuthInterceptor
+classはorg.iplass.mtp.impl.web.interceptors.AuthInterceptorを指定します。
+
+認証を行うインターセプターです。設定変更可能な項目はありません。
+
+[[ExceptionInterceptor]]
+.ExceptionInterceptor
+classはorg.iplass.mtp.impl.web.interceptors.ExceptionInterceptorを指定します。
+
+例外のハンドリングを行うインターセプターです。以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| noHande | String、複数指定可 | ハンドリングを行わない例外クラス。
+複数指定する場合はプロパティを複数設定するか例外クラスを半角コロン(:)で区切って設定します。
+| eliminate | String、複数指定可 | ハンドリングから除外する例外クラス。
+複数指定する場合はプロパティを複数設定するか例外クラスを半角コロン(:)で区切って設定します。
+|===
+
+[[LoggingInterceptor]]
+.LoggingInterceptor
+classはorg.iplass.mtp.impl.web.interceptors.LoggingInterceptorを指定します。
+
+ログの出力を行うインターセプターです。以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| actionTrace | boolean | アクションのログを出力するか。デフォルト値はtrueです。
+| partsTrace | boolean | 画面の1部品として実行されたアクションのログを出力するか。デフォルト値はtrueです。
+| paramName | String、複数指定可 | ログ出力するパラメータ名。
+| noStackTrace | String、複数指定可 | スタックトレースを出力しない例外クラス。
+複数指定する場合はプロパティを複数設定するか例外クラスを半角コロン(:)で区切って設定します。
+| warnLogThresholdOfSqlExecutionCount | int | 警告ログを出力するSQL実行回数の閾値。 +
+単一リクエスト中に閾値を越える回数のSQLが発行された場合、WARNレベルでログ出力されます。 +
+デフォルト値は-1（すべてINFOレベルで出力）です。
+| warnLogThresholdOfExecutionTimeMillis | long | 警告ログを出力する実行時間の閾値（ミリ秒）。 +
+リクエスト処理時間が閾値を越えた場合、WARNレベルでログ出力されます。 +
+デフォルト値は-1（すべてINFOレベルで出力）です。
+|===
+
+[[UnavailableInterceptor_ri]]
+.[.eeonly]#UnavailableInterceptor#
+classはorg.iplass.mtp.impl.web.interceptors.UnavailableInterceptorを指定します。
+
+メンテナンスチェックを行うインターセプターです。設定変更可能な項目はありません。
+
+[[ActionMetricsInterceptor]]
+.[.eeonly]#ActionMetricsInterceptor#
+classはorg.iplass.mtp.impl.micrometer.metrics.web.action.ActionMetricsInterceptorを指定します。
+
+Actionのレイテンシ・SQLの発行回数をメトリクスとして記録するインターセプターです。Micrometerモジュールを適用した場合にデフォルトで追加されます。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| provider | ActionMetricsTagsProvider | org.iplass.mtp.impl.micrometer.metrics.web.action.ActionMetricsTagsProviderを実装するクラス。メトリクスに付与するタグをカスタマイズしたい場合に指定可能です。デフォルトでは、org.iplass.mtp.impl.micrometer.metrics.web.action.DefaultActionMetricsTagsProviderが使用されます。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.web.actionmapping.ActionMappingService</interface>
+	<property name="interceptor" class="org.iplass.mtp.impl.web.interceptors.InitialInterceptor" />
+	<property name="interceptor" class="org.iplass.mtp.impl.web.interceptors.AuthInterceptor" />
+	<property name="interceptor" class="org.iplass.mtp.impl.web.interceptors.ExceptionInterceptor">
+		<property name="noHande" value="org.iplass.mtp.auth.NeedTrustedAuthenticationException" />
+		<property name="eliminate" value="org.apache.catalina.connector.ClientAbortException" />
+		<property name="eliminate" value="org.iplass.mtp.impl.web.WebProcessRuntimeException:org.apache.catalina.connector.ClientAbortException" />
+	</property>
+	<property name="interceptor" class="org.iplass.mtp.impl.web.interceptors.UnavailableInterceptor" />
+	<property name="interceptor" class="org.iplass.mtp.impl.web.interceptors.LoggingInterceptor">
+		<property name="partsTrace" value="true" />
+		<property name="paramName" value="defName" />
+		<property name="noStackTrace" value="org.apache.catalina.connector.ClientAbortException" />
+		<property name="noStackTrace" value="org.iplass.mtp.impl.web.WebProcessRuntimeException:org.apache.catalina.connector.ClientAbortException" />
+	</property>
+	<property name="interceptor" class="org.iplass.mtp.impl.web.interceptors.ActionCacheInterceptor" />
+</service>
+----

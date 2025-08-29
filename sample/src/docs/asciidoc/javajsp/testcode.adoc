@@ -1,0 +1,121 @@
+[[Java_Jsp_Testcode]]
+== テストコード
+* プロジェクトの `src/test/` フォルダを開き、以下の構成になっています。
++
+[source]
+----
+src.test
+	┣ java
+	┃	┗ samples.ec01.test.command <1>
+	┃		┣ inquiry
+	┃		┃	┗ RegistInquiryCommandTest.java
+	┃		┗ TopCommandTest.java
+	┗ resources <2>
+		┣ mtptest.properties
+		┗ test-mtp-service-config.xml
+----
+<1> テストクラス
+<2> テストクラス実行用の設定ファイル
+
+* テストクラス
++
+[cols="1,2", options="header"]
+|===
+|パッケージ|クラス名
+|samples.ec01.test.command|TopComamnd.java
+|samples.ec01.test.command.inquiry|RegistInquiryCommandTest.java
+|===
+
+* テスト実行用の設定ファイル
++
+[cols="1,2"]
+|===
+h|ファイル名|/src/test/resources/mtptest.properties
+|===
++
+[source]
+----
+configFileName=/test-mtp-service-config.xml <1>
+rollbackTransaction=true <2>
+tenantName= <3>
+userId= <4>
+password= <5>
+----
+<1> テスト実行用のデータベース接続とメタデータ定義が記述されたファイル
+<2> トランザクションロールバックの設定
+<3> テストを実行するテナント
+<4> テストを実行するユーザー
+<5> テストを実行するユーザーのパスワード
++
+※ プロパティによる指定以外に、クラスレベルアノテーションとメソッドレベルアノテーションによる指定も可能です。詳しい設定方法は    `org.iplass.mtp.test.MTPJUnitTestRule` のJavaDocをご参照ください。
++
+[cols="1,2"]
+|===
+h|ファイル名|/src/test/resources/test-mtp-service-config.xml
+|===
++
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE serviceDefinition>
+<serviceDefinition>
+	<!-- If use oracle, inherits mtp-service-config-mysql.xml for convenience. -->
+	
+	<!-- <inherits>/mtp-core-service-config-oracle.xml</inherits> -->
+	<inherits>/mtp-web-service-config.xml</inherits>
+	<inherits>/gem-service-config.xml</inherits>
+
+	<inherits>/mtp-core-service-config-mysql.xml</inherits>
+
+	<!-- Rdb Connection Settings -->
+	<service>
+		<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>
+		<class>org.iplass.mtp.impl.rdb.connection.DriverManagerConnectionFactory</class>
+		<property name="url" value="jdbc:mysql://[host]:[port]/[schema]" /> <1>
+		<property name="user" value="[user]" /> <2>
+		<property name="password" value="[password]" /> <3>
+		<property name="driver" value="com.mysql.cj.jdbc.Driver" />
+	</service>
+
+	<!-- XmlResource MetaData and Annotation MetaData Settings -->
+	<service>
+		<interface>org.iplass.mtp.impl.metadata.MetaDataRepository</interface>
+		<property name="resourcePath" value="/samples-ec01-ce-metadata.xml" additional="true" /> <4>
+		<property name="annotatedClass" value="samples.ec01.command.metadata.CommandList" additional="true"/> <5>
+	</service>
+
+</serviceDefinition>
+----
+<1> テスト実行用のデータベース接続
+<2> データベース接続ユーザー
+<3> データベース接続ユーザーのパスワード
+<4> メタデータの定義ファイル
+<5> コマンドのメタデータ定義
+
+* 動作確認
+
+** Gradleでテストコードを実行する場合、プロジェクトのルートパスで以下のコマンドを実行してください。
++
+[source]
+----
+gradlew test
+----
+
+** 実行結果
++
+[source]
+----
+:compileJava UP-TO-DATE
+:processResources UP-TO-DATE
+:classes UP-TO-DATE
+:compileTestJava UP-TO-DATE
+:processTestResources UP-TO-DATE
+:testClasses UP-TO-DATE
+:test UP-TO-DATE
+
+BUILD SUCCESSFUL
+
+Total time: 1.855 secs
+----
+
+** Eclipseでテストコードを実行する場合、`src.test.java` パッケージを右クリックして `Run as` を選択し、`Junit Test` を実行してください。

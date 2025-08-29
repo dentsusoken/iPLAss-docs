@@ -1,0 +1,132 @@
+[[CubeService]]
+=== [.eeonly]#CubeService#
+Cubeの定義（メタデータ）を管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.aggregation.cube.CubeService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.aggregation.cube.CubeService
+----
+
+==== CubeServiceの設定
+CubeServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| enablePhysicalResourceLoading | boolean | ファイルやJDBCといった物理リソースへのアクセスを許可するか。デフォルト値はfalseです。
+| useDataCompression | boolean | メモリ内に展開したデータを圧縮するか。デフォルト値はtrueです。
+| decompressDataReferenceType | String a| useDataCompression有効時、展開されたデータの保持形式を指定。 `SOFT` もしくは `WEAK` を指定します。デフォルト値は `SOFT` です。
+
+SOFT:: 展開されたデータはSoftReferenceとしてキャッシュされます。
+WeakReferenceに比較し、キャッシュが再利用されやすくなります。
+ただし、CSVダウンロードなど一度に大量のデータが展開され、且つメモリがひっ迫した状況下においては、レスポンス性能が極端に悪化する可能性があります。
+java VMの起動オプション、 `-XX:SoftRefLRUPolicyMSPerMB` によりSoftReferenceの生存期間を調整することが必要です。
+
+WEAK:: 展開されたデータはWeakReferenceとしてキャッシュされます。
+
+| useFlyweightListOnBitSetColData | boolean | BitMap形式でデータ格納する際、Listとして実データを保持するか。trueにした場合、集計速度は速くなりますがメモリ使用量は増えます。デフォルト値はfalseです。
+| useHashIndexOnListColData | boolean | ObjectPool形式でデータ格納する際、HashIndexを生成するか。trueにした場合、集計速度は速くなりますがメモリ使用量は増えます。デフォルト値はfalseです。
+| hashIndexSegmentSize | int | HashIndex利用時のHashのセグメントサイズ。設定された値は2の累乗に自動的に補正されます。デフォルト値は16です。
+| maxRowsOfDimension | int | 集計時の最大ディメンジョン数（Clientへの返却可能な行数）。デフォルト値は10000です。
+| maxRowsOfDimensionInternal | int | 集計時の最大ディメンジョン数（内部処理での）。デフォルト値は100000です。
+| transferredRawDataInMemoryThreshold | int | ローデータ取得時に分散環境下において、他Nodeから実データが転送されてきますが、それをメモリ内で扱う閾値。これより大きい場合は、一旦ファイルに落とします。デフォルト値は16384（16K）です。
+| joinBufferSize | int | Cubeのjoinを行う際のバッファーサイズ（行数）。大きくするとロード速度は上がりますがメモリ使用量が増えます。デフォルト値は1000です。
+| enableDistinctRows | boolean | ローデータ取得時にdistinctRow指定を許可するか。distinct操作には重複チェックのため取得する行数に応じてメモリを消費します。デフォルト値はtrueです。
+| inMemoryRowThresholdOfDistinctRows | int | ローデータ取得時のdistinct処理において、メモリ内で処理する最大行数。これ以上の行を処理する場合はファイルにスワップします（速度は低下します）。-1はすべてをメモリ内で処理します。0はすべてをファイルで処理します。デフォルト値は10000です。
+| loadStrategy | <<LoadStrategy>> | メモリへのデータロード取得時の処理方式。
+| useForkJoin | boolean | fork-join frameworkベースのコードで処理するか。複数Nodeでの分散実行の際にtrue設定すると高速化が望めます。デフォルト値はfalseです。
+| gapFillLimit | int | ディメンジョンのギャップを埋める場合のカテゴリ数の最大値。これ以上のカテゴリとなる場合はギャップ埋めしません。デフォルト値は100です。
+| queryTimeoutOfWaitLoading | long | クエリ実行から読み込みを待機するタイムアウト期間(ms)。デフォルト値は3000です。
+| maxRowsOfDerivedCube | int | DerivedCube利用時のローデータの最大行数。メモリ内で処理するため行数を制限する。
+| innerCubeLoadTimeoutSec | long | Cubeの結合、DerivedCube時に、参照先のCubeがLOADINGであった場合の待機の最大時間(秒)。
+| innerCubeLoadIntervalSec | int | Cubeの結合、DerivedCube時に、参照先のCubeがLOADINGであった場合のロードが完了したかをチェックする間隔(秒)。
+| rawDataDimensionResolverBufferSize | int | ReferenceやSelectValueをラベル表示する際のバッファーサイズ。デフォルト値は100。
+| listaggDefaultSeparator | String | LISTAGG集約関数利用時のデフォルトのセパレータです。デフォルト値は `,` です。
+|===
+
+[[LoadStrategy]]
+.LoadStrategy
+classはorg.iplass.mtp.impl.aggregation.cube.engine.inmemory.fact.load.LoadStrategyの実装クラスを指定します。
+
+標準で、以下のLoadStrategyを提供します。
+
+- <<AllPartitionDirectLoadStrategy>>
+- <<PerPartitionLoadStrategy>>
+- <<SaveMemoryLoadStrategy>>
+
+[[AllPartitionDirectLoadStrategy]]
+.AllPartitionDirectLoadStrategy
+classはorg.iplass.mtp.impl.aggregation.cube.engine.inmemory.fact.load.AllPartitionDirectLoadStrategyを指定します。
+
+直接ダイレクトにメモリに読み込む方式です。設定変更可能な項目はありません。 +
+メモリを大量消費しますが高速です。
+
+[[PerPartitionLoadStrategy]]
+.PerPartitionLoadStrategy
+classはorg.iplass.mtp.impl.aggregation.cube.engine.inmemory.fact.load.PerPartitionLoadStrategyを指定します。
+
+パーティション単位でデータを読み込む方式です。設定変更可能な項目はありません。 +
+パーティションタイプがMOD,LISTの場合、またはCubeの読み込み元がCSVの場合で、あらかじめパーティション単位でデータが分けられている場合、これを指定するとメモリ消費抑えつつ高速ロードが期待できます。
+
+[[SaveMemoryLoadStrategy]]
+.SaveMemoryLoadStrategy
+classはorg.iplass.mtp.impl.aggregation.cube.engine.inmemory.fact.load.SaveMemoryLoadStrategyを指定します。
+
+ファイルへデータをスワップしながらなるべくメモリ消費を抑えながらロードする方式です。設定変更可能な項目はありません。
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.aggregation.cube.CubeService</interface>
+	<class>org.iplass.mtp.impl.aggregation.cube.CubeService</class>
+	<!-- ファイルやJDBCといった物理リソースへのアクセスを許可するかどうか -->
+	<property name="enablePhysicalResourceLoading" value="false"/>
+	<!-- メモリ内に展開したデータを圧縮するかどうか（圧縮しない場合は、メモリ使用量は増える。ただ、GC後の初回集計時に集計速度が多少遅くなることはない） -->
+	<property name="useDataCompression" value="true"/>
+	<!-- BitMap形式でデータ格納する際、Listとして実データを保持するかどうか。（trueにした場合、集計速度は速くなるが、メモリ使用量は増える） -->
+	<property name="useFlyweightListOnBitSetColData" value="false"/>
+	<!-- ObjectPool形式でデータ格納する際、HashIndexを生成するかどうか。（trueにした場合、集計速度は速くなるが、メモリ使用量は増える） -->
+	<property name="useHashIndexOnListColData" value="false"/>
+	<!-- HashIndex利用時のHashのセグメントサイズ。（2の累乗に自動的に補正される） -->
+	<property name="hashIndexSegmentSize" value="16"/>
+	<!-- 集計時の最大ディメンジョン数（Clientへの返却可能な行数） -->
+	<property name="maxRowsOfDimension" value="10000"/>
+	<!-- 集計時の最大ディメンジョン数（内部処理での） -->
+	<property name="maxRowsOfDimensionInternal" value="100000"/>
+	<!-- ローデータ取得時に分散環境下において、他Nodeから実データが転送されてくるが、それをメモリ内で扱う閾値。これより大きい場合は、一旦ファイルに落とす。デフォルト16K。 -->
+	<property name="transferredRawDataInMemoryThreshold" value="16384"/>
+	<!-- Cubeのjoinを行う際のバッファーサイズ（行数）。大きくするとロード速度は上がるが、メモリ使用量が増える。 -->
+	<property name="joinBufferSize" value="1000"/>
+	<!-- ローデータ取得時にdistinctRow指定を許可するかどうか。distinct操作には重複チェックのため、取得する行数に応じて、メモリを消費する。 -->
+	<property name="enableDistinctRows" value="true"/>
+	<!-- ローデータ取得時のdistinct処理において、メモリ内で処理する最大行数。これ以上の行を処理する場合はファイルにスワップする（速度は低下する）。-1はすべてをメモリ内で処理。0はすべてをファイルで処理。 -->
+	<property name="inMemoryRowThresholdOfDistinctRows" value="10000"/>
+	<!-- メモリへのデータロード取得時の処理方式
+			SaveMemoryLoadStrategy:			ファイルへデータをスワップしながらなるべくメモリ消費を抑えながらロードする方式。
+			AllPartitionDirectLoadStrategy:	直接ダイレクトにメモリに読み込む方式。メモリを大量消費するが、高速。
+			PerPartitionLoadStrategy:		パーティション単位でデータを読み込む方式。
+											パーティションタイプがMOD,LISTの場合、またはCubeの読み込み元がCSVの場合で、
+											あらかじめパーティション単位でデータが分けられている場合、これを指定するとメモリ消費抑えつつ高速ロードが期待できる。
+
+			※いずれもパッケージはorg.iplass.mtp.impl.aggregation.cube.engine.inmemory.fact.load
+	 -->
+	<property name="loadStrategy" class="org.iplass.mtp.impl.aggregation.cube.engine.inmemory.fact.load.SaveMemoryLoadStrategy"/>
+	<!-- fork-join frameworkベースのコードで処理するか否か。複数Nodeでの分散実行の際にtrue設定すると高速化が望める -->
+	<property name="useForkJoin" value="false"/>
+	<!-- ディメンジョンのギャップを埋める場合のカテゴリ数の最大値。これ以上のカテゴリとなる場合は、ギャップ埋めしない -->
+	<property name="gapFillLimit" value="100"/>
+	<!-- DerivedCube利用時のローデータの最大行数。メモリ内で処理するため行数を制限する。 -->
+	<property name="maxRowsOfDerivedCube" value="10000"/>
+	<!-- Cubeの結合、DerivedCube時に、参照先のCubeがLOADINGであった場合の待機の最大時間(秒)。 -->
+	<property name="innerCubeLoadTimeoutSec" value="1800"/>
+	<!-- Cubeの結合、DerivedCube時に、参照先のCubeがLOADINGであった場合のロードが完了したかをチェックする間隔(秒)。 -->
+	<property name="innerCubeLoadIntervalSec" value="10"/>
+</service>
+----

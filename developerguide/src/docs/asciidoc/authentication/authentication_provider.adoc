@@ -1,0 +1,404 @@
+[[ref_authentication_provider]]
+== 認証プロバイダ
+認証プロバイダとは、認証する為の処理をモジュール化したものになります。
+認証プロバイダを入れ替えることで、iPLAss標準のID、パスワードによる認証以外のさまざまな認証方式を利用する事が可能です。
+また、カスタムプロバイダを作成し、独自の認証処理を利用することも可能です。
+
+=== 標準の設定
+認証プロバイダはmtp-service-config.xmlのAuthService定義内に設定します。
+初期状態では以下の認証プロバイダが有効化されています。
+
+.Community Edition +
+* BuiltinAuthenticationProvider (RememberMeTokenAuthenticationProviderに内包される） +
+RememberMe トークンでの認証、ならびに内包するBuiltinAuthenticationProviderによるID、パスワードによる認証処理を行うプロバイダ。
+
+* AccessTokenAuthenticationProvider +
+OAuth2.0のアクセストークンで認証処理を行うプロバイダ。
+
+* SimpleAuthTokenAuthenticationProvider +
+単純なトークンでの認証処理を行うプロバイダ。
+
+.Enterprise Edition +
+* TwoStepAuthenticationProvider (RememberMeTokenAuthenticationProviderに内包される） +
+RememberMe トークンでの認証、ならびに内包するTwoStepAuthenticationProviderによる2段階認証を行うプロバイダ。 +
+TwoStepAuthenticationProviderは、
+1段階目としてBuiltinAuthenticationProviderを利用したID、パスワードによる認証処理を行い、
+2段階目として、ワンタイムコード、時間ベース（2段階認証アプリ）、ナレッジ(質問)、クライアント証明書を利用した認証を行います。
++
+プライマリ認証プロバイダ:: 標準プロバイダ（BuiltinAuthenticationProvider） +
+セカンダリ認証プロバイダ:: ワンタイムコード（OnetimeCodeAuthenticationProvider） +
+時間ベース（TimeBasedAuthenticationProvider） +
+ナレッジベース（KnowledgeBasedAuthenticationProvider） +
+クライアント証明書（X509AuthenticationProvider）
++
+実際に2段階認証を実施するか、RememberMeトークンでの認証を許可するかは、認証ポリシーで設定します。
+
+* SamlAuthenticationProvider +
+SAMLベースの認証処理を行う認証プロバイダ。 +
+SAMLベースの認証は、別途、SAML定義が行われ、認証ポリシーにて有効化された場合に処理されるようになります。
+
+* AccessTokenAuthenticationProvider +
+OAuth2.0のアクセストークンで認証処理を行うプロバイダ。
+
+* SimpleAuthTokenAuthenticationProvider +
+単純なトークンでの認証処理を行うプロバイダ。
+
+=== 提供認証プロバイダ
+
+各認証プロバイダや設定可能な項目については<<../../serviceconfig/index.adoc#AuthService,AuthService>>を参照してください。
+
+
+=== カスタマイズ
+認証プロバイダを独自で作成し、利用する事が可能です。
+認証プロバイダは、 `AuthenticationProvider` インターフェースを実装して作成しますが、
+予め汎用的な部分を設定した `AuthenticationProviderBase` クラスを継承して作成する方法もあります。
+
+----
+org.iplass.mtp.impl.auth.authenticate.AuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.AuthenticationProviderBase
+----
+
+例として、 `AuthenticationProviderBase` クラスを継承したサンプルをもとに説明します。
+
+実装する上での大きな流れとしては、以下の３つです。
+
+. 認証したアカウント情報を保持するための `AccountHandle` インターフェースを実装したクラスを作成
+. アカウント情報からUserエンティティを生成する `UserEntityResolver` インターフェースを実装したクラスを作成
+. `AuthenticationProvider` でログイン処理の実装
+
+[source, java]
+----
+package org.iplass.mtp.sample.auth;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.iplass.mtp.auth.User;
+import org.iplass.mtp.auth.login.Credential;
+import org.iplass.mtp.auth.login.IdPasswordCredential;
+import org.iplass.mtp.impl.auth.AuthService;
+import org.iplass.mtp.impl.auth.authenticate.AccountHandle;
+import org.iplass.mtp.impl.auth.authenticate.AccountManagementModule;
+import org.iplass.mtp.impl.auth.authenticate.AuthenticationProvider;
+import org.iplass.mtp.impl.auth.authenticate.AuthenticationProviderBase;
+import org.iplass.mtp.impl.auth.authenticate.UserEntityResolver;
+import org.iplass.mtp.spi.Config;
+
+public class SampleAuthenticationProvider extends AuthenticationProviderBase {
+
+	/**
+	 * 認証プロバイダーの初期化処理を実装します。
+	 */
+	@Override
+	public void inited(AuthService service, Config config) {
+
+		//独自のUserEntityResolverを設定 <1>
+		if (getUserEntityResolver() == null) {
+			SampleUserEntityResolver uer = new SampleUserEntityResolver();
+			setUserEntityResolver(uer);
+		}
+
+		super.inited(service, config);
+	}
+
+	/**
+	 * ログイン処理を実装します。
+	 *
+	 * ログインが成功した場合は、AccountHandleを実装したクラスを返します。
+	 */
+	@Override
+	public AccountHandle login(Credential credential) { <2>
+		IdPasswordCredential ipc = null;
+		if (credential instanceof IdPasswordCredential) {
+			ipc = (IdPasswordCredential) credential;
+		} else {
+			//違う場合はこのプロバイダでは認証しないので、nullを返す
+			return null;
+		}
+
+		//認証処理の実装
+		//ここは、認証するデータソースにあわせてそれぞれで実装します
+		if (ipc.getId().equals("xxxx") && ipc.getPassword().equals("yyyy")) {
+			//認証が成功した場合は、AccountHandleを実装したクラスのインスタンスを返します
+
+			//AccountHandleに、ユーザー情報として持たせたい情報を設定します
+			Map<String, Object> attributeMap = new HashMap<>();
+			attributeMap.put("name", "test1");
+			attributeMap.put("mail", "test@mail.com");
+
+			return new SampleAccountHandle(ipc.getId(), attributeMap);
+		}
+
+		//認証失敗なのでnullを返す
+		return null;
+	}
+
+	/**
+	 * ログアウト処理を実装します。
+	 */
+	@Override
+	public void logout(AccountHandle user) { <3>
+		if (user instanceof SampleAccountHandle) {
+			//対象のAccountHandleであれば、ログアウト時に必要な処理を実行
+		}
+	}
+
+	/**
+	 * アカウント情報の更新可否、更新処理を管理するAccountManagementModuleを返します。
+	 */
+	@Override
+	public AccountManagementModule getAccountManagementModule() { <4>
+
+		/*
+		 * この例では、AuthenticationProviderBaseで定義されている認証情報が変更不可なものを利用しています。
+		 * もし更新も可能にする場合は、AccountManagementModuleを実装したクラスを返します。
+		 */
+		return AuthenticationProviderBase.NO_UPDATABLE_AMM;
+	}
+
+	/**
+	 * 対象とするCredentialを実装したクラス返します。
+	 */
+	@Override
+	public Class<? extends Credential> getCredentialType() {
+
+		/*
+		 * この例では、ID、パスワードをもつIdPasswordCredentialを利用しています。
+		 * もし他の属性で認証したい場合は、Credentialを実装したクラスを返します。
+		 */
+		return IdPasswordCredential.class;
+	}
+
+	/**
+	 * このプロバイダーでログインが成功した場合に保持するアカウント情報を管理するクラスを返します。
+	 */
+	@Override
+	protected Class<? extends AccountHandle> getAccountHandleClassForTrust() { <5>
+		return SampleAccountHandle.class;
+	}
+
+
+	/**
+	 * ログインしたアカウント情報を保持するクラスです。
+	 */
+	public class SampleAccountHandle implements AccountHandle { <6>
+
+		private static final long serialVersionUID = 7558415988260650638L;
+
+		/** 変更不可なユニークKEY */
+		private String accountId;
+
+		/** アカウントの属性として保持したい値 */
+		private Map<String, Object> attributeMap;
+
+		/** これは何番目のプロバイダーかの情報を保持するものです。基盤側で設定されるので保持してください */
+		private int authenticationProviderIndex;
+
+		public SampleAccountHandle(String accountId, Map<String, Object> attributeMap) {
+			this.accountId = accountId;
+			this.attributeMap = attributeMap;
+		}
+
+		@Override
+		public boolean isAccountLocked() {
+			return false;
+		}
+
+		@Override
+		public boolean isExpired() {
+			return false;
+		}
+
+		@Override
+		public boolean isInitialLogin() {
+			return false;
+		}
+
+		/*
+		 * 認証後に、色々な処理でアカウントの認証情報が求められた場合の認証情報を返します。
+		 * パスワード情報は認証時にしか使わないためAccountHandleには保持せずに、ここではセットしていません。
+		 */
+		@Override
+		public Credential getCredential() {
+			return new IdPasswordCredential(accountId, null);
+		}
+
+		@Override
+		public String getUnmodifiableUniqueKey() {
+			return accountId;
+		}
+
+		@Override
+		public Map<String, Object> getAttributeMap() {
+			if(attributeMap == null){
+				attributeMap = new HashMap<String, Object>();
+			}
+			return attributeMap;
+		}
+
+		@Override
+		public void setAuthenticationProviderIndex(int authenticationProviderIndex) {
+			this.authenticationProviderIndex = authenticationProviderIndex;
+		}
+
+		@Override
+		public int getAuthenticationProviderIndex() {
+			return authenticationProviderIndex;
+		}
+
+	}
+
+	/**
+	 * アカウント情報からUserエンティティを生成するクラスです。
+	 */
+	public class SampleUserEntityResolver implements UserEntityResolver { <7>
+
+		@Override
+		public void inited(AuthService service, AuthenticationProvider provider) {
+		}
+
+		/**
+		 * パラメータとして渡されたアカウント情報をもとにUserエンティティを返します。
+		 *
+		 * Userエンティティとしてデータを管理している場合はUserエンティティを検索して返しますが、
+		 * Userエンティティとして管理していない場合はここでUserエンティティを生成して返すように実装します。
+		 */
+		@Override
+		public User searchUser(AccountHandle account) {
+
+			User user = new User();
+
+			//ここではアカウント情報としてユニークな値をOIDに設定します
+			user.setOid(account.getUnmodifiableUniqueKey());
+
+			user.setAccountId(account.getCredential().getId());
+			user.setName(account.getCredential().getId());
+
+			//ここではaccountに設定された属性をUserエンティティに設定しています
+			if (account.getAttributeMap() != null) {
+				account.getAttributeMap().entrySet().stream().forEach(e -> {
+					user.setValue(e.getKey(), e.getValue());
+				});
+			}
+			return user;
+		}
+
+		@Override
+		public String getUnmodifiableUniqueKeyProperty() {
+			//ユニークなKEYとなるプロパティ名を返します
+			//OIDにユニークなKEYを設定しているので、OIDを返します。
+			return User.OID;
+		}
+
+	}
+}
+----
+<1> UserEntityResolverは、認証に成功したアカウントの情報からUserエンティティを生成するクラスです。
+AuthenticationProviderBaseで設定されている標準のUserEntityResolverは、Userエンティティを検索します。
+Userエンティティとしてユーザーを管理していない場合は、独自でUserEntityResolverを生成してセットします。
+<2> ログイン処理を実装します。
+ログインが成功した場合は、AccountHandleを実装したクラスを返します。
+ログインが失敗した場合、または他の認証プロバイダで認証する場合はnullを返します。
+<3> ログアウト処理を実装します。
+<4> アカウント情報（パスワードなど）の更新可否、更新処理を管理するAccountManagementModuleを返します。
+例えば外部システムでの認証処理などで、このシステムとしてアカウント情報を更新しない場合は、
+`AuthenticationProviderBase.NO_UPDATABLE_AMM` を利用することも可能です。
+<5> 独自で作成したAccountHandleを返します。
+<6> AccountHandleの実装クラスを定義します。
+<7> AccountHandle情報からUserエンティティを作成するUserEntityResolverクラスを定義します。
+
+=== 複数プロバイダの利用
+認証プロバイダは複数設定する事が可能です。
+例えば、
+
+* 社外ユーザーはiPLAss標準の認証プロバイダ経由で認証させるようにし、社内ユーザーは社内のLDAPに保存されているユーザー情報を利用して認証させる
+* 通常のログイン方法（iPLAss標準のid/pass認証）に加えて、外部認証サービス（例えばOpenID Connect）経由での認証も可能にする
+
+といったことが可能です。
+
+認証プロバイダを複数設定した場合、認証時には、認証プロバイダの定義順に認証が成功するまで認証処理を試みます。
+ただし、認証プロバイダの認証処理が明示的にExceptionをスローした場合は、その時点で認証処理は中断され、ログイン失敗となります。
+
+==== 設定
+
+* 既存のmtp-service-config.xmlに定義されるデフォルトを優先する場合 +
+mtp-service-config.xmlにてAuthServiceに対して、 `authenticationProvider` を `additional="true"` 指定で追加します。
+この場合、認証プロバイダの定義順として、デフォルト設定されている認証プロバイダ⇒追加した認証プロバイダの順になります。
++
+[source, xml]
+----
+:
+:
+<service>
+  <interface>org.iplass.mtp.impl.auth.AuthService</interface>
+
+  <property name="authenticationProvider"
+        class="org.iplass.mtp.impl.auth.authenticate.ldap.LdapAuthenticationProvider" additional="true" >
+    <property name="providerName" value="ad" />
+    :
+    :
+
+  </property>
+
+</service>
+:
+:
+
+----
+
+* デフォルト設定を上書きする場合 +
+mtp-service-config.xmlにてAuthServiceに対して、 `authenticationProvider` を `inherit="false"` 指定で指定します。
+この場合、標準で定義される設定を継承せず上書きする形になり、mtp-service-config.xmlに定義した認証プロバイダ順に処理が実行されます。
++
+標準の認証プロバイダも利用する場合は、mtp-service-config.xmlに標準の認証プロバイダの設定も記述する必要があります。
++
+[source, xml]
+----
+:
+:
+<service>
+  <interface>org.iplass.mtp.impl.auth.AuthService</interface>
+
+  <property name="authenticationProvider"
+        class="org.iplass.mtp.impl.auth.authenticate.ldap.LdapAuthenticationProvider" inherit="false" >
+    <property name="providerName" value="ad" />
+    :
+    :
+
+  </property>
+
+  <property name="authenticationProvider"
+        class="org.iplass.mtp.impl.auth.authenticate.rememberme.RememberMeTokenAuthenticationProvider" inherit="false" >
+    <property name="authenticationProvider" class="org.iplass.mtp.impl.auth.authenticate.twostep.TwoStepAuthenticationProvider">
+      <property name="primary" class="org.iplass.mtp.impl.auth.authenticate.builtin.BuiltinAuthenticationProvider">
+        <property name="updatable" value="true" />
+        <property name="providerName" value="default" />
+        :
+        :
+
+      </property>
+      :
+      :
+
+    </property>
+  </property>
+
+</service>
+:
+:
+----
+
+==== 認証したプロバイダの取得
+複数の認証プロバイダを利用した場合に、Command処理などでどの認証プロバイダで認証したかの情報が必要になる場合は、
+以下の方法で取得してください。
+
+[source, java]
+----
+import org.iplass.mtp.auth.AuthContext;
+
+AuthContext auth = AuthContext.getCurrentContext(); <1>
+
+String providerName = (String)authContext.getAttribute("providerName"); <2>
+----
+<1> Groovyの場合は、すでにバインドされている場合があります。
+<2> service-configで指定した `providerName` が返ります。

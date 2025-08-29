@@ -1,0 +1,94 @@
+[[SamlService]]
+=== [.eeonly]#SamlService#
+This service manages SAML authentication.
+When operating as an IdP, or when signing a message sent from the SP side to the IdP, the settings of the certificate storage is required.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.auth.authenticate.saml.SamlService
+----
+
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.auth.authenticate.saml.SamlService
+----
+
+
+==== The settings of SamlService
+To utilize SAML authentication, SamlService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| validateSchema | boolean | verify if the SAML message conforms to the XMLSchema definition. The default value is false.
+| keyStore | <<SamlKeyStore>> | The settings of the certificate storage.
+| setAddressToSubjectConfirmationData | boolean | Whether to include the Address in SubjectConfirmationData of Assertion. The default value is true.
+| assertionLifetimeMinutes | int | Duration of the SAML assertion. Default value is 5 (minutes).
+| allowedClockSkewMinutes | int | Allowable clock skew time. Default value is 5 (minutes).
+
+If iPLAss operates in SP mode, it is considered when verifying NotOnOrAfter in the SubjectConfirmationData.
+
+When iPLAss operates in IdP mode, the validity period of the SAML assertion (NotOnOrAfter of SubjectConfirmationData and NotBefore/NotOnOrAfter of Conditions) to be issued is extended by the clock skew time as follows:
+
+`NotBefore` = `IssueInstant - allowedClockSkewMinutes` +
+`NotOnOrAfter` = `IssueInstant + assertionLifetimeMinutes + allowedClockSkewMinutes`
+
+|===
+
+////
+This is unlikely to be specified on the app side therefore it is not displayed in the list.
+| jsr105Provider | String | java.security.Provider 's Implementing Class can be specified.
+////
+
+[[SamlKeyStore]]
+.SamlKeyStore
+When operating as an IdP, corresponding definition is required when signing SAML messages on the SP side (iPLAss side).
+Private key and certificate (entry and description below) are stored in KeyStore.
+Multiple entries can be registered.
+(To support multiple encryption algorithms and for certificate rollover)
+
+Please specify org.iplass.mtp.impl.auth.authenticate.saml.SamlKeyStore to the class.
+The following items can be configured.
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| keyStoreType | String | KeyStore type. The default value is `JKS`.
+| keyStoreFilePath | String | File path of KeyStore where entries for signature creation are stored.
+| keyStorePassword | String | KeyStore password.
+| keyPassword | String | The keyPassword of the private key.
+| myCertificate | String, Multiple | The alias of the entry when you want to narrow down the entries used in the signature in the KeyStore.
+| defaultSignatureAlgorithm | String | Set the default signature algorithm. The default value is `SHA256withRSA`.
+| keyStoreReloadIntervalDays | int | Reload interval (number of days) of keyStore file.
+If not specified, reload will never be performed.
+| rollOverStrategy | <<CertificateRollOverStrategy>> | Rollover method when the validity period of a certificate is approaching.
+The default value is `OLDER`.
+| rollOverDaysBeforeExpire | long | Number of days to switch when rollOverStrategy is `BEFORE_N_DAYS`.
+|===
+
+[[CertificateRollOverStrategy]]
+.CertificateRollOverStrategy
+Specify the rollover method when the validation period of the certificate is approaching.
+When multiple (new and old) certificates are found in KeyStore, this is the method to determine which one to use.
+
+OLDER:: Use a certificate with a short validation period (NotAfter is old) until the validity period expires.
+NEWER:: Use a certificate with a longer validation period (NotAfter is new).
+BEFORE_N_DAYS :: switch to "rollOverDaysBeforeExpire" days before expiration
+
+===== Example
+[source, xml]
+----
+<service>
+  <interface>org.iplass.mtp.impl.auth.authenticate.saml.SamlService</interface>
+  <property name="keyStore" class="org.iplass.mtp.impl.auth.authenticate.saml.SamlKeyStore">
+    <property name="keyStoreFilePath" value="/app/.keystore" />
+    <property name="keyStorePassword" value="yourOwnKeyStorePassword" />
+    <property name="keyPassword" value="yourOwnKeyPassword" />
+    <property name="keyStoreReloadIntervalDays" value="1" />
+    <property name="rollOverStrategy" value="BEFORE_N_DAYS" />
+    <property name="rollOverDaysBeforeExpire" value="5" />
+
+  </property>
+</service>
+----

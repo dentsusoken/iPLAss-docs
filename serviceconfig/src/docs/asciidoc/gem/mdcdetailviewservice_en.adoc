@@ -1,0 +1,170 @@
+[[MdcDetailViewService]]
+=== [.eeonly]#MdcDetailViewService#
+This service for settings for the mobile version of the Detail pages.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.mdc.view.entityview.detail.MdcDetailViewService
+----
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.mdc.view.entityview.detail.MdcDetailViewService
+----
+
+==== The Settings of MdcDetailViewService
+MdcDetailViewService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| detailViewGenerator | <<MdcDetailViewHandlerGenerator>> | Automatic generation setting of screen definition of detail screen.
+| loadEntityController | <<LoadEntityController>> | Entity loading process.
+| saveEntityController | <<SaveEntityController>> | Entity save process.
+| copyEntityController | <<CopyEntityController>> | Entity copy process.
+|===
+
+[[MdcDetailViewHandlerGenerator]]
+.MdcDetailViewHandlerGenerator
+Please specify the implementing class of org.iplass.mtp.mdc.view.entityview.detail.definition.MdcDetailViewHandlerGenerator.
+
+As standard implementation, we provided the class:org.iplass.mtp.impl.mdc.view.entityview.detail.MdcDetailViewHandlerGeneratorImpl.
+The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| showSystemSection | boolean | Output System Section when auto-generated.
+| systemSectionProperties | <<SectionProperty>>,Multiple | System Section property.
+The basic items name and description and version control items (startDate, endDate) are excluded.
+| systemSectionDisplayPosition | SectionDisplayPosition a| The display position of the system Section.
+Specify enum value of SectionDisplayPosition.
+Specify one of the following:
+
+TOP:: Displayed at the top of the detail screen.
+
+BOTTOM:: Displayed at the end of the detail screen.
+
+The default value is `TOP`.
+| excludeOidWhenCustomOid | boolean | Hide OIDs if you have customized them.
+| useUserPropertyEditor | boolean | Use UserPropertyEditor for createBy, updateBy, lockedBy.
+When using the UserPropertyEditor, the User's name is displayed instead of the OID.
+|====================
+
+[[SectionProperty]]
+.SectionProperty
+This is a setting related to whether or not to display each system property.
+The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| propertyName | String | property name
+| displayView | boolean | Show on detail screen
+| displayCreate | boolean | Show on the new or copy screen
+| displayUpdate | boolean | Show on edit screen
+|====================
+
+[[LoadEntityController]]
+.LoadEntityController
+Please specify the implementing class of org.iplass.mtp.mdc.view.entityview.detail.load.LoadEntityController.
+
+As standard implementation, we provided the class:org.iplass.mtp.impl.mdc.view.entityview.detail.LoadEntityControllerImpl.
+There are no items that can be set.
+
+[[SaveEntityController]]
+.SaveEntityController
+Please specify the implementing class of org.iplass.mtp.mdc.view.entityview.detail.save.SaveEntityController.
+
+As standard implementation, we provided the class:org.iplass.mtp.impl.mdc.view.entityview.detail.SaveEntityControllerImpl.
+There are no items that can be set.
+
+[[CopyEntityController]]
+.CopyEntityController
+Please specify the implementing class of org.iplass.mtp.mdc.view.entityview.detail.copy.CopyEntityController.
+
+As standard implementation, we provided the class:org.iplass.mtp.impl.mdc.view.entityview.detail.CopyEntityControllerImpl.
+The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| shallowCopyLobData | boolean | Shallow copy Lob data.
+If `true`, it refers to the same data as the copy source without copying the entity.
+If `false`, copy the entity and refer to the data after copying.
+|====================
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.mdc.view.entityview.detail.MdcDetailViewService</interface>
+	<!-- Auto Generator -->
+	<property name="detailViewGenerator" class="org.iplass.mtp.impl.mdc.view.entityview.detail.MdcDetailViewHandlerGeneratorImpl">
+		<!-- Output System Section -->
+		<property name="showSystemSection" value="false" />
+		<!-- Properties to output to System Section -->
+		<property name="systemSectionProperties" class="org.iplass.mtp.mdc.view.entityview.detail.definition.SectionProperty">
+			<property name="propertyName" value="oid" />
+			<property name="displayView" value="false" />
+			<property name="displayCreate" value="false" />
+			<property name="displayUpdate" value="false" />
+		</property>
+		<property name="systemSectionProperties" class="org.iplass.mtp.mdc.view.entityview.detail.definition.SectionProperty">
+			<property name="propertyName" value="state" />
+			<property name="displayView" value="false" />
+			<property name="displayCreate" value="false" />
+			<property name="displayUpdate" value="false" />
+		</property>
+		<property name="systemSectionProperties" class="org.iplass.mtp.mdc.view.entityview.detail.definition.SectionProperty">
+			<property name="propertyName" value="createDate" />
+			<property name="displayView" value="false" />
+			<property name="displayCreate" value="false" />
+			<property name="displayUpdate" value="false" />
+		</property>
+		<property name="systemSectionProperties" class="org.iplass.mtp.mdc.view.entityview.detail.definition.SectionProperty">
+			<property name="propertyName" value="createBy" />
+			<property name="displayView" value="false" />
+			<property name="displayCreate" value="false" />
+			<property name="displayUpdate" value="false" />
+		</property>
+		<property name="systemSectionProperties" class="org.iplass.mtp.mdc.view.entityview.detail.definition.SectionProperty">
+			<property name="propertyName" value="updateDate" />
+			<property name="displayView" value="false" />
+			<property name="displayCreate" value="false" />
+			<property name="displayUpdate" value="false" />
+		</property>
+		<property name="systemSectionProperties" class="org.iplass.mtp.mdc.view.entityview.detail.definition.SectionProperty">
+			<property name="propertyName" value="updateBy" />
+			<property name="displayView" value="false" />
+			<property name="displayCreate" value="false" />
+			<property name="displayUpdate" value="false" />
+		</property>
+		<property name="systemSectionProperties" class="org.iplass.mtp.mdc.view.entityview.detail.definition.SectionProperty">
+			<property name="propertyName" value="lockedBy" />
+			<property name="displayView" value="false" />
+			<property name="displayCreate" value="false" />
+			<property name="displayUpdate" value="false" />
+		</property>
+		<!-- Display position of System Section TOP or BOTTOM -->
+		<property name="systemSectionDisplayPosition" value="BOTTOM" />
+		<!-- Hide OIDs if you have customized OIDs -->
+		<property name="excludeOidWhenCustomOid" value="true" />
+		<!-- Use UserPropertyEditor for createBy, updateBy, lockedBy -->
+		<property name="useUserPropertyEditor" value="true" />
+	</property>
+
+	<!-- Load Entity Controller -->
+	<property name="loadEntityController" class="org.iplass.mtp.impl.mdc.view.entityview.detail.LoadEntityControllerImpl" />
+
+	<!-- Save Entity Controller -->
+	<property name="saveEntityController" class="org.iplass.mtp.impl.mdc.view.entityview.detail.SaveEntityControllerImpl" />
+
+	<!-- Copy Entity Controller -->
+	<property name="copyEntityController" class="org.iplass.mtp.impl.mdc.view.entityview.detail.CopyEntityControllerImpl">
+		<!-- Shallow copy Lob data -->
+		<property name="shallowCopyLobData" value="false" />
+	</property>
+</service>
+----

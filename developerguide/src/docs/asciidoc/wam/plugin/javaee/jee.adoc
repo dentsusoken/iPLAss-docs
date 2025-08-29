@@ -1,0 +1,34 @@
+==== 初期設定
+
+. 事前準備/前提 +
+* 有償版のSDKに同梱されている `iplass-ee-wam-jee-[バージョン].zip` をアプリケーションサーバーに配置してください。
+* 以降の説明では、Tomcatのインストールディレクトリを `%TOMCAT_HOME%` と表記します。
+
+. WAMプラグインモジュールの配置 +
+* アプリケーションサーバーの `%TOMCAT_HOME%/webapps/{プロジェクト名}/WEB-INF/lib` にWAMプラグインモジュールを配置します。`iplass-wam-jee-[バージョン].zip` 内の以下のファイルが対象です。
+** iplass-ee-wam-jee-[バージョン].jar
+
+. JavaEEの設定 +
+* `iplass-ee-wam-jee-[バージョン].zip` に格納されている設定ファイル/ライブラリを以下のように配置します。
+** WAMプラグインモジュールの設定ファイル(iplass-wam-config.xml)を `%TOMCAT_HOME%/webapps/{プロジェクト名}/WEB-INF/classes` に配置します。設定項目の詳細は<<wamsettingfile, WAMプラグインモジュールの設定>>を参照してください。
+** libフォルダ配下のファイルを `%TOMCAT_HOME%/webapps/{プロジェクト名}/WEB-INF/lib` に配置します。
+** lib/logフォルダ配下のファイルを `%TOMCAT_HOME%/webapps/{プロジェクト名}/WEB-INF/lib` に配置します。
+** lib/httpclientフォルダ配下のファイルを `%TOMCAT_HOME%/webapps/{プロジェクト名}/WEB-INF/lib` に配置します。
+
+.tomcat 構成イメージ
+----
+%TOMCAT_HOME%
+└─webapps
+   └─{プロジェクト名}
+       └─WEB-INF
+           ├─classes
+           │      iplass-wam-plugin.xml 
+           │      <1>
+           └─lib
+                  iplass-ee-wam-jee-[バージョン].jar などの、iplass-wam-jee-[バージョン].zip/lib 以下の jar ファイル全てを配置
+                  logback*.jar などの、iplass-wam-jee-[バージョン].zip/lib/log 以下の jar ファイル全てを配置
+                  httpcomponent*.jar などの、iplass-wam-jee-[バージョン].zip/lib/httpclient 以下の jar ファイル全てを配置 <2>
+----
+<1> 必要に応じてログ設定ファイル（logback.xml）を配置
+<2> lib/httpclientフォルダ配下にはApache HttpClientのjarファイルが格納されています。 +
+対象環境で別のバージョンのHttpClientを利用している等、当該jarを含めない場合は、WAMプラグインモジュールはJava標準ライブラリを使用してHTTP通信を行います。

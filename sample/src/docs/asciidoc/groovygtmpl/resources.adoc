@@ -1,0 +1,10 @@
+[[Groovy_GTmpl_Resource]]
+== リソース定義
+
+include::resources_message.adoc[]
+
+include::resources_beanvalidation.adoc[]
+
+include::resources_staticresource.adoc[]
+
+

@@ -1,0 +1,22 @@
+= サンプルアプリケーション
+:_hreflang-path: sample/index.html
+ifdef::env-github,env-browser[:outfilesuffix: .adoc]
+:_menu-item-name: sample-ec
+
+ifeval::["{lang}" == "en"]
+
+[WARNING]
+====
+The English Version of this documentation is under construction.
+====
+
+endif::[]
+
+
+include::overall.adoc[]
+
+include::businessflow.adoc[]
+
+include::globalsettings.adoc[]
+
+include::implementation.adoc[]

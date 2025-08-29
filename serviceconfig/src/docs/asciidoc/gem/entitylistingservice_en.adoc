@@ -1,0 +1,37 @@
+[[EntityListingService]]
+=== [.eeonly]#EntityListingService#
+This service manages the definition (metadata) of EntityListing.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.view.entitylisting.EntityListingService
+----
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.view.entitylisting.EntityListingService
+----
+
+==== The settings of EntityListingService
+EntityListingService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| searchResultCacheLimit | int | internal cache size (number of records) for user name search results. The default value is 300.
+| useSubQueryIfPossible | boolean | Whether to use subqueries as much as possible when using filter on saved lists. The default value is false.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.view.entitylisting.EntityListingService</interface>
+	<class>org.iplass.mtp.impl.view.entitylisting.EntityListingService</class>
+	<!-- Internal cache size of the searches of User Name -->
+	<property name="searchResultCacheLimit" value="300" />
+	<!-- Whether to use subqueries as much as possible when using filter on saved lists. -->
+	<property name="useSubQueryIfPossible" value="false" />
+</service>
+----

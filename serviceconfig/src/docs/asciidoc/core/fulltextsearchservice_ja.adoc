@@ -1,0 +1,905 @@
+[[FulltextSearchService]]
+=== FulltextSearchService
+全文検索のサービスです。
+全文検索の実装として、Luceneを利用した全文検索、Elasticsearchを利用した全文検索、OpenSearchを利用した全文検索、Solrを利用した全文検索を標準提供します。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.fulltextsearch.FulltextSearchService
+----
+
+==== 実装クラス名
+.Luceneを利用した全文検索
+----
+org.iplass.mtp.impl.fulltextsearch.lucene.LuceneFulltextSearchService
+----
+
+.[.eeonly]#Elasticsearchを利用した全文検索#
+----
+org.iplass.mtp.impl.fulltextsearch.elasticsearch.ElasticsearchFulltextSearchService
+----
+
+.[.eeonly]#OpenSearchを利用した全文検索#
+----
+org.iplass.mtp.impl.aws.fulltextsearch.opensearch.OpenSearchFulltextSearchService
+----
+
+.[.eeonly]#（非推奨）Solrを利用した全文検索#
+----
+org.iplass.mtp.impl.fulltextsearch.FulltextSearchSolrService
+----
+
+==== FulltextSearchServiceの設定
+全文検索の共通項目を設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| useFulltextSearch | boolean | 全文検索を利用するか。デフォルト値はfalseです。
+| maxRows | int | 全文検索の結果件数の上限。デフォルト値は1000です。
+| throwExceptionWhenOverLimit | boolean | maxRows以上の件数がヒットした場合の挙動。
+trueの場合、件数以上取得できたことのメッセージを表示し、検索結果は出しません。
+falseの場合、件数以上取得できたことのメッセージを表示し、検索結果も出します。デフォルト値はtrueです。
+| redundantTimeMinutes | long | `前回Index更新日時-redundantTimeMinutes` より後のデータに対してIndexの処理を行います。デフォルト値は10です。
+| binaryParser | <<BinaryReferenceParser>>、複数指定可 | BinaryReference解析用のParser。
+| binaryParseLimitLength | int | BinaryReferenceのParse可能な最大文字数。
+| scorePropertyName | String | 検索結果のEntityにスコア値を格納する際のプロパティ名を設定。デフォルト値は `score` です。
+| includeMappedByReferenceIfNoPropertySpecified | boolean | 検索結果のEntityに被参照の値も取得するかどうかを設定。デフォルト値は `false` です。
+|===
+
+[[BinaryReferenceParser]]
+.BinaryReferenceParser
+Apache Tikaを利用してBinaryReferenceの内容を解析します。
+
+classはorg.iplass.mtp.impl.fulltextsearch.parser.BinaryReferenceParserの実装クラスを指定します。
+
+標準で以下のBinaryReferenceParserを提供します。
+
+* <<BinaryAutoDetectParser>>
+* <<BinaryHtmlParser>>
+* <<BinaryOfficeParser>>
+* <<BinaryOOXMLParser>>
+* <<BinaryPDFParser>>
+* <<BinaryTextParser>>
+* <<BinaryXMLParser>>
+* <<BinaryNameTypeParser>>
+
+標準で提供しているBinaryReferenceParserの共通設定項目は次の通りです（BinaryNameTypeParserを除く）。
+
+.共通設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 
+| 値 
+| 説明
+
+| continuableExceptions 
+| String、複数指定可 
+a| バイナリ情報をパースする際に、例外が発生しても処理継続したい例外クラス名を設定する。 +
+設定値にはパース時に発生する例外の完全修飾クラス名を設定する。
+
+|===
+
+[[BinaryAutoDetectParser]]
+.BinaryAutoDetectParser
+TikaのAutoDetectParserを利用して全てのタイプを対象に解析します。
+ただし解析に必要となる依存ライブラリが存在しない場合はスキップします。
+
+classにorg.iplass.mtp.impl.fulltextsearch.parser.BinaryAutoDetectParserを指定します。
+設定変更可能な項目は、共通設定項目のみです。
+
+[[BinaryHtmlParser]]
+.BinaryHtmlParser
+HTML用Parser。
+TikaのHtmlParserを利用して解析します。
+
+classにorg.iplass.mtp.impl.fulltextsearch.parser.BinaryHtmlParserを指定します。
+設定変更可能な項目は、共通設定項目のみです。
+
+[[BinaryOfficeParser]]
+.BinaryOfficeParser
+OfficeDocument(2003以前の形式)用Parser。
+TikaのOfficeParserを利用して解析します。
+
+classにorg.iplass.mtp.impl.fulltextsearch.parser.BinaryOfficeParserを指定します。
+設定変更可能な項目は、共通設定項目のみです。
+
+[[BinaryOOXMLParser]]
+.BinaryOOXMLParser
+OfficeDocument(OOXML形式)用Parser。
+TikaのOOXMLParserを利用して解析します。
+
+classにorg.iplass.mtp.impl.fulltextsearch.parser.BinaryOOXMLParserを指定します。
+設定変更可能な項目は、共通設定項目のみです。
+
+[[BinaryPDFParser]]
+.BinaryPDFParser
+PDF用Parser。
+TikaのPDFParserを利用して解析します。
+
+classにorg.iplass.mtp.impl.fulltextsearch.parser.BinaryPDFParserを指定します。
+設定変更可能な項目は、共通設定項目のみです。
+
+[[BinaryTextParser]]
+.BinaryTextParser
+PlainText用Parser。
+TikaのTXTParserを利用して解析します。
+
+classにorg.iplass.mtp.impl.fulltextsearch.parser.BinaryTextParserを指定します。
+設定変更可能な項目は、共通設定項目のみです。
+
+[[BinaryXMLParser]]
+.BinaryXMLParser
+XML用Parser。
+TikaのXMLParserを利用して解析します。
+
+classにorg.iplass.mtp.impl.fulltextsearch.parser.BinaryXMLParserを指定します。
+設定変更可能な項目は、共通設定項目のみです。
+
+[[BinaryNameTypeParser]]
+.BinaryNameTypeParser
+全てのバイナリファイルを対象に、nameとtypeを返します。
+
+classにorg.iplass.mtp.impl.fulltextsearch.parser.BinaryNameTypeParserを指定します。
+設定変更可能な項目はありません。
+
+[[LuceneFulltextSearchService]]
+==== LuceneFulltextSearchServiceの設定
+Luceneを利用した全文検索の項目を設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| indexWriterSetting | <<IndexWriterSetting>>、省略可能 | IndexWriterの設定です。
+| directory | String | Indexファイルを保存するルートディレクトリを指定。
+ルートディレクトリ配下にテナント、Entity単位にIndexファイルが作成されます。
+| luceneFSDirectory | `org.apache.lucene.store.SimpleFSDirectory`、 `org.apache.lucene.store.MMapDirectory`、 `org.apache.lucene.store.NIOFSDirectory` | ファイルシステムにINDEXファイルを保存するLucene Directoryの実装クラス。 + 
+LuceneのドキュメントによりWindowsの環境で `NIOFSDirectory` の利用は推薦しません。 + 
+※ 未設定の場合、Luceneが決定するデフォルトのFSDirectoryが利用されます。
+| luceneFSDirectoryMaxChunkSizeMB | int | `org.apache.lucene.store.MMapDirectory` クラスが利用するメモリマッピング用maxChunkSizeです。 + 
+未設定の場合、Luceneが決定するデフォルト値が利用されます。 +
+※ `org.apache.lucene.store.MMapDirectory` 以外が選択されている場合、この設定値は無視されます。
+| analyzerSetting | <<AnalyzerSetting>>、省略可能 | analyzerを初期化する設定クラスです。設定が省略された場合はJapaneseAnalyzerSettingが適用されます。
+| defaultOperator | Operator | 演算子。設定可能な演算子は `AND` または `OR` です。
+| searcherAutoRefreshTimeMinutes | int | iPLAssが保持しているLuceneのIndexSearcher( ≒ IndexReader)が自動的に更新される時間間隔（分）です。 + 
+デフォルト値が「-1」となっています、「0」以下の値を設定している場合、自動更新処理は実行されません。
+|===
+
+[[IndexWriterSetting]]
+.IndexWriterSetting
+classはorg.iplass.mtp.impl.fulltextsearch.lucene.IndexWriterSettingを指定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| ramBufferSizeMB | double | Index作成時のメモリのキャッシュサイズ。デフォルト値は64.0です。
+| commitLimit | int | Index作成時のコミット単位。未指定の場合は、全件一括でコミットします。
+| mergePolicy | org.apache.lucene.index.MergePolicy | org.apache.lucene.index.MergePolicyのインスタンスを指定します。
+| infoStream | org.apache.lucene.util.InfoStream | org.apache.lucene.util.InfoStreamのインスタンスを指定します。
+DEBUGログに出力する `org.iplass.mtp.impl.fulltextsearch.lucene.LoggingInfoStream` を提供していますので、利用することも可能です。
+|===
+
+
+[[AnalyzerSetting]]
+.AnalyzerSetting
+analyzerを初期化する設定クラスです。
+
+classはorg.iplass.mtp.impl.fulltextsearch.lucene.AnalyzerSettingの実装クラスを指定します。
+
+標準で以下のAnalyzerSettingを提供します。
+
+- <<SimpleAnalyzerSetting>>
+- <<JapaneseAnalyzerSetting>>
+- <<PerEntityAnalyzerSetting>>
+
+[[SimpleAnalyzerSetting]]
+.SimpleAnalyzerSetting
+Analyzerクラス名を指定可能なシンプルなAnalyzerSettingです。
+`org.iplass.mtp.impl.fulltextsearch.lucene.SimpleAnalyzerSetting` を指定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| className | String | org.apache.lucene.analysis.Analyzerの実装クラス名を指定。
+|===
+
+[[JapaneseAnalyzerSetting]]
+.JapaneseAnalyzerSetting
+JapaneseAnalyzerを初期化するAnalyzerSettingです。
+`org.iplass.mtp.impl.fulltextsearch.lucene.JapaneseAnalyzerSetting` を指定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| className | String | org.apache.lucene.analysis.Analyzerの実装クラス名を指定。
+デフォルト値は `org.apache.lucene.analysis.ja.JapaneseAnalyzer` です。
+| mode | org.apache.lucene.analysis.ja.JapaneseTokenizer.Mode | トークナイゼーションモード。JapaneseTokenizer.Modeのenum値を指定します。デフォルト値は `SEARCH` です。
+| userDictionary | String | ユーザー定義辞書。クラスパス上に配置する必要があります。 +
+未設定の場合、ユーザー定義辞書を利用しないと同じようになります。
+| stopwords | String | ストップワード定義ファイル。クラスパス上に配置する必要があります。 +
+未設定の場合、`lucene-analyzers-kuromoji-XXX.jar` 内の定義ファイルが適用されます。
+| stoptags | String | ストップタグ定義ファイル。クラスパス上に配置する必要があります。 +
+未設定の場合、`lucene-analyzers-kuromoji-XXX.jar` 内の定義ファイルが適用されます。
+|===
+
+[[PerEntityAnalyzerSetting]]
+.PerEntityAnalyzerSetting
+Entity定義単位に異なったAnalyzerを利用するためのAnalyzerSettingです。
+`org.iplass.mtp.impl.fulltextsearch.lucene.PerEntityAnalyzerSetting` を指定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| settingsPerEntity | <<AnalyzerSetting>>、Map形式 | keyとしてEntity定義名を指定し、valueとしてAnalyzerSettingのインスタンスを設定します。
+| defaultSetting | <<AnalyzerSetting>> | デフォルトで適用されるAnalyzerを指定。settingsPerEntityで指定されていないEntity定義に適用されます。
+|===
+
+[[ElasticsearchFulltextSearchService]]
+==== [.eeonly]#ElasticsearchFulltextSearchServiceの設定#
+Elasticsearchを利用した全文検索の項目を設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| restClientFactory | <<org.iplass.mtp.impl.fulltextsearch.elasticsearch.RestClientFactory, RestClientFactory>> | RestClientFactoryの設定です。
+| analysisFactory | <<org.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.AnalysisFactory, AnalysisFactory>> | AnalysisFactoryの設定です。
+| defaultAnalyzerProperty | <<org.iplass.mtp.impl.fulltextsearch.elasticsearch.mappings.AnalyzerProperty, AnalyzerProperty>> | AnalyzerPropertyの設定です。
+| analyzerPropertyPerEntity | <<org.iplass.mtp.impl.fulltextsearch.elasticsearch.mappings.AnalyzerProperty, AnalyzerProperty>>、Map形式 | keyとしてEntity定義名を指定し、valueとしてAnalyzerPropertyのインスタンスを設定します。
+| defaultOperator | Operator | 演算子。設定可能な演算子は `AND`, `OR`, `And`, `Or` のいずれかです。
+|===
+
+[[org.iplass.mtp.impl.fulltextsearch.elasticsearch.RestClientFactory]]
+.RestClientFactory
+classはorg.iplass.mtp.impl.fulltextsearch.elasticsearch.RestClientFactoryの実装クラスを指定します。 + 
+
+標準で以下のRestClientFactoryを提供します。
+
+- <<org.iplass.mtp.impl.fulltextsearch.elasticsearch.DefaultRestClientFactory, DefaultRestClientFactory>>
+
+[[org.iplass.mtp.impl.fulltextsearch.elasticsearch.DefaultRestClientFactory]]
+.DefaultRestClientFactory
+classはorg.iplass.mtp.impl.fulltextsearch.elasticsearch.DefaultRestClientFactoryを指定します。 + 
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| elasticsearchUrl | String、複数指定可 | ElasticsearchサーバのURL
+| headers | String、Map形式 | リクエスト時に設定できるHeader。Map形式で指定可能です。
+| connectionTimeout | int | http通信確立時のConnectionTimeout値（ミリ秒）。デフォルト値は-1です。
+| soTimeout | int | http通信確立時のSoTimeout値（ミリ秒）。デフォルト値は-1です。
+| proxyHost | String | http通信する際のproxyHost。
+| proxyPort | int | http通信する際のproxyPort。
+| userName | String | BASIC認証で利用するユーザー名
+| password | String | BASIC認証で利用するパスワード
+|===
+
+[[org.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.AnalysisFactory]]
+.AnalysisFactory
+カスタムでAnalyzer等を定義したい場合に利用するクラスです。
+
+classはorg.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.AnalysisFactoryの実装クラスを指定します。
+
+標準で以下のAnalysisFactoryを提供します。
+
+- <<org.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.DefaultAnalysisFactory, DefaultAnalysisFactory>>
+
+[[org.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.DefaultAnalysisFactory]]
+.DefaultAnalysisFactory
+classはorg.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.DefaultAnalysisFactoryを指定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| analyzer | <<org.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.AnalyzerFactory, AnalyzerFactory>>、Map形式 | keyとして定義名を指定し、valueとしてAnalyzerFactoryのインスタンスを設定します。
+| charFilter | <<org.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.charfilter.CharFilterFactory, CharFilterFactory>>、Map形式 | keyとして定義名を指定し、valueとしてCharFilterFactoryのインスタンスを設定します。
+| filter | <<org.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.filter.TokenFilterFactory, TokenFilterFactory>>、Map形式 | keyとして定義名を指定し、valueとしてTokenFilterFactoryのインスタンスを設定します。
+| tokenizer | <<org.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.tokenizer.TokenizerFactory, TokenizerFactory>>、Map形式 | keyとして定義名を指定し、valueとしてTokenizerFactoryのインスタンスを設定します。
+|===
+
+[[org.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.AnalyzerFactory]]
+.AnalyzerFactory
+カスタムでAnalyzerを定義したい場合に利用するFactoryクラスです。
+classはorg.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.AnalyzerFactoryの実装クラスを指定します。
+
+標準で以下のAnalysisFactoryを提供します。
+
+- <<org.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.analyzer.CustomAnalyzerFactory, CustomAnalyzerFactory>>
+- <<org.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.analyzer.KuromojiAnalyzerFactory, KuromojiAnalyzerFactory>>
+
+[[org.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.analyzer.CustomAnalyzerFactory]]
+.CustomAnalyzerFactory
+charFilter、tokenizer、filterを組み合わせてAnalyzerを定義することができます。
+classはorg.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.analyzer.CustomAnalyzerFactoryを指定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| charFilter | String、複数指定可 | charFilterの定義名
+| filter | String、複数指定可 | filterの定義名
+| tokenizer | String、必須 | tokenizerの定義名
+|===
+
+[[org.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.analyzer.KuromojiAnalyzerFactory]]
+.KuromojiAnalyzerFactory
+カスタマイズされたKuromojiAnalyzerを定義することができます。
+classはorg.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.analyzer.KuromojiAnalyzerFactoryを指定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| mode | co.elastic.clients.elasticsearch._types.analysis.KuromojiTokenizationMode | tokenizationモードの設定
+| userDictionary | String | ユーザー辞書
+|===
+
+[[org.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.charfilter.CharFilterFactory]]
+.CharFilterFactory
+カスタムでCharFilterを定義したい場合に利用するFactoryクラスです。
+classはorg.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.AnalyzerFactoryの実装クラスを指定します。
+
+[[org.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.filter.TokenFilterFactory]]
+.TokenFilterFactory
+カスタムでTokenFilterを定義したい場合に利用するFactoryクラスです。
+classはorg.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.filter.TokenFilterFactoryの実装クラスを指定します。
+
+[[org.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.tokenizer.TokenizerFactory]]
+.TokenizerFactory
+カスタムでTokenizerを定義したい場合に利用するFactoryクラスです。
+classはorg.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.tokenizer.TokenizerFactoryの実装クラスを指定します。
+
+[[org.iplass.mtp.impl.fulltextsearch.elasticsearch.mappings.AnalyzerProperty]]
+.AnalyzerProperty
+Analyzerを指定する際に利用します。
+classはorg.iplass.mtp.impl.fulltextsearch.elasticsearch.mappings.AnalyzerPropertyを指定します。 + 
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| analyzer | String | デフォルトで利用するAnalyzer名
+| searchAnalyzer | String | 検索で利用するAnalyzer名
+| searchQuoteAnalyzer | String | フレーズを利用した検索で利用するAnalyzer名
+|===
+
+[[OpenSearchFulltextSearchService]]
+==== [.eeonly]#OpenSearchFulltextSearchServiceの設定#
+OpenSearchを利用した全文検索の項目を設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| restClientFactory | <<org.iplass.mtp.impl.aws.fulltextsearch.opensearch.RestClientFactory, RestClientFactory>> | RestClientFactoryの設定です。
+| analysisFactory | <<org.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.AnalysisFactory, AnalysisFactory>> | AnalysisFactoryの設定です。
+| defaultAnalyzerProperty | <<org.iplass.mtp.impl.aws.fulltextsearch.opensearch.mappings.AnalyzerProperty, AnalyzerProperty>> | AnalyzerPropertyの設定です。
+| analyzerPropertyPerEntity | <<org.iplass.mtp.impl.aws.fulltextsearch.opensearch.mappings.AnalyzerProperty, AnalyzerProperty>>、Map形式 | keyとしてEntity定義名を指定し、valueとしてAnalyzerPropertyのインスタンスを設定します。
+| defaultOperator | Operator | 演算子。設定可能な演算子は `AND`, `OR`, `And`, `Or` のいずれかです。
+|===
+
+[[org.iplass.mtp.impl.aws.fulltextsearch.opensearch.RestClientFactory]]
+.RestClientFactory
+classはorg.iplass.mtp.impl.aws.fulltextsearch.opensearch.RestClientFactoryの実装クラスを指定します。 + 
+
+標準で以下のRestClientFactoryを提供します。
+
+- <<org.iplass.mtp.impl.aws.fulltextsearch.opensearch.DefaultRestClientFactory, DefaultRestClientFactory>>
+
+[[org.iplass.mtp.impl.aws.fulltextsearch.opensearch.DefaultRestClientFactory]]
+.DefaultRestClientFactory
+classはorg.iplass.mtp.impl.aws.fulltextsearch.opensearch.DefaultRestClientFactoryを指定します。 + 
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| openSearchUrl | String、複数指定可 | OpenSearchサーバのURL
+| headers | String、Map形式 | リクエスト時に設定できるHeader。Map形式で指定可能です。
+| connectionTimeout | int | http通信確立時のConnectionTimeout値（ミリ秒）。デフォルト値は-1です。
+| soTimeout | int | http通信確立時のSoTimeout値（ミリ秒）。デフォルト値は-1です。
+| proxyHost | String | http通信する際のproxyHost。
+| proxyPort | int | http通信する際のproxyPort。
+| userName | String | BASIC認証で利用するユーザー名
+| password | String | BASIC認証で利用するパスワード
+| httpRequestInterceptorFactory | <<HttpRequestInterceptorFactory>> | HttpRequestInterceptorFactoryの設定です。userNameとpasswordの値が設定されていない場合に適用されます。
+|===
+
+[[HttpRequestInterceptorFactory]]
+.HttpRequestInterceptorFactory
+`org.apache.http.HttpRequestInterceptor` を生成するFactoryクラスです。
+classはorg.iplass.mtp.impl.aws.HttpRequestInterceptorの実装クラスを指定します。
+
+標準で以下のHttpRequestInterceptorFactoryを提供します。
+
+- <<AWSRequestSigningApacheInterceptorFactory>>
+
+[[AWSRequestSigningApacheInterceptorFactory]]
+.AWSRequestSigningApacheInterceptorFactory
+`com.amazonaws.http.AWSRequestSigningApacheInterceptor` を生成するFactoryクラスです。BASIC認証ではなく、IAM認証情報を使用してリクエストを署名したい場合に利用します。 +
+
+AWSRequestSigningApacheInterceptorで利用するAWSCredentialsProviderについて、AWSSettingのaccessKeyIdとsecretKeyが設定されている場合はAWSStaticCredentialsProviderが適用され、未設定の場合はDefaultAWSCredentialsProviderChainが適用されます。 + 
+
+classはorg.iplass.mtp.impl.aws.AWSRequestSigningApacheInterceptorFactoryを指定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| serviceName | String | サービス名
+| region | String | リージョン名
+|===
+
+[[org.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.AnalysisFactory]]
+.AnalysisFactory
+カスタムでAnalyzer等を定義したい場合に利用するクラスです。
+
+classはorg.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.AnalysisFactoryの実装クラスを指定します。
+
+標準で以下のAnalysisFactoryを提供します。
+
+- <<org.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.DefaultAnalysisFactory, DefaultAnalysisFactory>>
+
+[[org.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.DefaultAnalysisFactory]]
+.DefaultAnalysisFactory
+classはorg.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.DefaultAnalysisFactoryを指定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| analyzer | <<org.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.AnalyzerFactory, AnalyzerFactory>>、Map形式 | keyとして定義名を指定し、valueとしてAnalyzerFactoryのインスタンスを設定します。
+| charFilter | <<org.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.charfilter.CharFilterFactory, CharFilterFactory>>、Map形式 | keyとして定義名を指定し、valueとしてCharFilterFactoryのインスタンスを設定します。
+| filter | <<org.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.filter.TokenFilterFactory, TokenFilterFactory>>、Map形式 | keyとして定義名を指定し、valueとしてTokenFilterFactoryのインスタンスを設定します。
+| tokenizer | <<org.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.tokenizer.TokenizerFactory, TokenizerFactory>>、Map形式 | keyとして定義名を指定し、valueとしてTokenizerFactoryのインスタンスを設定します。
+|===
+
+[[org.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.AnalyzerFactory]]
+.AnalyzerFactory
+カスタムでAnalyzerを定義したい場合に利用するクラスです。
+classはorg.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.AnalyzerFactoryの実装クラスを指定します。
+
+標準で以下のAnalysisFactoryを提供します。
+
+- <<org.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.analyzer.CustomAnalyzerFactory, CustomAnalyzerFactory>>
+- <<org.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.analyzer.KuromojiAnalyzerFactory, KuromojiAnalyzerFactory>>
+
+[[org.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.analyzer.CustomAnalyzerFactory]]
+.CustomAnalyzerFactory
+charFilter、tokenizer、filterを組み合わせてAnalyzerを定義することができます。
+classはorg.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.analyzer.CustomAnalyzerFactoryを指定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| charFilter | String、複数指定可 | charFilterの定義名
+| filter | String、複数指定可 | filterの定義名
+| tokenizer | String、必須 | tokenizerの定義名
+|===
+
+[[org.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.analyzer.KuromojiAnalyzerFactory]]
+.KuromojiAnalyzerFactory
+カスタマイズされたKuromojiAnalyzerを定義することができます。
+classはorg.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.analyzer.KuromojiAnalyzerFactoryを指定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| mode | co.elastic.clients.opensearch._types.analysis.KuromojiTokenizationMode | tokenizationモードの設定
+| userDictionary | String | ユーザー辞書
+|===
+
+[[org.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.charfilter.CharFilterFactory]]
+.CharFilterFactory
+カスタムでCharFilterを定義したい場合に利用するFactoryクラスです。
+classはorg.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.AnalyzerFactoryの実装クラスを指定します。
+
+[[org.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.filter.TokenFilterFactory]]
+.TokenFilterFactory
+カスタムでTokenFilterを定義したい場合に利用するFactoryクラスです。
+classはorg.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.filter.TokenFilterFactoryの実装クラスを指定します。
+
+[[org.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.tokenizer.TokenizerFactory]]
+.TokenizerFactory
+カスタムでTokenizerを定義したい場合に利用するFactoryクラスです。
+classはorg.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.tokenizer.TokenizerFactoryの実装クラスを指定します。
+
+[[org.iplass.mtp.impl.aws.fulltextsearch.opensearch.mappings.AnalyzerProperty]]
+.AnalyzerProperty
+Analyzerを指定する際に利用します。
+classはorg.iplass.mtp.impl.aws.fulltextsearch.opensearch.mappings.AnalyzerPropertyを指定します。 + 
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| analyzer | String | デフォルトで利用するAnalyzer名
+| searchAnalyzer | String | 検索で利用するAnalyzer名
+| searchQuoteAnalyzer | String | フレーズを利用した検索で利用するAnalyzer名
+|===
+
+==== [.eeonly]#FulltextSearchSolrServiceの設定#
+
+CAUTION: FulltextSearchSolrServiceは将来削除される予定です。 <<ElasticsearchFulltextSearchService, [.eeonly]#ElasticsearchFulltextSearchService#>> もしくは <<OpenSearchFulltextSearchService, [.eeonly]#OpenSearchFulltextSearchService#>> を利用することを推奨します。
+
+Solrを利用した全文検索の項目を設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| solrUrl | String、複数指定可 | 用意したsolrサーバのURL。
+| solrMasterUrl | String | レプリケーション機能利用時のマスターサーバのURL。
+| highlightPreTag | String | ハイライト用の開始タグ。
+| highlightPostTag | String | ハイライト用の終了タグ。
+|===
+
+===== 設定例（LuceneFulltextSearchService利用の場合）
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.fulltextsearch.FulltextSearchService</interface>
+	<class>org.iplass.mtp.impl.fulltextsearch.lucene.LuceneFulltextSearchService</class>
+
+	<property name="useFulltextSearch" value="true" />
+	<property name="maxRows" value="1000" />
+    <property name="throwExceptionWhenOverLimit" value="true"/>
+
+	<property name="directory" value="/lucene" />
+
+	<property name="indexWriterSetting">
+		<property name="ramBufferSizeMB" value="64.0"/>
+		<property name="commitLimit" value="1000"/>
+		<property name="infoStream" class="org.iplass.mtp.impl.fulltextsearch.lucene.LoggingInfoStream"/>
+	</property>
+	<property name="redundantTimeMinutes" value="10"/>
+
+	<!--
+	    some.SampleEntity、some.AnotherSampleEntityの場合CJKAnalyzerを利用し、
+	    それ以外の場合はJapaneseAnalyzerを利用する設定例
+	-->
+	<property name="analyzerSetting" class="org.iplass.mtp.impl.fulltextsearch.lucene.PerEntityAnalyzerSetting">
+		<property name="defaultSetting" class="org.iplass.mtp.impl.fulltextsearch.lucene.JapaneseAnalyzerSetting">
+    		<property name="mode" value="SEARCH" />
+    		<property name="userDictionary" value="/lucene/userdict.txt" />
+    		<property name="stopwords" value="/lucene/stopwords.txt" />
+    		<property name="stoptags" value="/lucene/stoptags.txt" />
+		</property>
+		<property name="settingsPerEntity">
+			<property name="some.SampleEntity" class="org.iplass.mtp.impl.fulltextsearch.lucene.SimpleAnalyzerSetting">
+				<property name="className" value="org.apache.lucene.analysis.cjk.CJKAnalyzer"/>
+			</property>
+			<property name="some.AnotherSampleEntity" class="org.iplass.mtp.impl.fulltextsearch.lucene.SimpleAnalyzerSetting">
+				<property name="className" value="org.apache.lucene.analysis.cjk.CJKAnalyzer"/>
+			</property>
+		</property>
+	</property>
+
+	<property name="defaultOperator" value="AND" />
+	<property name="indexWriterCommitLimit" value="-1"/>
+
+	<property name="binaryParseLimitLength" value="100000"/>
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryPDFParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryOOXMLParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryOfficeParser">
+		<property name="continuableExceptions" value="org.apache.poi.poifs.filesystem.NotOLE2FileException" />
+	</property>
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryHtmlParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryTextParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryXMLParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryNameTypeParser" />
+
+</service>
+----
+
+===== 設定例（ElasticsearchFulltextSearchService利用の場合）
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.fulltextsearch.FulltextSearchService</interface>
+	<class>org.iplass.mtp.impl.fulltextsearch.elasticsearch.ElasticsearchFulltextSearchService</class>
+
+	<property name="useFulltextSearch" value="true" />
+	<property name="maxRows" value="1000" />
+    <property name="throwExceptionWhenOverLimit" value="true"/>
+
+    <property name="restClientFactory"  class="org.iplass.mtp.impl.fulltextsearch.elasticsearch.DefaultRestClientFactory">
+        <property name="elasticsearchUrl" value="{SCHEME}://{ADDRESS}:{PORT}"/>
+    </property>
+	
+	<property name="analysisFactory" class="org.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.DefaultAnalysisFactory">
+        <property name="analyzer" >
+            <property name="my_kuromoji" class="org.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.analyzer.KuromojiAnalyzerFactory">
+                <property name="mode" value="Search"/>
+                <property name="method" value="Nfc"/>
+            </property>
+        </property>
+    </property>
+	
+	<!--
+	testEntityの場合、my_kuromojiを利用し、それ以外の場合はkuromojiを利用する設定例
+	-->
+    <property name="defaultAnalyzerProperty" >
+        <property name="analyzer" value="kuromoji"/>
+    </property>
+    <property name="analyzerPropertyPerEntity" >
+        <property name="testEntity" class="org.iplass.mtp.impl.fulltextsearch.elasticsearch.mappings.AnalyzerProperty">
+            <property name="analyzer" value="my_kuromoji"/>
+        </property>
+    </property>
+
+	<property name="redundantTimeMinutes" value="10"/>
+	<property name="defaultOperator" value="AND" />
+
+	<property name="binaryParseLimitLength" value="100000"/>
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryPDFParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryOOXMLParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryOfficeParser">
+		<property name="continuableExceptions" value="org.apache.poi.poifs.filesystem.NotOLE2FileException" />
+	</property>
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryHtmlParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryTextParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryXMLParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryNameTypeParser" />
+
+</service>
+----
+
+===== 設定例（OpenSearchFulltextSearchService利用の場合）
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.fulltextsearch.FulltextSearchService</interface>
+	<class>org.iplass.mtp.impl.aws.fulltextsearch.opensearch.OpenSearchFulltextSearchService</class>
+	
+	<property name="useFulltextSearch" value="true" />
+	<property name="maxRows" value="1000" />
+    <property name="throwExceptionWhenOverLimit" value="true"/>
+
+	<property name="restClientFactory" class="org.iplass.mtp.impl.aws.fulltextsearch.opensearch.DefaultRestClientFactory" >
+		<property name="openSearchUrl" value="{SCHEME}://{ADDRESS}:{PORT}"/>
+		<property name="httpRequestInterceptorFactory" class="org.iplass.mtp.impl.aws.AWSRequestSigningApacheInterceptorFactory" >
+			<property name="serviceName" value="es"/>
+			<property name="region" value="ap-northeast-1"/>
+		</property>
+	</property>
+	
+	<property name="analysisFactory" class="org.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.DefaultAnalysisFactory">
+        <property name="analyzer" >
+            <property name="my_kuromoji" class="org.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.analyzer.KuromojiAnalyzerFactory">
+                <property name="mode" value="Search"/>
+                <property name="method" value="Nfc"/>
+            </property>
+        </property>
+    </property>
+	
+	<!--
+	testEntityの場合、my_kuromojiを利用し、それ以外の場合はkuromojiを利用する設定例
+	-->
+    <property name="defaultAnalyzerProperty" >
+        <property name="analyzer" value="kuromoji"/>
+    </property>
+    <property name="analyzerPropertyPerEntity" >
+        <property name="testEntity" class="org.iplass.mtp.impl.aws.fulltextsearch.opensearch.mappings.AnalyzerProperty">
+            <property name="analyzer" value="my_kuromoji"/>
+        </property>
+    </property>
+
+	<property name="defaultOperator" value="AND" />
+
+	<property name="binaryParseLimitLength" value="100000"/>
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryPDFParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryOOXMLParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryOfficeParser">
+		<property name="continuableExceptions" value="org.apache.poi.poifs.filesystem.NotOLE2FileException" />
+	</property>
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryHtmlParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryTextParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryXMLParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryNameTypeParser" />
+
+</service>
+----
+
+===== 設定例
+[source, xml]
+----
+<!--
+	■全文検索で利用するService
+
+	useFulltextSearch：				全文検索を利用する場合は、trueへ変更してください。
+	maxRows：						全文検索の結果件数の上限を設定してください。
+	throwExceptionWhenOverLimit：	maxRows以上の件数がヒットした場合の挙動を切り替えます。
+									true  -> 件数以上取得できたことのメッセージを表示し、検索結果は出さない。
+									false -> 件数以上取得できたことのメッセージを表示し、検索結果も出す。
+	indexWriterRAMBufferSizeMB：	Index作成時のメモリのキャッシュサイズを設定します。
+	redundantTimeMinutes：			「前回Index更新日時-redundantTimeMinutes」より後のデータに対してIndexの処理を行います。
+
+	□ solr利用の場合
+	solrUrl：
+		用意したsolrサーバのURLを指定してください。
+
+	□ lunece利用の場合
+	directory：
+		Index情報（検索対象値）の保存先を指定してください。
+	analyzer：
+		利用するanalyzerを指定してください。
+
+	□ Elasticsearch利用の場合
+	elasticsearchUrl：
+		用意したElasticsearchサーバのURLを指定してください。
+	defaultAnalyzerProperty：
+		利用するanalyzerを指定してください。
+
+	□ OpenSearch利用の場合
+	openSearchUrl：
+		用意したOpenSearchサーバのURLを指定してください。
+	defaultAnalyzerProperty：
+		利用するanalyzerを指定してください。
+
+
+	■use to fulltext search service
+
+	useFulltextSearch：				If use fulltext search, change to true.
+	maxRows：						Setting max rows of fulltext search result.
+	throwExceptionWhenOverLimit：	If maxRows or more of the search result is hit, set one of the operations.
+									true  -> Display a message that was able to get maxRows or more, and not display search result.
+									false -> Display a message that was able to get maxRows or more, and display search result.
+	indexWriterRAMBufferSizeMB：	Setting the memory cache size when creating a index.
+	redundantTimeMinutes：			do the processing of the Index for the data after the "previous Index update date -redundantTimeMinutes".
+
+	□ use to solr
+	solrUrl：
+		Set url of solr server.
+
+	□ use to lunece
+	directory：
+		Set save directory of the index information.
+	analyzer：
+		Set the analyzer to use
+
+	□ use to Elasticsearch
+	elasticsearchUrl：
+		Set url of Elasticsearch server.
+	defaultAnalyzerProperty：
+		Set the analyzer to use
+
+	□ use to OpenSearch
+	openSearchUrl：
+		Set url of OpenSearch server.
+	defaultAnalyzerProperty：
+		Set the analyzer to use
+-->
+<service>
+	<interface>org.iplass.mtp.impl.fulltextsearch.FulltextSearchService</interface>
+	<property name="useFulltextSearch" value="false" />
+	<property name="maxRows" value="1000" />
+	<property name="highlightPreTag" value="&lt;b style=&quot;background:aquamarine&quot;&gt;" />
+	<property name="highlightPostTag" value="&lt;/b&gt;" />
+	<property name="throwExceptionWhenOverLimit" value="true"/>
+
+	<!-- BinaryReferenceのParse可能な最大文字数 -->
+	<property name="binaryParseLimitLength" value="100000"/>
+
+	<!--
+		BinaryReference用Parser設定。
+		org.iplass.mtp.impl.fulltextsearch.parser.BinaryReferenceParser
+		を実装したParserを設定可能。
+		BinaryReferenceのタイプに対して対応されているParserを上から順にチェックする。
+	 -->
+
+	<!-- PDF用Parser。TikaのPDFParserを利用して解析する -->
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryPDFParser" />
+	<!-- OfficeDocument(OOXML形式)用Parser。TikaのOOXMLParserを利用して解析する -->
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryOOXMLParser" />
+	<!-- OfficeDocument(2003以前の形式)用Parser。TikaのOfficeParserを利用して解析する -->
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryOfficeParser">
+		<!-- RTFファイルの解析例外は処理継続する -->
+		<property name="continuableExceptions" value="org.apache.poi.poifs.filesystem.NotOLE2FileException" />
+	</property>
+	<!-- HTML用Parser。TikaのHtmlParserを利用して解析する -->
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryHtmlParser" />
+	<!-- PlainText用Parser。TikaのTXTParserを利用して解析する -->
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryTextParser" />
+	<!-- XML用Parser。TikaのXMLParserを利用して解析する -->
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryXMLParser" />
+
+	<!-- TikaのAutoDetectParserを利用して全てのタイプを対象に解析する。
+		ただし解析に必要となる依存ライブラリが存在しない場合はスキップされる -->
+	<!--
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryAutoDetectParser" />
+	-->
+
+	<!-- 全てのバイナリファイルを対象に、nameとtypeのみ返す -->
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryNameTypeParser" />
+
+	<!-- solr利用 -->
+	<!--
+	<class>org.iplass.mtp.impl.fulltextsearch.FulltextSearchSolrService</class>
+	<property name="solrUrl" value="http://ADDRESS:PORT/solr/coreName/" />
+	 -->
+
+	<!-- lucene利用 -->
+	<class>org.iplass.mtp.impl.fulltextsearch.lucene.LuceneFulltextSearchService</class>
+	<property name="directory" value="D:\tmp\lucene" />
+	<property name="defaultOperator" value="AND" />
+	<property name="analyzer" value="org.apache.lucene.analysis.ja.JapaneseAnalyzer" />
+	<!-- JapaneseAnalyzerを初期化する設定。
+	<property name="analyzerSetting" class="org.iplass.mtp.impl.fulltextsearch.JapaneseAnalyzerSetting">
+		<property name="userDictionary" value="/lucene/userdict.txt" />
+		<property name="mode" value="SEARCH" />
+		<property name="stopwords" value="/lucene/stopwords.txt" />
+		<property name="stoptags" value="/lucene/stoptags.txt" />
+	</property>
+	-->
+	<property name="indexWriterRAMBufferSizeMB" value="64.0"/>
+	<property name="redundantTimeMinutes" value="10"/>
+	<property name="indexWriterCommitLimit" value="-1"/>
+
+	<!-- Elasticsearch利用 -->
+	<!--
+	<class>org.iplass.mtp.impl.fulltextsearch.elasticsearch.ElasticsearchFulltextSearchService</class>
+    <property name="useFulltextSearch" value="true" />
+    <property name="restClientFactory"  class="org.iplass.mtp.impl.fulltextsearch.elasticsearch.DefaultRestClientFactory">
+        <property name="elasticsearchUrl" value="{SCHEME}://{ADDRESS}:{PORT}"/>
+    </property>
+	
+	<property name="analysisFactory" class="org.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.DefaultAnalysisFactory">
+        <property name="analyzer" >
+            <property name="my_kuromoji" class="org.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.analyzer.KuromojiAnalyzerFactory">
+                <property name="mode" value="Search"/>
+                <property name="method" value="Nfc"/>
+            </property>
+        </property>
+    </property>
+    <property name="defaultAnalyzerProperty" >
+        <property name="analyzer" value="kuromoji"/>
+    </property>
+    <property name="analyzerPropertyPerEntity" >
+        <property name="testEntity" class="org.iplass.mtp.impl.fulltextsearch.elasticsearch.mappings.AnalyzerProperty">
+            <property name="analyzer" value="my_kuromoji"/>
+        </property>
+    </property>
+	-->
+
+	<!-- OpenSearch利用 -->
+	<!--
+	<class>org.iplass.mtp.impl.aws.fulltextsearch.opensearch.OpenSearchFulltextSearchService</class>
+	<property name="restClientFactory" class="org.iplass.mtp.impl.aws.fulltextsearch.opensearch.DefaultRestClientFactory" >
+		<property name="openSearchUrl" value="{SCHEME}://{ADDRESS}:{PORT}"/>
+		<property name="httpRequestInterceptorFactory" class="org.iplass.mtp.impl.aws.AWSRequestSigningApacheInterceptorFactory" >
+			<property name="serviceName" value="es"/>
+			<property name="region" value="ap-northeast-1"/>
+		</property>
+	</property>
+	
+	<property name="analysisFactory" class="org.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.DefaultAnalysisFactory">
+        <property name="analyzer" >
+            <property name="my_kuromoji" class="org.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.analyzer.KuromojiAnalyzerFactory">
+                <property name="mode" value="Search"/>
+                <property name="method" value="Nfc"/>
+            </property>
+        </property>
+    </property>
+    <property name="defaultAnalyzerProperty" >
+        <property name="analyzer" value="kuromoji"/>
+    </property>
+    <property name="analyzerPropertyPerEntity" >
+        <property name="testEntity" class="org.iplass.mtp.impl.aws.fulltextsearch.opensearch.mappings.AnalyzerProperty">
+            <property name="analyzer" value="my_kuromoji"/>
+        </property>
+    </property>
+	-->
+</service>
+----
+

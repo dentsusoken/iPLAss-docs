@@ -1,0 +1,277 @@
+== プッシュ通知
+モバイル端末へのプッシュ通知を行うための機能です。
+繰り返し利用する通知メッセージ、タイトルなどをPushNotificationTemplateとして登録・管理することも可能です。
+EntityのEventListenerを利用して、宛先を設定すれば通知が出せますが、PushNotificationManagerを利用するコード実装も可能です。
+
+iPLAssではプッシュ通知サービスとしてFirebase Cloud Messaging（FCM）
+を利用したモジュールを標準提供します。サービスインタフェース（PushNotificationService）を独自実装することにより、Firebase Cloud Messaging以外のプッシュ通知サービスを利用することも可能です。
+
+NOTE: iPLAssの実装は、FCM HTTP v1 API に対応しています。
+
+=== プッシュ通知の方法
+プッシュ通知する場合はPushNotificationManagerのapiを利用します。 +
+また、標準提供されている FCM を利用したモジュールを利用してプッシュ通知を行う場合は、以下の設定を行う必要があります。
+
+. 当該プロジェクトに、ライブラリ `iplass-googlecloud` (Enterprise版は `iplass-ee-googlecloud`) の依存関係を追加する。
+. mtp-service-config.xmlにて <<pushnotification-config,外部プッシュ通知サービスの設定>> を行う。
+
+以下に FCM HTTP v1 API を利用するサンプルコードを示します。
+
+[source, java]
+----
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.pushnotification.*;
+import org.iplass.mtp.pushnotification.fcmv1.PushNotificationTargetType;
+
+:
+:
+
+//プッシュ通知の際には、PushNotificationManagerを利用
+PushNotificationManager pnm = ManagerLocator.manager(PushNotificationManager.class);
+
+PushNotification pn = new PushNotification();
+//通知先（RegistrationToken）を指定
+pn.addTo(PushNotificationTargetType.TOKEN.getPrefixedValue("EgRo3fVLeKw6qPlo-X_Z1R:APA91bGkZ5..._gp0w")); // <1><2>
+//メッセージをNotificationPayloadにて指定
+pn.setNotification(
+        new NotificationPayload(
+                "Caution!",
+                "Check your login history!",
+                "ic_stat_notification"));
+
+//送信オプションを指定
+pn.getOptions().put("analytics_label", "label");
+
+PushNotificationResult res = pnm.push(pn);
+
+//PushNotificationResult#isSuccess()で通知成功したかどうか判断可能
+System.out.println(res.isSuccess());
+//PushNotificationResult#getDetails()で通知結果の詳細取得可能
+System.out.println(res.getDetails());
+
+----
+<1> 通知先の指定は RegistrationToken、もしくはtopic、もしくはtopicの条件式（condition）を指定可能です。複数の通知先を設定する場合は、 `addTo()` を複数回実行してください。
+<2> FCM HTTP v1 API に対応したサービスを利用する場合、 `addTo()` で指定する通知先に種別を表す接頭辞が必要となります。接頭辞は下表の通りです。
++
+[[ref_table_pushnotification_target_prefix]]
+.FCM HTTP v1 API 利用時の通知先種別を識別する接頭辞
+[cols="1,1,2,2", options="header"]
+|===
+|宛先種類
+|接頭辞
+|PushNotificationTargetType 列挙値 &#42;
+|設定例
+
+|登録トークン
+|`token:`
+|TOKEN
+|`token:EgRo3fVLeKw6qPlo-X_Z1R:APA91bGkZ5..._gp0w`
+
+|トピック
+|`topic:`
+|TOPIC
+|`topic:weather`
+
+|条件
+|`condition:`
+|CONDITION
+|`condition:'foo' in topics && 'bar' in topics`
+|===
+&#42; `PushNotificationTargetType.TOKEN.getPrefixedValue("...")` では通知先に接頭辞を付与します。通知先の種類によって TOKEN, TOPIC, CONDITION を使い分けてください。
+
+apiの詳細はPushNotificationManagerのjavadocを参照ください。
+
+
+=== PushNotificationTemplateの利用
+繰り返し利用する通知メッセージ、タイトルなどをPushNotificationTemplateとして登録・管理し、そのテンプレートを利用して通知メッセージを作成することが可能です。
+PushNotificationTemplateはAdminConsoleにて登録・管理します。
+
+
+==== PushNotificationTemplateの作成
+AdminConsoleからNotificationカテゴリにあるPushNotificationTemplateの定義を作成します（PushNotificationTemplate -> 右クリック -> 作成）。
+
+===== 設定項目の説明
+次の項目を設定可能です。
+
+.Default PushNotificationTemplateタブ
+Default PushNotificationTemplateタブでは、言語設定によらない共通のメッセージを設定します。
+
+[cols="1,4", options="header"]
+|===
+| 設定項目 | 設定内容
+| タイトル | プッシュ通知のタイトルを指定します。この値は iOS のスマートフォンやタブレットには表示されません。
+| アイコン | 通知アイコンを設定します。Androidのみ有効です。
+| 本文 | プッシュ通知のメッセージ本文を指定します。本文はGroovyTemplate形式で設定可能です。テンプレート呼び出し時にバインドされたオブジェクトを利用し、値の埋め込みが可能です。
+次項に<<body-text-example,本文の記述例>>を示します。
+| ConfigScript | プッシュ通知のオプション、DataPayloadなどをGroovyScript形式で設定可能です。pnという変数名でPushNotificationのインスタンスがバインドされています。
+次項に<<configScript-example,ConfigScriptの記述例>>を示します。
+|===
+
+[[body-text-example]]
+.本文の記述例
+本文はGroovyTemplate形式で記述可能です。
+次の例は、userでUserエンティティ、pointでIntegerのインスタンスがバインドされている場合を想定したものです。
+
+[source, GroovyTemplate]
+----
+${user.name}さん、
+あなたのポイントは${point}ポイントです。
+----
+
+[[configScript-example]]
+.ConfigScriptの記述例
+ConfigScriptはGroovyScript形式で記述可能です。
+pnという変数名でPushNotificationのインスタンスがバインドされています。
+
+[source, Groovy]
+----
+//<1>
+pn.message = [
+    'android': [
+        'priority': 'high', //<2>
+        'notification': [
+            'color': '#FF9900' //<3>
+        ]
+    ],
+    'apns': [
+        'headers': [
+            'apns-priority': '5' //<2>
+        ]
+    ],
+    'webpush': [
+        'headers': [
+            'Urgency': 'high' //<2>
+        ]
+    ]
+]
+
+// <4>
+pn.data.score = '3x1'
+----
+<1> pn.message (PushNotification#getMessage() で取得できる値) は link:https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages/send#request-body[FCM リクエストの本文の message^] にマッピングされます。設定値の詳細は link:https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages[ドキュメント^] を参照してください。
+<2> メッセージのデバイスタイプ別の優先度の設定。FCM メッセージの優先度については、link:https://firebase.google.com/docs/cloud-messaging/concept-options#setting-the-priority-of-a-message[ドキュメント^] を参照してください。
+<3> メッセージに追加のパラメータを設定。記載例は、Android の通知アイコンの色を指定。
+<4> DataPayloadの設定。DataPayload はFCM リクエストの本文の message.data にマッピングされます。
+
+.Multilingual PushNotificationTemplateタブ
+Multilingual PushNotificationTemplateタブでは、言語毎のメッセージを定義可能です。
+
+[cols="1,4", options="header"]
+|===
+| 設定項目 | 設定内容
+| 言語設定情報バインド名 | ここに設定した値をキーとして、PushNotificationManagerに渡すバインド変数として言語キー(enやjaなど)、もしくはUserエンティティをセットすることで、受信側の設定言語にあわせた言語でのプッシュ通知が可能です。
+| Language | addボタンにより、言語毎にタイトル、本文を定義します。
+|===
+
+
+==== PushNotificationTemplateを利用したプッシュ通知の方法
+PushNotificationTemplateを利用してプッシュ通知する場合もPushNotificationManagerのapiを利用して行います。
+また、実際にプッシュ通知を行う場合は、mtp-service-config.xmlにて外部プッシュ通知サービスの<<pushnotification-config,設定>>を正しく行う必要があります。
+
+以下にapi利用のサンプルコードを示します。
+
+[source, java]
+----
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.auth.AuthContext;
+import org.iplass.mtp.pushnotification.*;
+import org.iplass.mtp.pushnotification.fcmv1.PushNotificationTargetType;
+
+:
+:
+
+PushNotificationManager pnm = ManagerLocator.manager(PushNotificationManager.class);
+
+//PushNotificationTemplateに渡すバインド変数設定（例ではuserとpointを設定）
+Map<String, Object> bindings = new HashMap<>();
+bindings.put("user", AuthContext.getCurrentContext().getUser());//<1>
+bindings.put("point", 10);
+
+//テンプレートを指定してPushNotificationを作成
+PushNotification pn = pnm.createNotification("pointNotification", bindings);//<2>
+//通知先（RegistrationToken）を指定
+pn.addTo(PushNotificationTargetType.TOKEN.getPrefixedValue("EgRo3fVLeKw6qPlo-X_Z1R:APA91bGkZ5..._gp0w"));
+
+PushNotificationResult res = pnm.push(pn);
+
+----
+<1> 言語設定情報バインド名にuserと定義している場合、ユーザーのlanguageプロパティに設定されている値により、適切な言語のテンプレートが利用されます
+<2> バインド変数に与えたオブジェクトがPushNotificationTemplate定義にて参照可能となります。
+
+apiの詳細はPushNotificationManagerのjavadocを参照ください。
+
+
+[[pushnotification-config]]
+=== mtp-service-config.xmlの設定
+プッシュ通知する際には、Push通知を実際に行う外部サービスの設定を行う必要があります。
+
+
+==== Firebase Cloud Messaging を利用する場合
+Firebase Cloud Messaging（FCM）を利用する場合、mtp-service-config.xml の PushNotificationService の実装クラスとして、FCM HTTP v1 API 用の PushNotificationService を指定し設定を行います。 +
+FCM の API リクエストに利用する認証情報を取得するため、GoogleCloudSettings の設定も必要となります。
+
+設定例を以下に示します。
+[source, xml]
+----
+<!-- FCM HTTP v1 API を利用するための設定-->
+
+<!--1-->
+<!-- GoogleCloudSettings -->
+<service>
+    <interface>org.iplass.mtp.impl.googlecloud.GoogleCloudSettings</interface>
+    <class>org.iplass.mtp.impl.googlecloud.GoogleCloudSettings</class>
+
+    <property name="credentialsFactory" class="org.iplass.mtp.impl.googlecloud.ServiceAccountSecretKeyGoogleCredentialsFactory">
+        <!-- Firebase プロジェクトの設定で、サービスアカウント用の秘密鍵を生成し設定する。 -->
+        <property name="serviceAccountSecretKeyFilePath" value="/path/to/firebase-adminsdk.json" />
+        <property name="scope" value="https://www.googleapis.com/auth/firebase.messaging" />
+        <!-- proxy利用する場合設定 -->
+        <property name="proxyHost" value="xxxxxx.dentsusoken.com" />
+        <property name="proxyPort" value="8080" />
+    </property>
+</service>
+
+<!--2-->
+<!-- FCM HTTP v1 API 用の PushNotificationService  -->
+<service>
+    <interface>org.iplass.mtp.impl.pushnotification.PushNotificationService</interface>
+
+    <class>org.iplass.mtp.impl.pushnotification.fcmv1.PushNotificationService</class>
+    <!-- Google(Firebase) Project Id を設定する -->
+    <property name="projectId" value="[set Firebase(Google) Project Id]" />
+    <property name="compressRequest" value="true" />
+    <property name="apiRequestValidateOnly" value="false" />
+    <!-- リトライ処理を行う場合、enableRetry、exponentialBackoffにて設定 -->
+    <property name="enableRetry" value="true" />
+    <property name="exponentialBackoff" class="org.iplass.mtp.impl.http.ExponentialBackoff">
+        <property name="retryIntervalMillis" value="500" />
+        <property name="randomizationFactor" value="0.5" />
+        <property name="multiplier" value="1.5" />
+        <property name="maxIntervalMillis" value="60000" />
+        <property name="maxElapsedTimeMillis" value="300000" />
+    </property>
+    <property name="defaultRetryAfterSeconds" value="60" />
+    <property name="httpClientConfig" class="org.iplass.mtp.impl.http.HttpClientConfig">
+        <!-- proxy利用する場合設定 -->
+        <property name="proxyHost" value="xxxxxx.dentsusoken.com" />
+        <property name="proxyPort" value="8080" />
+    </property>
+    <!-- 
+    RegistrationTokenHandler 実装クラス。 
+    実行した結果、デバイス登録トークンが未登録の場合の処理を実施する場合、
+    org.iplass.mtp.pushnotification.fcmv1.RegistrationTokenHandler の実装クラスを指定可能。
+    -->
+    <!--
+    <property name="registrationTokenHandler" class="[set class of implements org.iplass.mtp.pushnotification.fcmv1.RegistrationTokenHandler]" />
+    -->
+    <!-- PushNotificationListener 実装クラス。複数設定可能 -->
+    <!-- 
+    <property name="listener" class="[set class of implements org.iplass.mtp.pushnotification.PushNotificationListener]" />
+    -->
+</service>
+----
+<1> GoogleCloudSettings の設定内容の詳細は、<<../../serviceconfig/index.adoc#GoogleCloudSettings,service-config GoogleCloudSettings>> を参照してください。
+<2> FCM HTTP v1 API 用の PushNotificationService の設定内容の詳細は、<<../../serviceconfig/index.adoc#PushNotificationService,service-config PushNotificationService>> を参照してください。
+
+==== その他のプッシュ通知サービスを利用する場合
+Firebase Cloud Messaging以外の外部プッシュ通知サービスを利用する場合、PushNotificationServiceの実装クラスを実装し、その実装クラスをmtp-service-config.xmlに設定します。

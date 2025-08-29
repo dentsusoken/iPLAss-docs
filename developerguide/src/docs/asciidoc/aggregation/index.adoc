@@ -1,0 +1,15 @@
+= 定型集計　
+:_hreflang-path: developerguide/aggregation/index.html
+:_relative-root-path: ../../
+:_menu-title-ee-only: true
+
+[[aggregation]]
+== 定型集計
+定型集計は予め設定された集計方式、検索条件を元に、データの集計やグラフ表示を行います。
+単一のエンティティを対象にした単純集計とクロス集計、複数の集計やグラフをまとめて表示するダッシュボードがあります。
+
+include::operationguide.adoc[]
+
+include::aggregation.adoc[]
+
+include::dashboard.adoc[]

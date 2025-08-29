@@ -1,0 +1,67 @@
+[[WorkflowService]]
+=== [.eeonly]#WorkflowService#
+This is the service to manage the performance of the workflow.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.workflow.WorkflowService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.workflow.WorkflowService
+----
+
+==== Settings of WorkflowService
+This is the configuration of WorkflowService.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| workflowInstanceStore | <<WorkflowInstanceStore>> | The method to manage workflow instance.
+| historyLogStore | <<HistoryLogStore>> | The method to manage workflow's history log
+| queueForWorkflow | String | Set the queue name for the workflow.
+|===
+
+[[WorkflowInstanceStore]]
+.WorkflowInstanceStore
+Please specify the implementing class of org.iplass.mtp.impl.workflow.WorkflowInstanceStore to the class.
+
+In standard, org.iplass.mtp.impl.workflow.store.EntityWorkflowInstanceStore are provided.
+The workflow instance will be managed as a entity.
+There is no configurable items for this configuration options.
+
+[[HistoryLogStore]]
+.HistoryLogStore
+Please specify the implementing class of org.iplass.mtp.impl.workflow.HistoryLogStore to the class.
+
+In standard, the following HistoryLogStore ar provided.
+
+* <<LoggerHistoryLogStore>>
+* <<EntityHistoryLogStore>>
+
+[[LoggerHistoryLogStore]]
+.LoggerHistoryLogStore
+The history of workflow will be managed as logs.
+
+Please specify org.iplass.mtp.impl.workflow.store.LoggerHistoryLogStore to the class.
+There is no configurable items for this configuration options.
+
+[[EntityHistoryLogStore]]
+.EntityHistoryLogStore
+The history of workflow will be managed as Entity.
+
+Please specify org.iplass.mtp.impl.workflow.store.EntityHistoryLogStore to the class.
+There is no configurable items for this configuration options.
+
+===== Example
+[source, xml]
+----
+<service final="true">
+	<interface>org.iplass.mtp.impl.workflow.WorkflowService</interface>
+	<class>org.iplass.mtp.impl.workflow.WorkflowService</class>
+	<property name="workflowInstanceStore" class="org.iplass.mtp.impl.workflow.store.EntityWorkflowInstanceStore" />
+	<property name="historyLogStore" class="org.iplass.mtp.impl.workflow.store.EntityHistoryLogStore" />
+</service>
+----

@@ -1,0 +1,26 @@
+= Tutorial (customization)
+:_relative-root-path: ../../
+:toclevels: 2
+
+== Prerequisite
+This tutorial assumes the following are satisfied:
+Before proceeding with the tutorial, do one of the following to prepare the environment where the Web application will runs upon.
+
+* <<../gettingstarted/index.adoc#Introduction, Install and Run>>
+* <<../installguide/index.adoc#ConstructionEnvironment, Eclipse Developing Environment>>
+* <<../docker/index.adoc#DockerEnvironmentConstruction, Docker Environment>>
+
+include::customize_en.adoc[]
+
+//include::ecsample.adoc[]
+
+//include::webapi.adoc[]
+
+
+== Next Step
+Please refer to <<../workflow/index.adoc#, tutorial(workflow) >> if you want to see how to use the workflow procedure to implement the functionality such as "request approval".
+
+Please refer to <<../../sample/index.adoc#, Sample application description>> if you want to build a web application for consumers with a full custom design,
+Which Simulates an EC site that runs on iPLAss. 
+
+If you want to understand the details of each feature, please refer to <<../../developerguide/index.adoc#, Developer Guide>> and modify the definitions as you want.

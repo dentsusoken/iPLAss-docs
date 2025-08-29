@@ -1,0 +1,36 @@
+[[DefaultQueueBaseAsyncTaskService]]
+=== DefaultQueueBaseAsyncTaskService
+This is a standard asynchronous execution service that uses RDB queues. +
+AsyncTaskService definition for asynchronous execution.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.async.AsyncTaskService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.async.rdb.RdbAsyncTaskService
+----
+
+==== Settings of RdbAsyncTaskService
+RdbAsyncTaskService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| defaultGetResultTimeoutMillis | long | Standard result acquisition timeout in milliseconds. The default value is 60000 (1 minitus).
+| initialGetResultIntervalMillis | long | Interval time (milliseconds) for initial result acquisition. The default value is 100.
+|===
+
+===== Example
+[source, xml]
+----
+<service name="DefaultQueueBaseAsyncTaskService">
+	<interface>org.iplass.mtp.impl.async.AsyncTaskService</interface>
+	<class>org.iplass.mtp.impl.async.rdb.RdbAsyncTaskService</class>
+	<property name="defaultGetResultTimeoutMillis" value="60000" />
+	<property name="initialGetResultIntervalMillis" value="100" />
+</service>
+----

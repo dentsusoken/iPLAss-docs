@@ -1,0 +1,6 @@
+= Developer Guide
+
+//GitHub上ではincludeはlink表示されてしまう
+//include::./src/docs/asciidoc/index.adoc[]
+
+link:src/docs/asciidoc/index.adoc[Top Index]

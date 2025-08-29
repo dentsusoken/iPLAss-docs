@@ -1,0 +1,16 @@
+= データ管理
+:_hreflang-path: developerguide/datamanagement/index.html
+:_relative-root-path: ../../
+:toclevels: 3
+
+include::about.adoc[]
+
+include::entity.adoc[]
+
+include::property.adoc[]
+
+include::selectvalue.adoc[]
+
+include::entity_storagespace.adoc[]
+
+include::entity_fulltextsearch.adoc[]

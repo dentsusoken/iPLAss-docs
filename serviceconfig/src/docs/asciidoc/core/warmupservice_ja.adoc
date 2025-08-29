@@ -1,0 +1,170 @@
+[[WarmupService]]
+=== WarmupService
+アプリケーション起動時のウォームアップ（暖気）処理を管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.warmup.WarmupService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.warmup.WarmupService
+----
+
+==== WarmupService
+WarmupService で利用可能な設定項目は以下の通りです。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| enabled | boolean | ウォームアップを実行するかを指定します。true を設定するとウォームアップを実行します。デフォルト値は false です。
+| statusFile | String a| ウォームアップ状態を表すファイルパスを設定します。ウォームアップが完了すると、完了状態と指定されたファイルパスによって、以下の２ファイルを作成します。 +
+（statusFile の設定値が `/path/to/warmup_status` の場合の例）
+
+.正常終了時
+- /path/to/warmup_status （ファイルには、complete が記載されている）
+- /path/to/warmup_status.complete （空ファイル）
+
+.異常終了時
+- /path/to/warmup_status （ファイルには、failed が記載されている）
+- /path/to/warmup_status.failed （空ファイル）
+
+| taskMap | Map形式 <String, <<WarmupTask>>> | name 属性（key）にウォームアップタスク名、value 属性（value）に org.iplass.mtp.impl.warmup.WarmupTask の実装クラスを指定します。 +
+基本的なメタデータロード処理として、`defaultMetaDataWarmupTask` を定義しています。tenantTaskMap プロパティの value 属性で指定可能です。
+| applicationTask | String | taskMap プロパティで設定したウォームアップタスク名を指定します。カンマ区切りで複数指定可能です。
+| tenantTaskMap | Map形式 <String, String> | name 属性（key）にテナントID、value 属性（value）に taskMap プロパティで設定したウォームアップタスク名を指定します。テナントID、ウォームアップタスク名ともにカンマ区切りで複数指定可能です。 +
+特殊文字 `{asterisk}` をテナントIDに指定することで、全テナントIDを表すことができます。
+|===
+
+[[WarmupTask]]
+.WarmupTask
+起動時にアプリケーションのウォームアップを行うタスクです。
+
+class は org.iplass.mtp.impl.warmup.WarmupTask の実装クラスを設定します。
+標準で以下のクラスを提供します。
+
+* <<MetaDataWarmupTask, org.iplass.mtp.impl.warmup.MetaDataWarmupTask>>
+** 事前にメタデータを読み取るタスクです。
+* <<TomcatJasperJspPreCompileWarmupTask, [.eeonly]#org.iplass.mtp.impl.web.warmup.TomcatJasperJspPreCompileWarmupTask#>>
+** JSPを事前コンパイルするタスクです。
+
+[[MetaDataWarmupTask]]
+.MetaDataWarmupTask
+
+事前にメタデータを読み取ります。 +
+class は org.iplass.mtp.impl.warmup.MetaDataWarmupTask を指定します。
+
+以下の項目を設定可能です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| metadataPathList | String、複数指定可 a| メタデータパスのリストを設定する。メタデータパスは以下のルールで記載してください。
+
+.ルール
+- メタデータの最上位パスは必ず指定してください。（例：エンティティであれば `/entity/`）
+- 前方一致検索する場合は、末尾にアスタリスク（ `{asterisk}` ）を設定してください。（例： `/entity/mtp/{asterisk}`）
+- 完全一致検索する場合は、完全なメタデータパスを設定してください。（例： `/entity/mtp/auth/User`）
+|===
+
+[[TomcatJasperJspPreCompileWarmupTask]]
+.[.eeonly]#TomcatJasperJspPreCompileWarmupTask#
+設定に従い JSP ファイルを検索し事前コンパイルします。 +
+class は org.iplass.mtp.impl.web.warmup.TomcatJasperJspPreCompileWarmupTask を指定します。
+
+以下の項目を設定可能です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| jspPathPrefixList | String、複数指定可 a| JSP ファイルが格納されているパスのプレフィックスを指定します。 +
+指定されたパスのプレフィックスに一致する JSP ファイルを検索し、事前コンパイルします。 +
+設定するパスの値によって検索先が異なります。
+
+.パス設定値による検索先の違い
+- `/META-INF/resources` 以下のパスを指定した場合、jar に格納されたクラスパスリソースを検索します。 +
+（例： `/META-INF/resources/jsp/` ）
+- 上記以外のパスを指定した場合、ウェブアプリケーションデプロイ先のファイルシステムを検索します。 +
+（例： `/jsp/app/` ）
+
+| jspExtensionList | String、複数指定可 | JSP ファイルの拡張子を指定します。未設定の場合は `.jsp` となります。
+| excludeResourceRegexList | String、複数指定可 | 除外するリソースの正規表現を指定します。
+|===
+
+===== 設定例
+[source,xml]
+----
+<service>
+    <interface>org.iplass.mtp.impl.warmup.WarmupService</interface>
+    <class>org.iplass.mtp.impl.warmup.WarmupService</class>
+
+    <!-- enabled が true に設定されている場合に、ウォームアップ処理が実行されます。未指定の場合は false が設定されます。 -->
+    <!--
+    <property name="enabled" value="true" />
+    -->
+    <!--
+        statusFile には、ウォームアップ状態を表すファイルパスを設定します。指定されたファイルパスによって、以下の２ファイルを作成します。
+        statusFile の設定値が "/path/to/warmup_status" の場合。
+        
+        正常終了時
+            /path/to/warmup_status （ファイルには、complete が記載されている）
+            /path/to/warmup_status.complete （空ファイル）
+
+        異常終了時
+            /path/to/warmup_status （ファイルには、failed が記載されている）
+            /path/to/warmup_status.failed （空ファイル）
+    -->
+    <!--
+    <property name="statusFile" value="/path/to/warmup_status" />
+    -->
+
+    <!--
+        taskMap は Map 形式でプロパティを設定してください。
+            name = ウォームアップタスク名
+            value = org.iplass.mtp.impl.warmup.WarmupTask の実装クラス
+    -->
+    <property name="taskMap">
+        <!-- defaultMetaDataWarmupTask はメタデータウォームアップのデフォルト定義 -->
+        <property name="defaultMetaDataWarmupTask" class="org.iplass.mtp.impl.warmup.MetaDataWarmupTask">
+            <property name="metadataPathList" value="/entity/mtp/*" />
+            <property name="metadataPathList" value="/message/mtp/*" />
+            <property name="metadataPathList" value="/authNPolicy/*" />
+        </property>
+        <!-- JSP 事前コンパイルタスクの設定例 -->
+        <!--
+        <property name="applicationJspPreCompile" class="org.iplass.mtp.impl.web.warmup.TomcatJasperJspPreCompileWarmupTask">
+            <property name="jspPathPrefixList" value="/META-INF/resources/jsp/" />
+            <property name="jspPathPrefixList" value="/jsp/app/" />
+            <property name="jspExtensionList" value=".jsp" />
+        </property>
+        -->
+        <!--
+        <property name="taskA" class="example.path.to.package.TaskAWarmupTask" />
+        <property name="taskB" class="example.path.to.package.TaskBWarmupTask" />
+        <property name="allTenantTask" class="example.path.to.package.AllTenantWarmupTask" />
+        -->
+    </property>
+
+    <!--
+        applicationTask には taskMap プロパティで設定したウォームアップタスク名を指定してください。
+        カンマ区切りで複数指定可能です。
+    -->
+    <!--
+    <property name="applicationTask" value="applicationJspPreCompile" />
+    -->
+
+    <!--
+        tenantTaskMap には Map 形式でプロパティを設定してください。
+            name = テナントID。"*" は全テナントIDを表す。カンマ区切りで複数指定可能。
+            value = taskMap プロパティで設定したウォームアップタスク名。カンマ区切りで複数指定可能。
+    -->
+    <!--
+    <property name="tenantTaskMap">
+        <property name="1,2" value="taskA,taskB" />
+        <property name="*" value="allTenantTask" />
+    </property>
+    -->
+</service>
+----

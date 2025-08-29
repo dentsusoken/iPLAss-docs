@@ -1,0 +1,56 @@
+= Getting Started
+ifdef::env-github,env-browser[:outfilesuffix: .adoc]
+
+== はじめに
+
+iPLAss入門用のドキュメントです。
+
+もし、あなたが開発者で、既にiPLAssのデータベースが存在している環境で開発をはじめる場合、 <<./installguide/index#, 開発環境の構築>> の手順をみてください。
+それ以外の方がiPLAssに初めてさわる場合は、 <<./gettingstarted/index#, Install and Run>> または <<./docker/index#, Dockerで環境構築>> に従って実際に動かしてみることをお勧めします。
+
+iPLAssを動かす環境ができたなら、次のステップとして、チュートリアルを実施してみてください。
+
+=== <<./gettingstarted/index#, Install and Run>>
+iPLAssのインストールと簡単な動作確認のための手順です。
+まずは、この手順に従ってお試しください。
+Windows/MySQL/Tomcatを用います。
+
+=== <<./installguide/index#, 開発環境の構築>>
+Eclipse上にiPLAssの開発環境を構築する手順です。
+Eclipse上でのjavaアプリケーション開発経験のある開発者向けのドキュメントです。
+
+=== <<./docker/index#, Dockerで環境構築>>
+DockerでiPLAssを動作させる手順です。
+Dockerを用います。
+
+== チュートリアル
+iPLAssの機能を理解するためのチュートリアルです。
+
+=== <<./basic/index#, ベーシック>>
+AdminConsole（Webブラウザ上で動作する設定ツール）を用いて、簡単なWebアプリケーションを構築するチュートリアルです。
+
+=== <<./advanced/index#, アドバンス>>
+簡単なコーディングによるカスタマイズも含めたより高度なチュートリアルです。  
+
+[NOTE]
+====
+一部Enterprise Editionでのみ実施可能な内容も含まれます
+====
+
+=== <<./introductioncustomize/index#, カスタマイズ>>
+MVCパターンベースの開発フレームワーク上で、画面、WebApiを開発するチュートリアルです。
+Javaでコーディングする場合のチュートリアル、Groovyでコーディングする場合のチュートリアルが存在します。
+
+=== <<./workflow/index#, ワークフロー>>
+ワークフロー機能のチュートリアルです。
+
+[NOTE]
+====
+Enterprise Editionでのみ実施可能です
+====
+
+== 次のステップ
+フルカスタムのデザインを持つコンシューマ向けのWebアプリケーションを構築したい場合、 <<../sample/index.adoc#,サンプルアプリケーションの説明>> を参照してください。
+iPLAss上で動作するECサイトを模したものです。動かして構造を理解してください。
+
+それぞれの機能の詳細を理解したい場合は、 <<../developerguide/index.adoc#,Developer Guide>> を参照し、いろいろと定義を変更してみてください。

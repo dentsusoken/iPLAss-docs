@@ -1,0 +1,157 @@
+[[Java_JSP_BeanValidation]]
+=== Bean／Bean Validation
+
+iPLAssのBean／Bean Validation機能を利用する場合、チェックしたいBeanクラスのプロパティにアノテーションをつけることで、バリデーションが自動に実行されます。それに、バリデーション結果を画面に表示できます。
+
+サンプルアプリの問い合わせ登録画面で入力された値に対してバリデーションが実行される機能を例として説明していきます。 
+
+* 必要なJavaクラスを作成しています。 + 
+プロジェクトのフォルダ src/main/java/samples/ec01/beanを開きます。
++
+[source]
+----
+src.main.java
+	┗ samples.ec01
+		┣ bean
+		┗ annotation <1>	
+			┃	┣ Kana.java
+			┃	┗ ......		　
+			┣ ui		
+			┣ validator	<2>
+			┃	┣ group	<3>
+			┃	┃	┗ JapaneseChecks.java	
+			┃	┣ KanaValidator.java 
+			┃	┗ ......
+			┣━ UserBean.java <4>
+			┗ ......
+----
+<1> カスタムのバリデーション + 
+カスタムのバリデーションを `samples.ec01.bean.annotation.Kana` に記述して、それがカスタムのバリデーターを利用しています。
+<2> カスタムのバリデーター + 
+カスタムのバリデーターを `samples.ec01.bean.validator.KanaValidator` に記述して、それがカスタムのバリデーションで利用されています。
+<3> カスタムのバリデーショングループ + 
+カスタムのバリデーショングループを `samples.ec01.bean.validator.group.JapaneseChecks` に記述して、それがBeanクラスのアノテーションで利用されています。
+<4> JavaBeanクラス +
+`samples.ec01.bean.UserBean` でカスタムのバリデーションとバリデーショングループを利用しています。
+
+* バリデーションエラーメッセージを定義する +  
+<<index#Java_JSP_ResourceFiles_BeanValication,Bean Validationエラーメッセージ>>はプロパティファイルに定義し、多言語利用が可能です。
+
+* コマンドクラスでBean Validationを利用する
++
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/java/samples/ec01/command/inquiry/RegistInquiryCommand.java
+|===
++
+[source,java]
+----
+......
+@ActionMapping(
+		name = "samples/ec01/inquiry/doInquiry", 
+		displayName = "お問合せ登録", 
+		privileged = true, 
+		tokenCheck = @TokenCheck(
+				executeCheck = true, 
+				consume = true, 
+				exceptionRollback = true), 
+		result = { 
+				@Result(
+						exception = MappingException.class,  <1>
+						type = Type.TEMPLATE, 
+						value = "samples/ec01/inquiry/inquiry"),
+				@Result(
+						status = Constants.CMD_EXEC_SUCCESS, 
+						type = Type.TEMPLATE, 
+						value = "samples/ec01/inquiry/inquirySuccess")})
+@CommandClass(
+		name = "samples/ec01/inquiry/RegistInquiryCommand", 
+		displayName = "お問合せ登録コマンド")
+public class RegistInquiryCommand implements Command {
+
+	private final BeanParamMapper mapper = new BeanParamMapper().withValidation()
+			.whitelistPropertyNameRegex("^(mail|content|familyName(Kana)?|firstName(Kana)?)$"); <2>
+	public static final String RESULT_INQUIRY_BEAN = "inquiryBean";
+
+
+	@Override
+	public String execute(RequestContext request) {
+		// 入力チェック
+		InquiryBean inquiryBean = new InquiryBean();
+		request.setAttribute(RESULT_INQUIRY_BEAN, inquiryBean);
+		// 日本語専用"name_kana"取得フォーム
+		if (Consts.LANGUAGE_JA.equals(TemplateUtil.getLanguage()) || TemplateUtil.getLanguage() == null) {
+			mapper.populate(inquiryBean, request.getParamMap(), Default.class, JapaneseChecks.class); <3>
+		} else {
+			mapper.populate(inquiryBean, request.getParamMap(), Default.class); <4>
+		}
+
+		Inquiry inquiry = inquiryBean.toEntity();
+		// 問い合わせステータス
+		// 1 : 未対応
+		// 2 : 対応中
+		// 3 : 対応完了
+		// 4 : 終了
+		SelectValue inquiryStatus = new SelectValue(InquiryStatus.NOT_DEAL.getValue());
+		inquiry.setInquiryStatus(inquiryStatus);
+		// 請求の登録
+		EntityDaoHelper.insert(inquiry);
+
+		return Constants.CMD_EXEC_SUCCESS;
+	}
+}
+----
+<1> MappingExceptionが発生した場合、遷移先のTemplateを指定します。※RequestスコープにWebRequestConstants.EXCEPTIONをキーにMappingExceptionを登録してくれます。
+<2> Beanクラスに画面からの入力値をマッピングするためのユーティリティクラスを初期化します。 + 
+※ whitelistPropertyNameRegexメソッドにセット可能な項目の正規表現式を指定します。
+<3> 多言語利用で「日本語」が選択されているまたは多言語利用の設定が取得できなかった場合、`samples.ec01.bean.validator.group.JapaneseChecks` グループとデフォルトグループに属する項目に対してバリデーションが実行されます。 + 
+※ populate(Object, Map, Class)メソッドはスレッドセーフですが、それ以外の delimiters(char, char, char)等の設定用メソッドがスレッドセーフではありません。 詳しい説明は `org.iplass.mtp.command.beanmapper.BeanParamMapper` のJavaDocを参照してください。
+<4> 多言語利用で「日本語」以外が選択されている場合、デフォルトグループに属する項目のみに対してバリデーションが実行されます。
+
+* JSPテンプレートファイル
++
+[cols="1,2"]
+|===
+h|ファイル名|/jsp/samples/ec01/inquiry/registInquiry.jsp
+|===
++
+[source,jsp]
+----
+----------------------------------------以上略----------------------------------------		
+        <m:bind bean="${inquiryBean}"> <1>
+        <form class="custom-form mt-3" action="${m:tcPath()}/samples/ec01/inquiry/doInquiry" method="post">
+        	<input type="hidden" name="_t" value="${m:token()}">
+            <div class="form-group row">
+                ......
+                <div class="col-12 col-md-6 mt-3">
+                    <div>
+                    	<m:bind prop="familyNameKana"> <2>
+                        	<label for="${name}" class="col-form-label label-hidden">${m:rs('iplass-wtp-messages', 'samples.ec01.inquiry.regist.familyNameKana')}</label>
+                        	<input type="text" class="form-control border rounded input-hint-visible" name="${name}" value="${value}" placeholder="${m:rs('iplass-wtp-messages', 'samples.ec01.inquiry.regist.familyNameKana')}"> <3>
+                        	<small class="form-text text-danger"><m:errors /></small> <4>
+                        </m:bind>
+                    </div>
+                </div>
+                ......                
+        </form>
+        </m:bind>
+----------------------------------------以下略----------------------------------------
+----
+<1> `PageContext` にBeanインスタンスをバインドします。
+<2> `PageContext` にBeanインスタンスに格納されているプロパティ名と値をバインドします。autoDetectErrors=true（デフォルトがtrue）の場合、WebRequestConstants.EXCEPTIONをキーにMappingExceptionを取得し、MappingResultのインスタンスが自動解決されます。当該Bean、プロパティに紐付くエラーがバインドされます。
+<3> バインドされたプロパティの名前と値をテキストボックスにバインドします。
+<4> バインドされたエラーメッセージを画面に出力します。
++
+※ 詳しい設定する方法を `org.iplass.mtp.web.template.tags.BindTag` と `org.iplass.mtp.web.template.tags.ErrorsTag` のJavaDocをご参照してください。
+
+* 動作確認
+** 「姓」と「名」を空文字として登録しようとしたら、バリデーションエラーが発生することを画面から確認できます。
+** 「セイ」と「メイ」に全角カタカナ以外の値を入れて登録しようとしたら、バリデーションエラーが発生することを画面から確認できます。
++
+image:images/sample-ec_java-jsp-bean-validation-error.png[align=left]
+
+** 多言語利用で「英語」が選択された場合、英語のバリデーションエラーメッセージが表示されることを確認できます。
++
+image:images/sample-ec_java-jsp-bean-validation-error-en.png[align=left]
++
+※ 英語用の画面にカタカナの「セイ」と「メイ」の入力項目がないので、日本語用の画面と比べてレイアウトに少し違いがあります。

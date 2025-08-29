@@ -1,0 +1,78 @@
+[[special_authority]]
+== 特殊な権限の利用
+
+[[privileged]]
+=== 特権実行
+Action、WebApiに対して、特権を設定する事が可能です。
+
+特権実行とは、対象Action、WebApiの実行を、セキュリティの制約を一切受ける事なく実行可能にするものです。
+
+Action設定の詳細は <<../customizing/index.adoc#Action, Action>>を参照してください。 +
+WebApi設定の詳細は <<../webapi/index.adoc#, WebApi>>を参照してください。
+
+また、Action、WebApiの実行を特権実行にせずに、実行されるロジックの一部のみを特権として実行する事も可能です。 +
+この場合は下記のように `AuthContext.doPrivileged` を利用します。
+
+[source, java]
+----
+import org.iplass.mtp.auth.AuthContext;
+
+AuthContext.doPrivileged(()-> {
+	・・・・・
+});
+----
+
+EntityのLoad処理を特権実行で実行する場合の例を示します。
+
+[source, java]
+----
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.auth.AuthContext;
+import org.iplass.mtp.entity.Entity;
+import org.iplass.mtp.entity.EntityManager;
+
+final EntityManager em = ManagerLocator.manager(EntityManager.class);
+
+//特権でload処理を実行
+Entity entity = AuthContext.doPrivileged(()-> {
+    return em.load("012345", "SampleEntity001");
+});
+----
+
+Command内で検索は通常に処理し、更新は特権で実行する場合の例を示します。
+更新部分のみを特権実行にすることで、必要最低限の特権実行とすることが出来ます。
+
+[source, java]
+----
+public final class PrivelegeSampleCommand implements Command {
+
+	@Override
+	public String execute(RequestContext request) {
+
+		final EntityManager em = ManagerLocator.manager(EntityManager.class);
+
+		// 通常検索
+		final Entity entity = em.load("012345", "SampleEntity001");
+		entity.setDescription("sample description");
+
+		// 更新は特権で実行
+		AuthContext.doPrivileged(()->{
+			UpdateOption option = new UpdateOption();
+			option.add("description");
+			em.update(entity, option);
+		});
+
+		return "SUCCESS";
+	}
+}
+----
+
+[[release]]
+=== 公開
+Action、WebApiに対して公開を設定する事が可能です。
+
+公開とは、Action、WebApiを権限の制限なく呼び出すことが可能となります。
+ただし、特権実行とは異なり、ActionやWebApiの処理内でEntityの検索等を実行する際には、権限が適用されます。
+
+Action設定の詳細は <<../customizing/index.adoc#Action, Action>>を参照してください。 +
+WebApi設定の詳細は <<../webapi/index.adoc#, WebApi>>を参照してください。

@@ -1,0 +1,106 @@
+[[WebApiService]]
+=== WebApiService
+This service manages WebApi definitions (metadata).
+
+==== Interface Name
+----
+org.iplass.mtp.impl.webapi.WebApiService
+----
+
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.webapi.WebApiService
+----
+
+
+==== The settings of WebApiService
+WebApi can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| enableDefinitionApi | boolean | Set whether to publish the DefinitionWebApi.
+| enableBinaryApi | boolean | Set whether to publish the BinaryWebApi.
+| writeEncodedFilenameInBinaryApi | boolean | Specifies whether to output the `filename*` attribute in the `Content-Disposition` response header during BinaryWebApi download operations. false means output the `filename` attribute. The default value is false.
+| unescapeFilenameCharacterInBinaryApi | String | Specifies the characters not to escape when outputting the `filename*` attribute in the `Content-Disposition` response header during a BinaryWebApi download operation (Alphabet and numbers are unconditionally excluded from escaping).
+| acceptMimeTypesPatternInBinaryApi | String a| Specifies the MIME Type pattern for files that can be uploaded during BinaryWebApi upload operations. The setting value specifies a regular expression pattern. +
+If not set, the MIME Type of the file will not be checked during upload. +
+
+Configuration example
+
+* Accept CSV files `^(text/csv)$`
+* Accept PDFs and images `^(application/pdf\|image/.*)$`
+
+See <<WebFrontendService, WebFrontendService uploadFileTypeDetector>>, <<FileTypeDetector, FileTypeDetector>> for information on how to determine the MIME Type to be validated.
+| statusMap | <<StatusMap>>, Multiple | Setting of the status code to be returned when corresponding exception occurs.
+| xRequestedWithMap | Map | Set the to-be-checked items and comparable values when configuring X-Requested-With header in WebApi.
+| cors | <<CorsConfig>> a|
+WARNING: This config item is not recommended. Please utilize the requestRestriction item from WebFrontendService instead.
+
+This item will specify the trusted domain for XHR2(CORS).
+|===
+
+[[StatusMap]]
+.StatusMap
+
+The following items are configurable.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| exception | String | Exception class anme
+| status | int | Exception status code of the occurrence.
+|===
+
+[[CorsConfig]]
+.CorsConfig
+
+The following items are configurable.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| allowOrigin | String, Multiple | The domain allowing the access.
+| allowCredentials | boolean | Specify whether to permit the system to credential the authentication information (such as Cookie). The default is false.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.webapi.WebApiService</interface>
+	<property name="enableDefinitionApi" value="false" />
+	<property name="enableBinaryApi" value="false" />
+	<property name="writeEncodedFilenameInBinaryApi" value="false" />
+	<property name="unescapeFilenameCharacterInBinaryApi" value="-._~" />
+
+	<!-- Binary file upload acceptable MIME Type pattern. Specify a regular expression. -->
+	<!-- Configuration example
+	<property name="acceptMimeTypesPatternInBinaryApi" value="^(image/.*|application/pdf|text/csv)$" />
+	-->
+
+	<property name="xRequestedWithMap">
+		<property name="X-Requested-With" value="XMLHttpRequest" />
+	</property>
+	<property name="statusMap">
+		<property name="exception" value="org.iplass.mtp.auth.NoPermissionException" />
+		<property name="status" value="403" />
+	</property>
+	<property name="statusMap">
+		<property name="exception" value="org.iplass.mtp.auth.NeedTrustedAuthenticationException" />
+		<property name="status" value="403" />
+	</property>
+	<property name="statusMap">
+		<property name="exception" value="org.iplass.mtp.tenant.available.UnavailableException" />
+		<property name="status" value="503" />
+	</property>
+	<property name="statusMap">
+		<property name="exception" value="org.iplass.mtp.ApplicationException" />
+		<property name="status" value="500" />
+	</property>
+	<property name="statusMap">
+		<property name="exception" value="org.iplass.mtp.SystemException" />
+		<property name="status" value="500" />
+	</property>
+</service>
+----

@@ -1,0 +1,9 @@
+:_hreflang-path: gettingstarted/installguide/index.html
+:table-caption!:
+:_relative-root-path: ../../
+ifeval::["{lang}" == "ja"]
+include::index_ja.adoc[]
+endif::[]
+ifeval::["{lang}" == "en"]
+include::index_en.adoc[]
+endif::[]

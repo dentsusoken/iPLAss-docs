@@ -1,0 +1,11 @@
+= 認可
+:_hreflang-path: developerguide/authorization/index.html
+:_relative-root-path: ../../
+
+include::about.adoc[]
+
+include::authorization_entity.adoc[]
+
+include::authorization_format.adoc[]
+
+include::special_permission.adoc[]

@@ -1,0 +1,15 @@
+[[Groovy_GTmpl_Resource_Message]]
+=== 多言語メッセージ
+* GroovyTemplateで特定のメッセージ定義(メタデータ）またはResourceBundleに定義された文字列を取得することができるので、言語別にメッセージ定義を作成することで多言語利用が可能です。 + 
+取得方法について、<<../../developerguide/customizing/index#_groovytemplateの関数,開発者ガイド GroovyTemplateの関数>>の `${rs()}` と `${msg()}` 関数を参照してください。 + 
+ + 
+サンプルではメタデータとして定義しています。
++
+image:images/sample-ec_groovy-gtmpl-multilang-messages-general.png[align=left]
++
+[cols="1,2"]
+|===
+h|Message名|samples/ec01/general
+|===
++
+image:images/sample-ec_groovy-gtmpl-multilang-messages.png[align=left]

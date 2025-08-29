@@ -1,0 +1,112 @@
+[[SmsService]]
+=== SmsService
+A service to manage SMS template definitions (metadata) and SMS transmissions.
+As an implementation of SMS transmission, a module for SMS transmission using Twilio is provided as the standard implementation.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.sms.SmsService
+----
+
+
+==== Implementing Class Name
+.[.eeonly]#SMS Transmission with Twilio#
+----
+org.iplass.mtp.impl.sms.twilio.TwilioSmsService
+----
+
+
+==== [.eeonly]#Settings of TwilioSmsService#
+When using SMS transmission with Twilio, it is required to set TwilioSmsService.
+At the time when obtaining Twilio contracts, "ACCOUNT SID" and "AUTH TOKEN" are required.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| accountSid | String, required  | ACCOUNT SID.
+| authToken | String, required  | AUTH TOKEN.
+| region | String | Sets the region for the Twilio service. See link:https://www.twilio.com/docs/global-infrastructure/edge-locations/legacy-regions[here, window="_blank"] for possible values.
+| edge | String | Sets the edge location for the Twilio service. See link:https://www.twilio.com/docs/global-infrastructure/edge-locations[here, window="_blank"] for possible values.
+| userAgentExtensions | String, Multiple | Extended User-Agent header settings for requests to Twilio services.
+| defaultFrom | String | The default send-from tel number.
+| messageCustomizerList | <<TwilioSmsMessageCustomizer>>, Multiple | List of message custom processing when sending SMS.
+| httpClientConfig | <<HttpClientConfig_tw, HttpClientConfig>> | Settings of HTTP client.
+| listener | <<SendSmsMailListener>>, Multiple | The listener for SMS Transmissions.
+|===
+
+[[TwilioSmsMessageCustomizer]]
+.TwilioSmsMessageCustomizer
+class is a class implementing org.iplass.mtp.impl.sms.twilio.TwilioSmsMessageCustomizer. +
+There is no standard functionality provided.
+
+Implement a process to customize messages and add the implemented class to the service-config configuration.
+
+[[HttpClientConfig_tw]]
+.HttpClientConfig
+Please specify org.iplass.mtp.impl.http.HttpClientConfig to the class.
+
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| connectionTimeout | int | Timeout in milliseconds for establishing an HTTP connection. The default value is 30000 (30 seconds).
+| soTimeout | int | socket timeout (SO_TIMEOUT) (milliseconds) during HTTP communication. The default value is 30000 (30 seconds).
+| poolingMaxTotal | int | Maximum number of pools for http connections. The default value is 20.
+| poolingDefaultMaxPerRoute | int | Maximum number of http connections per domain. The default value is 2.
+| poolingTimeToLive | int | Lifetime of pooled http connections (milliseconds). The default is unlimited.
+| proxyHost | String | Proxy server host.
+| proxyPort | int | Proxy server port number.
+| httpClientBuilderFactory | <<HttpClientBuilderFactory_tw, HttpClientBuilderFactory>> | Specify this if you want to create a custom HttpClientBuilder.
+|====================
+
+[[HttpClientBuilderFactory_tw]]
+.HttpClientBuilderFactory
+Please specify the implementation class of org.iplass.mtp.impl.http.HttpClientBuilderFactory to the class.
+
+The following HttpClientBuilderFactory is provided as standard.
+
+* <<MicrometerHttpClientBuilderFactory>>
+
+[[SendSmsMailListener]]
+.SendSmsMailListener
+Please specify the implementing class of org.iplass.mtp.sms.SendSmsMailListener.
+
+As the standard implementation, the following SendSmsMailListener are provided.
+
+- <<MetricsSendSmsMailListener>>
+
+[[MetricsSendSmsMailListener]]
+.MetricsSendSmsMailListener
+Please specify org.iplass.mtp.impl.micrometer.metrics.sms.MetricsSendSmsMailListener to the class.
+
+It’s SendSmsMailListener with the metric collection function by Micrometer.
+There are no settings that can be configured.
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.sms.SmsService</interface>
+	<class>org.iplass.mtp.impl.sms.twilio.TwilioSmsService</class>
+	<property name="accountSid" value="yourOwnAccountSid"/>
+	<property name="authToken" value="yourOwnAuthToken"/>
+	<property name="edge" value="tokyo"/>
+
+	<property name="defaultFrom" value="+1234......."/>
+
+	<!-- Set the org.iplass.mtp.impl.sms.twilio.TwilioSmsMessageCustomizer implementation class -->
+	<!--
+	<property name="messageCustomizerList" class="...set your implementation class..." />
+	-->
+	
+	<!-- Development
+	<property name="httpClientConfig" class="org.iplass.mtp.impl.http.HttpClientConfig">
+		<property name="connectionTimeout" value="30000" />
+		<property name="soTimeout" value="30000" />
+		<property name="proxyHost" value="proxyhost.dentsusoken.com" />
+		<property name="proxyPort" value="8080" />
+	</property>
+	-->
+</service>
+----

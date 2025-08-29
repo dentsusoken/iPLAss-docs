@@ -1,0 +1,138 @@
+[[binary_api]]
+== バイナリ 操作 API
+バイナリデータのアップロード、ダウロードを提供します。REST形式と [.eeonly]#SOAP形式# の2種類に対応しています。
+
+NOTE: 本APIでバイナリデータをアップロード後、別APIでアップロードしたバイナリデータを扱う場合は、
+セッションを維持し、同一セッションで扱う必要があります。
+
+基本となるURLは以下です。
+
+* REST形式 +
++
+[source,url]
+----
+http(s)://[server]/[tenantContextPath]/api/mtp/bin
+----
+
+* SOAP形式 +
++
+[source,url]
+----
+http(s)://[server]/[servletContextPath]/soap/bin?wsdl
+----
+
+REST形式の場合、METHODによって実行される処理が判定されます。
+
+[cols="1,1a",options="header"]
+|===
+|METHOD + パス|処理
+|GET api/mtp/bin/[lobId] |lobId指定でダウンロード
+|POST api/mtp/bin |uploadFileというキー名でファイルアップロード (multipart/form-data形式)
+|===
+
+=== 利用設定
+バイナリの操作用APIを利用するには、WebApiServiceの `enableBinaryApi` 設定が必要になります。 +
+詳細については、 <<../../serviceconfig/index.adoc#WebApiService, WebApiService>>を参照してください。
+
+=== REST ダウンロード
+ファイルをダウンロードする場合はGETを利用します。
+
+[cols="1,1a",options="header"]
+|===
+|METHOD + パス|処理
+|GET api/mtp/bin/[lobId] |lobId指定でダウンロード
+|===
+
+* パラメータ +
++
+パラメータはありません。
+
+* 返却値 +
+バイナリファイルを返します。
+
+=== REST アップロード
+ファイルをアップロードする場合はPOSTを利用します。
+
+[cols="1,1a",options="header"]
+|===
+|METHOD + パス|処理
+|POST api/mtp/bin |uploadFileというキー名でファイルアップロード (multipart/form-data形式)
+|===
+
+* パラメータ +
++
+[cols="1,5a",options="header"]
+|===
+|パラメータ名|内容
+|uploadFile |アップロードするファイルをセットします
+|===
+
+* 返却値 +
++
+[cols="1,5a",options="header"]
+|===
+|項目|内容
+|lobId| 登録したBinaryReferenceのLobIdがセットされます
+|===
++
+この他に<<WebApi-Result,共通の返却値>>があります。
+
+* Service-Config <<../../serviceconfig/index.adoc#WebApiService, WebApiService>> 関連設定 +
++
+[cols="1,5a",options="header"]
+|===
+|項目|内容
+| acceptMimeTypesPatternInBinaryApi | アップロードファイル種類を限定することが可能です。
+|===
+
+=== SOAP ダウンロード
+WSDLに記載されている通り、 `BinaryWebService.fileDownload` を実行します。
+
+* パラメータ +
++
+[cols="1,1,3a",options="header"]
+|===
+|引数No.|型|内容
+|第1引数|String|lobId
+|===
+
+* 返却値 +
+バイナリデータが返却されます。 +
+ファイルがない場合は404エラーが、その他エラーの場合は500エラーが返却されます。
+
+=== SOAP アップロード
+WSDLに記載されている通り、 `BinaryWebService.upload` を実行します。
+
+* パラメータ +
++
+[cols="1,1,3a",options="header"]
+|===
+|引数No.|型|内容
+|第1引数|String|ファイル名
+|第2引数|DataHandler|アップロードしたいバイナリデータをDataHandler形式で渡します。
+|===
++
+DataHandlerへは下記の要領で変換して下さい。（D:\USER\Data\sample.jpgをリクエストに添付したい場合）
++
+[source,java]
+----
+FileDataSource fdSource = new FileDataSource("D:\\USER\\Data\\sample.jpg");
+DataHandler dhandler = new DataHandler(fdSource);
+----
+
+* 返却値 +
+WebApiResponseとして結果が戻ります。 +
++
+----
+org.iplass.mtp.impl.webapi.WebApiResponse
+----
++
+[cols="1,5a",options="header"]
+|===
+|項目|内容
+|status|処理成功時には `SUCCESS` が、失敗時には `FAILURE` がセットされます
+|exceptionType|文字列として例外のクラス名がセットされます
+|exceptionMessage|文字列としてのエラーメッセージです
+|lobId| 登録したBinaryReferenceのLobIdがセットされます
+|===
+

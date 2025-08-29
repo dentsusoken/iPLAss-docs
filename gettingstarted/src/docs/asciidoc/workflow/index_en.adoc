@@ -1,0 +1,39 @@
+= Tutorial(WorkFlow)
+:_relative-root-path: ../../
+
+Using iPLAss' workflow function, you can create flows that meet various requirements.
+Here, we will explain how to create a workflow, divided into preparation, basic, and practical sections.
+
+* Preparation Section +
+I will briefly explain the overview of the workflow and the workflow in iPLAss.
+* Basic Section +
+We will explain how each event works and how to set it up while creating a simple workflow.
+* Practical Section +
+We will create a more realistic workflow using the content explained in the basics.
+
+== Prerequisite
+This tutorial assumes the following condition was done:
+Before proceeding with the tutorial, do one of the following to prepare the environment where the Web application operates.
+
+* <<../gettingstarted/index.adoc#Introduction, Install and Run>>
+* <<../installguide/index.adoc#ConstructionEnvironment, Building Eclipse development environment>>
+* <<../docker/index.adoc#DockerEnvironmentConstruction, Docker Environment>>
+* This tutorial can only be performed with the Enterprise Edition.
++
+To upgrade an open source version to Enterprise Edition, see <<../../environment/index.adoc#UpgradeToEnterpriseEdition, Upgrade to Enterprise Edition>>.
++
+For Docker, use the Enterprise Edition Docker image.
++
+* When operating the GEM screen as User Admin (default administrator user), please switch to the "DEFAULT" menu from "Change Menu". In this tutorial, we omit setting permissions for menus, etc.
+
+include::preparation_en.adoc[]
+
+include::basic_en.adoc[]
+
+include::practice_en.adoc[]
+
+
+== Next step
+If you want to know the very details about the workflow mentioned in this tutorial, please refer to the Developer Guides of <<../../developerguide/workflow/index.adoc#, Workflow>>.
+
+If you want to understand the details of other features, please refer to the content list of the <<../../developerguide/index.adoc#, Developer Guide>> and modify the definitions according to the requirements of your specific situations.

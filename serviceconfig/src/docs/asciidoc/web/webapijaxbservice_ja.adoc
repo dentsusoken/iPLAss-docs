@@ -1,0 +1,37 @@
+[[WebApiJaxbService]]
+=== WebApiJAXBService
+WebApiのJAXBでの変換対象のクラス定義を行うサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.webapi.jaxb.WebApiJaxbService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.webapi.jaxb.WebApiJaxbService
+----
+
+==== WebApiJaxbServiceの設定
+WebApiJaxbServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| classToBeBound | String、複数指定可 | WebApiのレスポンスでJAXBでの変換対象となるクラス。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.webapi.jaxb.WebApiJaxbService</interface>
+	<property name="classToBeBound" value="org.iplass.mtp.impl.webapi.jaxb.Builtins" />
+	<!-- ee only classes -->
+	<property name="classToBeBound" value="org.iplass.mtp.impl.webapi.jaxb.EnterpriseDefinitions" />
+	<!--
+	<property name="classToBeBound" value="org.iplass.mtp.impl.csv.CsvUploadResult" />
+	 -->
+</service>
+----

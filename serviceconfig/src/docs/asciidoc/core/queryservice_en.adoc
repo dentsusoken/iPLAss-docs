@@ -1,0 +1,67 @@
+[[QueryService]]
+=== QueryService
+The service to manage the external hints for EQL.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.query.QueryService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.query.QueryService
+----
+
+==== Settings of QueryService
+QueryService can be configured in the following ways.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| externalHintFile | String | When using the external hint clauses, this specify the location (Or the resource path on classpath) of the property files of the hints.
+| externalHints | HintComment, Multiple| set external hint name to name, and set the hints to value.
+|===
+
+If the property file path is set in externalHintFile, we can specify the key name and the corresponding hint phrase in this way.
+
+----
+hint1=native(q0t0, 'FORCE INDEX(obj_store__USER_ISTR_index_3)')
+hint2=native(q0t0, 'FORCE INDEX(obj_store__USER_ISTR_index_1)')
+:
+:
+----
+
+To use an external hint in EQL, you can read the hint phrase specified in the property file or externalHints by specifying @hint (keyName) in the EQL statement.
+
+.EQL Example
+Specify @hint in the EQL statement as shown below.
+----
+select /*+ @hint(hint1) */ propA, propB, refX.name from HogeEntity where refX.propFuga='piyo'
+----
+
+Inside, the contents of @hint are expanded as follows.
+----
+select /*+ native(q0t0, 'FORCE INDEX(obj_store__USER_ISTR_index_3)') */ propA, propB, refX.name from HogeEntity where refX.propFuga='piyo'
+----
+
+You can also obtain the Hint clause as a Java instance by calling the org.iplass.mtp.entity.query.hint.Hint#externalHint (String key) method.
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.query.QueryService</interface>
+		<!--
+			if use external hint, set propertyFile path(file path or classpath's resource path) or add inline.
+		 -->
+		 <!--
+		<property name="externalHintFile" value="/externalHint.properties" />
+
+		<property name="externalHints">
+			<property name="hint1" value="native(...)" />
+			<property name="hint2" value="index(...)" />
+		</property>
+		  -->
+</service>
+----

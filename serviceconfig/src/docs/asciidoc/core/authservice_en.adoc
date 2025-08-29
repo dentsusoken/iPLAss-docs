@@ -1,0 +1,1247 @@
+[[AuthService]]
+=== AuthService
+This is the service for authentication.
+Various kind of authentications can be achieve by switching authentication providers.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.auth.AuthService
+----
+
+
+==== Implementing Class Name
+.Community Edition
+----
+org.iplass.mtp.impl.auth.AuthService
+----
+.[.eeonly]#Enterprise Edition#
+----
+org.iplass.mtp.impl.auth.EnterpriseAuthService
+----
+
+
+==== Settings for AuthService
+These are the setting items for AuthService.
+
+===== Configurable items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| userSessionStore | <<UserSessionStore>> | Specifying the store objects which manage the user sessions.
+| authorizationProvider | <<AuthorizationProvider>>  | Setting the authorization provider.
+| authenticationProvider | <<AuthenticationProvider>>, Multiple | Setting the authentication provider.
+|===
+
+
+==== [.eeonly]#Settings for EnterpriseAuthService#
+It is one extended configurable about AuthService.
+
+===== Configurable Items
+Please refer to the AuthService above.
+
+
+[[UserSessionStore]]
+.UserSessionStore
+Please specify the implementation of org.iplass.mtp.impl.auth.authenticate.UserSessionStore for class.
+
+.Implementing Class Name
+----
+org.iplass.mtp.impl.auth.authenticate.DefaultUserSessionStore
+----
+
+[[DefaultUserSessionStore]]
+.DefaultUserSessionStore
+The UserSessionStore supplied as default standard.
+
+Please specify org.iplass.mtp.impl.auth.authenticate.DefaultUserSessionStore to the class.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| shareLoginSession | boolean | Whether to share the log in information across the session.
+| sessionFixationProtection | DefaultUserSessionStore.SessionFixationProtectionMethod a| Session fixation attack protection method. enum value for DefaultUserSessionStore.SessionFixationProtectionMethod.
+Specify one of the following
+
+CHANGE_SESSION_ID:: Changes the session ID at login. Data held in the session prior to login will be retained.
+
+NEW_SESSION:: Create a new session at login. Any data stored in the session prior to login will not be retained.
+
+The default value is `CHANGE_SESSION_ID`.
+|====================
+
+
+[[AuthorizationProvider]]
+.AuthorizationProvider
+Please specify the implementation of org.iplass.mtp.impl.auth.authorize.AuthorizationProvider to the class.
+
+.Implementing Class Name
+----
+org.iplass.mtp.impl.auth.authorize.builtin.BuiltinAuthorizationProvider
+----
+
+[[BuiltinAuthorizationProvider]]
+.BuiltinAuthorizationProvider
+The standard authorization provider of iPLAss.
+
+Please specify org.iplass.mtp.impl.auth.authorize.builtin.BuiltinAuthorizationProvider to the class.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| authorizationContextHandler | <<AuthorizationContextHandler>>, Multiple | Specify the expression class for execution per Permission.
+| grantAllPermissionsToAdmin | boolean | Whether to grant all privilege to Admin user.
+If set to false, role control is applied to the Admin user.
+The default value is true.
+|====================
+
+[[AuthorizationContextHandler]]
+.AuthorizationContextHandler
+Please specify the implementation of org.iplass.mtp.impl.auth.authorize.builtin.AuthorizationContextHandler to the class.
+
+.Implementing Class Name
+----
+org.iplass.mtp.impl.auth.authorize.builtin.action.ActionAuthContextHandler
+org.iplass.mtp.impl.auth.authorize.builtin.cube.CubeAuthContextHandler
+org.iplass.mtp.impl.auth.authorize.builtin.entity.EntityAuthContextHandler
+org.iplass.mtp.impl.auth.authorize.builtin.webapi.WebApiAuthContextHandler
+org.iplass.mtp.impl.auth.authorize.builtin.workflow.WorkflowAuthContextHandler
+----
+
+.ActionAuthContextHandler
+A class to manage the WebApi privilege permissions.
+
+Please specify org.iplass.mtp.impl.auth.authorize.builtin.action.ActionAuthContextHandler to the class.
+
+.[.eeonly]#CubeAuthContextHandler#
+A class to manage the WebApi privilege permissions.
+
+Please specify org.iplass.mtp.impl.auth.authorize.builtin.cube.CubeAuthContextHandler to the class.
+
+.EntityAuthContextHandler
+A class to manage the Entity privilege permissions.
+
+Please specify org.iplass.mtp.impl.auth.authorize.builtin.entity.EntityAuthContextHandler to the class.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| useCorrelatedSubqueryOnEntityLimitCondition | boolean |Whether to use correlated subqueries when restriction is applied by Entity authority. The default value is true.
+|====================
+
+.WebApiAuthContextHandler
+A class to manage the WebApi privilege permissions.
+
+Please specify org.iplass.mtp.impl.auth.authorize.builtin.webapi.WebApiAuthContextHandler to the class.
+
+.[.eeonly]#WorkflowAuthContextHandler#
+A class to manage the workflow privilege permissions.
+
+Please specify org.iplass.mtp.impl.auth.authorize.builtin.workflow.WorkflowAuthContextHandler to the class.
+
+[[AuthenticationProvider]]
+.AuthenticationProvider
+Please specify the implementation of org.iplass.mtp.impl.auth.authenticate.AuthenticationProvider to the class.
+
+.Implementing Class Name
+----
+org.iplass.mtp.impl.auth.authenticate.builtin.BuiltinAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.simpletoken.SimpleAuthTokenAuthenticationProvider
+org.iplass.mtp.impl.auth.oauth.AccessTokenAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.configfile.ConfigFileAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.jaas.JaasAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.jee.JeeContainerManagedAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.ldap.LdapAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.preexternal.PreExternalAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.x509.X509AuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.saml.SamlAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.twostep.TwoStepAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.onetime.OnetimeCodeAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.knowledgebased.KnowledgeBasedAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.timebased.TimeBasedAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.rememberme.RememberMeTokenAuthenticationProvider
+----
+
+[[BuiltinAuthenticationProvider]]
+.BuiltinAuthenticationProvider
+The standard authorization provider of iPLAss.
+Authorization based on the id/password information stored in DB.
+The settings such as password complexity, log out functions can be configured with authorization policy..
+
+Please specify org.iplass.mtp.impl.auth.authenticate.builtin.BuiltinAuthenticationProvider to the class.
+The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| providerName | String | Name of the provider
+When setting multiple providers, please set unique names for each provider.
+The default value is `default`.
+| updatable | boolean | Whether to use the account management module.
+The default value is true.
+
+true:: Allow account managements.
+Enable password update/reset by users in this authentication provider.
+Normally, it should be true.
+false:: Account managements are not allowed.
+| passwordHashSetting | <<PasswordHashSetting>> , Multiple | Set the password Hash algorithms.
+By defining multiple Hash algorithms, it is possible to operate with the new version of the algorithm when updating a new password while keep the old password with old algorithms.
+| autoLoginHandler | AutoLoginHandler | 
+Automatic login handler.
+Set when automatic login process is needed with this authentication provider.
+The following classes are available as default implementations:
+
+<<IdPasswordAutoLoginHandler,IdPasswordAutoLoginHandler>>
+
+| userEntityResolver | UserEntityResolver | Set the acquisition method of user Entity after successful authentication.
+You can specify one of the following:
+
+<<DefaultUserEntityResolver_builtin,DefaultUserEntityResolver>> (Default) +
+<<UserEntityResolver_builtin,Custom implementing class of UserEntityResolver>>
+
+|===
+
+[[PasswordHashSetting]]
+.PasswordHashSetting
+
+Settings related to the password hash algorithms.
+
+Please specify org.iplass.mtp.impl.auth.authenticate.builtin.PasswordHashSetting or its subclass to the class.
+
+As our standard implementation, the following PasswordHashSetting implementations are provided.
+
+- <<PasswordHashSetting>>(default)
+- <<Argon2PasswordHashSetting>>
+
+If using the PasswordHashSetting class, the following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| version | String | The version value of the password hash algorithms.
+When changing the algorithms, please increment the generation order and make sure it never overlap with older entries.
+The default value is 1.
+| passwordHashAlgorithm | String | For the available algorithms, please refer to link:http://docs.oracle.com/javase/jp/8/docs/technotes/guides/security/StandardNames.html#MessageDigest[MessageDigest Algorithm^].
+The default value is `SHA-256`.
+| systemSalt | String | The Salt value handled by the system (Pepper, as it is commonly known).
+It is recommended to set a new value each time when a new version is added.
+The default value is `iPLAssSystemSalt`.
+| stretchCount | int | Number of stretches when doing password hash.
+The default value is 1000.
+|===
+
+[[Argon2PasswordHashSetting]]
+.Argon2PasswordHashSetting
+Please specify org.iplass.mtp.impl.auth.authenticate.builtin.Argon2PasswordHashSetting to the class.
+
+Settings related to the password Hash algorithm by Argon2.
+The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| version | String | The version value of the password hash algorithms.
+When changing the algorithms, please increment the generation order and make sure it never overlap with older entries.
+| passwordHashAlgorithm | String | One of `Argon2d` `Argon2i` `Argon2id` can be set.
+The default value is `Argon2id` .
+| hashLength | int | Size (in bytes) of hash to be generated. The default value is 32.
+| systemSalt | String | The Salt value handled by the system (Pepper, as it is commonly known). The secret parameter in Argon2.
+It is recommended to set a new value each time when a new version is added.
+| parallelism | int | Degree of parallelism.
+| memorySizeKB | int | Memory size (KiB).
+| iterations | int | Number of iterations.
+|===
+
+[[IdPasswordAutoLoginHandler]]
+.IdPasswordAutoLoginHandler
+If IdPasswordAutoLoginHandler is used, authentication can be performed by specifying ID and password in HTTP header when calling WebApi.
+You can use one of the following methods:
+
+- Custom header authentication +
+Authentication is performed by specifying an ID and password in the X-Auth-Id and X-Auth-Password headers, respectively.
+
+- Authentication with BASIC authentication +
+Authentication is performed using the BASIC method.
+Specify the ID and password in the Authorization header.
+
+Please specify org.iplass.mtp.impl.auth.authenticate.builtin.web.IdPasswordAutoLoginHandler to the class. 
+
+The following items can be configured.
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| enableBasicAuthentication | boolean | Set to true to enable authentication using BASIC authentication when calling WebApi. The default value is false.
+| rejectAmbiguousRequest | boolean | Controls the behavior when ID and password are specified while already logged in. The default value is false.
+
+true :: Returns an error as an invalid call.
+false :: Give priority to the logged-in session.
+|===
+
+[[DefaultUserEntityResolver_builtin]]
+.DefaultUserEntityResolver
+Search through User entity and get user information.
+If the user cannot be found, the login fails.
+
+Please specify org.iplass.mtp.impl.auth.authenticate.DefaultUserEntityResolver to the class.
+
+The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| unmodifiableUniqueKeyProperty | String | Property name that is the key when searching User entity.
+Searches User entity by using the condition specified in this property =[Unique ID] (Principal value specified by uniquePrincipalType) as a condition.
+The default value is oid.
+| eagerLoadReferenceProperty | String, Multiple | Reference property to be obtained while retrieving User entity to log in.
+By default, the user reference properties rank and groups are specified.
+| filterCondition | String | It is possible to specify filter conditions when searching for users.
+|===
+
+[[UserEntityResolver_builtin]]
+.Custom implementing class of UserEntityResolver
+Please specify your custom implementation of org.iplass.mtp.impl.auth.authenticate.UserEntityResolver to the class.
+Write logic to get User entity in UserEntityResolver implementation class.
+
+[[SimpleAuthTokenAuthenticationProvider]]
+.SimpleAuthTokenAuthenticationProvider
+A provider that authenticates with a persistent opaque token (a random string of meaningless itself) associated with the user.
+Token must be generated in advance using 'org.iplass.mtp.auth.tokenAuthTokenInfoList' interface.
+
+
+Please specify org.iplass.mtp.impl.auth.authenticate.simpletoken.SimpleAuthTokenAuthenticationProvider to the class.
+
+The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| providerName | String | refer to <<BuiltinAuthenticationProvider>>
+| autoLoginHandler | AutoLoginHandler | 
+Automatic login handler.
+Set automatic login feature is needed with this authentication provider.
+The following classes are available as default implementations:
+
+<<BearerTokenAutoLoginHandler,BearerTokenAutoLoginHandler>>
+
+| credentialTypeForTrust | String | 
+Specify the credential implementing classs to call for upgrading the trusted authentication.
+For instance `org.iplass.mtp.auth.login.IdPasswordCredential` can be specified.
+| accountHandleClassForTrust | String | 
+Specify the AccountHandle implementing classs to call for upgrading the trusted authentication.
+For instance `org.iplass.mtp.impl.auth.authenticate.builtin.BuiltinAccountHandle` can be specified.
+| userEntityResolver | UserEntityResolver | Set the acquisition method for user Entity after successful authentication.
+You can specify one of the following:
+
+<<DefaultUserEntityResolver_simpletoken,DefaultUserEntityResolver>> (Default) +
+<<UserEntityResolver_simpletoken,Custom implementing class of UserEntityResolver>>
+
+|===
+
+[[BearerTokenAutoLoginHandler]]
+.BearerTokenAutoLoginHandler
+It is possible to authenticate with Bearer Token when calling WebApi.
+
+Please specify org.iplass.mtp.impl.auth.authenticate.token.web.BearerTokenAutoLoginHandler to the class. 
+
+The following items can be configured.S
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| rejectAmbiguousRequest | boolean | Controls the behavior when Bearer Token are specified while already logged in. The default value is false.
+
+true :: Returns an error as an invalid call.
+false :: Give priority to the logged-in session.
+| bearerTokenHeaderOnly | boolean | Set to true only when you want to restrain the system to get the Bearer Token only from the HTTP Header. +
+The default value is false.
+| authTokenType | String | Specify the AuthTokenHandler's type that will be handled by the BearerTokenAutoLoginHandler which are defined by AuthTokenService.
+
+|===
+
+[[DefaultUserEntityResolver_simpletoken]]
+.DefaultUserEntityResolver
+Please specify org.iplass.mtp.impl.auth.authenticate.DefaultUserEntityResolver to the class.
+
+For more details, please refer to  <<DefaultUserEntityResolver_builtin,DefaultUserEntityResolver>>.
+
+[[UserEntityResolver_simpletoken]]
+.Custom implementing class of UserEntityResolver
+Please specify your custom implementation of org.iplass.mtp.impl.auth.authenticate.UserEntityResolver to the class.
+
+Write acquisition logic to get User entity in the implementation class of org.iplass.mtp.impl.auth.authenticate.UserEntityResolver.
+
+
+[[AccessTokenAuthenticationProvider]]
+.AccessTokenAuthenticationProvider
+A provider that authenticates with an OAuth2.0 access token.
+
+Authenticates the user with the access token passed when calling WebApi. Access token is obtained in advance according to the OAuth2.0 flow.
+
+Please specify org.iplass.mtp.impl.auth.oauth.AccessTokenAuthenticationProvider to the class.
+
+The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| providerName | String | refer to <<BuiltinAuthenticationProvider>>
+| autoLoginHandler | AutoLoginHandler | 
+Automatic login handler
+Set when automatic login feature is needed when using this authentication provider.
+Use the following classes:
+
+<<BearerTokenAutoLoginHandler_accesstoken,BearerTokenAutoLoginHandler>>
+
+| credentialTypeForTrust | String | 
+Specify credential implementing class for upgrading trusted authentication.
+For instance `org.iplass.mtp.auth.login.IdPasswordCredential` can be specified.
+| accountHandleClassForTrust | String | 
+Specify AccountHandle implementing class for upgrading trusted authentication.
+For instance `org.iplass.mtp.impl.auth.authenticate.builtin.BuiltinAccountHandle` can be specified.
+| userEntityResolver | UserEntityResolver | Set the acquisition method of user Entity after successful authentication.
+You can specify one of the following:
+
+<<DefaultUserEntityResolver_accesstoken,DefaultUserEntityResolver>> (Default) +
+<<UserEntityResolver_accesstoken,Custom implementing class of UserEntityResolver>>
+
+|===
+
+[[BearerTokenAutoLoginHandler_accesstoken]]
+.BearerTokenAutoLoginHandler
+Please specify org.iplass.mtp.impl.auth.authenticate.token.web.BearerTokenAutoLoginHandler to the class. 
+
+When using an access token, specify authTokenType as `OAT` and rejectAmbiguousRequest as `true`.
+
+For more details, please refer to <<BearerTokenAutoLoginHandler,BearerTokenAutoLoginHandler>>.
+
+[[DefaultUserEntityResolver_accesstoken]]
+.DefaultUserEntityResolver
+Please specify org.iplass.mtp.impl.auth.authenticate.DefaultUserEntityResolver to the class.
+
+For more details, please refer to <<DefaultUserEntityResolver_builtin,DefaultUserEntityResolver>>.
+
+[[UserEntityResolver_accesstoken]]
+.Custom implementing class of UserEntityResolver
+Please specify your custom implementation of org.iplass.mtp.impl.auth.authenticate.UserEntityResolver to the class.
+
+Write acquisition logic to get User entity in the implementing class of org.iplass.mtp.impl.auth.authenticate.UserEntityResolver.
+
+[[ConfigFileAuthenticationProvider]]
+.ConfigFileAuthenticationProvider
+This provider authenticates from the account information described in the configuration file.
+It is assumed that the admin user account for developers who manage all tenants is described in File, and metadata management is possible even if there is no admin user in the User entity of each tenant.
+
+A setting example is shown below.
+In addition, since users with administrator privileges are described in the configuration file, when using ConfigFileAuthenticationProvider, also use <<obfuscation, Setting Value Obfuscation>>.
+
+[source, xml]
+----
+<service>
+  <interface>org.iplass.mtp.impl.auth.AuthService</interface>
+  <property name="authenticationProvider" class="org.iplass.mtp.impl.auth.authenticate.configfile.ConfigFileAuthenticationProvider" >
+    <property name="tenantIds" value="1" />
+    <property name="tenantIds" value="2" />
+    <property name="tenantIds" value="5" />
+    <property name="accounts">
+      <property name="id" value="configUser" />
+      <property name="password" value="password000" />
+      <property name="admin" value="true" />
+      <property name="attributeMap">
+          <property name="attr1" value="xxx" />
+          <property name="attr2" value="yyy" />
+          <property name="attr3" value="zzz" />
+      </property>
+    </property>
+  </property>
+  :
+  :
+</service>
+----
+
+Please specify org.iplass.mtp.impl.auth.authenticate.configfile.ConfigFileAuthenticationProvider to the class.
+The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| providerName | String | refer to <<BuiltinAuthenticationProvider>>
+| accounts | <<AccountConfig>>, Multiple | Settings baout the account information.
+| tenantIds | int, Multiple | A tenant that can be logged into the account specified in `accounts`.
+|===
+
+[[AccountConfig]]
+.AccountConfig
+The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| id | String | Account ID。
+| password | String | Account Password
+| admin | boolean | Whether this account has administrator privilege.
+| attributeMap | String | Any key name(name) and value(value).
+The attribute information specified in `attributeMap` can be referenced as user attributes when bound as user information in GroovyScript etc.
+|===
+
+[[JaasAuthenticationProvider]]
+.JaasAuthenticationProvider
+The id/password authorization provider of JAAS(Java Authentication and Authorization Service)を.
+By setting, authentication is possible even if the User entity does not exist in the iPLAss DB.
+
+The JAAS authentication module definition must be defined in the login configuration file (or javax.security.auth.login.Configuration implementation).
+As a method defining the JAAS authentication module, there is a method of specifying a login configuration file with a system variable at JVM startup.
+
+Example: -Djava.security.auth.login.config=/someware/conf/jaas.cfg
+
+.jaas.cfg
+[source]
+----
+mtplogin {
+    com.sun.security.auth.module.LdapLoginModule REQUIRED
+    userProvider="ldap://example.dentsusoken.com:389/dc=mtp,dc=dentsusoken,dc=com" <1>
+    userFilter="(uid={USERNAME})"
+    useSSL=false
+    debug=true
+    ;
+};
+----
+<1> Set ldap server information appropriately for USERNAME of userProvider and userFilter.
+
+Please specify org.iplass.mtp.impl.auth.authenticate.jaas.JaasAuthenticationProvider to the class.
+
+The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| providerName | String | refer to <<BuiltinAuthenticationProvider>>
+| entryName | String | The entry name defined by the settings of JAAS authentication.
+The default value is mtplogin.
+| uniquePrincipalType | java.security.Principal | The Principal class name indicating the unique ID in the authentication module.
+
+For instance, when using com.sun.security.auth.module.LdapLoginModule,the class such as com.sun.security.auth.LdapPrincipal, and com.sun.security.auth.UserPrincipal can be specified.
+If the uniquePrincipalType are not specified, the id inputted during authorization process will be used as the unique id.
+| userEntityResolver | UserEntityResolver | Set the acquisition method of the user Entity after successful authentication.
+You can specify one of the following:
+
+<<DefaultUserEntityResolver_jaas,DefaultUserEntityResolver>> (Default) +
+<<AccountBaseUserEntityResolver_jaas,AccountBaseUserEntityResolver>> +
+<<UserEntityResolver_jaas,Custom Class Implementing of UserEntityResolver>>
+
+If there is no definition entry for userEntityResolver, user Entity is searched by accountId.
+If there is a definition entry for DefaultUserEntityResolver and the definition of unmodifiableUniqueKeyProperty is not set,then it will be searched with oid.
+|===
+
+[[DefaultUserEntityResolver_jaas]]
+.DefaultUserEntityResolver
+Please specify org.iplass.mtp.impl.auth.authenticate.DefaultUserEntityResolver to the class.
+
+For more details, please refer to <<DefaultUserEntityResolver_builtin,DefaultUserEntityResolver>>.
+
+[[AccountBaseUserEntityResolver_jaas]]
+.AccountBaseUserEntityResolver
+Please specify org.iplass.mtp.impl.auth.authenticate.AccountBaseUserEntityResolver to the class.
+
+Login is possible even if User entity does not exist in DB.
+A pseudo-created User entity is set in which the [unique ID] (Principal value specified by uniquePrincipalType) returned from the JAAS authentication module in oid, and the id entered during authentication are set in accountId and name.
+
+[[UserEntityResolver_jaas]]
+.Custom implementing class of UserEntityResolver
+Please specify org.iplass.mtp.impl.auth.authenticate.UserEntityResolver to the class.
+
+Write the User entity acquisition logics in the implementing class of org.iplass.mtp.impl.auth.authenticate.UserEntityResolver.
+
+[[JeeContainerManagedAuthenticationProvider]]
+.JeeContainerManagedAuthenticationProvider
+An authentication provider using the authentication mechanism defined in JavaEE (Servlet specifications).
+Authenticate using the Principal object acquired with HttpServletRequest#getUserPrincipal().
+It is assumed that the login process happens in advance outside of iPLAss by the mechanism provided by JavaEE container.
+By setting, it is possible to authenticate even if the User entity corresponding to the related Principal does not exist in the iPLAss DB.
+
+Please specify org.iplass.mtp.impl.auth.authenticate.jee.JeeContainerManagedAuthenticationProvider to the class.
+
+The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| providerName | String | refer to <<BuiltinAuthenticationProvider>>
+| validateOnlyLogin | boolean | Whether to check if the Principal User matches the records in the iPLAss session for every request.
+The default value is false.
+| roleAsGroup | String, Multiple | If you want to handle the role (HttpServletRequest#isUserInRole(String)) specified in JavaEE as a group code, specify the role name you want to handle as a group code.
+| userEntityResolver | UserEntityResolver | Specify how to retrieve user Entity after successful authentication.
+You can specify one of the following:
+Refer to the Specify link that you actually specify.
+
+<<DefaultUserEntityResolver_jee,DefaultUserEntityResolver>> (Default) +
+<<AccountBaseUserEntityResolver_jee,AccountBaseUserEntityResolver>> +
+<<UserEntityResolver_jee,Custom implementing class of UserEntityResolver>>
+
+When the definition of userEntityResolver cannot be found, the accountId will be used instead to search on User Entity.
+When the definition of DefaultUserEntityResolver exists, but the definition of unmodifiableUniqueKeyProperty was not set, the oid will be used as the key to search.
+|===
+
+[[DefaultUserEntityResolver_jee]]
+.DefaultUserEntityResolver
+Please specify org.iplass.mtp.impl.auth.authenticate.DefaultUserEntityResolver to the class.
+
+For more details, please refer to <<DefaultUserEntityResolver_builtin,DefaultUserEntityResolver>>.
+
+[[AccountBaseUserEntityResolver_jee]]
+.AccountBaseUserEntityResolver
+Please specify org.iplass.mtp.impl.auth.authenticate.AccountBaseUserEntityResolver to the class.
+
+UserエンティティがDB上に存在せずともログイン可能とします。
+oid、accountId、nameにJEEコンテナが返却したPrincipalオブジェクトのnameをセットしたUserエンティティを疑似的に生成します。
+roleAsGroupが指定されている場合、当該roleはグループコードとして設定されます。
+
+[[UserEntityResolver_jee]]
+.Custom implementing class of UserEntityResolver
+Please specify your custom implementation of org.iplass.mtp.impl.auth.authenticate.UserEntityResolver to the class.
+
+And add the User Entity acquisition logics in the implementation of the class org.iplass.mtp.impl.auth.authenticate.UserEntityResolver.
+
+[[LdapAuthenticationProvider]]
+.LdapAuthenticationProvider
+Provider that performs id/password authentication using LDAP server (including Active Directory).
+Depends on settings, it is possible to authenticate even if the User entity does not exist in the iPLAss DB.
+In that situation, it is also possible to get the attribute value and group of the user managed on the LDAP server.
+
+Please specify org.iplass.mtp.impl.auth.authenticate.ldap.LdapAuthenticationProvider to the class.
+
+The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| providerName | String | Please refer to <<BuiltinAuthenticationProvider>>.
+| jndiEnv | <<JNDIEnv>> | JNDI environment properties for LDAP connections.
+| userDn | String | User DN pattern for authentication.
+The user ID and tenant name requested for authentication are embedded in ${userName} and ${tenantName}, respectively.
+====
+cn=${userName},cn=Users,ou=${tenantName}
+====
+====
+${userName}@example.dentsusoken.com ※in the case of Active Directory
+====
+
+If it is not specified, then in order to retrieve the user DN before the authentication process, the userFilter setting value is used to search for the user so to acquire the DN, and therefore the authentication can be performed using the acquired user DN.
+It is recommended to set this value when the user DN can be derived uniquely from the user ID and tenant name at the time of authentication request.
+| getUser | boolean | Set whether to get the attribute value of the user on LDAP after successful user authentication.
+If userFilter is set, it will be used to search for users.
+If userFilter is not set, the user is acquired using the user DN.
+The default value is false.
+| userBaseDn | String | baseDN(pattern) for user search.
+If the user's baseDN is divided per tenant, it is possible to embed the tenant name with ${tenantName}.
+====
+cn=Users,ou=${tenantName}
+====
+If userBaseDn is not specified, it will search from the root DN specified in java.naming.provider.url.
+| userFilter | String | Set the Filter pattern for user search.
+The user ID and tenant name requested for authentication are embedded in ${userName} and ${tenantName}, respectively.
+====
+(&(objectClass=user)(userPrincipalName=${userName}@local))
+====
+If userDn is not specified, the userFilter setting is mandatory.
+| uniqueKeyAttribute | String | Attribute name to uniquely identify the user among user attributes obtained from LDAP.
+If not specified, the user ID value at the time of authentication request is set as the unique key.
+userAttribute name obtained from userAttributeLDAP. Multiple settings are possible.
+If not specified, all attributes are obtained from LDAP.
+| getGroup | boolean | Whether to acquire group information on LDAP to which the user belongs after successful user authentication.
+The acquired group information can be used in iPLAss role definition.
+The default value is false.
+| groupBaseDn | String | Set the BaseDN(pattern) for group search.
+If the group's baseDN is divided per tenant, it is possible to embed the tenant name with ${tenantName}.
+====
+cn=Groups,ou=${tenantName}
+====
+If groupBaseDn is not specified, it will search from the root DN specified in java.naming.provider.url.
+| groupFilter | String | Set the Filter pattern for group search.
+User search target DN and tenant name are embedded in ${userDn} and ${tenantName}, respectively.
+====
+(&(objectClass=groupOfNames)(member=${userDn}))
+====
+If getGroup is true, the groupFilter setting is mandatory.
+| groupCodeAttribute | String | Attribute name on LDAP to be acquired as group code (example: cn).
+If getGroup is true, setting groupCodeAttribute is mandatory.
+| groupAsTenant | boolean | Whether to determine whether a user belongs to the tenant to be authenticated by a group on LDAP.
+The default value is false.
+| tenantGroupCode | String | When groupAsTenant is true, if the group code matches the pattern set in tenantGroupCode, it is determined that the user belongs to the tenant and authentication is successful.
+It is possible to embed the tenant name with ${tenantName}.
+====
+T-${tenantName}
+====
+The group for tenant determination needs to be included in the results searched by groupFilter.
+| userEntityResolver | UserEntityResolver | Specify how to retrieve user Entity after successful authentication.
+You can specify one of the followings:
+Refer to the link destination for the class to be actually specified.
+
+<<DefaultUserEntityResolver_ldap,DefaultUserEntityResolver>> (Default) +
+<<AccountBaseUserEntityResolver_ldap,AccountBaseUserEntityResolver>> +
+<<UserEntityResolver_ldap,Custom implementing class of UserEntityResolver>>
+
+If there is no definition entry for userEntityResolver, user Entity is searched according to accountId.
+If there is a definition entry for DefaultUserEntityResolver and the definition of unmodifiableUniqueKeyProperty is not set, it will be searched according to oid.
+|===
+
+[[JNDIEnv]]
+.JNDIEnv
+Configurable items can be set in addition to the basic items described below.
+The details can be found link:http://docs.oracle.com/javase/jp/8/docs/technotes/guides/jndi/jndi-ldap.html#PROP[here^].
+
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| java.naming.factory.initial | String | Specify the initialContextFactory of JNDI.
+The default value is com.sun.jndi.ldap.LdapCtxFactory.
+| java.naming.provider.url | String | URL pointing to the LDAP connection destination. The URL can also include the baseDN which is the search root.
+====
+ldap://example.dentsusoken.com:389/dc=mtp,dc=dentsusoken,dc=com
+====
+| java.naming.security.principal | String | Set the ID of the administrative user who can search for users and groups.
+If not set, the user account at the time of authentication will be used to perform user search and group search.
+Set this if the authenticated user does not have search privilege.
+| java.naming.security.credentials | String | Password of the administrative user who can perform user search and group search.
+|===
+
+[[DefaultUserEntityResolver_ldap]]
+.DefaultUserEntityResolver
+Please specify org.iplass.mtp.impl.auth.authenticate.DefaultUserEntityResolver to the class.
+
+For more details, please refer to <<DefaultUserEntityResolver_builtin,DefaultUserEntityResolver>>.
+
+[[AccountBaseUserEntityResolver_ldap]]
+.AccountBaseUserEntityResolver
+Login is possible even if User entity does not exist in DB.
+In the case of LDAP module, user attribute value returned from LDAP can be mapped with User entity property.
+It will define the mapping between the attributeMappingUser entity property and the attribute retrieved from LDAP.
+Multiple settings can be made for each property name.
+
+Please specify org.iplass.mtp.impl.auth.authenticate.AccountBaseUserEntityResolver to the class.
+The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| propertyName | String | Property name of the mapped User entity.
+| accountAttributeName | String | The name of the attribute value obtained from the mapping source LDAP.
+Beside the attribute names defined on LDAP, the following setting values can be used.
+
+id:: User ID entered during user authentication
+unmodifiableUniqueKey:: The attributes set in the uniqueKeyAttribute definition above
+
+It is also possible to combine multiple attributes in the GroovyTemplate format using the ${attribute value} format.
+
+====
+${sn ?:''} ${givenName ?:''} ※Join sn and givenName with space
+====
+| type | Class | Specify the type of the value that you need to convert to when obtaining the value from LDAP（Such as java.lang.String, java.lang.Boolean, etc.）。
+If not specified, the type returned from LDAP will be used directly.
+| defaultValue | Object | The default value if it fail to retrieve the value from LDAP.
+If not specified and the value could not be obtained, the value will be set to null.
+|===
+
+[[UserEntityResolver_ldap]]
+.Custom implementing class of UserEntityResolver
+Please specify your custom implementation of org.iplass.mtp.impl.auth.authenticate.UserEntityResolver to the class.
+
+And add the User Entity acquisition logics to the implementing class for org.iplass.mtp.impl.auth.authenticate.UserEntityResolver.
+
+
+.Notes for Authenticating with Active Directory
+When using LdapAuthenticationProvider for Active Directory, please note that userDn is in the following format at the time of user authentication.
+
+----
+[userID]@[domainName]
+----
+
+Also, when using the objectGUID value that can uniquely identify the user object on Active Directory as uniqueKeyAttribute, it is necessary to note that objectGUID is stored in binary.
+To handle binary attributes correctly, the JNDI environment property (java.naming.ldap.attributes.binary) must be set correctly.
+
+An example of settings when using Active Directory is shown below.
+
+[source, xml]
+----
+<service>
+  <interface>org.iplass.mtp.impl.auth.AuthService</interface>
+  <property name="authenticationProvider" class="org.iplass.mtp.impl.auth.authenticate.ldap.LdapAuthenticationProvider" >
+    <property name="providerName" value="ad" />
+    <property name="jndiEnv">
+      <property name="java.naming.provider.url" value="ldap://example.dentsusoken.com:389/DC=example,DC=dentsusoken,DC=com" />
+      <property name="java.naming.ldap.attributes.binary" value="objectGUID" /><!-- objectGUID is declared to be binary-->
+    </property>
+    <property name="getUser" value="true" />
+    <property name="userBaseDn" value="CN=Users" />
+    <property name="userDn" value="${userName}@example.dentsusoken.com" />
+    <property name="userFilter" value="(&amp;(objectClass=user)(userPrincipalName=${userName}@example.dentsusoken.com))" />
+    <property name="uniqueKeyAttribute" value="objectGUID" />
+    <property name="userAttribute" value="name" />
+    <property name="userAttribute" value="sn" />
+    <property name="userAttribute" value="givenName" />
+    <property name="getGroup" value="true" />
+    <property name="groupBaseDn" value="CN=Groups" />
+    <property name="groupFilter" value="(&amp;(objectClass=groupOfNames)(member=${userDn}))" />
+    <property name="groupCodeAttribute" value="cn" />
+    <property name="groupAsTenant" value="true" />
+    <property name="tenantGroupCode" value="T-${tenantName}" />
+
+    <property name="userEntityResolver" class="org.iplass.mtp.impl.auth.authenticate.AccountBaseUserEntityResolver">
+      <property name="attributeMapping">
+        <property name="propertyName" value="oid" />
+        <property name="accountAttributeName" value="objectGUID" />
+        <property name="type" value="java.lang.String" /><!-- Will be retrieved as byte[], thus transforming to string -->
+      </property>
+      <property name="attributeMapping">
+        <property name="propertyName" value="name" />
+        <property name="accountAttributeName" value="${sn ?:''} ${givenName ?:''}" />
+        <property name="type" value="java.lang.String" />
+      </property>
+      <property name="attributeMapping">
+        <property name="propertyName" value="firstName" />
+        <property name="accountAttributeName" value="givenName" />
+      </property>
+      <property name="attributeMapping">
+        <property name="propertyName" value="lastName" />
+        <property name="accountAttributeName" value="sn" />
+      </property>
+      <property name="attributeMapping">
+        <property name="propertyName" value="admin" />
+        <property name="defaultValue" value="false" class="java.lang.Boolean"/>
+      </property>
+    </property>
+  </property>
+  :
+  :
+</service>
+----
+
+[[PreExternalAuthenticationProvider]]
+.PreExternalAuthenticationProvider
+An authentication provider that supports agent-type and reverse proxy-type authentication mechanisms for SSO products (or similar proprietary authentication infrastructure).
+Normally, when using these SSO products, authentication information is linked to the application as HTTP header, HttpServletRequest attribute, and HttpSession attribute.
+This authentication provider performs authentication on iPLAss based on the information linked from these external authentication mechanisms.
+It is assumed that the login screen and login processing are provided by the external authentication mechanism and are performed outside iPLAss.
+By setting, it is possible to authenticate even if the User entity does not exist in the iPLAss DB.
+
+Please specify org.iplass.mtp.impl.auth.authenticate.preexternal.PreExternalAuthenticationProvider to the class.
+The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| providerName | String | Please refer to <<BuiltinAuthenticationProvider>>
+| validateOnlyLogin | boolean | Specify whether to always check if the linked user information matches the User recognized in the iPLAss session for each request.
+The default value is false.
+| sourceType | <<SourceType>> | Specify the location where the user information passed from external authentication mechanism is stored.
+| accountIdAttribute | String | Key name in which account ID is stored among user information passed from external authentication mechanism.
+| uniqueKeyAttribute | String | Key name that stores unique key (equivalent to OID) among user information passed from external authentication mechanism.
+If not specified, the value specified in accoutIdAttribute is used as the unique key.
+| userAttribute | String, Multiple | Key name of the value treated as user attribute among user information passed from external authentication mechanism.
+| logoutUrl | String | Specify the URL for logout processes of external authentication mechanism.
+When logout is called on the iPLAss standard screen, it redirects to that screen.
+| userEntityResolver | UserEntityResolver | Specify the method to retrieve user Entity after successful authentication.
+You can specify one of the following:
+Refer to the link destination for the class to be actually specified.
+
+<<DefaultUserEntityResolver_pre,DefaultUserEntityResolver>> (Default) +
+<<AccountBaseUserEntityResolver_pre,AccountBaseUserEntityResolver>> +
+<<UserEntityResolver_pre,Custom implementing class of UserEntityResolver>>
+
+If there is no definition entry for userEntityResolver and uniqueKeyAttribute is not specified, user Entity will be searched depends on accountId.
+In the cases other than the above, if the definition of unmodifiableUniqueKeyProperty is not set, it will be searched by oid.
+|===
+
+[[SourceType]]
+.SourceType
+Specify the location where the user information passed from external authentication mechanism is stored.
+
+HEADER:: Get user information from header with getHeader (String)
+REQUEST:: Get user information with getAttribute (String) from HttpServletRequest
+SESSION:: Get user information with getAttribute (String) from HttpSession
+
+
+[[DefaultUserEntityResolver_pre]]
+.DefaultUserEntityResolver
+Please specify org.iplass.mtp.impl.auth.authenticate.DefaultUserEntityResolver to the class.
+
+For more details, please refer to <<DefaultUserEntityResolver_builtin,DefaultUserEntityResolver>>.
+
+[[AccountBaseUserEntityResolver_pre]]
+.AccountBaseUserEntityResolver
+Please specify org.iplass.mtp.impl.auth.authenticate.AccountBaseUserEntityResolver to the class.
+
+For more details, please refer to <<AccountBaseUserEntityResolver_ldap,AccountBaseUserEntityResolver>>.
+UserAttribute value passed from external authentication mechanism can be mapped to User entity property.
+
+[[UserEntityResolver_pre]]
+.Custom implementing class of UserEntityResolver
+Please specify your custom implementation of org.iplass.mtp.impl.auth.authenticate.UserEntityResolver to the class.
+
+And add the acquisition logics to the implementing class of org.iplass.mtp.impl.auth.authenticate.UserEntityResolver.
+
+[[X509AuthenticationProvider]]
+.[.eeonly]#X509AuthenticationProvider#
+An authentication provider that authenticates using an X509 client certificate.
+The authenticity of the X509 client certificate itself is treated as if it was verified by the SSL/TLS layer (no revalidation is performed within iPLAss).
+
+X509AuthenticationProvider can be used alone as an authentication provider, or as a secondary authentication factor for TwoStepAuthenticationProvider.
+When using it as a single authentication provider, the CN in the certificate must match the accountId. However, when using it as a secondary authentication element of the TwoStepAuthenticationProvider, matching the CN and accountId is not mandatory.
+
+Also, when used as a single authentication provider, due to the nature of the client certificate, even if logout processing is performed, it will be immediately re-authenticated by the subsequent request.
+
+By setting, it is possible to authenticate even if the User entity corresponding to the user does not exist in the iPLAss DB.
+
+Please specify org.iplass.mtp.impl.auth.authenticate.x509.X509AuthenticationProvider to the class.
+The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| providerName | String | refer to <<BuiltinAuthenticationProvider>>
+| validateOnlyLogin | boolean | Whether to check for each request if the user in the request matches the logged user in session.
+The default value is false.
+| twoStep2ndFactor | boolean | When setting as a secondary authentication factor of TwoStepAuthenticationProvider, it must be set to true.
+The default value is false.
+| userEntityResolver | UserEntityResolver | Specify the method to retrieve the User Entity after a successful authentication.
+The user can specify one of the followings.
+Please refer to the specific link that you actually going to use.
+
+<<DefaultUserEntityResolver_x509,DefaultUserEntityResolver>> (Default) +
+<<AccountBaseUserEntityResolver_x509,AccountBaseUserEntityResolver>> +
+<<UserEntityResolver_x509,Custom implementing class of UserEntityResolver>>
+
+If there is no definition entry for userEntityResolver, user Entity is searched by accountId.
+If there is a definition entry of DefaultUserEntityResolver and the definition of unmodifiableUniqueKeyProperty is not set, it will be searched with oid.
+|===
+
+[[DefaultUserEntityResolver_x509]]
+.DefaultUserEntityResolver
+Please specify org.iplass.mtp.impl.auth.authenticate.DefaultUserEntityResolver to the class.
+
+For more details, please refer to <<DefaultUserEntityResolver_builtin,DefaultUserEntityResolver>>.
+
+[[AccountBaseUserEntityResolver_x509]]
+.AccountBaseUserEntityResolver
+Please specify org.iplass.mtp.impl.auth.authenticate.AccountBaseUserEntityResolver to the class.
+
+Login is possible even if User entity does not exist in DB.
+Creates a pseudo User entity with oid, accountId, and name set to CN in the certificate.
+
+[[UserEntityResolver_x509]]
+.Custom implementing class ofUserEntityResolver
+Please specify your custom implementation of org.iplass.mtp.impl.auth.authenticate.UserEntityResolver to the class.
+
+Please add the acquisition logics to retrieve the User Entity to the implementing class of org.iplass.mtp.impl.auth.authenticate.UserEntityResolver.
+
+[[SamlAuthenticationProvider]]
+.[.eeonly]#SamlAuthenticationProvider#
+Authentication provider that performs SSO/SLO based on SAML2.0.
+iPLAss supports SAML 2.0 SP mode.
+You can log in to iPLAss by linking authentication information authenticated by an external IdP.
+If you need to use SamlAuthenticationProvider, it is necessary to configure
+<<../developerguide/authentication/index.adoc#authpolicy,AuthenticationPolicy>> so to enable SAML.
+
+Please specify org.iplass.mtp.impl.auth.authenticate.saml.SamlAuthenticationProvider to the class.
+
+The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| providerName | String | refer to <<BuiltinAuthenticationProvider>>
+| userEntityResolver | UserEntityResolver | Set the User entity acquisition method after successful authentication.
+You can specify one of the following:
+Refer to the link for the corresponding classes.
+
+<<SamlUserEntityResolver_saml,[.eeonly]#SamlUserEntityResolver#>> (Default) +
+<<AccountBaseUserEntityResolver_saml,AccountBaseUserEntityResolver>> +
+<<UserEntityResolver_saml,Custom implementing class of UserEntityResolver>>
+|===
+
+[[SamlUserEntityResolver_saml]]
+.[.eeonly]#SamlUserEntityResolver#
+Search user Entity according to NameID mapping of SAML definition set as metadata.
+
+Please specify org.iplass.mtp.impl.auth.authenticate.saml.SamlUserEntityResolver to the class.
+
+The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| eagerLoadReferenceProperty | String, Multiple | Reference property to be obtained at the same time when searching User entity after login.
+By default, the user reference properties rank and groups are specified.
+| filterCondition | String | The filter conditions when searching through the User.
+|===
+
+[[AccountBaseUserEntityResolver_saml]]
+.AccountBaseUserEntityResolver
+Please specify org.iplass.mtp.impl.auth.authenticate.AccountBaseUserEntityResolver to the class.
+
+For more details, please refer to Please refer to the section of<<AccountBaseUserEntityResolver_ldap,AccountBaseUserEntityResolver>>.
+User attribute values passed via SAML can be mapped to User entity properties.
+
+[[UserEntityResolver_saml]]
+.Custom implementing class of UserEntityResolver
+Please specify your custom implementation of org.iplass.mtp.impl.auth.authenticate.UserEntityResolver to the class.
+
+Please add the User Entity acquisition logics to the implementing class of org.iplass.mtp.impl.auth.authenticate.UserEntityResolver.
+
+[[TwoStepAuthenticationProvider]]
+.[.eeonly]#TwoStepAuthenticationProvider#
+An authentication provider that performs 2-step authentication.
+We can configure one primary authentication provider and one or more secondary authentication providers.
+The two-step authentication process is executed according to the settings in the specified authentication provider and authentication policy.
+Please refer to [User-Management] sheet for details of authentication policy.
+
+In the setting of TwoStepAuthenticationProvider, define the primary and secondary AuthenticationProvider as shown in the example below.
+
+[source, xml]
+----
+<service>
+  <interface>org.iplass.mtp.impl.auth.AuthService</interface>
+  <property name="authenticationProvider" class="org.iplass.mtp.impl.auth.authenticate.twostep.TwoStepAuthenticationProvider">
+    <property name="primary" class="org.iplass.mtp.impl.auth.authenticate.builtin.BuiltinAuthenticationProvider">
+      <property name="updatable" value="true" />
+      <property name="providerName" value="default" />
+      <property name="passwordHashSettings">
+        <property name="version" value="1" />
+        <property name="passwordHashAlgorithm" value="SHA-256" />
+        <property name="systemSalt" value="salt" />
+        <property name="stretchCount" value="3000" />
+      </property>
+    </property>
+
+    <property name="secondary" class="org.iplass.mtp.impl.auth.authenticate.onetime.OnetimeCodeAuthenticationProvider" />
+    <property name="secondary" class="org.iplass.mtp.impl.auth.authenticate.timebased.TimeBasedAuthenticationProvider">
+      <property name="maxFailureCount" value="5" />
+      <property name="failureExpirationInterval" value="10" />
+      <property name="unmodifiableUniqueKeyResolver" class="org.iplass.mtp.impl.auth.authenticate.timebased.DefaultUnmodifiableUniqueKeyResolver">
+      	<property name="unmodifiableUniqueKeyProperty" value="oid" />
+      </property>
+    </property>
+    <property name="secondary" class="org.iplass.mtp.impl.auth.authenticate.knowledgebased.KnowledgeBasedAuthenticationProvider">
+  </property>
+  :
+  :
+</service>
+----
+
+Please specify org.iplass.mtp.impl.auth.authenticate.twostep.TwoStepAuthenticationProvider to the class.
+The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| providerName | String | refer to <<BuiltinAuthenticationProvider>>.
+If not specified, providerName defined in primary is applied.
+| primary | AuthenticationProvider | Primary AuthenticationProvider.
+Authentication Provider that can be specified (※) to one of the following authentication providers which uses IdPasswordCredential as a Credential at the time of authentication, or a custom authentication provider.
+
+<<BuiltinAuthenticationProvider>> +
+<<JaasAuthenticationProvider>> +
+<<LdapAuthenticationProvider>>
+
+※ When using the login authentication provided by iPLAss GEM module
+| secondary | AuthenticationProvider | Specify the secondary AuthenticationProvider.
+Multiple "secondary" can be specified.
+One of the following authentication providers can be specified (※).
+
+<<OnetimeCodeAuthenticationProvider>> +
+<<TimeBasedAuthenticationProvider>> +
+<<KnowledgeBasedAuthenticationProvider>> +
+<<X509AuthenticationProvider>>
+
+※ When using the login authentication provided by iPLAss GEM module
+|===
+
+[[OnetimeCodeAuthenticationProvider]]
+.[.eeonly]#OnetimeCodeAuthenticationProvider#
+A provider that authenticates using a one-time authentication code.
+Usually, it is used as a secondary authentication provider for 2-step authentication.
+One-time code generation method is defined separately in OnetimeCodeGeneratorService.
+The setting of which one-time code generation method to use is defined in the authentication policy.
+For the details, please refer to the section of <<../developerguide/authentication/index.adoc#ref_two_step,2-Step Verification>>.
+
+There is no configurable items for OnetimeCodeAuthenticationProvider itself.
+
+Please specify org.iplass.mtp.impl.auth.authenticate.onetime.OnetimeCodeAuthenticationProvider to the class.
+
+[[TimeBasedAuthenticationProvider]]
+.[.eeonly]#TimeBasedAuthenticationProvider#
+A provider that performs timebased authentication (authenticating by two-factor app).
+Usually, it is used as a secondary authentication provider for 2-step authentication.
+For the details, please refer to the section of <<../developerguide/authentication/index.adoc#ref_two_step,2-Step Verification>>.
+
+The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| maxFailureCount | int | The maximum authentication failure count. The default is 5.
+| failureExpirationInterval | int | The expiration interval  (minutes) of authentication failure. The number of authentication failures within the specified time is defined as the number of failures. The default is 10.
+| unmodifiableUniqueKeyResolver | UnmodifiableUniqueKeyResolver | Set the acquisition method of user unique key after successful authentication. You can specify one of the following:
+<<DefaultUnmodifiableUniqueKeyResolver_builtin,[.eeonly]#DefaultUnmodifiableUniqueKeyResolver#>> (Default) +
+<<UnmodifiableUniqueKeyResolver_builtin,Custom implementing class of [.eeonly]#UnmodifiableUniqueKeyResolver#>>
+|===
+
+
+[[DefaultUnmodifiableUniqueKeyResolver_builtin]]
+.[.eeonly]#DefaultUnmodifiableUniqueKeyResolver#
+
+Search through User entity and get unique key. 
+
+Please specify org.iplass.mtp.impl.auth.authenticate.timebased.DefaultUnmodifiableUniqueKeyResolver to the class.
+
+The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| unmodifiableUniqueKeyProperty | String | Property name that get the key when searching User entity. The default value is oid.
+|===
+
+[[UnmodifiableUniqueKeyResolver_builtin]]
+.[.eeonly]#Custom implementing class of DefaultUnmodifiableUniqueKeyResolver#
+Please specify your custom implementation of org.iplass.mtp.auth.login.timebased.UnmodifiableUniqueKeyResolver to the class. Write logic to get User unique key in UnmodifiableUniqueKeyResolver implementation class.
+
+[[KnowledgeBasedAuthenticationProvider]]
+.[.eeonly]#KnowledgeBasedAuthenticationProvider#
+A provider that performs knowledge based authentication (authenticating by answering secret questions).
+Usually, it is used as a secondary authentication provider for 2-step authentication.
+It is possible to use the property stored in the User entity as a question item.
+Settings such as which property is used as a question item and the number of questions are set in the authentication policy.
+For the details, please refer to the section of <<../developerguide/authentication/index.adoc#ref_two_step,2-Step Verification>>.
+
+There is no configurable items for KnowledgeBasedAuthenticationProvider itself.
+
+Please specify org.iplass.mtp.impl.auth.authenticate.knowledgebased.KnowledgeBasedAuthenticationProvider to the class.
+
+[[RememberMeTokenAuthenticationProvider]]
+.RememberMeTokenAuthenticationProvider
+An authentication provider that implements the RememberMe function (function that keeps you logged in).
+A provider that authenticates with the token stored in the browser cookie (persistent cookie) at the previous login.
+Use the authentication policy to set the validity period to keep logged in.
+For the detailed explanation on the features, please refer to <<../developerguide/authentication/index.adoc#ref_rememberme_policy,Remember Me>> section.
+
+RememberMeTokenAuthenticationProvider works as a wrapper to give RememberMe functionality to various actual AuthenticationProviders.
+Please define the configuration file to include AuthenticationProvider that you want to give RememberMe function.
+
+A setting example is shown below.
+
+[source, xml]
+----
+<service>
+  <interface>org.iplass.mtp.impl.auth.AuthService</interface>
+  <property name="authenticationProvider"
+        class="org.iplass.mtp.impl.auth.authenticate.rememberme.RememberMeTokenAuthenticationProvider">
+    <property name="authenticationProvider" class="org.iplass.mtp.impl.auth.authenticate.builtin.BuiltinAuthenticationProvider">
+      <property name="updatable" value="true" />
+      <property name="providerName" value="default" />
+      :
+      :
+    </property>
+  </property>
+  :
+  :
+</service>
+----
+
+Please specify org.iplass.mtp.impl.auth.authenticate.rememberme.RememberMeTokenAuthenticationProvider to the class.
+
+The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| providerName | String | refer to <<BuiltinAuthenticationProvider>>
+If not specified, providerName defined in the included authenticationProvider is applied.
+| AuthenticationProvider | AuthenticationProvider | AuthenticationProvider is the one that performs the actual authentication process.
+| deleteTokenOnFailure | boolean | Set whether or not to delete the token when authentication fails. Default is true.
+| clientStore | AuthTokenClientStore | Setting for client side token storage.
+The following implementation class is provided by default.
+
+<<AuthTokenCookieStore>>
+| autoLoginHandler | AutoLoginHandler |
+Automatic login handler.
+Set a custom AutoLoginHandler if you want to customize the automatic login process using the RememberMe token implemented in RememberMeTokenAuthenticationProvider.
+|===
+
+[[AuthTokenCookieStore]]
+.AuthTokenCookieStore
+This class uses Cookie as a token storage method on the client side.
+
+Please specify org.iplass.mtp.impl.auth.authenticate.token.web.AuthTokenCookieStore to the class.
+The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| cookieName | String | Cookie Name。
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.auth.AuthService</interface>
+	<class>org.iplass.mtp.impl.auth.EnterpriseAuthService</class>
+		<property name="authenticationProvider" class="org.iplass.mtp.impl.auth.authenticate.rememberme.RememberMeTokenAuthenticationProvider">
+		<property name="deleteTokenOnFailure" value="true" />
+		<property name="clientStore" class="org.iplass.mtp.impl.auth.authenticate.token.web.AuthTokenCookieStore">
+			<property name="cookieName" value="iprmtkn" />
+		</property>
+
+		<property name="authenticationProvider" class="org.iplass.mtp.impl.auth.authenticate.twostep.TwoStepAuthenticationProvider">
+			<property name="primary" class="org.iplass.mtp.impl.auth.authenticate.builtin.BuiltinAuthenticationProvider">
+                <property name="updatable" value="true" />
+                <property name="providerName" value="default" />
+
+                <!-- if load custom reference property at login, set userEntityResolver.eagerLoadReferenceProperty -->
+                <!--
+                <property name="userEntityResolver" class="org.iplass.mtp.impl.auth.authenticate.DefaultUserEntityResolver">
+                    <property name="eagerLoadReferenceProperty" value="rank" />
+                    <property name="eagerLoadReferenceProperty" value="groups" />
+                    <property name="eagerLoadReferenceProperty" value="yourCustomReference" />
+                </property>
+                -->
+
+				<property name="passwordHashSettings">
+					<property name="version" value="1" />
+					<property name="passwordHashAlgorithm" value="SHA-256" />
+					<property name="systemSalt" value="yourSystemSalt" />
+					<property name="stretchCount" value="1000" />
+				</property>
+			</property>
+			<property name="secondary" class="org.iplass.mtp.impl.auth.authenticate.onetime.OnetimeCodeAuthenticationProvider">
+			</property>
+      <property name="secondary" class="org.iplass.mtp.impl.auth.authenticate.timebased.TimeBasedAuthenticationProvider">
+        <property name="maxFailureCount" value="5" />
+        <property name="failureExpirationInterval" value="10" />
+        <property name="unmodifiableUniqueKeyResolver" class="org.iplass.mtp.impl.auth.authenticate.timebased.DefaultUnmodifiableUniqueKeyResolver">
+          <property name="unmodifiableUniqueKeyProperty" value="oid" />
+        </property>
+			</property>
+			<property name="secondary" class="org.iplass.mtp.impl.auth.authenticate.knowledgebased.KnowledgeBasedAuthenticationProvider">
+			</property>
+			<property name="secondary" class="org.iplass.mtp.impl.auth.authenticate.x509.X509AuthenticationProvider">
+				<property name="twoStep2ndFactor" value="true" />
+			</property>
+		</property>
+    </property>
+    <property name="authenticationProvider" class="org.iplass.mtp.impl.auth.authenticate.saml.SamlAuthenticationProvider">
+         <property name="updatable" value="false" />
+         <property name="providerName" value="saml" />
+	</property>
+
+	<property name="authorizationProvider" class="org.iplass.mtp.impl.auth.authorize.builtin.BuiltinAuthorizationProvider">
+		<property name="grantAllPermissionsToAdmin" value="true" />
+
+		<property name="authorizationContextHandler" class="org.iplass.mtp.impl.auth.authorize.builtin.action.ActionAuthContextHandler" />
+		<property name="authorizationContextHandler" class="org.iplass.mtp.impl.auth.authorize.builtin.webapi.WebApiAuthContextHandler" />
+		<property name="authorizationContextHandler" class="org.iplass.mtp.impl.auth.authorize.builtin.cube.CubeAuthContextHandler" />
+		<property name="authorizationContextHandler" class="org.iplass.mtp.impl.auth.authorize.builtin.entity.EntityAuthContextHandler">
+			<property name="useCorrelatedSubqueryOnEntityLimitCondition" value="true" />
+		</property>
+		<property name="authorizationContextHandler" class="org.iplass.mtp.impl.auth.authorize.builtin.workflow.WorkflowAuthContextHandler" />
+	</property>
+</service>
+----

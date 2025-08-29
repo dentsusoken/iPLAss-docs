@@ -1,0 +1,19 @@
+[[ref_selectvalue]]
+== SelectValue
+
+SelectValueは、Entityの <<ref_property_select>> 型Propertyの選択値を定義するためのものです。
+
+SelectValueメタデータとして定義することで、複数のEntity間や複数のProperty間で選択可能な値のセットを使いまわすことができます。
+
+=== SelectValueの作成
+SelectValueアイコンを右クリックして「SelectValueを作成する」を選択してください。
+
+=== 設定
+
+[cols="1,4", options="header"]
+|===
+| 設定項目 | 設定内容
+| value | 値を指定します。String型のため、数値、Boolean値として扱う場合は注意してください。
+| display name | 表示名(ラベル)を指定します。
+|===
+

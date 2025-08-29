@@ -1,0 +1,17 @@
+= 開発・運用サポート
+:_hreflang-path: developerguide/support/index.html
+:_relative-root-path: ../../
+
+include::about.adoc[]
+
+include::tenant.adoc[]
+
+include::adminconsole.adoc[]
+
+include::batch.adoc[]
+
+include::check_server_status.adoc[]
+
+include::micrometer.adoc[]
+
+include::appflow.adoc[]

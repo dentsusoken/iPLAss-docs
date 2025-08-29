@@ -1,0 +1,58 @@
+[[RedisService]]
+=== RedisService
+Redisを管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.redis.RedisService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.redis.RedisService
+----
+
+==== RedisServiceの設定
+RedisServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| redisServers | <<RedisServer>>、複数指定可 | Redisサーバの設定。
+|===
+
+[[RedisServer]]
+.RedisServer
+以下の項目が設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| serverName | String | RedisServerの識別子となるサーバ名。
+| host | String | Redisサーバのホスト。
+| port | int | Redisサーバのポート番号。デフォルト値は6379です。
+| timeout | long | 接続タイムアウト。
+| database | int | データベース番号。
+| userName | String | ユーザー名。
+| password | String | パスワード。
+| ssl | boolean | SSL通信を行う場合はtrueを設定します。デフォルト値はfalseです。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.redis.RedisService</interface>
+
+	<property name="redisServers">
+		<property name="serverName" value="RedisServer-1" />
+		<property name="host" value="192.168.0.1" />
+		<property name="port" value="6379" />
+	</property>
+	<property name="redisServers">
+		<property name="serverName" value="RedisServer-2" />
+		<property name="host" value="192.168.0.2" />
+		<property name="port" value="6379" />
+	</property>
+</service>
+----

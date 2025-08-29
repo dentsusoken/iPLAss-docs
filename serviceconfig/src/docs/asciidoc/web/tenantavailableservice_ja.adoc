@@ -1,0 +1,52 @@
+[[TenantAvailableService]]
+=== [.eeonly]#TenantAvailableService#
+テナントの稼動状態を管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.tenant.available.TenantAvailableService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.tenant.available.TenantAvailableService
+----
+
+==== TenantAvailableServiceの設定
+TenantAvailableServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| allwaysAvailableAction | String、複数指定可 | メンテナンス中でも利用可能なアクション
+
+CAUTION: `alwaysAvailableAction` の方を使用してください。次期マイナーバージョンアップで削除します
+
+| alwaysAvailableAction | String、複数指定可 | メンテナンス中でも利用可能なアクション
+
+
+| alwaysAvailableWebApi | String、複数指定可 | メンテナンス中でも利用可能なWebApi
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.tenant.available.TenantAvailableService</interface>
+	<class>org.iplass.mtp.impl.tenant.available.TenantAvailableService</class>
+	<property name="alwaysAvailableAction" value="gem/auth/login" />
+	<property name="alwaysAvailableAction" value="gem/auth/dologin" />
+	<property name="alwaysAvailableAction" value="gem/auth/logout" />
+	<property name="alwaysAvailableAction" value="gem/auth/expiredpassword/update" />
+	<property name="alwaysAvailableAction" value="gem/auth/verify2nd" />
+	<property name="alwaysAvailableAction" value="mdc/auth/login" />
+	<property name="alwaysAvailableAction" value="mdc/auth/dologin" />
+	<property name="alwaysAvailableAction" value="mdc/auth/logout" />
+	<property name="alwaysAvailableAction" value="mdc/auth/expiredpassword/update" />
+	<property name="alwaysAvailableAction" value="mdc/auth/verify2nd" />
+
+	<property name="alwaysAvailableWebApi" value="gem/auth/verifycodegen" />
+	<property name="alwaysAvailableWebApi" value="mdc/auth/verifycodegen" />
+</service>
+----

@@ -1,0 +1,208 @@
+[[MdcConfigService]]
+=== [.eeonly]#MdcConfigService#
+This service manage the settings of the overall performance of the mobile version of the general pages(MDC).
+
+==== Interface Name
+----
+org.iplass.mtp.mdc.MdcConfigService
+----
+
+
+==== Implementing Class
+----
+org.iplass.mtp.mdc.MdcConfigService
+----
+
+
+==== The settings of MdcConfigService
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| formatNumberWithComma | boolean | Whether to format numeric property values ​​with commas in the detail display screen. The default value is true.
+| searchResultDispRowCount | int |  Number of search results to be displayed on the search screen. The default value is 10.
+| searchInterval | int | Set the search interval to prevent redundant requests. If 0 is set, it will be infinite.(cannot click the search button until the result was retrieved and presented) The default value is 60000 (1 minute).
+| recycleBinMaxCount | int | Maximum number of trash cans displayed. If not specified, the default value is 100. If -1 is specified, there is no limit.
+| deleteAllCommandBatchSize | int | Batch size when committing bulk deletion. If not specified, the default value is 100. Applicable when the bulk delete commit type is DIVISION.
+| themes | <<MdcTheme>>, Multiple | Themes.
+| themeColorSchemes | <<ThemeColorScheme>>, In format of Map | Theme color schemes. specify the theme name in key and set the color scheme for each theme in Map format.
+| displayBreakpoint | <<DisplayBreakpoint>> | Display breakpoint. Set the width for each device size.
+| permitRolesToMdc | String, Multiple | Mdc permit roles in MdcAuth.
+The default value is `MdcUser` and `AppAdmin` .
+| permitRolesToNoView | String, Multiple | Permit roles in MdcAuth when EntityView is undefined.
+The default value is `AppAdmin` .
+| binaryDownloadLoggingTargetProperty | <<Mdc_BinaryDownloadLoggingTargetProperty>>, Multiple | Properties to be output as a binary download log.
+| binaryUploadAcceptMimeTypesPattern | String a| Specifies the MIME Type pattern of the files that can be uploaded in the binary properties of the entity. The set value specifies a regular expression pattern. +
+If not set, the MIME Type of the file will not be checked during upload. +
+The settings are reflected in the binary properties of all entities.
+
+Configuration example
+
+* Accept CSV files `^(text/csv)$`
+* Accept PDFs and images `^(application/pdf\|image/.*)$`
+
+See <<WebFrontendService, WebFrontendService uploadFileTypeDetector>>, <<FileTypeDetector, FileTypeDetector>> for information on how to determine the MIME Type to be validated.
+
+|===
+
+[[MdcTheme]]
+.Theme
+Please specify org.iplass.mtp.mdc.tenant.Theme to the class.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| themeName | String | Theme name.
+| displayName | String | Display name.
+|====================
+
+[[ThemeColorScheme]]
+.ThemeColorScheme
+Please specify org.iplass.mtp.mdc.tenant.ThemeColorScheme to the class.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| primary | String | Primary color.
+| secondary | String | Secondary color.
+| neutral | String | Neutral color. The default value is `#D4D4D4`.
+| success | String | Success color. The default value is `#4CAF50`.
+| info | String | Information color. The default value is `#2196F3`.
+| warning | String | Warning color. The default value is `#FF7D07`.
+| error | String | Error color. The default value is `#FF5252`.
+| background | String | Background color. The default value is `#F7F7F7`.
+| surface | String | Surface color. The default value is `#FFFFFF`.
+|====================
+
+[[DisplayBreakpoint]]
+.DisplayBreakpoint
+Please specify org.iplass.mtp.mdc.DisplayBreakpoint to the class.The following items can be configured. +
+Sends a request header (`X-Mdc-Display-Breakpoint`) to identify the display breakpoint when calling WebAPI. This can be used in display determination scripts, etc.
+
+[cols="1,1,3", options="header"]
+|====================
+|  Item | Value | Description
+| mobileBreakpoint | String | Mobile breakpoint. Set the item name of the threshold for judging mobile.
+| thresholds | <<BreakpointThresholds>> | threshold.
+|====================
+
+[[BreakpointThresholds]]
+.BreakpointThresholds
+Please specify org.iplass.mtp.mdc.BreakpointThresholds to the class.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|====================
+|  Item | Value | Description
+| xs | int | xs threshold (px).
+| sm | int | sm threshold (px).
+| md | int | md threshold (px).
+| lg | int | lg threshold (px).
+| xl | int | xl threshold (px).
+|====================
+
+[[Mdc_BinaryDownloadLoggingTargetProperty]]
+.BinaryDownloadLoggingTargetProperty
+Please specify org.iplass.mtp.mdc.BinaryDownloadLoggingTargetProperty to the class.
+
+This property is the output target of the binary download log. The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| entityName | String | Entity name
+| propertyName | String | Property Name
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.mdc.MdcConfigService</interface>
+	<!--  Whether to format numeric property values ​​with commas in the detail display screen -->
+	<property name="formatNumberWithComma" value="true" />
+
+	<!-- Number of search results to be displayed on the search screen. -->
+	<property name="searchResultDispRowCount" value="10"/>
+
+	<!-- Search processing interval, infinite (0) / specified milliseconds (1 or more) -->
+	<property name="searchInterval" value="60000"/>
+
+	<!-- Maximum number of trash cans displayed -->
+	<property name="recycleBinMaxCount" value="100" />
+
+	<!-- Batch size when committing bulk deletion. -->
+	<property name="deleteAllCommandBatchSize" value="100" />
+
+	<!-- Themes -->
+	<property name="themes" class="org.iplass.mtp.mdc.tenant.Theme">
+		<property name="themeName" value="green" />
+		<property name="displayName" value="Green" />
+	</property>
+	<property name="themes" class="org.iplass.mtp.mdc.tenant.Theme">
+		<property name="themeName" value="red" />
+		<property name="displayName" value="Red" />
+	</property>
+	<property name="themes" class="org.iplass.mtp.mdc.tenant.Theme">
+		<property name="themeName" value="blue" />
+		<property name="displayName" value="Blue" />
+	</property>
+	<property name="themes" class="org.iplass.mtp.mdc.tenant.Theme">
+		<property name="themeName" value="orange" />
+		<property name="displayName" value="Orange" />
+	</property>
+
+	<!-- Theme color schemes -->
+	<property name="themeColorSchemes">
+		<property name="green" class="org.iplass.mtp.mdc.tenant.ThemeColorScheme" >
+			<property name="primary" value="#4CAF50" />
+			<property name="secondary" value="#DADADA" />
+			<property name="accent" value="#0D909B" />
+		</property>
+		<property name="red" class="org.iplass.mtp.mdc.tenant.ThemeColorScheme" >
+			<property name="primary" value="#F25A4F" />
+			<property name="secondary" value="#DADADA" />
+			<property name="accent" value="#0D909B" />
+		</property>
+		<property name="blue" class="org.iplass.mtp.mdc.tenant.ThemeColorScheme" >
+			<property name="primary" value="#14B4FC" />
+			<property name="secondary" value="#DADADA" />
+			<property name="accent" value="#0D9B6F" />
+		</property>
+		<property name="orange" class="org.iplass.mtp.mdc.tenant.ThemeColorScheme" >
+			<property name="primary" value="#EE961F" />
+			<property name="secondary" value="#DADADA" />
+			<property name="accent" value="#0D909B" />
+		</property>
+	</property>
+
+	<!-- Display Setting  -->
+	<property name="displayBreakpoint" class="org.iplass.mtp.mdc.DisplayBreakpoint">
+		<property name="mobileBreakpoint" value="md" />
+		<property name="thresholds" class="org.iplass.mtp.mdc.BreakpointThresholds" >
+			<property name="xs" value="0" />
+			<property name="sm" value="600" />
+			<property name="md" value="960" />
+			<property name="lg" value="1264" />
+			<property name="xl" value="1904" />
+		</property>
+	</property>
+
+	<!-- MdcAuth Mdc permission role -->
+	<property name="permitRolesToMdc" value="MdcUser" />
+	<property name="permitRolesToMdc" value="AppAdmin" />
+
+	<!-- MdcAuth Permitted roles when EntityView is undefined -->
+	<property name="permitRolesToNoView" value="AppAdmin" />
+
+	<!-- Log output setting for Binary download -->
+	<property name="binaryDownloadLoggingTargetProperty">
+		<property name="entityName" value="mtp.maintenance.Package" />
+		<property name="propertyName" value="archive" />
+	</property>
+
+	<!-- Binary file upload acceptable MIME Type pattern. Specify a regular expression. -->
+	<!-- Configuration example
+	<property name="binaryUploadAcceptMimeTypesPattern" value="^(image/.*|application/pdf|text/csv)$" />
+	-->
+</service>
+----

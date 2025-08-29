@@ -1,0 +1,4 @@
+[[Java_JSP_Overview]]
+== 概要
+Java／JSPを利用して実装されたサンプルアプリケーションです。 + 
+Java／JSPのカスタマイズする方法は<<../../gettingstarted/introductioncustomize/index#_java_jsp,チュートリアル（カスタマイズ）Java/JSP>>をご参照ください。

@@ -1,0 +1,113 @@
+= Gradle Plugin
+:_hreflang-path: developerguide/gradleplugin/index.html
+:_relative-root-path: ../../
+
+[[top]]
+== Gradle Plugin について
+
+iPLAssのデフォルト設定では各種メタデータはRDBで管理されます。 +
+RDBで管理する場合、バージョン管理による履歴は残りますが、各バージョン間の差異等は分かりません。 +
+そのため複数の開発者で更新を繰り返すと、変更点が分かりにくくなるというデメリットがあります。
+
+そこで、メタデータをファイル（XML形式）管理へ変更し、メタデータファイルをバージョン管理システム（Git/SVN等）で管理します。 +
+バージョン管理システムを利用することで、メタデータのファイル単位の変更内容を管理することが可能となり、デメリットを解消できます。
+
+iPLAssにはメタデータをXMLファイルとして出力する機能があります。 +
+このXMLファイルを管理可能な形でローカルプロジェクトに取り込むツールとして、Gradle Plugin を提供しています。
+
+Gradle Plugin はメタデータのファイル管理機能の他に、開発時に利用する機能を提供します。
+
+== 利用設定
+Gradle Plugin を利用するために、次の設定が必要です。
+
+=== build.gradle の設定
+プロジェクトの build.gradle に plugin を設定します。
+
+.Plugin の最低限の設定
+[source,groovy]
+----
+plugins {
+    id 'org.iplass.dev' version '1.0.0'
+}
+
+configure(iplass) {
+    tenantId = TENANT_ID // 利用しているテナントIDを設定する
+}
+----
+
+その他の設定詳細は、Github link:https://github.com/dentsusoken/iplass-gradle-plugin[iplass gradle plugin^] の README を参照ください。
+
+=== service-config の設定
+service-config の MetaDataRepository のプロパティ設定が必要となります。 +
+詳細については <<../support/index.adoc#batch_meta_export_rdb_to_file, 開発運用サポート：バッチツール → MetaData → Export Rdb to File>> の `service-config の設定` を参照してください。
+
+
+== メタデータ管理
+=== RDBメタデータをファイルメタデータへ変換
+以下のコマンドで開発用のテナント（RDB）からローカルのプロジェクト内にメタデータを移行します。
+
+==== タスク実行
+ファイルメタデータへ変換するGradleタスクを実行します。
+
+.Gradleタスク実行コマンド
+[source,bat]
+----
+.\gradlew.bat :metaConvertRdbToFile
+----
+
+タスクが完了すると、XmlFileMetaDataRepositoryのfileStorePathで指定したディレクトリに種類毎に分割されたメタデータファイルが格納されます。
+
+
+=== RDB管理メタデータを最新化
+Entity等のRDB管理しているメタデータを、以下の操作で最新化します。
+
+==== build.gradle の設定
+プロジェクトの build.gradle ファイルに、RDB管理しているメタデータのパスを設定します。
+
+.RDB管理メタデータパスの設定例
+[source,groovy]
+----
+// entity メタデータ、staticresource メタデータを対象とする設定
+metaSyncRdbToFile {
+    source = ['/entity/*', '/staticresource/*']
+}
+----
+
+==== タスク実行
+メタデータの最新化タスクを実行します。
+
+.Gradleタスク実行コマンド
+[source,bat]
+----
+.\gradlew.bat :metaSyncRdbToFile
+----
+
+タスクが完了すると、XmlFileMetaDataRepositoryのfileStorePathで指定したディレクトリに build.gradle で設定したパスに一致するメタデータファイルが更新されます。
+
+
+=== バージョン管理システムの利用
+
+Git/SVN等のバージョン管理システムを利用することで、メタデータの変更を管理できるようになります。 +
+競合や差分が発生した場合、変更内容を確認しマージ／コミット等を行ってください。
+
+== 開発時に利用する機能
+
+=== Entity View DDL 作成
+バッチツール Entity View を plugin から WIZARD モードで実行します。 +
+詳しい説明は <<../support/index.adoc#_service_config_viewer,こちら>> を参照ください。
+
+.Gradleタスク実行コマンド
+[source,bat]
+----
+.\gradlew.bat :entityViewDdl
+----
+
+=== service-config 表示
+バッチツール service-config viewer を plugin から実行します。 +
+詳しい説明は <<../support/index.adoc#entity_view,こちら>> を参照ください。
+
+.Gradleタスク実行コマンド
+[source,bat]
+----
+.\gradlew.bat :serviceConfigView
+----

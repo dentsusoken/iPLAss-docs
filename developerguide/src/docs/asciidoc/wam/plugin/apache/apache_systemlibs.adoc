@@ -1,0 +1,162 @@
+[[wamapachesystemlibs]]
+==== WAMシステムライブラリ
+
+Apache版WAMプラグインモジュールの依存するライブラリは以下のとおりです。
+[cols="2", options="header"]
+|===
+|ライブラリ |バージョン
+|Boost |1.5.5
+|jsoncpp |0.6.0
+|GMP |5.1.2
+|GNU IDN |1.18
+|zlib |1.2.11
+|OpenSSL |1.0.2.k
+|libcurl |7.34.0
+|APR |1.5.2
+|APR-iconv |1.2.1
+|APR-util |1.5.4
+|===
+
+以下、AmazonLinux環境/GCC4.8.2におけるシステムライブラリインストール手順を示します。 +
+yum等、利用しているリポジトリマネージャに該当ライブラリが存在しない場合、参考にしてください。
+
+* ビルドツール
+
+以下のyumコマンドにより、ビルド中に使用するツールをインストールしておきます。
+----
+# yum install gcc gcc-c++ autoconf automake
+# yum install unzip
+# yum install cmake
+# yum install bzip2
+# yum install libtool
+# yum install dos2unix
+# yum install zip
+----
+
+以降、各ライブラリのビルド手順を示します。必要に応じて、prefixオプションで任意ディレクトリにインストールしてください。
+
+* Boost
+
+----
+# cd [your/build/work/dir]
+# tar zxf [your/scp/upload/path/to]/boost_1_55_0.tar.gz
+# cd boost_1_55_0
+#./bootstrap.sh --prefix=/usr/local
+#./b2 install
+----
+
+* jsoncpp
+
+----
+# unzip [your/scp/upload/path/to]/jsoncpp-master.zip
+# cd jsoncpp-master
+# mkdir build
+# cd build
+# cmake -DCMAKE_BUILD_TYPE=release -DJSONCPP_LIB_BUILD_SHARED=ON -DJSONCPP_WITH_TESTS=OFF -G "Unix Makefiles" ..
+# make
+# mkdir /usr/local
+# cd ..
+# cp -r include/ /usr/local
+# cp -r build/lib/ /usr/local
+----
+
+
+* GMP
+
+----
+# bzip2 -dc [your/scp/upload/path/to]/gmp-5.1.2.tar.bz2 | tar xf -
+# cd gmp-5.1.2
+#./configure --prefix=/usr/local
+# make
+# make install
+----
+
+* GNU IDN
+
+----
+# tar zxf  [your/scp/upload/path/to]/libidn-1.18.tar.gz
+# cd libidn-1.18
+#./configure --prefix=/usr/local
+# make
+# make install
+----
+
+* zlib
+
+----
+# tar zxf [your/scp/upload/path/to]/zlib-1.2.11.tar.gz
+# cd zlib-1.2.11/
+#./configure --prefix=/usr/local
+# make
+# make install
+----
+
+* OpenSSL
+
+----
+# tar zxf [your/scp/upload/path/to]/openssl-1.0.2k.tar.gz
+# cd openssl-1.0.2k
+#./config --prefix=/usr/local threads shared zlib-dynamic
+# vi Makefile
+ZLIB_INCLUDE=
+→ZLIB_INCLUDE= -I/mnt/ebs/opt/wam/local/zlib/include
+# make
+# make -W install_docs install
+----
+
+* libcurl
+
+----
+# tar zxf [your/scp/upload/path/to]/curl-7.34.0.tar.gz
+# cd curl-7.34.0/
+# export LD_LIBRARY_PATH=/usr/local /lib
+（LD_LIBRARY_PATHにopenssl、zlib、libidnのlib/のパスを含めます）
+# CPPFLAGS="-I/usr/local/include" \
+LDFLAGS="-L/usr/local/lib" \
+./configure --prefix=/usr/local
+(openssl、zlib、libidnの各include/パスを-Iオプション、各lib/のパスを-Lオプションで１つずつ指定します。)
+# make
+# make install
+----
+
+NOTE: libcurlでは、利用する機能によってはzlib、OpenSSLなど他のライブラリが +
+必要な場合があります。configureの出力で、各機能の有効無効を示す表示を確認することができます。 +
+上記手順では、SSL support、zlib support、IDN supportが enabled となることを確認してください。
+
+* APR
+
+----
+# tar zxf [your/scp/upload/path/to]/apr-1.5.2.tar.gz
+# cd apr-1.5.2
+#./configure --prefix=/usr/local
+# make
+# make install
+----
+
+NOTE: configure実行時、rm: cannot remove 'libtoolT': No such file or directory と出力された場合がありますが、WAMモジュール利用には影響ありません。無視して進めてください。
+
+* APR-iconv
+
+----
+# tar zxf [your/scp/upload/path/to]/apr-iconv-1.2.1.tar.gz
+# cd apr-iconv-1.2.1
+#./configure --prefix=/usr/local --with-apr=/usr/local
+# make
+# make install
+----
+
+* APR-util
+
+----
+# tar zxf [your/scp/upload/path/to]/apr-util-1.5.4.tar.gz
+# cd apr-util-1.5.４
+#./configure --prefix=/usr/local --with-apr=/usr/local --with-apr-iconv=../apr-iconv-1.2.1
+(--with-apr-iconvオプションではapr-iconvのソースコードパスを指定します)
+# make
+# make install
+----
+
+NOTE: Windows環境でのCurlライブラリは、OpenSSL/1.0.2k、zlib/1.2.11、libidn/1.18、libssh2/1.4.3、librtmp/2.3に +
+依存しており、これらはApache実行環境に含まれている必要があります。
+OpenSSLはlibeay32, ssleay32 (Linuxでのライブラリ名はlibssl、libcrypto)に依存していますが、 +
+Apache2.4にビルトインされているため特に何か作業をする必要はありません。

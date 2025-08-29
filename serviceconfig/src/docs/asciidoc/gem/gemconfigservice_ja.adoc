@@ -1,0 +1,495 @@
+[[GemConfigService]]
+=== GemConfigService
+汎用画面全般の動作の設定を行うサービスです。
+
+==== インタフェース名
+----
+org.iplass.gem.GemConfigService
+----
+
+
+==== 実装クラス名
+.コミュニティエディション用設定
+----
+org.iplass.gem.GemConfigService
+----
+.[.eeonly]#エンタープライズエディション用設定#
+----
+org.iplass.gem.EnterpriseGemConfigService
+----
+
+
+==== GemConfigServiceの設定
+コミュニティエディション用の動作を設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| loadWithReference | boolean | リクエストのパラメータを基に参照データをロードする際、参照プロパティも合わせてロードするか。デフォルト値はfalseです。
+| formatNumberWithComma | boolean | 詳細画面で数値プロパティの値をカンマでフォーマットするか。デフォルト値はtrueです。
+| csvDownloadMaxCount | int | CSVダウンロード件数の上限値。デフォルト値は65535です。
+| uploadableCsvDownloadLoadSize | int | Upload形式のCSVダウンロード時に多重度複数の参照を含むEntityの一括ロード件数。デフォルト値は1です。
+| csvDownloadCharacterCode | String、複数指定可 | CSVダウンロードの文字コード。デフォルト値は `UTF-8` です。
+| csvDownloadQuoteAll | boolean | CSVダウンロードで常時ダブルクォートの出力を行うか。デフォルト値はtrueです。
+| csvDownloadReferenceVersion | boolean | CSVダウンロードで参照項目のバージョンを出力するか。デフォルト値はtrueです。
+| uploadableCsvDownloadWithMappedByReference | boolean | Upload形式のCSVダウンロード時に被参照プロパティも出力するか。デフォルト値はfalseです。
+| csvUploadCommitCount | int | CSVアップロードのコミット単位。デフォルト値は1000です。
+| csvUploadAsync | boolean | CSVアップロードを非同期で行うか。デフォルト値はfalseです。 +
+非同期で行う場合は、 <<RdbQueueService>>の<<useQueue>>プロパティをtrueに設定してください。
+| csvUploadStatusPollingInterval | int | CSVアップロードのステータスポーリングのインターバル。デフォルト値は10000（10秒）です。
+| searchResultCacheLimit | int | CSVダウンロード時User名取得のための検索内部キャッシュサイズ。デフォルト値は300です。
+| confirmEditSave | boolean | 編集画面、一括更新画面で保存時に確認ダイアログを表示するか。デフォルト値はfalseです。
+BulkLayoutを利用しない一括更新の場合は無条件で確認ダイアログが表示されます。
+| confirmEditCancel | boolean | 編集画面でキャンセル時に確認ダイアログを表示するか。デフォルト値はtrueです。
+| topViewEditCancelBackToTop | boolean a| 詳細画面から編集画面に遷移した際にキャンセル時にTopViewに戻るか。デフォルト値はfalse(詳細画面に戻る)です。
+
+NOTE: 3.0.20までの互換設定です。今後は詳細画面に遷移する動作に統一する予定です。
+| showSeachCondResetButton | boolean | 検索画面でリセットボタンを表示するか。デフォルト値はtrueです。
+| searchResultDispRowCount | int | 検索画面で表示する検索結果の件数。デフォルト値は10です。
+個別のEntityView定義の<<../developerguide/genericentitymanager/entityview/index#searchresult_setting,検索結果の設定>>で上書きすることが可能です。
+| maxOfDetailSearchItems | int | 詳細検索画面における検索項目の上限数。デフォルト値は100です。
+| searchInterval | int | 検索処理のインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
+| csvDownloadInterval | int | CSVダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
+| csvDownloadWithFooter | boolean | 汎用検索のCSVダウンロードでフッターを出力するか。デフォルト値はfalseです。
+| csvDownloadFooter | String | 汎用検索のCSVダウンロードのフッター文言。
+| useDisplayLabelItemInSearch | boolean a| 検索処理で表示ラベルとして扱うプロパティを検索条件に利用するか。trueの場合、ReferencePropertyEditorで「表示ラベルとして扱うプロパティ」として設定された項目を通常検索のテキスト入力による条件指定時、または詳細検索の条件項目として設定します。
+
+CAUTION: 後方互換性のための設定フラグです。将来のバージョンでは本設定項目は削除されます。
+| useDisplayLabelItemInCsvDownload | boolean a| CSVダウンロード処理で表示ラベルとして扱うプロパティを出力するか。trueの場合、ReferencePropertyEditorで「表示ラベルとして扱うプロパティ」として設定された項目をCSV項目として出力します。
+ 
+CAUTION: 後方互換性のための設定フラグです。将来のバージョンでは本設定項目は削除されます。
+| showPulldownPleaseSelectLabel | boolean | プルダウンの未選択時のラベル「選択してください」を表示するか。デフォルト値はtrueです。
+| datePickerDefaultOption | String | Datepickerのデフォルトオプション。デフォルト値は以下です。 +
+ `changeMonth:true,changeYear:true,yearRange:"c-10:c+10"`
+| recycleBinMaxCount | int | ゴミ箱の表示件数上限値。未指定の場合のデフォルト値は100です。-1を指定した場合は無制限となります。
+| deleteAllCommandBatchSize | int | 一括削除のコミットバッチサイズ件数。未指定の場合のデフォルト値は100です。一括削除コミットタイプがDIVISIONの場合適用されます。
+| bulkUpdateAllCommandBatchSize | int | 一括更新のコミットバッチサイズ件数。未指定の場合のデフォルト値は100です。一括更新コミットタイプがDIVISIONの場合適用されます。
+| binaryDownloadLoggingTargetProperty | <<BinaryDownloadLoggingTargetProperty>>、複数指定可 | バイナリダウンロード用ログの出力対象のプロパティ。
+| binaryUploadAcceptMimeTypesPattern | String a| エンティティのバイナリプロパティでアップロード可能なファイルのMIME Typeパターンを指定します。設定値は正規表現パターンを指定します。 +
+設定が無い場合はアップロード時のファイルの MIME Type の確認は実施しません。 +
+設定内容は全エンティティのバイナリプロパティに反映されます。
+
+設定例
+
+* CSVファイルのアップロード許可 `^(text/csv)$`
+* PDFと画像のアップロード許可 `^(application/pdf\|image/.*)$`
+
+検証対象となる MIME Type の決定方法については、<<WebFrontendService, WebFrontendService uploadFileTypeDetector>>, <<FileTypeDetector, FileTypeDetector>> を参照してください。
+
+| imageColors | <<ImageColorSetting>>、複数指定可 | 検索画面や詳細画面、メニュー等に設定するイメージカラーの設定。
+| skins | <<Skin>>、複数指定可 | スキン。
+| themes | <<Theme>>、複数指定可 | テーマ。
+| entityViewHelper | <<EntityViewHelper>> | 検索画面や詳細画面を表示する際のヘルパークラス。
+| shallowCopyLobData | boolean | エンティティをコピーする際にLobデータをシャッローコピーするか。デフォルト値はfalseです。
+| autoGenerateShowSystemProperty | boolean | 汎用画面の自動生成処理でシステム項目を表示するか。
+`autoGenerateSystemProperties` で指定したプロパティを詳細・編集画面で「システム情報」Secitonとして読み取り専用項目で出力します。
+新規作成画面では表示しません。デフォルト値は `false` です。
+| autoGenerateSystemProperties | String a| 汎用画面の自動生成処理の「システム情報」に表示するプロパティ。カンマ区切り。以下のプロパティのみ対象。 +
+`oid` , `version` , `createBy` , `createDate` , `updateBy` , `updateDate` , `lockedBy`
+| autoGenerateSystemPropertyDisplayPosition | String a| 汎用画面の自動生成処理の「システム情報」表示位置。 `TOP` か `BOTTOM` 。デフォルトは `TOP` です。
+| autoGenerateExcludeOidWhenCustomOid | boolean | 汎用画面の自動生成処理の「システム情報」で、EntityのOIDプロパティをカスタマイズしている場合にOIDを表示しないか。デフォルト値は `true` です。
+| autoGenerateUseUserPropertyEditor | boolean | `createBy` 、 `updateBy` 、 `lockedBy` にUserPropertyEditorを利用するか。
+デフォルト値は `true` です。
+| permitRolesToGem | String、複数指定可 | GemAuthでのGem許可ロール。
+デフォルト値は `GemUser` と `AppAdmin` です。
+| permitRolesToNoView | String、複数指定可 | GemAuthでのEntityViewが未定義の場合の許可ロール。
+デフォルト値は `AppAdmin` です。
+|===
+
+==== [.eeonly]#EnterpriseGemConfigServiceの設定#
+エンタープライズエディション用の動作を設定します。
+コミュニティエディション用の設定と併せて設定してください。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| savedListCsvDownloadInterval | int | SavedList一覧のCSVダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
+| entitylistingSearchInterval | int | EntityListingの検索処理のインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
+| entitylistingCsvDownloadInterval | int | EntityListingのCSVダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
+| aggregationCsvDownloadInterval | int | AggregationのCSVダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
+| aggregationRawdataCsvDownloadInterval | int | AggregationのローデータCSVダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
+| showBothAggregationCsvDownloadButton | boolean | AggregationのCSVダウンロードを集計表の上下に表示するか。デフォルト値はfalseです。
+| dividingTableSideAtCrosstabCsvDownload | boolean | Aggregation(Crosstab)のCSVダウンロードで表側を分割して出力するか。デフォルト値はfalseです。
+| dividingTableHeadAtCrosstabCsvDownload | boolean | Aggregation(Crosstab)のCSVダウンロードで表頭を分割して出力するか。デフォルト値はfalseです。
+| outputItemLabelCrosstabCsvDownload | boolean | Aggregation(Crosstab)のCSVダウンロードで表頭/表側のアイテム名を表示するか。デフォルト値はfalseです。
+| entitylistingSearchLimit | int | EntityListingの検索Limit。デフォルト値は10です。
+| entitylistingCsvDownloadWithFooter | boolean | EntityListingのCSVダウンロードでフッターを出力するか。デフォルト値はfalseです。
+| entitylistingCsvDownloadFooter | String | EntityListingのCSVダウンロードのフッター文言。
+| aggregationCsvDownloadWithFooter | boolean | 集計のCSVダウンロードでフッターを出力するか。デフォルト値はfalseです。
+| aggregationCsvDownloadFooter | String | 集計のCSVダウンロードのフッター文言。
+| aggregationRawdataCsvDownloadWithFooter | boolean | 集計のローデータCSVダウンロードでフッターを出力するか。デフォルト値はfalseです。
+| aggregationRawdataCsvDownloadFooter| String | 集計のローデータのCSVダウンロードのフッター文言。
+| confirmUserTaskSubmit| boolean | ワークフローのタスク編集画面でタスク確認ダイアログを表示するか。デフォルト値はfalseです。
+| confirmUserTaskCancel| boolean | ワークフローのタスク編集画面でキャンセル確認ダイアログを表示するか。デフォルト値はfalseです。
+|===
+
+[[BinaryDownloadLoggingTargetProperty]]
+.BinaryDownloadLoggingTargetProperty
+classはorg.iplass.gem.BinaryDownloadLoggingTargetPropertyを指定します。
+
+バイナリダウンロード用ログの出力対象のプロパティです。以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| entityName | String | エンティティ名。
+| propertyName | String | プロパティ名。
+|===
+
+[[ImageColorSetting]]
+.ImageColorSetting
+classはorg.iplass.gem.ImageColorSettingを指定します。
+
+検索画面や詳細画面、メニュー等に設定するイメージカラーと、対応するCSSを設定します。
+イメージカラーを追加する場合、対応するCSSを作成してください。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| colorName | String | イメージカラー名。
+| cssSettings | <<CssSetting>>、複数指定可 | スキンと対応するCSSファイルのパスの設定。
+|===
+
+[[CssSetting]]
+.CssSetting
+classはorg.iplass.gem.CssSettingを指定します。
+
+スキンと対応するCSSファイルのパスを設定します。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| skinName | String | スキン名。
+| cssPath | String | CSSファイルのパス。
+|===
+
+[[Skin]]
+.Skin
+classはorg.iplass.mtp.tenant.Skinを指定します。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| displayName | String | 表示名。
+| skinName | String | スキン名。
+| pageSkinName | String | ページ全体用のスキン名。
+| menuSkinName | String | メニュー用のスキン名。
+|====================
+
+[[Theme]]
+.Theme
+classはorg.iplass.mtp.tenant.Themeを指定します。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| displayName | String | 表示名。
+| themeName | String | テーマ名。
+|====================
+
+[[EntityViewHelper]]
+.EntityViewHelper
+検索画面や詳細画面を表示する際のヘルパークラスを設定します。
+
+classはorg.iplass.gem.EntityViewHelperの実装クラスを指定します。
+
+標準で以下のEntityViewHelperを提供しています。
+
+* <<EntityViewHelperImpl>>
+* <<EnterpriseEntityViewHelperImpl>>
+
+[[EntityViewHelperImpl]]
+.EntityViewHelperImpl
+コミュニティエディション向けのEntityViewHeplerです。
+
+classにorg.iplass.gem.EntityViewHelperImplを指定します。
+設定可能な項目はありません。
+
+[[EnterpriseEntityViewHelperImpl]]
+.[.eeonly]#EnterpriseEntityViewHelperImpl#
+エンタープライズエディション向けのEntityViewHelperです。
+
+classにorg.iplass.gem.EnterpriseEntityViewHelperImplを指定します。
+設定可能な項目はありません。
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.gem.GemConfigService</interface>
+	<class>org.iplass.gem.EnterpriseGemConfigService</class>
+
+	<!-- CSVダウンロード件数上限値 -->
+	<property name="csvDownloadMaxCount" value="65535" />
+
+	<!-- CSVダウンロード文字コード -->
+	<!--
+	gem-service-config.xmlにUTF8が設定されています。
+	追加したい場合は以下を参考にvalueに任意の文字コードを指定し有効にして下さい。
+
+	<property name="csvDownloadCharacterCode" value="windows-31j" additional="true" />
+	<property name="csvDownloadCharacterCode" value="EUC-JP" additional="true" />
+	 -->
+	<property name="csvDownloadCharacterCode" value="UTF-8"/>
+
+	<!-- CSVダウンロード常時ダブルクォート出力
+		標準ではtrueに設定されています。ダブルクォートを出力したくない場合はfalseにしてください。
+		(," 改行が含まれる場合は設定に関係なくダブルクォートを出力します)
+	 -->
+	<property name="csvDownloadQuoteAll" value="true"/>
+
+	<!-- CSVダウンロード参照項目バージョン出力 -->
+	<property name="csvDownloadReferenceVersion" value="true"/>
+
+	<!-- CSVアップロードコミット単位 -->
+	<property name="csvUploadCommitCount" value="1000"/>
+
+	<!-- CSVダウンロード時User名取得のための検索内部キャッシュサイズ -->
+	<property name="searchResultCacheLimit" value="300" />
+
+	<!-- 編集画面で保存時に確認ダイアログを表示するか
+		デフォルトで非表示するに設定されています。表示にしたい場合はtrueを設定してください。
+	-->
+	<property name="confirmEditSave" value="false"/>
+
+	<!-- 編集画面でキャンセル時に確認ダイアログを表示するか
+		 デフォルトで表示するに設定されています。非表示にしたい場合はfalseを設定してください。
+	-->
+	<property name="confirmEditCancel" value="true"/>
+
+	<!-- 編集画面でキャンセル時にTopViewに戻るか
+		 デフォルト戻らない(詳細画面に戻る)に設定されています。TopViewに戻りたい場合はtrueを設定してください。
+	 -->
+	<property name="topViewEditCancelBackToTop" value="false"/>
+
+	<!-- 検索画面でリセットボタンを表示するか
+		 デフォルトで表示するに設定されています。非表示にしたい場合はfalseを設定してください。
+	-->
+	<property name="showSeachCondResetButton" value="true"/>
+
+	<!-- 検索画面で表示する検索結果の件数 -->
+	<property name="searchResultDispRowCount" value="10"/>
+
+	<!-- 詳細検索画面における検索項目の上限数 -->
+	<property name="maxOfDetailSearchItems" value="100"/>
+
+	<!-- 検索処理のインターバル、無期限(0)/指定ミリ秒(1以上) -->
+	<property name="searchInterval" value="60000"/>
+
+	<!-- CSVダウンロードのインターバル、無期限(0)/指定ミリ秒(1以上) -->
+	<property name="csvDownloadInterval" value="60000"/>
+
+	<!-- EntityListingの検索処理のインターバル、無期限(0)/指定ミリ秒(1以上) -->
+	<property name="entitylistingSearchInterval" value="60000"/>
+
+	<!-- EntityListingのCSVダウンロードのインターバル、無期限(0)/指定ミリ秒(1以上) -->
+	<property name="entitylistingCsvDownloadInterval" value="60000"/>
+
+	<!-- AggregationのCSVダウンロードのインターバル、無期限(0)/指定ミリ秒(1以上) -->
+	<property name="aggregationCsvDownloadInterval" value="60000"/>
+
+	<!-- AggregationのローデータCSVダウンロードのインターバル、無期限(0)/指定ミリ秒(1以上) -->
+	<property name="aggregationRawdataCsvDownloadInterval" value="60000"/>
+
+	<!-- AggregationのCSVダウンロードを集計表の上下に表示するか -->
+	<property name="showBothAggregationCsvDownloadButton" value="false"/>
+
+	<!-- Aggregation(Crosstab)のCSVダウンロードで表側を分割して出力するか -->
+	<property name="dividingTableSideAtCrosstabCsvDownload" value="false"/>
+
+	<!-- Aggregation(Crosstab)のCSVダウンロードで表頭を分割して出力するか -->
+	<property name="dividingTableHeadAtCrosstabCsvDownload" value="false"/>
+
+	<!-- Aggregation(Crosstab)のCSVダウンロードで表頭/表側のアイテム名を表示するか -->
+	<property name="outputItemLabelCrosstabCsvDownload" value="false"/>
+
+	<!-- 汎用検索のCSVダウンロードでフッターを出力するか -->
+	<property name="csvDownloadWithFooter" value="false"/>
+
+	<!-- 汎用検索のCSVダウンロードのフッター文言 -->
+	<property name="csvDownloadFooter" value=""/>
+
+	<!-- 検索処理で表示ラベルとして扱うプロパティを検索条件に利用するか -->
+	<property name="useDisplayLabelItemInSearch" value="true"/>
+
+	<!-- CSVダウンロード処理で表示ラベルとして扱うプロパティを出力するか -->
+	<property name="useDisplayLabelItemInCsvDownload" value="true"/>
+
+	<!-- EntityListingの検索Limit -->
+	<property name="entitylistingSearchLimit" value="10"/>
+
+	<!-- EntityListingのCSVダウンロードでフッターを出力するか -->
+	<property name="entitylistingCsvDownloadWithFooter" value="false"/>
+
+	<!-- EntityListingのCSVダウンロードのフッター文言 -->
+	<property name="entitylistingCsvDownloadFooter" value=""/>
+
+	<!-- 集計のCSVダウンロードでフッターを出力するか -->
+	<property name="aggregationCsvDownloadWithFooter" value="false"/>
+
+	<!-- 集計のCSVダウンロードのフッター文言 -->
+	<property name="aggregationCsvDownloadFooter" value=""/>
+
+	<!-- 集計のローデータCSVダウンロードでフッターを出力するか -->
+	<property name="aggregationRawdataCsvDownloadWithFooter" value="false"/>
+
+	<!-- 集計のローデータのCSVダウンロードのフッター文言 -->
+	<property name="aggregationRawdataCsvDownloadFooter" value=""/>
+
+	<!-- ワークフローのタスク編集画面でタスク確認ダイアログを表示するか
+		 デフォルトで表示するに設定されています。非表示にしたい場合はfalseを設定してください。
+	-->
+	<property name="confirmUserTaskSubmit" value="false"/>
+
+	<!-- ワークフローのタスク編集画面でキャンセル確認ダイアログを表示するか
+		 デフォルトで表示するに設定されています。非表示にしたい場合はfalseを設定してください。
+	-->
+	<property name="confirmUserTaskCancel" value="false"/>
+
+	<!-- CSVアップロード非同期設定 -->
+	<!-- true(非同期)を設定する場合は、 RdbQueueServiceのuseQueueプロパティをtrueに設定してください。 -->
+	<property name="csvUploadAsync" value="false"/>
+
+	<!-- CSVアップロードステータスポーリングのインターバル、指定ミリ秒 -->
+	<property name="csvUploadStatusPollingInterval" value="10000"/>
+
+	<!-- プルダウンの「選択してください」を表示するか -->
+	<property name="showPulldownPleaseSelectLabel" value="true" />
+
+	<property name="binaryDownloadLoggingTargetProperty">
+		<property name="entityName" value="mtp.maintenance.Package" />
+		<property name="propertyName" value="archive" />
+	</property>
+	<property name="binaryDownloadLoggingTargetProperty">
+		<property name="entityName" value="mtp.listing.SavedList" />
+		<property name="propertyName" value="listedData" />
+	</property>
+
+	<!-- バイナリファイルアップロード受け入れ可能な MIME Type パターン。正規表現を指定する。 -->
+	<!-- 設定例
+	<property name="binaryUploadAcceptMimeTypesPattern" value="^(image/.*|application/pdf|text/csv)$" />
+	-->
+
+	<!-- 汎用画面、メニュー用のイメージカラー設定 -->
+	<property name="imageColors">
+		<property name="colorName" value="blue" />
+		<property name="cssSettings">
+			<property name="skinName" value="flat" />
+			<property name="cssPath" value="/styles/gem/skin/flat/imagecolor/blue.css" />
+		</property>
+		<property name="cssSettings">
+			<property name="skinName" value="horizontal" />
+			<property name="cssPath" value="/styles/gem/skin/horizontal/imagecolor/blue.css" />
+		</property>
+		<property name="cssSettings">
+			<property name="skinName" value="vertical" />
+			<property name="cssPath" value="/styles/gem/skin/vertical/imagecolor/blue.css" />
+		</property>
+	</property>
+	<property name="imageColors">
+		<property name="colorName" value="green" />
+		<property name="cssSettings">
+			<property name="skinName" value="flat" />
+			<property name="cssPath" value="/styles/gem/skin/flat/imagecolor/green.css" />
+		</property>
+		<property name="cssSettings">
+			<property name="skinName" value="horizontal" />
+			<property name="cssPath" value="/styles/gem/skin/horizontal/imagecolor/green.css" />
+		</property>
+		<property name="cssSettings">
+			<property name="skinName" value="vertical" />
+			<property name="cssPath" value="/styles/gem/skin/vertical/imagecolor/green.css" />
+		</property>
+	</property>
+	<property name="imageColors">
+		<property name="colorName" value="red" />
+		<property name="cssSettings">
+			<property name="skinName" value="flat" />
+			<property name="cssPath" value="/styles/gem/skin/flat/imagecolor/red.css" />
+		</property>
+		<property name="cssSettings">
+			<property name="skinName" value="horizontal" />
+			<property name="cssPath" value="/styles/gem/skin/horizontal/imagecolor/red.css" />
+		</property>
+		<property name="cssSettings">
+			<property name="skinName" value="vertical" />
+			<property name="cssPath" value="/styles/gem/skin/vertical/imagecolor/red.css" />
+		</property>
+	</property>
+	<property name="imageColors">
+		<property name="colorName" value="yellow" />
+		<property name="cssSettings">
+			<property name="skinName" value="flat" />
+			<property name="cssPath" value="/styles/gem/skin/flat/imagecolor/yellow.css" />
+		</property>
+		<property name="cssSettings">
+			<property name="skinName" value="horizontal" />
+			<property name="cssPath" value="/styles/gem/skin/horizontal/imagecolor/yellow.css" />
+		</property>
+		<property name="cssSettings">
+			<property name="skinName" value="vertical" />
+			<property name="cssPath" value="/styles/gem/skin/vertical/imagecolor/yellow.css" />
+		</property>
+	</property>
+
+	<!-- スキン定義 -->
+	<property name="skins" class="org.iplass.gem.Skin">
+		<property name="skinName" value="flat" />
+		<property name="displayName" value="フラット" />
+		<property name="pageSkinName" value="flat" />
+		<property name="menuSkinName" value="sub-popup" />
+	</property>
+	<property name="skins" class="org.iplass.gem.Skin">
+		<property name="skinName" value="vertical" />
+		<property name="displayName" value="垂直メニュー" />
+		<property name="pageSkinName" value="vertical" />
+		<property name="menuSkinName" value="sub-popup" />
+	</property>
+	<property name="skins" class="org.iplass.gem.Skin">
+		<property name="skinName" value="horizontal" />
+		<property name="displayName" value="水平メニュー" />
+		<property name="pageSkinName" value="horizontal" />
+		<property name="menuSkinName" value="sub-popup" />
+	</property>
+	<property name="skins" class="org.iplass.gem.Skin">
+		<property name="skinName" value="horizontal_droplist" />
+		<property name="displayName" value="水平メニュー(ドロップリストメニュー)" />
+		<property name="pageSkinName" value="horizontal" />
+		<property name="menuSkinName" value="sub-droplist" />
+	</property>
+
+	<!-- テーマ定義 -->
+	<property name="themes" class="org.iplass.gem.Theme">
+		<property name="themeName" value="black" />
+		<property name="displayName" value="黒" />
+	</property>
+	<property name="themes" class="org.iplass.gem.Theme">
+		<property name="themeName" value="red" />
+		<property name="displayName" value="赤" />
+	</property>
+	<property name="themes" class="org.iplass.gem.Theme">
+		<property name="themeName" value="green" />
+		<property name="displayName" value="緑" />
+	</property>
+	<property name="themes" class="org.iplass.gem.Theme">
+		<property name="themeName" value="blue" />
+		<property name="displayName" value="青" />
+	</property>
+	<property name="themes" class="org.iplass.gem.Theme">
+		<property name="themeName" value="lightred" />
+		<property name="displayName" value="明赤" />
+	</property>
+	<property name="themes" class="org.iplass.gem.Theme">
+		<property name="themeName" value="lightgreen" />
+		<property name="displayName" value="明緑" />
+	</property>
+	<property name="themes" class="org.iplass.gem.Theme">
+		<property name="themeName" value="lightblue" />
+		<property name="displayName" value="明青" />
+	</property>
+	<property name="themes" class="org.iplass.gem.Theme">
+		<property name="themeName" value="orange" />
+		<property name="displayName" value="橙" />
+	</property>
+	<property name="entityViewHelper" class="org.iplass.gem.EnterpriseEntityViewHelperImpl" />
+</service>
+----

@@ -1,0 +1,123 @@
+[[metadata_crud_api]]
+== メタデータ CRUD API
+
+メタデータに対する操作（Load, Create, Update, Delete）を提供します。REST形式にのみ対応しています。
+
+基本となるURLは以下です。
+[source,url]
+----
+http(s)://[server]/[tenantContextPath]/api/mtp/definition
+----
+
+METHODによって実行される処理が判定されます。
+
+[cols="1,1a",options="header"]
+|===
+|METHOD + パス|処理
+|GET api/mtp/definition/[メタデータ定義パス]| 指定されたメタデータ定義をLoad
+|POST api/mtp/definition/[メタデータ定義パス]| 指定されたメタデータ定義をCreate
+|PUT api/mtp/definition/[メタデータ定義パス]| 指定されたメタデータ定義をUpdate
+|DELETE api/mtp/definition/[メタデータ定義パス]| 指定されたメタデータ定義をDelete
+|===
+
+NOTE: メタデータ定義パスについては、 AdminConsoleのMetaDataExplorerのPathを参照してください。
+
+=== 利用設定
+メタデータの更新用APIを利用するには、WebApiServiceの `enableDefinitionApi` 設定が必要になります。 +
+詳細については、 <<../../serviceconfig/index.adoc#WebApiService, WebApiService>>を参照してください。
+
+=== Load
+メタデータをロードする場合はGETを利用します。
+
+[cols="1,1a",options="header"]
+|===
+|METHOD + パス|処理
+|GET api/mtp/definition/[メタデータ定義パス]| 指定されたメタデータ定義をLoad
+|===
+
+* パラメータ +
++
+[cols="1,5a",options="header"]
+|===
+|項目|内容
+|recursive | trueが設定されている場合、指定されているパス配下を再帰的にすべて検索します。
+|===
+
+* 返却値 +
+** パスの最後が `/` の場合 +
++
+[cols="1,5a",options="header"]
+|===
+|項目|内容
+|list|パス配下の検索結果がセットされます
+|===
++
+** 上記以外の場合 +
++
+[cols="1,5a",options="header"]
+|===
+|項目|内容
+|definition|指定パスの検索結果がセットされます
+|===
++
+** 共通 +
++
+この他に<<WebApi-Result,共通の返却値>>があります。
+
+=== Create
+メタデータを登録する場合はPOSTを利用します。
+
+[cols="1,1a",options="header"]
+|===
+|METHOD + パス|処理
+|POST api/mtp/definition/[メタデータ定義パス]| 指定されたメタデータ定義をCreate
+|===
+
+* パラメータ +
++
+[cols="1,5a",options="header"]
+|===
+|項目|内容
+|definition | 登録するメタデータ定義を設定します
+|===
+
+* 返却値 +
++
+<<WebApi-Result,共通の返却値>>のみ返ります。
+
+=== Update
+メタデータを更新する場合はPUTを利用します。
+
+[cols="1,1a",options="header"]
+|===
+|METHOD + パス|処理
+|PUT api/mtp/definition/[メタデータ定義パス]| 指定されたメタデータ定義をUpdate
+|===
+
+* パラメータ +
++
+[cols="1,5a",options="header"]
+|===
+|項目|内容
+|definition | 登録するメタデータ定義を設定します
+|===
+
+* 返却値 +
++
+<<WebApi-Result,共通の返却値>>のみ返ります。
+
+=== Delete
+メタデータを削除する場合はDELETEを利用します。
+
+[cols="1,1a",options="header"]
+|===
+|METHOD + パス|処理
+|DELETE api/mtp/definition/[メタデータ定義パス]| 指定されたメタデータ定義をDelete
+|===
+
+* パラメータ +
+パラメータはありません。
+
+* 返却値 +
++
+<<WebApi-Result,共通の返却値>>のみ返ります。

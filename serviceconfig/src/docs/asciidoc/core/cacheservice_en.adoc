@@ -1,0 +1,348 @@
+[[CacheService]]
+=== CacheService
+This service manages the Cache store.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.cache.CacheService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.cache.CacheService
+----
+
+==== Settings of CacheService
+CacheService can be configured withe the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| reloadThreadPoolSize | int | Number of threads to perform cache reload processing. The default is 0.
+| defaultFactory | <<CacheStoreFactory>> | Settings of  CacheStoreFactory
+| Text string (excluding `defaultFactory` and `reloadThreadPoolSize`)  | <<CacheStoreFactory>>, Multiple | specific Settings of CacheStoreFactory。
+|===
+
+[[CacheStoreFactory]]
+.CacheStoreFactory
+Please specify the implementing class of org.iplass.mtp.impl.cache.store.CacheStoreFactory.
+
+As our standard implementation, the following CacheStoreFactory implementations are provided.
+
+- <<RdbCacheStoreFactory>>
+- <<SimpleCacheStoreFactory>>
+- <<SyncServerCacheStoreFactory>>
+- <<TransactionLocalCacheStoreFactory>>
+- <<InfinispanCacheStoreFactory>>
+- <<RedisCacheStoreFactory>>
+- <<MetricsCacheStoreFactory>>
+
+.Common Settings
+Below is the common settings for all CacheStoreFactory.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| namespace | String | The namespace for the Cache.
+| namespacePattern | String | Cache name space's pattern. In format of regular expression.
+| indexCount | int | The number of indexes. the default is 0.
+| concurrencyLevelOfCacheHandler | int | The parallel thread count of CacheHandlers. The default is 4.
+|===
+
+[[RdbCacheStoreFactory]]
+.RdbCacheStoreFactory
+This is the CacheStoreFactory using Rdb.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| cacheKeyResolver | <<CacheKeyResolver>> | Settings of CacheKeyResolver
+| cacheIndexResolver | <<CacheKeyResolver>>, Multiple | Settings of CacheKeyResolver for indexes.
+| connectionFactoryName | String | Name of the connection factories.
+| rdbArapterName | String | RdbAdapter name.
+| tableName | String | Set the table name to store the Cache. The default is `CACHE_STORE`.
+| retryCount | int | Number of times to retry when Caching fails. The default value is 0.
+| timeToLive | long | Cache lifespan (milliseconds). If -1 is set, it will be infinite. The default value is -1.
+| timeToLiveCalculator | TimeToLiveCalculator | To set the lifetime dynamically for each cache entry, specify an implementation class for the org.iplass.mtp.impl.cache.store.TimeToLiveCalculator interface. The implementation of timeToLiveCalculator takes precedence over the setting of timeToLive.
+|===
+
+[[SimpleCacheStoreFactory]]
+.SimpleCacheStoreFactory
+This is the CacheStoreFactory using the internal memories.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| initialCapacity | int | Cache initial capacity. The default value is 16.
+| loadFactor | float | Load factor. The initial value is 0.75.
+|concurrencyLevel | int | Estimated number of threads updating in parallel. The default value is 16.
+| timeToLive | int | Cache lifespan (milliseconds). If -1 is set, it will be indefinite. The default value is -1.
+| timeToLiveCalculator | TimeToLiveCalculator | To set the lifetime dynamically for each cache entry, specify an implementation class for the org.iplass.mtp.impl.cache.store.TimeToLiveCalculator interface. The implementation of timeToLiveCalculator takes precedence over the setting of timeToLive.
+| size | int | Cache size. If -1 is set, there is no limit. The default value is -1.
+| multiThreaded | boolean | Set whether to allow multi-threading. The default value is true.
+| evictionInterval | long | Cache expiry time in milliseconds. If -1 is set, it will be infinite. The default value is -1.
+| fineGrainedLock | boolean | Specifies whether or not fine-grained locking is used.
+Enabling this flag may improve parallelism of the cache update process if the Index is used and the cache is updated frequently. The default value is false.
+| indexConfig | <<FineGrainedLockIndexConfig>>, Multiple | Detailed settings for each index of fine-grained locks.
+|===
+
+[[FineGrainedLockIndexConfig]]
+.FineGrainedLockIndexConfig
+Please specify the implementing class of org.iplass.mtp.impl.cache.store.builtin.FineGrainedLockIndexConfig to the class.
+
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| shardSize | int | Shard size. Set the value according to the degree of parallelism. Default value is 1.
+| fair | boolean | Specifies the fairness policy for locking. Specify `true` to use the fair ordering policy. Default is false.
+|===
+
+[[SyncServerCacheStoreFactory]]
+.SyncServerCacheStoreFactory
+This is the CacheStoreFactory which synchronize the caches between server. It is less reliable.
+If this method is picked, please keep in mind that the system will keep refreshing the cache based on the interval specified in the settings of timeToLive.
+If another server goes down during the cache update process, inconsistency may occur until next successful cache refresh.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| cacheKeyResolver | <<CacheKeyResolver>> | Settings of CacheKeyResolver。
+| cacheIndexResolver | <<CacheKeyResolver>>, Multiple | Settings of CacheKeyResolver of the indexes.
+| store | <<CacheStoreFactory>> | Settings of CacheStoreFactory
+| listener | <<SyncServerCacheEventListener>> | Settings of the listener to execute when receiving synchronous messages.
+| noClusterEventOnPut | boolean | Set to true if you want no notification to be sent to another server during a put operation towards Cache. The default value is false. (there will be notifications).
+|===
+
+[[TransactionLocalCacheStoreFactory]]
+.TransactionLocalCacheStoreFactory
+CacheStoreFactory that delays reflection to the back-end CacheStore while the transaction is valid.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| backendStore | <<CacheStoreFactory>> | Settings of the back end's CacheStoreFactory.
+|===
+
+[[InfinispanCacheStoreFactory]]
+.InfinispanCacheStoreFactory
+CacheStoreFactory that uses Infinispan.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| createOnStartup | boolean | Whether to create a CacheStore at startup. The default value is false.
+| cacheConfigrationName | String | Cache Name.
+| timeToLiveCalculator | TimeToLiveCalculator | To set the lifetime dynamically for each cache entry, specify an implementation class for the org.iplass.mtp.impl.cache.store.TimeToLiveCalculator interface.
+|===
+
+[[RedisCacheStoreFactory]]
+.RedisCacheStoreFactory
+CacheStoreFactory that uses Redis.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| serverName | String | The server name specified by <<RedisService>>.
+| timeToLive | long | Cache lifespan (seconds). If 0 or less is set, it will be infinite. The default value is 0.
+| timeToLiveCalculator | TimeToLiveCalculator | To set the lifetime dynamically for each cache entry, specify an implementation class for the org.iplass.mtp.impl.cache.store.TimeToLiveCalculator interface. The implementation of timeToLiveCalculator takes precedence over the setting of timeToLive.
+| retryCount | int | Number of retries on cache save failure. Default value is 0 (no retry).
+| poolConfig | <<RedisCacheStorePoolConfig>> | Connection pool configuration (using Apache Commons-pool2).
+|===
+
+[[RedisCacheStorePoolConfig]]
+.RedisCacheStorePoolConfig
+The following items can be configured. Details and default values for each item can be found in Apache Commons-pool2's org.apache.commons.pool2.impl.BaseObjectPoolConfig and org.apache.commons.pool2.impl. GenericObjectPoolConfig.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| maxTotal | int | Maximum number of connections that can be allocated from the pool. Default value is 8.
+| maxIdle | int | Maximum number of idle instances in the pool. Default value is 8.
+| minIdle | int | The minimum number of idle instances to keep in the pool. The default value is 0.
+| blockWhenExhausted | boolean | Whether the caller should wait when trying to retrieve instances from the pool while maxTotal is reached. Default value is true.
+| maxWaitMillis | long | The maximum number of milliseconds the caller will wait when a connection is unavailable. Default value is -1 (no timeout).
+| testOnBorrow | boolean | Whether the connection should be verified before it is retrieved from the pool. Default value is false.
+| testOnReturn | boolean | Whether to validate before a connection is returned to the pool. Default value is false.
+| testWhileIdle | boolean | Whether to validate idle instances in the pool. Default value is false.
+| timeBetweenEvictionRunsMillis | long | Time to sleep while verification of idle instances in the pool is performed. Default value is -1 (do not validate).
+| minEvictableIdleTimeMillis | long | The minimum time between when an instance is idle in the pool and when it is verified and allowed to leave. The default value is 180000 (30 minutes).
+| numTestsPerEvictionRun | int | The maximum number of objects to inspect during an idle instance verification thread write run. Default value is 3.
+|===
+
+Translated with www.DeepL.com/Translator (free version)
+
+[[MetricsCacheStoreFactory]]
+.[.eeonly]#MetricsCacheStoreFactory#
+This is a CacheStoreFactory that collects metrics on the size of the backend CacheStore and the number of cache hits/misses. It has a persistent store in the backend that actually does the caching, and this class does not perform any operations on the cache (only recording). It is configurable when Micrometer module is added to the dependency. If Micrometer module is applied, it will default to collect metrics for CacheStoreFactory which is configured by default.
+
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| wrappedStore | <<CacheStoreFactory>> | Settings of the backend's CacheStoreFactory.
+| sizeOnly | boolean | Please Specify whether to record only the size of the CacheStore. If false, in addition to the size of the CacheStore, the number of Cache hits/misses will be recorded for each nameSpace. By default, only the Query cache and ActionContent cache are set to false.
+|===
+
+
+[[CacheKeyResolver]]
+.CacheKeyResolver
+Please specify the implementing class of org.iplass.mtp.impl.cache.store.keyresolver.CacheKeyResolver to the class.
+
+As standard implementation, the following CacheKeyResolver are provided.
+
+- <<CounterCacheKeyResolver>>
+- <<IntegerCacheKeyResolver>>
+- <<QueryCacheKeyResolver>>
+- <<StringCacheKeyResolver>>
+
+[[CounterCacheKeyResolver]]
+.CounterCacheKeyResolver
+Please specify　org.iplass.mtp.impl.counter.CachableRdbTableCounterServicea$CounterCacheKeyResolver to the class.
+
+The CacheKeyResolver of CounterKey type. There is no configurable items.
+
+[[IntegerCacheKeyResolver]]
+.IntegerCacheKeyResolver
+Please specify org.iplass.mtp.impl.cache.store.keyresolver.IntegerCacheKeyResolver to the class.
+
+CacheKeyResolver of Integer type. There is no configurable items.
+
+[[QueryCacheKeyResolver]]
+.QueryCacheKeyResolver
+Please specify org.iplass.mtp.impl.entity.cache.QueryCacheKeyResolver to the class.
+
+CacheKeyResolver of Query type. There is no configurable items.
+
+[[StringCacheKeyResolver]]
+.StringCacheKeyResolver
+Please specify org.iplass.mtp.impl.cache.store.keyresolver.StringCacheKeyResolver to the class.
+
+CacheKeyResolver of text strings type. There is no configurable items.
+
+[[SyncServerCacheEventListener]]
+.SyncServerCacheEventListener
+Please specify org.iplass.mtp.impl.metadata.MetaDataSyncServerCacheListener to the class.
+
+It will Synchronize metadata. There is no configurable items.
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.cache.CacheService</interface>
+
+	<!-- Entity transaction local cache (non-shared) -->
+	<property name="entityTransactionLocal" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+		<property name="namespace" value="mtp.entity.transactionLocalCache" />
+		<property name="multiThreaded" value="false" />
+		<property name="size" value="32" />
+	</property>
+
+	<!-- Query transaction local cache (non-shared) -->
+	<property name="queryTransactionLocal" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+		<property name="namespace" value="mtp.entity.transactionLocalQueryCache" />
+		<property name="indexCount" value="1" /><!-- index:defName -->
+		<property name="multiThreaded" value="false" />
+		<property name="size" value="32" />
+	</property>
+
+	<!-- Permission check result cache (non-shared) -->
+	<property name="permissionLocal" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+		<property name="namespace" value="mtp.auth.permissionCache" />
+		<property name="multiThreaded" value="false" />
+		<property name="size" value="16" />
+
+	</property>
+
+	<!-- TenantContextCache -->
+	<property name="tenantContext" class="org.iplass.mtp.impl.cache.store.builtin.TransactionLocalCacheStoreFactory">
+		<property name="namespace" value="mtp.tenant.tenantContext" />
+		<property name="indexCount" value="1" /><!-- index:tenantUrl -->
+		<property name="backendStore" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+		</property>
+	</property>
+
+	<!-- CounterService's counter's Cache -->
+	<property name="rdbTableCounter" class="org.iplass.mtp.impl.cache.store.builtin.SyncServerCacheStoreFactory">
+		<property name="namespace" value="mtp.counter.rdbTableCounter" />
+		<property name="cacheKeyResolver" class="org.iplass.mtp.impl.counter.CachableRdbTableCounterService$CounterCacheKeyResolver" />
+		<property name="store" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+			<property name="timeToLive" value="-1" />
+			<property name="size" value="1024" />
+		</property>
+	</property>
+
+	<!-- Cache of authentication related Entity -->
+	<property name="authBuiltin" class="org.iplass.mtp.impl.cache.store.builtin.TransactionLocalCacheStoreFactory">
+		<property name="namespacePattern" value="mtp[.]auth[.]builtin[.].*" />
+		<property name="backendStore" class="org.iplass.mtp.impl.cache.store.builtin.SyncServerCacheStoreFactory">
+			<property name="cacheKeyResolver" class="org.iplass.mtp.impl.cache.store.keyresolver.StringCacheKeyResolver" />
+			<property name="store" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+				<!-- Set to available to 6 hours -->
+				<property name="timeToLive" value="21600000" />
+			</property>
+		</property>
+	</property>
+
+	<!-- Cache of the Metadata(real object)-->
+	<property name="metadata" class="org.iplass.mtp.impl.cache.store.builtin.TransactionLocalCacheStoreFactory">
+		<property name="namespacePattern" value="mtp[.]metadata[.]metaData/.*" />
+		<property name="indexCount" value="1" /><!-- index:path -->
+		<property name="backendStore" class="org.iplass.mtp.impl.cache.store.builtin.SyncServerCacheStoreFactory">
+			<property name="cacheKeyResolver" class="org.iplass.mtp.impl.cache.store.keyresolver.StringCacheKeyResolver" />
+			<property name="cacheIndexResolver" class="org.iplass.mtp.impl.cache.store.keyresolver.StringCacheKeyResolver" />
+			<property name="store" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+				<!-- Set to available to 12 hours -->
+				<property name="timeToLive" value="43200000" />
+			</property>
+			<property name="listener" class="org.iplass.mtp.impl.metadata.MetaDataSyncServerCacheListener" />
+		</property>
+	</property>
+
+	<!-- Metadata (list for path) Cache (server local cache. Data synchronization via server notification of metadata cache) -->
+	<property name="metadataList" class="org.iplass.mtp.impl.cache.store.builtin.TransactionLocalCacheStoreFactory">
+		<property name="namespacePattern" value="mtp[.]metadata[.]metaDataDefList/.*" />
+		<property name="backendStore" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+				<!-- Set to available to 12 hours -->
+				<property name="timeToLive" value="43200000" />
+		</property>
+	</property>
+
+	<!-- Cache cube -->
+	<property name="cubeStatus" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+		<property name="namespace" value="mtp.aggregation.cube.status" />
+	</property>
+	<property name="cubeFactData" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+		<property name="namespace" value="mtp.aggregation.cube.factPartition" />
+		<property name="concurrencyLevelOfCacheHandler" value="4" />
+	</property>
+
+	<!-- QueryCache -->
+	<property name="query" class="org.iplass.mtp.impl.cache.store.builtin.TransactionLocalCacheStoreFactory">
+		<property name="namespacePattern" value="mtp[.]entity[.]queryCache/.*" />
+		<property name="indexCount" value="1" /><!-- index:defName -->
+		<property name="backendStore" class="org.iplass.mtp.impl.cache.store.builtin.SyncServerCacheStoreFactory">
+			<property name="cacheKeyResolver" class="org.iplass.mtp.impl.entity.cache.QueryCacheKeyResolver" />
+			<property name="cacheIndexResolver" class="org.iplass.mtp.impl.cache.store.keyresolver.StringCacheKeyResolver" />
+			<property name="store" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+				<property name="fineGrainedLock" value="true" />
+				<property name="indexConfig" class="org.iplass.mtp.impl.cache.store.builtin.FineGrainedLockIndexConfig">
+					<property name="shardSize" value="16" />
+					<property name="fair" value="true" />
+				</property>
+				<!-- Set to available to 12 hours -->
+				<property name="timeToLive" value="43200000" />
+				<!-- Maximum is 128 -->
+				<property name="size" value="128" />
+			</property>
+		</property>
+	</property>
+
+	<!-- Default Cache for cases other than the above namespace -->
+	<property name="defaultFactory" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+		<property name="namespacePattern" value=".*" />
+		<property name="indexCount" value="5" />
+	</property>
+</service>
+----

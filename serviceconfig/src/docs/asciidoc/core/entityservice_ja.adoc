@@ -1,0 +1,70 @@
+[[EntityService]]
+=== EntityService
+エンティティを管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.entity.EntityService
+----
+
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.entity.EntityService
+----
+
+
+==== EntityServiceの設定
+エンティティハンドラを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| limitOfReferences | int | エンティティの参照数の制限値。デフォルト値は1000です。
+| oidValidationPattern | String | oidに設定可能な文字列を制限するための正規表現。デフォルト値は `^[0-9a-zA-Z_\-]+$` です。
+| purgeTargetDate | int | ごみ箱データのクリーナー対象日数。クリーナー対象日数よりも前にごみ箱へ削除されたデータが物理削除されます。
+| interceptor | <<EntityInterceptor>>、複数指定可 | エンティティに対する操作の前に挿む処理。
+| additionalStoreMaintainer | <<AdditionalStoreMaintainer>>、複数指定可 | データ削除、デフラグ実行時に、併せてストア内をメンテナンスする処理。
+|===
+
+[[EntityInterceptor]]
+.EntityInterceptor
+classはorg.iplass.mtp.entity.interceptor.EntityInterceptorの実装クラスを指定します。
+
+[[AdditionalStoreMaintainer]]
+.AdditionalStoreMaintainer
+classはorg.iplass.mtp.impl.entity.AdditionalStoreMaintainerの実装クラスを指定します。
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.entity.EntityService</interface>
+	<property name="limitOfReferences" value="1000" />
+	<property name="oidValidationPattern" value="^[0-9a-zA-Z_\-]+$" />
+
+	<!--
+		ごみ箱データのクリーナー用日付です。日数を指定して下さい。
+		下記の場合、実行時より30日前の日付がクリーナー対象日となります。
+		クリーナー対象日よりも前にごみ箱へ削除されたデータが物理削除されます。
+	<property name="purgeTargetDate" value="30" />
+	-->
+
+	<property name="interceptor" class="org.iplass.mtp.impl.entity.contentcache.ContentCacheInterceptor" />
+	<property name="interceptor" class="org.iplass.mtp.impl.entity.auth.EntityAuthInterceptor" />
+	<property name="interceptor" class="org.iplass.mtp.impl.entity.available.EntityReadOnlyInterceptor" />
+	<property name="interceptor" class="org.iplass.mtp.impl.entity.auditlog.AuditLogInterceptor" />
+	<property name="interceptor" class="org.iplass.mtp.impl.entity.listener.EntityEventListenerInterceptor" />
+	<property name="interceptor" class="org.iplass.mtp.impl.entity.l10n.EntityLocalizationInterceptor" />
+	<property name="interceptor" class="org.iplass.mtp.impl.entity.cache.EntityCacheInterceptor" />
+	<property name="interceptor" class="org.iplass.mtp.impl.entity.fulltextsearch.FulltextSearchInterceptor" />
+
+	<property name="additionalStoreMaintainer" class="org.iplass.mtp.impl.entity.auditlog.AuditLogStoreMaintainer" />
+	<property name="additionalStoreMaintainer" class="org.iplass.mtp.impl.entity.fulltextsearch.FulltextSearchStoreMaintainer" />
+	<property name="additionalStoreMaintainer" class="org.iplass.mtp.impl.lob.LobStoreMaintainer" />
+
+	<property name="extendPropertyAdapterFactory" class="org.iplass.mtp.impl.entity.EnterpriseExtendPropertyAdapterFactory" />
+
+</service>
+----

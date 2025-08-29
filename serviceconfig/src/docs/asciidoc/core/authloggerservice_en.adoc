@@ -1,0 +1,85 @@
+[[AuthLoggerService]]
+=== AuthLoggerService
+This service manages authentication-related loggers.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.auth.log.AuthLoggerService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.auth.log.AuthLoggerService
+----
+
+==== Settings of AuthLoggerService
+The items of AuthLoggerService can be configured.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Items | Value | Description
+| loggers | <<AuthLogger>>, Multiple | Logger settings.
+The logger with name (loggerName) `default` is the standard logger.
+If not set, <<Slf4jAuthLogger>> will be used as the standard logger.
+|===
+
+[[AuthLogger]]
+.AuthLogger
+Please specify the implementing classs of   org.iplass.mtp.impl.auth.log.AuthLogger.
+
+As for common standards, the following AuthLoggers are provided.
+
+- <<Slf4jAuthLogger>>
+- <<MultiAuthLogger>>
+- <<EnterpriseSlf4jAuthLogger>>
+- <<AuthenticationEventMetrics>>
+
+[[Slf4jAuthLogger]]
+.Slf4jAuthLogger
+Please specify  org.iplass.mtp.impl.auth.log.Slf4jAuthLogger to the class.
+
+This logger uses SLF4J to output authentication logs. The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Items | Value | Description
+| loggerName | String | Logger Name
+| slf4LoggerName | String | SLF4J logger name, the default it `mtp.auth`.
+|===
+
+[[MultiAuthLogger]]
+.MultiAuthLogger
+Please specify org.iplass.mtp.impl.auth.log.MultiAuthLogger to the class.
+
+It holds multiple loggers. The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Items | Value | Description
+| loggerName | String | Logger Name
+| logger | <<AuthLogger>>, Multiple | Configuration of standard logger.
+|===
+
+[[EnterpriseSlf4jAuthLogger]]
+.[.eeonly]#EnterpriseSlf4jAuthLogger#
+Please specify org.iplass.mtp.impl.auth.log.EnterpriseSlf4jAuthLogger to the class.
+
+This logger uses SLF4J to output authentication logs.
+Please refer to Slf4jAuthLogger for available settings.
+
+[[AuthenticationEventMetrics]]
+.[.eeonly]#AuthenticationEventMetrics#
+Please specify org.iplass.mtp.impl.micrometer.metrics.authentication.AuthenticationEventMetrics to the class.
+
+This logger records the number of successful/unsuccessful authentication attempts as metrics, and is used together with <<EnterpriseSlf4jAuthLogger>> as a logger of <<MultiAuthLogger>> by default when the Micrometer module is applied.
+There is no configurable items.
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.auth.log.AuthLoggerService</interface>
+	<property name="logger" class="org.iplass.mtp.impl.auth.log.EnterpriseSlf4jAuthLogger">
+		<property name="loggerName" value="default" />
+	</property>
+</service>
+----

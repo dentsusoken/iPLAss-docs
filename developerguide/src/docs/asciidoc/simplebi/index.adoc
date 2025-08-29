@@ -1,0 +1,15 @@
+= 簡易BI　
+:_hreflang-path: developerguide/simplebi/index.html
+:_relative-root-path: ../../
+:_menu-title-ee-only: true
+
+[[simplebi]]
+== 簡易BI
+簡易BIはユーザー自身が自由に項目を指定して、動的に集計やグラフ作成を行えます。
+簡易BIにはデータソースとしてCubeを指定したキューブ集計があります。
+
+include::operationguide.adoc[]
+
+include::cube.adoc[]
+
+include::aggregation.adoc[]

@@ -1,0 +1,76 @@
+[[WamService]]
+=== [.eeonly]#WamService#
+Web会員管理機能のサービスです。
+
+==== インタフェース名
+----
+org.iplass.wam.impl.WamService
+----
+
+
+==== 実装クラス名
+----
+org.iplass.wam.impl.WamService
+----
+
+
+==== WamServiceの設定
+Wamを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| tokenManager | <<TokenManager>> | TokenManagerの設定。デフォルトではEntityTokenManagerが使用されます。
+| httpClientConfig | <<HttpClientConfig_wm,HttpClientConfig>> | HTTPクライアントに関する設定。
+| stickySessionCookieName | String | スティッキーセッションのクッキー名。
+|===
+
+[[TokenManager]]
+.TokenManager
+classはorg.iplass.wam.api.siteauth.TokenManagerの実装クラスを指定します。
+
+標準で、キャッシュで管理されたトークンの発行を行うorg.iplass.wam.impl.siteauth.CacheTokenManagerと、エンティティで管理されたトークンの発行を行うorg.iplass.wam.impl.siteauth.EntityTokenManagerを提供します。
+CacheTokenManagerとEntityTokenManagerは設定変更可能な項目はありません。
+
+[[HttpClientConfig_wm]]
+.HttpClientConfig
+classはorg.iplass.mtp.impl.http.HttpClientConfigを指定します。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| proxyHost | String | proxyを利用する場合のHost名。
+| proxyPort | int | proxyを利用する場合のport。
+| connectionTimeout | int | HTTPコネクションを確立する際のタイムアウト（ミリ秒）。
+デフォルト値は30000（30秒）です。
+| soTimeout | int | HTTP通信時のsocket timeout (SO_TIMEOUT)（ミリ秒）。
+デフォルト値は30000（30秒）です。
+| poolingMaxTotal | int | httpコネクションのプールの最大数。デフォルト値は20です。
+| poolingDefaultMaxPerRoute | int | ドメイン単位のhttpコネクションの最大数。デフォルト値は2です。
+| poolingTimeToLive | int | プールされているhttpコネクションの生存期間（ミリ秒）。デフォルトは無制限です。
+| httpClientBuilderFactory | <<HttpClientBuilderFactory_wm, HttpClientBuilderFactory>> |
+カスタムのHttpClientBuilderを生成したい場合に指定します。
+|====================
+
+[[HttpClientBuilderFactory_wm]]
+.HttpClientBuilderFactory
+classはorg.iplass.mtp.impl.http.HttpClientBuilderFactoryを実装するクラスを指定します。
+
+標準で以下のHttpClientBuilderFactoryを提供します。
+
+* <<MicrometerHttpClientBuilderFactory>>
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.wam.impl.WamService</interface>
+	<property name="tokenManager" class="org.iplass.wam.impl.siteauth.EntityTokenManager" />
+	<property name="httpClientConfig" class="org.iplass.mtp.impl.http.HttpClientConfig">
+		<property name="proxyHost" value="proxyhost.dentsusoken.com"/>
+		<property name="proxyPort" value="8080"/>
+	</property>
+	<property name="stickySessionCookieName" value="AWSELB"/>
+</service>
+----

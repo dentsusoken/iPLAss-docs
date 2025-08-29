@@ -1,0 +1,87 @@
+[[wamsettingfile_ex_jee]]
+==== 設定方法/設定例
+
+JavaEE版のWAMプラグインモジュールでは、`iplass-wam-plugin.xml` を使ってWAMプラグインモジュールの設定を行います。
+
+* propertyタグのname属性に設定項目名、value属性に値を定義します。
+* WAMプラグインモジュールの基本的な設定は、type属性が `WamPluginConfig` のcomponentタグで設定します。
+* SSL/TLS設定やプロキシ、タイムアウト時間などHTTP通信に関わる設定は、type属性が `HttpComponentConfig` のcomponentタグで設定します。
+* 設定項目の詳細は<<wamsettingfile, WAMプラグインモジュールの設定>>を参照してください。
+
+
+.サンプル
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE componentDefinition>
+<componentDefinition xmlns="http://wam.iplass.org/plugin/config">
+	<component type="org.iplass.wam.plugin.impl.config.WamPluginConfig">
+		<property name="siteId" value="local" />
+		<property name="siteSecret" value="123" />
+		<property name="siteCookiePath" value="/" />
+		<property name="siteCookieName" value="ipw" />
+
+		<!-- 管理対象サイトのドメイン/プロトコル -->
+		<property name="siteCookieDomain" value="mysite.example.com" />
+		<property name="siteScheme" value="https" />
+
+		<!-- WAMモジュールが稼働するiPLAssサーバーのURL -->
+		<property name="wamBaseUrl" value="https://my.iplass.jp/myiplassapp/mytenant/" />
+		<property name="wamCookieDomain" value="my.iplass.jp" />
+
+		<!-- 認証対象のURLパスパターン. -->
+		<property name="protectedPathPattern" value="/mysiteapp/path/pattern.*" />
+		<!-- 特定IPを許可します. -->
+		<property name="allowedIp" value="10.0.0.1/32" />
+		<property name="allowedIp" value="10.0.0.2/32" />
+		<property name="allowedIpHeaderName" value="X-Forwarded-For" />
+
+
+		<!-- 認証処理のコールバックのパス. -->
+		<property name="wamAuthCallbackPath" value="/mysiteapp/wamauthcallback" />
+
+		<property name="loadBalancerCookieName" value="myLB" />
+		<property name="siteLoadBalancerCookieName" value="wamMyLB" />
+		<property name="wamCookieName" value="JSESSIONID" />
+		<property name="wamCookiePath" value="/" />
+		<property name="csrfTokenCookieName" value="CSRFTOKEN" />
+		<property name="charset" value="UTF-8" />
+
+
+		<!-- Userエンティティをリクエストヘッダーに連携します. -->
+		<property name="mapUserAttribute" value="true" />
+		<property name="mapType" value="HEADER" />
+		<property name="attributeMap" className="org.iplass.wam.plugin.impl.config.AttributeMap">
+			<property name="mappedAttributeName" value="x-wam-user-id"/>
+			<property name="userAttributeName" value="accountId"/>
+		</property>
+		<property name="attributeMap" className="org.iplass.wam.plugin.impl.config.AttributeMap">
+			<property name="mappedAttributeName" value="x-wam-user-name"/>
+			<property name="userAttributeName" value="name"/>
+		</property>
+	</component>
+
+	<component type="org.iplass.wam.plugin.impl.config.HttpComponentConfig">
+		<property name="connectionTimeout" value="300000" />
+		<property name="soTimeout" value="300000" />
+		<property name="poolSize" value="15" />
+
+		<!-- HTTP Proxy -->
+		<property name="proxyHost" value="my.proxy.host"/>
+		<property name="proxyPort" value="8080"/>
+		<property name="noProxyHost" value="localhost"/>
+		<property name="noProxyHost" value="127.0.0.1"/>
+
+		<!-- SSL -->
+		<property name="sslCertificateValidation" value="True" />
+
+	</component>
+</componentDefinition>
+----
+
+TIP: *MapUserAttributeについて* +
+データの受領先をHTTPヘッダかリクエスト属性から選択可能です。 プラグインモジュールの設定ファイルで以下のように指定します。 +
+- アプリケーションからHTTPリクエストヘッダーで参照したい場合 +
+  `<property name="mapType" value="HEADER" />` +
+- リクエスト属性から参照したい場合 +
+  `<property name="mapType" value="REQUEST" />` +

@@ -1,0 +1,344 @@
+[[CacheService]]
+=== CacheService
+キャッシュストアを管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.cache.CacheService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.cache.CacheService
+----
+
+==== CacheServiceの設定
+CacheServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| reloadThreadPoolSize | int | キャッシュのリロード処理を実施するスレッド数。デフォルト値は0です。
+| defaultFactory | <<CacheStoreFactory>> | 標準のCacheStoreFactoryの設定。
+| 任意の文字列(`defaultFactory`, `reloadThreadPoolSize` を除く) | <<CacheStoreFactory>>、複数指定可 | 個別のCacheStoreFactoryの設定。
+|===
+
+[[CacheStoreFactory]]
+.CacheStoreFactory
+classはorg.iplass.mtp.impl.cache.store.CacheStoreFactoryの実装クラスを指定します。
+
+標準で、以下のCacheStoreFactoryを提供します。
+
+- <<RdbCacheStoreFactory>>
+- <<SimpleCacheStoreFactory>>
+- <<SyncServerCacheStoreFactory>>
+- <<TransactionLocalCacheStoreFactory>>
+- <<InfinispanCacheStoreFactory>>
+- <<RedisCacheStoreFactory>>
+- <<MetricsCacheStoreFactory>>
+
+.共通設定
+各CacheStoreFactoryの共通の設定項目です。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| namespace | String | キャッシュを行う名前空間。
+| namespacePattern | String | キャッシュを行う名前空間のパターン。パターンは正規表現で記述します。
+| indexCount | int | インデックスの数。デフォルト値は0です。
+| concurrencyLevelOfCacheHandler | int | CacheHandlerの並列実行数。デフォルト値は4です。
+|===
+
+[[RdbCacheStoreFactory]]
+.RdbCacheStoreFactory
+Rdbを利用するCacheStoreFactoryです。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| cacheKeyResolver | <<CacheKeyResolver>> | CacheKeyResolverの設定。
+| cacheIndexResolver | <<CacheKeyResolver>>、複数指定可 | インデックスのCacheKeyResolverの設定。
+| connectionFactoryName | String | 接続ファクトリ名。
+| rdbArapterName | String | RdbAdapter名。
+| tableName | String | キャッシュを保存するテーブル名。デフォルト値は `CACHE_STORE` です。
+| retryCount | int | キャッシュ保存失敗時にリトライする回数。デフォルト値は0です。
+| timeToLive | long | キャッシュの生存時間（ミリ秒）。-1が設定された場合は無期限となります。デフォルト値は-1です。
+| timeToLiveCalculator | TimeToLiveCalculator | キャッシュエントリ個別に生存期間を動的に設定したい場合、org.iplass.mtp.impl.cache.store.TimeToLiveCalculatorインタフェースの実装クラスを指定します。timeToLiveの設定よりtimeToLiveCalculatorの実装が優先されます。
+|===
+
+[[SimpleCacheStoreFactory]]
+.SimpleCacheStoreFactory
+内部メモリを利用するCacheStoreFactoryです。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| initialCapacity | int | キャッシュの初期容量。デフォルト値は16です。
+| loadFactor | float | 負荷係数。初期値は0.75です。
+| concurrencyLevel | int | 並行して更新しているスレッドの推定数。デフォルト値は16です。
+| timeToLive | int | キャッシュの生存時間（ミリ秒）。-1が設定された場合は無期限となります。デフォルト値は-1です。
+| timeToLiveCalculator | TimeToLiveCalculator | キャッシュエントリ個別に生存期間を動的に設定したい場合、org.iplass.mtp.impl.cache.store.TimeToLiveCalculatorインタフェースの実装クラスを指定します。timeToLiveの設定よりtimeToLiveCalculatorの実装が優先されます。
+| size | int | キャッシュのサイズ。-1が設定された場合は無制限となります。デフォルト値は-1です。
+| multiThreaded | boolean | マルチスレッドに対応するか。デフォルト値はtrueです。
+| evictionInterval | long | キャッシュの有効期限（ミリ秒）。-1が設定された場合は無期限となります。デフォルト値は-1です。
+| fineGrainedLock | boolean | 細粒度のロックを行うかどうか。Index利用且つキャッシュの更新頻度が高い場合、このフラグを有効化することにより、キャッシュ更新処理の並列性が向上する可能性があります。デフォルト値はfalseです。
+| indexConfig | <<FineGrainedLockIndexConfig>>、複数指定可 | 細粒度のロックのindex毎の詳細設定です。
+|===
+
+[[FineGrainedLockIndexConfig]]
+.FineGrainedLockIndexConfig
+classにorg.iplass.mtp.impl.cache.store.builtin.FineGrainedLockIndexConfigの実装クラスを指定します。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| shardSize | int | シャードのサイズ。並列度に応じた値を設定します。デフォルト値は1です。
+| fair | boolean | ロック時の公平性ポリシーを指定します。公平順序付けポリシーを使用する場合は `true` を指定します。デフォルトはfalseです。
+|===
+
+[[SyncServerCacheStoreFactory]]
+.SyncServerCacheStoreFactory
+信頼性の低い、サーバ間のキャッシュを同期するCacheStoreFactoryです。
+実ストアのtimeToLiveの設定で一定間隔でキャッシュがリフレッシュされる前提で利用してください。
+他のサーバがキャッシュの更新処理中にダウンした場合などは、そのtimeToLiveの間、キャッシュと実データの間で不整合が発生する可能性あります。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| cacheKeyResolver | <<CacheKeyResolver>> | CacheKeyResolverの設定。
+| cacheIndexResolver | <<CacheKeyResolver>>、複数指定可 | インデックスのCacheKeyResolverの設定。
+| store | <<CacheStoreFactory>> | CacheStoreFactoryの設定。
+| listener | <<SyncServerCacheEventListener>> | 同期メッセージ受信時に実行するリスナーの設定。
+| noClusterEventOnPut | boolean | キャッシュへのput操作時に別サーバに通知しない場合にtrueを設定する。デフォルト値はfalse（通知する）です。
+|===
+
+[[TransactionLocalCacheStoreFactory]]
+.TransactionLocalCacheStoreFactory
+トランザクションが有効な間はバックエンドのCacheStoreに反映を遅延するCacheStoreFactoryです。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| backendStore | <<CacheStoreFactory>> | バックエンドのCacheStoreFactoryの設定。
+|===
+
+[[InfinispanCacheStoreFactory]]
+.InfinispanCacheStoreFactory
+Infinispanを利用するCacheStoreFactoryです。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| createOnStartup | boolean | スタートアップ時にCacheStoreを生成するか。デフォルト値はfalseです。
+| cacheConfigrationName | String | キャッシュ名。
+| timeToLiveCalculator | TimeToLiveCalculator | キャッシュエントリ個別に生存期間を動的に設定したい場合、org.iplass.mtp.impl.cache.store.TimeToLiveCalculatorインタフェースの実装クラスを指定します。
+|===
+
+[[RedisCacheStoreFactory]]
+.RedisCacheStoreFactory
+Redisを利用するCacheStoreFactoryです。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| serverName | String | <<RedisService>>で設定されたサーバ名。
+| timeToLive | long | キャッシュの生存時間（秒）。0以下が設定された場合は無期限となります。デフォルト値は0 (無期限) です。
+| timeToLiveCalculator | TimeToLiveCalculator | キャッシュエントリ個別に生存期間を動的に設定したい場合、org.iplass.mtp.impl.cache.store.TimeToLiveCalculatorインタフェースの実装クラスを指定します。timeToLiveの設定よりtimeToLiveCalculatorの実装が優先されます。
+| retryCount | int | キャッシュ保存失敗時のリトライ回数。デフォルト値は0 (リトライしない) です。
+| poolConfig | <<RedisCacheStorePoolConfig>> | コネクションプールの設定 (Apache Commons-pool2 を使用しています)。
+|===
+
+[[RedisCacheStorePoolConfig]]
+.RedisCacheStorePoolConfig
+以下の項目が設定可能です。各項目の詳細やデフォルト値は、Apache Commons-pool2のorg.apache.commons.pool2.impl.BaseObjectPoolConfig、org.apache.commons.pool2.impl.GenericObjectPoolConfigで確認できます。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| maxTotal | int | プールから割り当てることができるコネクションの最大数。デフォルト値は8です。
+| maxIdle | int | プール内のアイドルインスタンス数の上限。デフォルト値は8です。
+| minIdle | int | プール内に維持するアイドルインスタンスの最小数。デフォルト値は0です。
+| blockWhenExhausted | boolean | maxTotalに達した状態でプールからインスタンスを取得しようとしたときに呼び出し元が待機する必要があるかどうか。デフォルト値はtrueです。
+| maxWaitMillis | long | コネクションが使用できないときに呼び出し元が待機する最大ミリ秒数。デフォルト値は-1 (タイムアウトしない) です。
+| testOnBorrow | boolean | コネクションをプールから取得する前に検証するかどうか。デフォルト値はfalseです。
+| testOnReturn | boolean | コネクションがプールに返される前に検証するかどうか。デフォルト値はfalseです。
+| testWhileIdle | boolean | プール内のアイドルインスタンスを検証するかどうか。デフォルト値はfalseです。
+| timeBetweenEvictionRunsMillis | long | プール内のアイドルインスタンスの検証が実行される間にスリープする時間。デフォルト値は-1 (検証しない) です。
+| minEvictableIdleTimeMillis | long | プール内でインスタンスがアイドル状態になってから、検証されて退去させられるようになるまでの最小時間。デフォルト値は 180000 (30分) です。
+| numTestsPerEvictionRun | int | アイドルインスタンス検証スレッドの書く実行中に検査するオブジェクトの最大数。デフォルト値は3です。
+|===
+
+[[MetricsCacheStoreFactory]]
+.[.eeonly]#MetricsCacheStoreFactory#
+バックエンドCacheStoreのサイズ、キャッシュヒット回数/ミス回数をメトリクスとして収集するCacheStoreFactoryです。バックエンドに実際にキャッシュを行う永続ストアを持っており、このクラスではキャッシュに関する操作は行いません（記録のみ）。 Micrometerモジュールを依存関係に追加した場合に設定可能です。Micrometerモジュールを適用した場合、標準で設定されているCacheStoreFactoryに対して、メトリクスを収集するようにデフォルトで設定されます。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| wrappedStore | <<CacheStoreFactory>> | バックエンドのCacheStoreFactoryの設定。
+| sizeOnly | boolean |CacheStoreのサイズのみを記録するかを指定します。falseの場合、CacheStoreのサイズに加えて、Cacheのヒット/ミスの回数をnameSpace毎に記録します。デフォルトでは、Queryキャッシュ、ActionContentキャッシュのみfalseに設定されています。
+|===
+
+[[CacheKeyResolver]]
+.CacheKeyResolver
+classにorg.iplass.mtp.impl.cache.store.keyresolver.CacheKeyResolverの実装クラスを指定します。
+
+標準で、以下のCacheKeyResolverを提供します。
+
+- <<CounterCacheKeyResolver>>
+- <<IntegerCacheKeyResolver>>
+- <<QueryCacheKeyResolver>>
+- <<StringCacheKeyResolver>>
+
+[[CounterCacheKeyResolver]]
+.CounterCacheKeyResolver
+classにorg.iplass.mtp.impl.counter.CachableRdbTableCounterServicea$CounterCacheKeyResolverを指定します。
+
+CounterKey型のCacheKeyResolverです。設定変更可能な項目はありません。
+
+[[IntegerCacheKeyResolver]]
+.IntegerCacheKeyResolver
+classにorg.iplass.mtp.impl.cache.store.keyresolver.IntegerCacheKeyResolverを指定します。
+
+Integer型のCacheKeyResolverです。設定変更可能な項目はありません。
+
+[[QueryCacheKeyResolver]]
+.QueryCacheKeyResolver
+classにorg.iplass.mtp.impl.entity.cache.QueryCacheKeyResolverを指定します。
+
+Query型のCacheKeyResolverです。設定変更可能な項目はありません。
+
+[[StringCacheKeyResolver]]
+.StringCacheKeyResolver
+classにorg.iplass.mtp.impl.cache.store.keyresolver.StringCacheKeyResolverを指定します。
+
+文字列型のCacheKeyResolverです。設定変更可能な項目はありません。
+
+[[SyncServerCacheEventListener]]
+.SyncServerCacheEventListener
+classにorg.iplass.mtp.impl.metadata.MetaDataSyncServerCacheListenerを指定します。
+
+メタデータの同期を行います。設定変更可能な項目はありません。
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.cache.CacheService</interface>
+
+	<!-- Entityのトランザクションローカル用キャッシュ（非共有） -->
+	<property name="entityTransactionLocal" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+		<property name="namespace" value="mtp.entity.transactionLocalCache" />
+		<property name="multiThreaded" value="false" />
+		<property name="size" value="32" />
+	</property>
+
+	<!-- Queryのトランザクションローカル用キャッシュ（非共有） -->
+	<property name="queryTransactionLocal" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+		<property name="namespace" value="mtp.entity.transactionLocalQueryCache" />
+		<property name="indexCount" value="1" /><!-- index:defName -->
+		<property name="multiThreaded" value="false" />
+		<property name="size" value="32" />
+	</property>
+
+	<!-- 権限チェック結果のキャッシュ（非共有） -->
+	<property name="permissionLocal" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+		<property name="namespace" value="mtp.auth.permissionCache" />
+		<property name="multiThreaded" value="false" />
+		<property name="size" value="16" />
+
+	</property>
+
+	<!-- TenantContextキャッシュ -->
+	<property name="tenantContext" class="org.iplass.mtp.impl.cache.store.builtin.TransactionLocalCacheStoreFactory">
+		<property name="namespace" value="mtp.tenant.tenantContext" />
+		<property name="indexCount" value="1" /><!-- index:tenantUrl -->
+		<property name="backendStore" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+		</property>
+	</property>
+
+	<!-- CounterServiceのカウンタキャッシュ -->
+	<property name="rdbTableCounter" class="org.iplass.mtp.impl.cache.store.builtin.SyncServerCacheStoreFactory">
+		<property name="namespace" value="mtp.counter.rdbTableCounter" />
+		<property name="cacheKeyResolver" class="org.iplass.mtp.impl.counter.CachableRdbTableCounterService$CounterCacheKeyResolver" />
+		<property name="store" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+			<property name="timeToLive" value="-1" />
+			<property name="size" value="1024" />
+		</property>
+	</property>
+
+	<!-- 権限系Entityのキャッシュ -->
+	<property name="authBuiltin" class="org.iplass.mtp.impl.cache.store.builtin.TransactionLocalCacheStoreFactory">
+		<property name="namespacePattern" value="mtp[.]auth[.]builtin[.].*" />
+		<property name="backendStore" class="org.iplass.mtp.impl.cache.store.builtin.SyncServerCacheStoreFactory">
+			<property name="cacheKeyResolver" class="org.iplass.mtp.impl.cache.store.keyresolver.StringCacheKeyResolver" />
+			<property name="store" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+				<!-- 6時間有効 -->
+				<property name="timeToLive" value="21600000" />
+			</property>
+		</property>
+	</property>
+
+	<!-- メタデータ（本体）キャッシュ -->
+	<property name="metadata" class="org.iplass.mtp.impl.cache.store.builtin.TransactionLocalCacheStoreFactory">
+		<property name="namespacePattern" value="mtp[.]metadata[.]metaData/.*" />
+		<property name="indexCount" value="1" /><!-- index:path -->
+		<property name="backendStore" class="org.iplass.mtp.impl.cache.store.builtin.SyncServerCacheStoreFactory">
+			<property name="cacheKeyResolver" class="org.iplass.mtp.impl.cache.store.keyresolver.StringCacheKeyResolver" />
+			<property name="cacheIndexResolver" class="org.iplass.mtp.impl.cache.store.keyresolver.StringCacheKeyResolver" />
+			<property name="store" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+				<!-- 12時間有効 -->
+				<property name="timeToLive" value="43200000" />
+			</property>
+			<property name="listener" class="org.iplass.mtp.impl.metadata.MetaDataSyncServerCacheListener" />
+		</property>
+	</property>
+
+	<!-- メタデータ（パスに対するリスト）キャッシュ(サーバローカルキャッシュ。メタデータ本体キャッシュのサーバ通知経由でデータの同期) -->
+	<property name="metadataList" class="org.iplass.mtp.impl.cache.store.builtin.TransactionLocalCacheStoreFactory">
+		<property name="namespacePattern" value="mtp[.]metadata[.]metaDataDefList/.*" />
+		<property name="backendStore" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+				<!-- 12時間有効 -->
+				<property name="timeToLive" value="43200000" />
+		</property>
+	</property>
+
+	<!-- cubeのキャッシュ -->
+	<property name="cubeStatus" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+		<property name="namespace" value="mtp.aggregation.cube.status" />
+	</property>
+	<property name="cubeFactData" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+		<property name="namespace" value="mtp.aggregation.cube.factPartition" />
+		<property name="concurrencyLevelOfCacheHandler" value="4" />
+	</property>
+
+	<!-- Queryキャッシュ -->
+	<property name="query" class="org.iplass.mtp.impl.cache.store.builtin.TransactionLocalCacheStoreFactory">
+		<property name="namespacePattern" value="mtp[.]entity[.]queryCache/.*" />
+		<property name="indexCount" value="1" /><!-- index:defName -->
+		<property name="backendStore" class="org.iplass.mtp.impl.cache.store.builtin.SyncServerCacheStoreFactory">
+			<property name="cacheKeyResolver" class="org.iplass.mtp.impl.entity.cache.QueryCacheKeyResolver" />
+			<property name="cacheIndexResolver" class="org.iplass.mtp.impl.cache.store.keyresolver.StringCacheKeyResolver" />
+			<property name="store" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+				<property name="fineGrainedLock" value="true" />
+				<property name="indexConfig" class="org.iplass.mtp.impl.cache.store.builtin.FineGrainedLockIndexConfig">
+					<property name="shardSize" value="16" />
+					<property name="fair" value="true" />
+				</property>
+				<!-- 12時間有効 -->
+				<property name="timeToLive" value="43200000" />
+				<!-- 最大128 -->
+				<property name="size" value="128" />
+			</property>
+		</property>
+	</property>
+
+	<!-- 上記namespace以外の場合のデフォルトキャッシュ -->
+	<property name="defaultFactory" class="org.iplass.mtp.impl.cache.store.builtin.SimpleCacheStoreFactory">
+		<property name="namespacePattern" value=".*" />
+		<property name="indexCount" value="5" />
+	</property>
+</service>
+----

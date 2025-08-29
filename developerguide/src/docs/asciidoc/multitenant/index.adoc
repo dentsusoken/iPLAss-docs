@@ -1,0 +1,59 @@
+= マルチテナント
+:_hreflang-path: developerguide/multitenant/index.html
+:_relative-root-path: ../../
+:toclevels: 3
+
+== マルチテナントとは
+単一のiPLAssインスタンス（APサーバ/DBサーバ/war）上にそれぞれが論理的に分離された複数のテナントを作成することが可能です。
+エンティティのデータはテナント毎に分離されており、基本的には相互に参照ができません（別途説明する共有テナント機能により共用するエンティティとデータを定義することも可能です）。 また、テナント単位にメタデータ、カスタムロジックを個別に設定することも可能です。
+
+テナントはテナント管理ツール（Tenant Manager）により、作成、削除が可能です。
+Tenant Managerの詳細は<<../support/index.adoc#,開発・運用サポート>>の説明を参照ください。
+
+
+== テナントの解決方法
+iPLAssにWebアクセスされた際に操作対象となるテナントは、リクエスト情報もしくは設定ファイルの設定内容を基に解決されます。
+以下のロジックに従って解決されたテナント名と一致するテナントが操作対象のテナントとして扱われます。
+
+.テナント名の解決ロジック
+. サーバーのホスト名から解決 +
+`WebFrontendService#tenantAsDomain` が `true` に設定された場合、サーバーのホスト名（Hostヘッダーの値）をテナント名として扱います。 +
+`tenantAsDomain` の詳細については、 <<../../serviceconfig/index.adoc#WebFrontendService, WebFrontendService>> を参照してください。
+
+. 設定ファイルから解決 +
+`WebFrontendService#fixedTenant` に値が設定された場合、設定された値を固定かつ単一のテナント名として扱います。 +
+`fixedTenant` の詳細については、 <<../../serviceconfig/index.adoc#WebFrontendService, WebFrontendService>> を参照してください。
+
+. HTTPリクエストヘッダーから解決 +
+HTTPリクエストヘッダーとして `ヘッダー名:X-Tenant-Name` が指定された場合、`X-Tenant-Name` ヘッダーの値をテナント名として扱います。
+
+. リクエストパスから解決 +
+それ以外の場合、テナント名はリクエストパスから解決されます。ServletContextPath以降の最初の1階層目の値をテナント名として扱います。 +
+例えば、「
+http://localhost:8080/sampleApp/sampleTenant/gem
+」というURLの場合、 `sampleTenant` をテナント名として解決します。
+
+
+== メタデータ・カスタムロジックとテナントの関係
+メタデータの定義方法、またカスタムロジックの作成手段により、それが適用されるテナントの範囲が異なります。
+
+=== すべてのテナントに適用されるメタデータ・カスタムロジック
+以下のものはすべてのテナントに適用されます。
+
+* 設定ファイルにて管理されるメタデータ
+* Java/JSPで作成されたカスタムロジック
+* Java上にアノテーションで記述されたメタデータ
+* <<sharedtenant.adoc#ref_shared_tenant,共有テナント>> と定義されたテナント上で定義された共有メタデータ
+
+=== テナント個別に適用されるメタデータ・カスタムロジック
+以下のものは個別のテナントのみに適用されます。
+
+* AdminConsoleから作成・更新されたメタデータ
+* Groovy/GroovyTemplateで作成されたカスタムロジック
+
+テナント共通に適用されたメタデータをAdminConsoleから変更することにより、
+特定のテナントのみカスタム設定、ロジックを適用することが可能です。
+
+include::tenant.adoc[]
+
+include::sharedtenant.adoc[]

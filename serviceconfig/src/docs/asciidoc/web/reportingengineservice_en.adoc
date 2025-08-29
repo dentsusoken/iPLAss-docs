@@ -1,0 +1,93 @@
+[[ReportingEngineService]]
+=== ReportingEngineService
+This service manages receipt reports output.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.report.ReportingEngineService
+----
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.report.ReportingEngineServiceImpl
+----
+
+==== The settings of ReportingEngineService
+ReportingEngineService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| reportingEngine | <<ReportingEngine>>, Multiple | The settings of the report generation engine.
+|===
+
+[[ReportingEngine]]
+.ReportingEngine
+Please specify the implementing class of org.iplass.mtp.impl.report.ReportingEngine to the class to the class.
+
+As the standard implementation, the following ReportingEngine are provided.
+
+* <<JasperReportingEngine>>
+* <<PoiReportingEngine>>
+* <<JxlsReportingEngine>>
+
+[[JasperReportingEngine]]
+.JasperReportingEngine
+An engine for creating reports using Jasper Report.
+
+Please specify org.iplass.mtp.impl.report.JasperReportingEngine to the class.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| supportFiles | String, Multiple |Specify the type of the supporting files.
+|===
+
+[[PoiReportingEngine]]
+.PoiReportingEngine
+An engine for creating forms using Apache POI.
+
+Please specify org.iplass.mtp.impl.report.PoiReportingEngine to the class.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| supportFiles | String, Multiple | Specify the type of the supporting files.
+|===
+
+[[JxlsReportingEngine]]
+.JxlsReportingEngine
+An engine for creating forms using JXLS.
+
+Please specify org.iplass.mtp.impl.report.JxlsReportingEngine to the class.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| supportFiles | String, Multiple | Specify the type of the supporting files.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.report.ReportingEngineService</interface>
+	<class>org.iplass.mtp.impl.report.ReportingEngineServiceImpl</class>
+	<property name="repotingEngine" class="org.iplass.mtp.impl.report.JasperReportingEngine">
+		<property name="supportFiles" value="PDF"/>
+		<property name="supportFiles" value="XLS"/>
+		<property name="supportFiles" value="XLSX"/>
+	</property>
+	<property name="repotingEngine" class="org.iplass.mtp.impl.report.PoiReportingEngine">
+		<property name="supportFiles" value="XLS_POI"/>
+		<property name="supportFiles" value="XLSX_POI"/>
+		<property name="supportFiles" value="XLSX_SXSSF_POI"/>
+	</property>
+	<property name="repotingEngine" class="org.iplass.mtp.impl.report.JxlsReportingEngine">
+		<property name="supportFiles" value="XLS_JXLS"/>
+		<property name="supportFiles" value="XLSX_JXLS"/>
+		<property name="supportFiles" value="XLSX_SXSSF_JXLS"/>
+	</property>
+</service>
+----

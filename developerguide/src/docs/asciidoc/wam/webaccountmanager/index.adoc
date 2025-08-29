@@ -1,0 +1,56 @@
+== WAMモジュール
+
+iPLAss framework上で動作し、会員管理を行うモジュールです。会員管理機能として、認証機能、アカウント情報のセルフメンテナンス機能、コンテンツの閲覧権限チェック機能などを提供します。
+
+=== 認証機能
+コンシューマ向けサイトの会員認証を行います。
+認証機能として、ID・パスワード認証、RememberMe機能、2段階認証、ソーシャルログインを提供します。
+
+* ID・パスワード認証 +
+`mtp.auth.User` エンティティとして管理するユーザー情報に対して、ID・パスワードで認証を行う機能を提供します。 +
+認証済みのセッション情報をCookieに格納し、一度認証すれば、2回目以降はユーザーIDとパスワードを入力しなくても直接サイトコンテンツへアクセスできるようになります。
+
+* RememberMe機能 +
+ログイン後、一定期間の間、認証情報の入力を省略するRemember Me機能を提供します。 +
+詳細はlink:../authentication/index.html#ref_rememberme_policy[Remember Me]を参照してください。
+
+* 2段階認証 +
+メールやSMSによるワンタイムコードによる認証、2段階認証アプリ（Google Authenticator等）による認証、あらかじめ設定した質問に対する答えでの認証、 X509規格に基づいたクライアント証明書での認証機能を提供します。 +
+詳細はlink:../authentication/index.html#ref_two_step[2段階認証]を参照してください。
+
+* ソーシャルログイン（ID連携） +
+ログインするアカウントとして、iPLAss上で管理するユーザーではなく、SNSアカウントを利用する事ができます。
+連携先として以下のSNSサービスが利用できます。
+
+** Facebook +
+管理コンソールに設定する事でFacebookユーザーでのログインが可能となります。 +
+利用する場合は<<wam_wampreference_idProvider_fb,Facebook>>の設定が必要になります。
+
+** X（Twitter） +
+管理コンソールに設定する事でX（Twitter）ユーザーでのログインが可能となります。 +
+利用する場合は<<wam_wampreference_idProvider_tw,X（Twitter）>>の設定が必要になります。
+
+** OpenID Connect準拠のサイト（Google、Yahoo!等） +
+管理コンソールに設定する事でGoogle、Yahoo!などOpenID Connect準拠のサイトのユーザーでのログインが可能となります。 +
+利用する場合は<<wam_wampreference_idProvider_gg,Google>>または<<wam_wampreference_idProvider_yh,Yahoo!>>もしくは<<wam_wampreference_idProvider_oidc, 汎用OpenID Provider>>の設定が必要になります。
+
+** SAML +
+管理コンソールに設定する事でSAML準拠のIdPのユーザーでのログインが可能となります。 +
+利用する場合は<<wam_wampreference_idProvider_saml,SAML>>の設定が必要になります。
+
+
+=== セルフレジストレーション（およびアクティベーション）
+新規ユーザー登録機能、およびメールアドレスのアクティベーション機能を提供します。ユーザー登録時のメールアドレスに対して、アクティベーションURLを通知します。アクティベーションURL押下時に起動画面にてパスワード設定後、ログイン可能となります。 +
+Preferenceの<<wam_wampreference_signUp,signUp>>を参照し、各項目を設定してください。
+
+=== セルフメンテナンス
+登録したユーザー情報をユーザー自らがメンテナンスする機能を提供します。また、メールアドレスを変更した場合、変更後のメールアドレスへアクティベーション用のURLを通知します。 +
+Preferenceの<<wam_wampreference_settings,settings>>を参照し、各項目を設定してください。
+
+=== パスワードリカバリ
+ユーザーがパスワードを忘れた際に、事前に設定されている秘密の質問へ回答することにより、ユーザーのメールアドレス宛にパスワードリセットURLを通知します。 +
+Preferenceの<<wam_wampreference_recovery,recovery>>を参照し、各項目を設定してください。
+
+include::setting.adoc[]
+
+include::setup.adoc[]

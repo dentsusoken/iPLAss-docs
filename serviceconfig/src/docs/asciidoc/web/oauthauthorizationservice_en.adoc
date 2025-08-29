@@ -1,0 +1,391 @@
+[[OAuthAuthorizationService]]
+=== OAuthAuthorizationService
+A service for managing the functions of the OAuth2.0 Authorization Server and OpenID Connect Provider.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.auth.oauth.OAuthAuthorizationService
+----
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.auth.oauth.OAuthAuthorizationService
+----
+
+==== The settings of OAuthAuthorizationService
+OAuthAuthorizationService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| paramStateRequired | boolean | Set whether the state parameter is required for Authorization Requests. +
+The default is true.
+| paramNonceRequired | boolean | Set whether the nonce parameter is required for Authorization Requests. +
+The default value is false.
+| forcePKCE | boolean | Set whether the PKCE (Proof Key for Code Exchange by OAuth Public Clients) is required for Public Client. +
+The default value is true.
+| forceS256ForCodeChallengeMethod | boolean | Set whether to force the PKCE CodeChallengeMethod to S256. +
+The default value is true.
+| defaultConsentTemplateName | String | Specify the template name of the default authorization screen of OAuth scope.
+| authorizationCodeStore | <<AuthorizationCodeStore>> | The settings of AuthorizationCodeStore.
+| accessTokenStore | <<OAuthAccessTokenStore>> | The settings of OAuthAccessTokenStore.
+| jwtProcessor | <<JwtProcessor>> | The settings of JwtProcessor.
+| jwtKeyStore | <<JwtKeyStore>> | The settings of JwtKeyStore.
+| subjectIdHashAlgorithm | String | 
+Specifies the hashing algorithm when the subject id of resource owner is disclosed to Client.
+| subjectIdHashAlgorithm | String | 
+Set the salt value when hashing the subject id.
+| idTokenLifetimeSeconds | long | Specify the expiration date (seconds) of the issued ID Token. +
+If not specified, the default value is 3600.
+|===
+
+[[AuthorizationCodeStore]]
+.AuthorizationCodeStore
+Please specify the implementing class of org.iplass.mtp.impl.auth.oauth.code.AuthorizationCodeStore to the class.
+
+As the standard implementation, the following AuthorizationCodeStore are provided.
+
+- <<CacheAuthorizationCodeStore>>
+
+[[CacheAuthorizationCodeStore]]
+.CacheAuthorizationCodeStore
+Please specify org.iplass.mtp.impl.auth.oauth.code.CacheAuthorizationCodeStore to the class.
+
+This item will manage the authentication code with CacheStore.
+The following options can be configured.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| secureRandomGeneratorName | String | Specify the string generator for the authentication code defined by <<SecureRandomService, SecureRandomService>>.
+If it was not specified, the SecureRandomGenerator from `oauthAuthorizationCodeGenerator` will be used.
+| cacheStoreName | String a| 
+Specify the name of the CacheStore defined in <<CacheService, CacheService>>.
+If not specified, the default value is `mtp.oauth.codeStore`.
+
+CAUTION: In a cluster environment, please use the CacheStoreFactory that can refer to the same cache from multiple AP servers such as RedisCacheStoreFactory.
+
+| timeToLive | long | 
+Specify the expiration date (milliseconds) of the authentication code.
+If not specified, the default value is `180000` (3 minutes).
+|===
+
+[[OAuthAccessTokenStore]]
+.OAuthAccessTokenStore
+Please specify the implementing class of org.iplass.mtp.impl.auth.oauth.token.OAuthAccessTokenStore to the class.
+
+The following OAuthAccessTokenStore is provided as standard.
+
+- <<OpaqueOAuthAccessTokenStore>>
+- <<RemoteOAuthAccessTokenStore>>
+
+[[OpaqueOAuthAccessTokenStore]]
+.OpaqueOAuthAccessTokenStore
+Please specify org.iplass.mtp.impl.auth.oauth.token.opaque.OpaqueOAuthAccessTokenStore to the class.
+The format of AcessToken is Opaque (Handle) format.
+AcessToken is stored using AuthTokenStore.
+
+For OpaqueOAuthAccessTokenStore,
+One AcessToken is issued for each Client × ResourceOwner.
+
+The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| authTokenType | String |
+Specify the type defined in AccessTokenHandler.
+If not specified, the default value is `OAT`.
+Please refer to the description of <<AuthTokenService, AuthTokenService>> for AccessTokenHandler.
+| seriesHashAlgorithm | String | 
+Set the hash algorithm for generating a key used to uniquely identify an AccessToken.
+If not specified, the default value is `SHA-256`.
+| seriesHashSalt | String |
+Set the Salt value used for hashing when generating a key used to uniquely identify an AccessToken.
+It is recommended to specify a different random character string for each environment.
+| tokenCreationStrategy | <<TokenCreationStrategy>> |
+Set the TokenCreationStrategy.
+|===
+
+[[RemoteOAuthAccessTokenStore]]
+.RemoteOAuthAccessTokenStore
+Please specify org.iplass.mtp.impl.auth.oauth.token.remote.RemoteOAuthAccessTokenStore to the class.
+
+An implementation of TokenStore that calls OAuth 2.0 Token Introspection (RFC7662) on the backend.
+An iPLAss instance of this setting is applied and will operates as a Resource Server.
+Obtain an AccessToken from the remotely activated Authorization Server and verify it.
+
+NOTE: RemoteOAuthAccessTokenStore is read-only.
+Since the Authorization Server functionality is not implemented, a runtime exception is thrown when calling a method that updates AccessToken.
+
+The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| introspectionEndpointUrl | String | 
+Specify Introspection Endpoint URL.
+If the Authorization Server is iPLAss, and it is a multi-tenant application, the endpoint will be different for each tenant.
+In that case, it is possible to embed the tenant name in the URL with the variable name `$ {tenantName}`.
+
+Example:
+https://localhost:8080/mtp/${tenantName}/api/oauth/introspect
+
+| authenticationMethod | ClientAuthenticationMethod a| 
+Specify the Introspection Endpoint Client (Resource Server) authentication method.
+Specify one of the following:
+
+CLIENT_SECRET_BASIC:: Client authentication via BASIC.
+
+CLIENT_SECRET_POST:: Client authentication via POST parameters (client_id, client_secret)
+NONE:: Do not grant parameters for Client authentication
+
+If not specified, the default value is `CLIENT_SECRET_BASIC`.
+| resourceServerId | String |
+Specify the ID of Resource Server issued from Authorization Server.
+| resourceServerSecret | String |
+Specify the Secret of Resource Server issued from Authorization Server.
+| tenantValidationType | TenantValidationType a|
+Specify the tenant verification method.
+Please choose one of the following:
+
+NONE:: In the situation when Authorization Server is not iPLAss server or when tenant verification is not required.
+
+ID:: When the Authorization Server is iPLAss, the system will obtain the tenant ID from the response of Introspection Endpoint and verify if it matches the ResourceServer tenant. It is assumed to be used when the DB and tenant information are shared between Authorization Server and Resource Server. +
+The tenant ID must be contained in the response with the parameter name `tenant_id`.
+
+NAME:: When the Authorization Server is iPLAss, the system will  get the tenant name from the response of Introspection Endpoint and verify if it matches the ResourceServer tenant name. When DB and tenant information are separated between Authorization Server and Resource Server (divided as a set of separate micro-services), It is very difficult to compare the tenant IDs in such case, so the tenant names are utilized to match up and the tenants with same tenant name are regarded as the same tenant. +
+The tenant name must be contained in the response with the parameter name `tenant_name`.
+
+If not specified, the default value is `NAME`.
+| reloadUser | boolean a|
+Control the acquisition method of user information linked to AccessToken.
+
+If true:: The `sub` value in the response is regarded as oid, and User entity is searched from Resource Server. If the User does not exist, it is denied.
+
+If false:: The user information will be retrieved from the response. +
+If the JSON representation of the User entity is stored in the `resource_owner` in the response, it will be used. +
+If it is not stored in `resource_owner`, the value of `sub` is set to oid, accountId, and the value of `username` is set to name as user information.
+
+If nothing specified, the default value is `false`.
+| httpClientConfig | <<HttpClientConfig_oa, HttpClientConfig>> | Settings related to HTTP connection when calling WebApi.
+| exponentialBackoff | <<ExponentialBackoff_oa, ExponentialBackoff>> | Set the link:https://developers.google.com/api-client-library/java/google-http-java-client/[Exponential backoff^] when retrying with ExponentialBackoff class properties.
+|===
+
+[[HttpClientConfig_oa]]
+.HttpClientConfig
+Please specify org.iplass.mtp.impl.http.HttpClientConfig to the class.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| proxyHost | String | Host name when proxy is used.
+| proxyPort | int | Port number when using proxy.
+| connectionTimeout | int | Timeout limit in milliseconds for establishing an HTTP connection. The default value is 30000 (30 seconds).
+| soTimeout | int | Specify socket timeout limit (SO_TIMEOUT) in milliseconds for HTTP communication. The default value is 30000 (30 seconds).
+| poolingMaxTotal | int | Maximum pool size for http connections. The default value is 20.
+| poolingDefaultMaxPerRoute | int | Maximum number of http connections per domain. The default value is 2.
+| poolingTimeToLive | int | Lifespan of pooled http connections (milliseconds). The default is unlimited.
+| httpClientBuilderFactory | <<HttpClientBuilderFactory_oa, HttpClientBuilderFactory>> | Specify this if you want to create a custom HttpClientBuilder.
+|====================
+
+[[HttpClientBuilderFactory_oa]]
+.HttpClientBuilderFactory
+Please specify the implementation class of org.iplass.mtp.impl.http.HttpClientBuilderFactory to the class.
+
+The following HttpClientBuilderFactory is provided as standard.
+
+* <<MicrometerHttpClientBuilderFactory, [.eeonly]#MicrometerHttpClientBuilderFactory#>>
+
+[[ExponentialBackoff_oa]]
+.ExponentialBackoff
+Please specify org.iplass.mtp.impl.http.ExponentialBackoff to the class.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| retryIntervalMillis | int | Specifies the retry interval in milliseconds. The default value is 500.
+| randomizationFactor | double | Specify the random elements when retrying.
+If set to 0.5, the value specified for retryIntervalMillis will fluctuate in the range of 25%. The default value is 0.5.
+| multiplier | double | Exponential element of retry interval when retrying.
+If 1.5 is set to multiplier and retryIntervalMillis is 500, the second retry is 750ms and the third retry is 1125ms. The default value is 1.5.
+| maxIntervalMillis | int | Maximum retry interval. The default value is 60000 (1 minute).
+| maxElapsedTimeMillis | int | Maximum retry execution time.
+If retry process is not successful during this time, retry processing is completed and the results up to that point are returned to the application. The default value is 300000 (5 minutes).
+|====================
+
+[[TokenCreationStrategy]]
+.TokenCreationStrategy
+Please specify the implementing class of org.iplass.mtp.impl.auth.oauth.token.opaque.TokenCreationStrategy to the class.
+
+As the standard implementation, the following TokenCreationStrategy are provided.
+
+- <<NewTokenCreationStrategy>>
+- <<SameTokenCreationStrategy>>
+
+[[NewTokenCreationStrategy]]
+.NewTokenCreationStrategy
+Please specify org.iplass.mtp.impl.auth.oauth.token.opaque.NewTokenCreationStrategy to the class.
+
+A new AccessToken is generated for each AccessToken acquisition request.
+When a new AccessToken is generated, the AccessToken previously issued for the Client and ResourceOwner becomes invalid.
+
+[[SameTokenCreationStrategy]]
+.SameTokenCreationStrategy
+Please specify org.iplass.mtp.impl.auth.oauth.token.opaque.SameTokenCreationStrategy to the class.
+
+When AccessToken acquisition is requested, if there is existing valid AccessToken issued for the Client and ResourceOwner, the same one will be returned.
+Since the existing AccessToken is returned, the validity period of the AccessToken may be short at the time of acquisition.
+
+For example, when a user has multiple terminals and they are defined as the same Client, it is possible to avoid a situation in which they fighting for a valid AccessToken.
+
+The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| retryCount | int | 
+It is possible to set the number of retries when AccessToken issuance fails.
+If not specified, the default value is 0 (do not retry).
+| retryIntervalMillis | long |
+Specify the retry interval (in milliseconds) when retrying.
+If not specified, the default value is 0.
+|===
+
+[[JwtProcessor]]
+.JwtProcessor
+Please specify the implementing class of org.iplass.mtp.impl.auth.oauth.jwt.JwtProcessor to the class.
+
+This configure about the generation of JWT (Json Web Token).
+As the standard implementation, the followingJwtProcessor are provided.
+
+- <<JjwtProcesor>>
+
+[[JjwtProcesor]]
+.JjwtProcesor
+Please specify org.iplass.mtp.impl.auth.oauth.jwt.JjwtProcesor to the class.
+
+We will utilize the JJWT(Java JWT) library to generate JWT.
+The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| useRsaSsaPss | boolean | Specify true if RSASSA-PSS is used instead of RSASSA-PKCS1-v1_5 for the RSA-based signature algorithm.
+The default value is false if not specified.
+|===
+
+The JWT signature method is determined as follows according to the encryption key algorithm used for signing.
+
+[cols="1,1,1,1", options="header"]
+|===
+| Key Algorithm | Key Size | useRsaSsaPss | JWT Signature
+| RSA | over 4096 | false | RS512
+| RSA | over 3072 and under 4096 | false | RS384
+| RSA | over 2048 and under 3072 | false | RS256
+| EC | over 521 | * | ES512
+| EC | over 384 and under 521 | * | ES384
+| EC | over 256 and under 384 | * | ES256
+| RSA | over 4096 | true | PS512
+| RSA | over 3072 and under 4096 | true | PS384
+| RSA | over 2048 and under 3072 | true | PS256
+|===
+
+[[JwtKeyStore]]
+.JwtKeyStore
+Please specify the implementing class of org.iplass.mtp.impl.auth.oauth.jwt.JwtKeyStore to the class.
+
+For signing to JWT, iPLAss supports public key based encryption signatures.
+It manages the key pairs (public key / private key).
+As the standard implementation, the followingJwtKeyStore are provided.
+
+- <<SimpleJwtKeyStore>>
+
+[[SimpleJwtKeyStore]]
+.SimpleJwtKeyStore
+Please specify org.iplass.mtp.impl.auth.oauth.jwt.SimpleJwtKeyStore to the class.
+
+It is a Java Key Store based JwtKeyStore implementation.
+It has the following features.
+
+- KeyStore's alias is set to kid(Key ID)
+- It manages the key valid period using the valid period of the public key certificate stored in the KeyStore
+
+The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| keyStoreType | String | KeyStore type. The default value is `PKCS12`
+.
+| keyStoreProvider | String | KeyStore provider. If not specified, the standard provider will be used.
+| keyStoreFilePath | String | KeyStore resource path (under classpath) or file path (as a file on the OS).
+| keyStorePassword | String | KeyStore password.
+| keyPasswordMap | Map format | When assigning a different keyPassword for each individual Key, define it by specifying an alias name for name and a password for value.
+If keyPasswordMap is not specified, the value of keyStorePassword is used for keyPassword.
+| keyStoreReloadIntervalMinutes | int | KeyStore reload interval (minutes) can be configured with the following items.
+If it is not set, it will not be reloaded.
+| rollOverType | << JwtKeyRolloverType >> | Key rollover method can be configured with the following items.
+The default value is `OLDER`.
+| rollOverDaysBeforeExpire | long | Number of days to switch when rollOverType is `BEFORE_N_DAYS`.
+|===
+
+
+[[JwtKeyRolloverType]]
+.JwtKeyRolloverType
+Specify the rollover method when the key's valid period is about to expire.
+When multiple (new and old) keys are in KeyStore, this is the method to determine which one to use.
+The validity period of the key is determined by the validity period of the public key certificate.
+
+OLDER:: Use a certificate key with a shorter validity period (NotAfter is old) until the validity period expires
+NEWER:: Use a certificate key with a longer validity period (NotAfter is newer) among certificates that are within the validity period
+BEFORE_N_DAYS:: switch to rollOverDaysBeforeExpire days before expiration
+
+===== Example (when Authorization Server and Resource Server are the same instance)
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.auth.oauth.OAuthAuthorizationService</interface>
+	<property name="defaultConsentTemplateName" value="oauth/Consent" />
+	<property name="authorizationCodeStore" class="org.iplass.mtp.impl.auth.oauth.code.CacheAuthorizationCodeStore">
+		<property name="timeToLive" value="180000" />
+	</property>
+	<property name="accessTokenStore" class="org.iplass.mtp.impl.auth.oauth.token.opaque.OpaqueOAuthAccessTokenStore">
+		<property name="seriesHashAlgorithm" value="SHA-256" />
+		<property name="seriesHashSalt" value="[salt for each environment]" />
+		<property name="tokenCreationStrategy" class="org.iplass.mtp.impl.auth.oauth.token.opaque.NewTokenCreationStrategy" />
+	</property>
+	<property name="jwtProcessor" class="org.iplass.mtp.impl.auth.oauth.jwt.JjwtProcesor" />
+	<property name="jwtKeyStore" class="org.iplass.mtp.impl.auth.oauth.jwt.SimpleJwtKeyStore">
+		<property name="keyStoreFilePath" value="/conf/jwtKeyStore.jks" />
+		<property name="keyStorePassword" value="[your jks store password]" />
+		<property name="keyStoreReloadIntervalMinutes" value="1440" />
+        <property name="rollOverType" value="BEFORE_N_DAYS" />
+        <property name="rollOverDaysBeforeExpire" value="5" />
+	</property>
+	<property name="subjectIdHashAlgorithm" value="SHA-256" />
+	<property name="subjectIdHashSalt" value="[yourOwnSalt]" />
+</service>
+----
+
+===== Example (Resource Server)
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.auth.oauth.OAuthAuthorizationService</interface>
+	<property name="accessTokenStore" class="org.iplass.mtp.impl.auth.oauth.token.remote.RemoteOAuthAccessTokenStore" inherit="false">
+		<property name="introspectionEndpointUrl" value="http://localhost:8080/mtp/${tenantName}/api/oauth/introspect"/>
+		<property name="resourceServerId" value="sampleRS"/>
+		<property name="resourceServerSecret" value="AK08O9RvVzmTWrrSidS..."/>
+		<property name="reloadUser" value="false"/>
+		
+		<property name="httpClientConfig">
+			<property name="poolingMaxTotal" value="30"/>
+		</property>
+		<property name="exponentialBackoff">
+			<property name="maxElapsedTimeMillis" value="60000"/>
+		</property>
+	</property>
+</service>
+----

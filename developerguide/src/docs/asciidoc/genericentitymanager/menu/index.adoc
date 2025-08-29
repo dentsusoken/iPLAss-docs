@@ -1,0 +1,16 @@
+= Generic Entity Manager (Menu)
+:_hreflang-path: developerguide/genericentitymanager/menu/index.html
+:_relative-root-path: ../../../
+
+[[menu]]
+== Menu
+ログイン後に表示されるメニュー項目を定義する機能です。
+各メニューは階層で分類したり、Actionやエンティティの検索画面と結び付けることができます。
+
+初期作成される `DEFAULT` とは別に、ロールに対応したメニューを追加することで、ロール毎にメニューを切り替えることができます。
+また、セキュリティ設定（Action権限、Entity権限）により参照することができないメニュー項目は自動的に非表示になります。
+
+include::operationguide.adoc[]
+
+include::setting.adoc[]
+

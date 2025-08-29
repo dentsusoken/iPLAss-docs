@@ -1,0 +1,36 @@
+[[EntityPortingService]]
+=== EntityPortingService
+Services related to Entity data tools.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.tools.entityport.EntityPortingService
+----
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.tools.entityport.EntityPortingService
+----
+
+==== The settings of EntityPortingService
+EntityPortingService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| uploadableCsvDownloadLoadSize | int | Size of batch loads when the Entity property contains multiplicity multiple references. The default value is `1` .
+| canCreateUserWithSpecificPassword | boolean a| Allow password specification on Insert of User entity? Default value is `false` .
+
+CAUTION: This setting item will be removed in future versions.Please use `canCreateUserWithSpecificPassword` in <<EntityCsvImportService>>.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.tools.entityport.EntityPortingService</interface>
+
+	<property name="uploadableCsvDownloadLoadSize" value="100" />
+</service>
+----

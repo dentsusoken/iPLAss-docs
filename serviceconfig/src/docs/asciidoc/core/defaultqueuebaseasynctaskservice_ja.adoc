@@ -1,0 +1,36 @@
+[[DefaultQueueBaseAsyncTaskService]]
+=== DefaultQueueBaseAsyncTaskService
+RDBによるキューを利用した標準の非同期実行のサービスです。 +
+非同期実行するためのAsyncTaskServiceの定義です。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.async.AsyncTaskService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.async.rdb.RdbAsyncTaskService
+----
+
+==== RdbAsyncTaskServiceの設定
+RdbAsyncTaskServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| defaultGetResultTimeoutMillis | long | 標準の結果取得のタイムアウト時間（ミリ秒）。デフォルト値は60000（1分）です。
+| initialGetResultIntervalMillis | long | 初期の結果取得のインターバル時間（ミリ秒）。デフォルト値は100です。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service name="DefaultQueueBaseAsyncTaskService">
+	<interface>org.iplass.mtp.impl.async.AsyncTaskService</interface>
+	<class>org.iplass.mtp.impl.async.rdb.RdbAsyncTaskService</class>
+	<property name="defaultGetResultTimeoutMillis" value="60000" />
+	<property name="initialGetResultIntervalMillis" value="100" />
+</service>
+----

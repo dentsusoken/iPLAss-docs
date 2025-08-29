@@ -1,0 +1,382 @@
+[[MailService]]
+=== MailService
+メールテンプレートの定義（メタデータ）の管理と、メール送信を行うためのサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.mail.MailService
+----
+
+
+==== 実装クラス名
+.JavaMailを利用したメール送信
+----
+org.iplass.mtp.impl.mail.MailServiceImpl
+----
+
+.[.eeonly]#Amazon SESを利用したメール送信#
+----
+org.iplass.mtp.impl.mail.AWSMailService
+----
+
+.[.eeonly]#SendGridを利用したメール送信#
+----
+org.iplass.mtp.impl.sendgrid.SendGridMailServiceImpl
+----
+
+
+==== MailServiceImplの設定
+標準のメール送信（JavaMail）を利用する場合、MailServiceImplを設定します。 +
+JavaMailで定義される標準のプロパティ、各プロバイダ実装のプロパティ、およびiPLAssで拡張したプロパティを設定可能です。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| mail.smtp.host | String、必須 | SMTPサーバのホスト名。
+| mail.smtp.port | int | SMTPサーバのポート番号。デフォルト値は25です。
+| mail.smtp.connectiontimeout | int | SMTPコネクションを確立する際のタイムアウト（ミリ秒）。
+デフォルト値は60000（1分）です。
+| mail.smtp.timeout | int | SMTP通信時のタイムアウト（ミリ秒）。
+デフォルト値は60000（1分）です。
+| mail.pop3.connectiontimeout | int | POP3コネクションを確立する際のタイムアウト（ミリ秒）。
+デフォルト値は60000（1分）です。
+| mail.pop3.timeout | int | POP3通信時のタイムアウト（ミリ秒）。
+デフォルト値は60000（1分）です。
+| mail.* | - a| その他JavaMailで定義される標準のプロパティ、各プロバイダ実装のプロパティを設定可能です。
+
+`mail.host` +
+`mail.smtp.from` +
+`mail.smtp.auth` +
+`mail.transport.protocol` +
+など
+| mail.smtp.popbeforesmtp |boolean | POP before SMTPにより認証する場合trueを設定します。デフォルト値はfalseです。 +
+iPLAssにて拡張されたプロパティです。
+| mail.pop3.auth.id | String | POP before SMTP認証する際のユーザーのIDです。 +
+この設定はmail.smtp.popbeforesmtpがtrueの場合に有効です。 +
+iPLAssにて拡張されたプロパティです。
+| mail.pop3.auth.password | String | POP before SMTP認証する際のユーザーのパスワードです。 +
+この設定はmail.smtp.popbeforesmtpがtrueの場合に有効です。 +
+iPLAssにて拡張されたプロパティです。
+| mail.smtp.auth.id | String | SMTP認証する際のユーザーIDです。 +
+この設定はmail.smtp.authがtrueの場合に有効です。 +
+iPLAssにて拡張されたプロパティです。
+| mail.smtp.auth.password | String | SMTP認証する際のパスワードです。 +
+この設定はmail.smtp.authがtrueの場合に有効です。 +
+iPLAssにて拡張されたプロパティです。
+| mail.charset | String | メールのデフォルトのcharsetです。 +
+例えば `utf-8` を指定します。 +
+iPLAssにて拡張されたプロパティです。
+| mail.encoding | String | メールのデフォルトのencodingです。 +
+例えば `base64` を指定します。 +
+iPLAssにて拡張されたプロパティです。
+| debug | boolean | デバッグを有効にした場合、標準出力にトレースを出力します。
+| listener | <<SendMailListener>>、複数指定可 | メール送信時のListener。
+| retryIntervalMillis | long | メール送信失敗時のリトライ間隔（ミリ秒）。
+| retryCount | int | メール送信失敗時のリトライ回数。
+| smimeHandler | <<SmimeHandler>> | S/MIME利用時のハンドラです。
+|===
+
+[[SendMailListener]]
+.SendMailListener
+classはorg.iplass.mtp.mail.SendMailListenerの実装クラスを指定します。
+
+標準で以下のSendMailListenerを提供します。
+
+- <<LoggingSendMailListener>>
+- <<MetricsSendMailListener>>
+
+[[LoggingSendMailListener]]
+.LoggingSendMailListener
+classはorg.iplass.mtp.mail.listeners.LoggingSendMailListenerを指定します。
+
+送信メールのログ出力を行うSendMailListenerです。
+設定変更可能な項目はありません。
+
+[[MetricsSendMailListener]]
+.[.eeonly]#MetricsSendMailListener#
+classはorg.iplass.mtp.impl.micrometer.metrics.mail.MetricsSendMailListenerを指定します。
+
+Micrometerによるメトリクス収集機能を追加したSendMailListenerです。
+設定変更可能な項目はありません。
+
+[[SmimeHandler]]
+.SmimeHandler
+MailServiceImplを利用する場合、標準でS/MIMEによる電子署名と暗号化を行うorg.iplass.mtp.impl.mail.smime.SmimeHandlerを提供します。
+以下の設定項目が可能です。
+|====================
+| 項目 | 値 | 説明
+| cmsAlgorithmName | String | CMS(暗号メッセージ構文）での暗号アルゴリズム名です。デフォルト値は `AES128_CBC` です。
+| signatureAlgorithmMap | <<SignatureAlgorithmMap>> | 電子署名アルゴリズムのマッピング。
+| certStore | <<SmimeCertStore>> | S/MIMEで利用する証明書と秘密鍵を格納しているストアクラスです。
+|====================
+
+[[SignatureAlgorithmMap]]
+.SignatureAlgorithmMap
+電子署名アルゴリズムのマッピングを設定します。
+以下の項目が設定できます。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| name | String | 電子署名アルゴリズムのキー。
+| value | String | 電子署名アルゴリズム。
+|===
+
+[cols="1,3", options="header"]
+デフォルトの設定値
+|===
+| name | value
+| RSA | SHA256withRSA
+| DSA | SHA256withDSA
+| EC | SHA256withECDSA
+|===
+
+[[SmimeCertStore]]
+.SmimeCertStore
+classはorg.iplass.mtp.impl.mail.smime.SmimeCertStoreの実装クラスを指定します。
+
+標準でjava.security.KeyStoreベースのシンプルな実装クラスorg.iplass.mtp.impl.mail.smime.SimpleSmimeCertStoreを提供します。
+KeyStoreに格納されている証明書はクライアントの証明書も含めて、信頼されたものとして扱います。
+実行時には有効期間のチェックのみ行い、証明書チェーンの検証は行いません。
+|====================
+| 項目 | 値 | 説明
+| keyStoreType | String | KeyStoreのタイプ。デフォルト値は `PKCS12` です。
+| keyStoreProvider | String | KeyStoreのプロバイダ名。未設定の場合、最優先のProviderから順に、登録済みのセキュリティプロバイダのリストから、指定されたKeyStoreのタイプをサポートする最初のプロバイダを利用します。
+| keyStoreFilePath | String | 署名作成および暗号化の為のエントリが格納されるKeyStoreのファイルパス。
+| keyStorePassword | String | KeyStoreのパスワード。
+| keyPasswordMap | <<KeyPasswordMap>> | エントリに関連した秘密鍵を復元する為のパスワードマッピング。
+| keyStoreReloadIntervalMinutes | String | KeyStoreのリロード間隔（分）。デフォルト値は `Long.MAX_VALUE` です。
+|====================
+
+[[KeyPasswordMap]]
+.KeyPasswordMap
+エントリに関連した鍵を復元する為のパスワードマッピングを設定します。
+以下の項目が設定できます。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| name | String | エントリの別名。(送信者または受信者のメールアドレス）
+| value | String | エントリに関連した秘密鍵を復元する為のパスワード。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.mail.MailService</interface>
+	<class>org.iplass.mtp.impl.mail.MailServiceImpl</class>
+
+	<!-- SMTP設定  -->
+	<!-- SMTPサーバホスト -->
+	<property name="mail.smtp.host" value="XXXXXXXX"/>
+	<!-- SMTPサーバポート  通常:25 / サブミッションポート:587 / SSL:465 -->
+	<property name="mail.smtp.port" value="25"/>
+	<!-- タイムアウト設定 -->
+	<property name="mail.smtp.connectiontimeout" value="60000"/>
+	<property name="mail.smtp.timeout" value="60000"/>
+
+    <!--
+		mail.smtp.hostプロパティはmail.hostプロパティに優先して認識されるため、2つの値が同一ならば、
+		mail.smtp.hostプロパティを設定するだけでもメール送信は可能です。
+		しかし、mail.hostプロパティは内部的にMessage-ID ヘッダを生成するのに利用されます。
+		mail.hostプロパティを明示的に指定していない場合、Message-IDヘッダが正しく生成できない可能性があります。
+	 -->
+	<property name="mail.host" value="XXXXXXXX"/>
+
+	<!-- デフォルトCharset -->
+	<property name="mail.charset" value="utf-8"/>
+
+	<property name="mail.encoding" value="base64"/>
+
+	<!-- S/MIME設定 -->
+	<!-- S/MIMEによる署名および暗号化を利用します。 -->
+	<property name="smimeHandler" class="org.iplass.mtp.impl.mail.smime.SmimeHandler">
+		<property name="cmsAlgorithmName" value="AES128_CBC" />
+		<property name="signatureAlgorithmMap">
+			<property name="RSA" value="SHA256withRSA" />
+			<property name="DSA" value="SHA256withDSA" />
+			<property name="EC" value="SHA256withECDSA" />
+		</property>
+		<property name="certStore" class="org.iplass.mtp.impl.mail.smime.SimpleSmimeCertStore" >
+			<property name="keyStoreType" value="yourOwnKeyStoreType" />
+			<property name="keyStoreProvider" value="yourOwnKeyStoreProvider" />
+			<property name="keyStoreFilePath" value="yourOwnKeyStoreFilePath" />
+			<property name="keyStorePassword" value="yourOwnKeyStorePassword" />
+			<property name="keyPasswordMap">
+				<property name="test1@contract.dentsusoken.com" value="yourOwnKeyPassword1" />
+				<property name="test2@contract.dentsusoken.com" value="yourOwnKeyPassword2" />
+			</property>
+			<property name="keyStoreReloadIntervalMinutes" value="60" />
+		</property>
+	</property>
+
+	<!-- ■ for develop only (additional="true) ■ -->
+	<!-- 送信メールをデバッグ出力する場合、以下を有効にしてください。 -->
+	<!--
+	<property name="listener" class="org.iplass.mtp.mail.listeners.LoggingSendMailListener" additional="true"/>
+	 -->
+</service>
+----
+
+==== [.eeonly]#AWSMailServiceの設定#
+Amazon SESを利用する場合、AWSMailServiceを設定します。 +
+AWSMailServiceを利用する場合、AWSSettingにてAWSの認証設定が行われている必要があります。ただし、注意点としてAWSSettingのclientConfigurationは適用できません。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| mail.charset | String | メールのデフォルトのcharsetです。 +
+例えば `utf-8` を指定します。 +
+| mail.encoding | String | メールのデフォルトのencodingです。 +
+例えば `base64` を指定します。 +
+| mail.aws.host | String | SESのendpointを指定可能です。 +
+未指定の場合はデフォルトのendpointが利用されます。
+| debug | boolean | デバッグを有効にした場合、標準出力にトレースを出力します。
+| listener | <<SendMailListener_a>>、複数指定可 | メール送信時のListener。
+| retryIntervalMillis | long | メール送信失敗時のリトライ間隔（ミリ秒）。
+| retryCount | int | メール送信失敗時のリトライ回数。
+|===
+
+[[SendMailListener_a]]
+.SendMailListener
+MailServiceImplの<<SendMailListener>>と同様です。
+
+===== 設定例
+MailServiceImplと同様です。
+
+==== [.eeonly]#SendGridMailServiceImplの設定#
+SendGridを利用する場合、SendGridMailServiceImplを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| checkBounce | boolean | 送信前にバウンスリスト、ブロックリストチェックを行うか。デフォルト値はfalseです。
+| checkBouncePattern | String | バウンスリスト、ブロックリストチェックを行う対象とするメールアドレス。正規表現の形式で指定します。
+| httpClientConfig | <<HttpClientConfig>> | HTTPクライアントの設定。
+| httpTransport | <<HttpTransport>> | WebApiへのHTTPリクエストの設定。
+| mailApiClient | <<MailClient>> | メールクライアントの設定。
+| deleteBouncePattern | String | SendGridのバウンス、ブロックリストにアドレスが載った際にリストから削除対象とするメールアドレス。正規表現の形式で指定します。
+| bounce | <<BounceClient>> | バウンスクライアント。
+| block | <<BlockClient>> | ブロッククライアント。
+| listener | <<SendMailListener_s, SendMailListener>>、複数指定可 | メール送信時のListener。
+| retryIntervalMillis | long | 送信失敗時のリトライ間隔（ミリ秒）。
+| retryCount | int | 送信失敗時のリトライ回数。
+|===
+
+[[HttpClientConfig]]
+.HttpClientConfig
+classはorg.iplass.mtp.impl.http.HttpClientConfigを指定します。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| connectionTimeout | int | HTTPコネクションを確立する際のタイムアウト（ミリ秒）。デフォルト値は30000（30秒）です。
+| soTimeout | int | HTTP通信時のsocket timeout (SO_TIMEOUT)（ミリ秒）。デフォルト値は30000（30秒）です。
+| poolingMaxTotal | int | httpコネクションのプールの最大数。デフォルト値は20です。
+| poolingDefaultMaxPerRoute | int | ドメイン単位のhttpコネクションの最大数。デフォルト値は2です。
+| poolingTimeToLive | int | プールされているhttpコネクションの生存期間（ミリ秒）。デフォルトは無制限です。
+| proxyHost | String | プロキシサーバのホスト。
+| proxyPort | int | プロキシサーバのポート番号。
+| httpClientBuilderFactory | <<HttpClientBuilderFactory, HttpClientBuilderFactory>> |
+カスタムのHttpClientBuilderを生成したい場合に指定します。
+|====================
+
+[[HttpClientBuilderFactory]]
+.HttpClientBuilderFactory
+classはorg.iplass.mtp.impl.http.HttpClientBuilderFactoryを実装するクラスを指定します。
+
+標準で以下のHttpClientBuilderFactoryを提供します。
+
+* <<MicrometerHttpClientBuilderFactory>>
+
+[[HttpTransport]]
+.HttpTransport
+classはorg.iplass.mtp.impl.sendgrid.apiclient.HttpTransportImplを指定します。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| apiUser | String、必須 | SendGridのユーザーID、もしくは `apikey` 固定値（認証時にパスワードではなくAPI Keyを利用する場合）
+| apiKey | String、必須 | SendGridのパスワード、もしくはAPI Key。
+| webApiRoot | String、必須 | SendGridのAPIのURL。
+|====================
+
+[[MailClient]]
+.MailClient
+classはorg.iplass.mtp.impl.sendgrid.apiclient.MailClientImplを指定します。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| charset | String | メールの文字コード。
+|====================
+
+[[BounceClient]]
+.BounceClient
+classはorg.iplass.mtp.impl.sendgrid.apiclient.BounceClientImplを指定します。
+
+BounceClientImplは設定変更可能な項目はありません。
+
+[[BlockClient]]
+.BlockClient
+classはorg.iplass.mtp.impl.sendgrid.apiclient.BlockClientImplを指定します。
+
+BlockClientImplは設定変更可能な項目はありません。
+
+[[SendMailListener_s]]
+.SendMailListener
+MailServiceImplの<<SendMailListener>>と同様です。
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.mail.MailService</interface>
+	<class>org.iplass.mtp.impl.sendgrid.SendGridMailServiceImpl</class>
+	<!-- 送信前にバウンスリスト、ブロックリストチェックを行わない場合、checkBounceをfalseに設定 -->
+	<!-- 
+	<property name="checkBounce" value="false" />
+ 	-->
+	<!-- バウンスリスト、ブロックリストのチェック対象とするメールアドレス。正規表現で指定。 -->
+	<property name="checkBouncePattern" value=".*@ldap.dentsusoken.com|.*@contract.dentsusoken.com" />
+ 	<property name="httpClientConfig" class="org.iplass.mtp.impl.http.HttpClientConfig">
+		<property name="connectionTimeout" value="30000" />
+		<property name="soTimeout" value="30000" />
+		<!-- ■ for develop only ■ -->
+		<!-- 
+		<property name="proxyHost" value="proxyhost.dentsusoken.com" />
+		<property name="proxyPort" value="8080" />
+		 -->
+	</property>
+	<property name="httpTransport" class="org.iplass.mtp.impl.sendgrid.apiclient.HttpTransportImpl">
+		<!-- SendGridの認証用キー -->
+		<property name="apiUser" value="yourOwnApiUser" />
+		<property name="apiKey" value="yourOwnApiKey" />
+		<!-- SendGridエンドポイント -->
+		<property name="webApiRoot" value="https://api.sendgrid.com/api" />
+	</property>
+	
+	<property name="mailApiClient" class="org.iplass.mtp.impl.sendgrid.apiclient.MailClientImpl">
+		<!-- メールの文字コード -->
+		<property name="charset" value="UTF-8" />
+	</property>
+	
+	<!-- SendGridのバウンス、ブロックリストにアドレスが載った際、リストから削除対象とするメールアドレス。正規表現で指定。 -->
+	<property name="deleteBouncePattern" value=".*@ldap.dentsusoken.com|.*@contract.dentsusoken.com" />
+	
+	<property name="bounce" class="org.iplass.mtp.impl.sendgrid.apiclient.BounceClientImpl" />
+	<property name="block" class="org.iplass.mtp.impl.sendgrid.apiclient.BlockClientImpl" />
+
+	<!-- ■ for develop only (additional="true") ■ -->
+	<!-- 
+	<property name="listener" class="org.iplass.mtp.mail.listeners.LoggingSendMailListener" additional="true"/>
+	 -->
+</service>
+----

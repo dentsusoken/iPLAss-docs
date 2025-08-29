@@ -1,0 +1,56 @@
+= Getting Started
+ifdef::env-github,env-browser[:outfilesuffix: .adoc]
+
+== Preface
+
+This is the iPLAss starter's guide.
+
+If you are a developer, and is going to develop for an existing iPLAss projects, then please jump to <<./installguide/index#, Constructing the Developing Environment>> and follow the steps.
+Otherwise if you are a beginner, it is recommanded to start with <<./gettingstarted/index#, Install and Run>> or <<./docker/index#, Docker Environment>> and see how iPLAss works in practice.
+
+Once you have iPLAss running, please follow the progresses of Tutorials.
+
+=== <<./gettingstarted/index#, Install and Run>>
+This guide depicts the steps to install iPLAss and examples of some basic functionalities. 
+It is always recommanded to start from this guide.
+Windows/MySQL/Tomcat is required.
+
+=== <<./installguide/index#, Eclipse Environment>>
+It guide you to construct the environment so to develop iPLAss on Eclipse.
+This guide is meant for the developers with experiences of Java development on Eclipse.
+
+=== <<./docker/index#, Docker Environment>>
+It guide you to run iPLAss with Docker.
+Use Docker.
+
+== Tutorials
+The Tutorial helping the reader to understand the core functionalities of iPLAss.
+
+=== <<./basic/index#, Basic Guide>>
+Using AdminConsole（Configuration Tools on Web Browser）to build a simple web application.
+
+=== <<./advanced/index#, Advanced Guide>>
+Tutorials for advanced contents such as customized function with coding.
+
+[NOTE]
+====
+Some content that are only available to Enterprise Editions are also explained in the guides.
+====
+
+=== <<./introductioncustomize/index#, Customization Guide>>
+The tutorial of customizing the view and WebApi on the MVC frameworks.
+It contains tutorials of both Java-based coding and Groovy-based coding. 
+
+=== <<./workflow/index#, WorkFlow Guide>>
+Tutorials for WorkFlow mechanics.
+
+[NOTE]
+====
+The feature only available to Enterprise Edition
+====
+
+== Next Step
+If you need to create fully customized consumer oriented web applications, have a look at the <<../sample/index.adoc#,Explaination of a Sample Application>> .
+It is an example of how to make an EC-site-like website by iPLAss. It is recommanded to try it yourself. 
+
+In case if you need to understand the each specific mechanisms in details, please refer to <<../developerguide/index.adoc#,Developer Guide>>  and play with things to see how it works.

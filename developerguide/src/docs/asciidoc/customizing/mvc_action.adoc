@@ -1,0 +1,971 @@
+[[Action]]
+== Action
+Actionはルーティング制御を行うための定義です。 +
+URLのパス単位に、そのパスが呼び出された場合の対応するCommandと処理結果により表示するTemplate（などの出力内容）の関連を定義します。
+
+Action定義はAdminConsole、もしくは、Javaで実装されたCommandへのアノテーションにより定義可能です。
+
+[[Action-Admin]]
+=== Action定義（AdminConsole）
+AdminConsoleを利用してActionを定義する方法を説明します。
+
+==== Actionの作成
+メニュー右クリックし「アクションを作成する」を選択します。
+アクションの名前はURLのパスとなります。
+
+==== Actionの設定項目
+Actionの設定画面は３つのパートに分かれます。
+
+===== 共通設定
+[cols="1,3",options="header"]
+|===
+|項目 | 内容
+|Name a| Action定義名です。 +
+アクションを呼び出す際のURLのパスとなります。 +
+/ 区切りで階層化可能です。 +
+Nameを `gem/auth/verify2nd` と定義した場合、次のURLでこのActionが呼び出されます。
+
+http(s)://[server]/[tenantContextPath]/gem/auth/verify2nd
+
+※[tenantContextPath]については、<<../multitenant/index.adoc#path_definition,パスの種類>> を参照してください。
+
+|Display Name | 表示名です。現状、AdminConsole上でのみ利用されます。
+|Description | Actionの概要文です。現状、AdminConsole上でのみ利用されます。
+|===
+
+===== Action固有設定
+
+.Allow Method
+[cols="1,3",options="header"]
+|===
+|項目|内容
+|Allow Method|
+アクセス可能なHTTPメソッド（GET, POST, PUT, DELETE）を指定します。 +
+全てチェックされていない場合は全メソッドでのアクセスが可能です。デフォルトでは全てチェックされていない状態となります。 +
+ひとつでもチェックされている場合は、チェックされているメソッドでのみアクセスが可能となります。
+|===
+[[synchronize_on_session]]
+.Access Policy
+[cols="1,3",options="header"]
+|===
+|項目|内容
+|parts. not direct access |メインのTempalteからincludeされる部品用のActionの場合指定します。URLを指定した直接の呼び出しは出来なくなります。
+|privilege execute|Action内の処理において、権限の制約を一切受けずに（特権として）実行する事ができます。
+|public action a|
+未ログインユーザーでもアクセス可能になります。 +
+通常、未ログインユーザーでも実行可能にするにはAction権限の定義が必要ですが、これをチェックすることでAction権限のチェックを省略することができます。
+
+[NOTE]
+.public Action と privilege execute の違い
+====
+public actionは、Actionを誰でも呼び出せるようにするだけです。Entity検索などの際には、Entity権限が適用されます。 +
+一方、privilege executeは、Action実行中は、権限チェックを全く行いません。Entity操作なども特権で実行されます。
+====
+
+|synchronize on session a|
+同一Sessionのリクエストを同期します。 +
+このフラグがONにされた場合、Session単位に単一のロック用Objectにてsynchronizeされた上で、Actionの処理が実行されます。
+
+CAUTION: Action処理全体（Templateの処理も含め）を同期します。可能であればCommand内にて必要な箇所で明示的に同期することを推奨します。
+
+|trusted authentication required|
+RememberMe機能を有効にした場合、ブラウザを閉じても一定期間ログイン状態が保持されます。 +
+このフラグを有効化した場合、
+RememberMe機能で自動的にログインした状態で、このActionを呼び出した際には再認証が要求されます。 +
+ユーザー情報の更新、パスワードの更新や決済処理など重要な処理を行うActionで、他のユーザーの可能性をできるだけ排除する必要がある場合はこのフラグをチェックしてください。
+|===
+[[csrf_token_check]]
+.Token Check
+[cols="1,3",options="header"]
+|===
+|項目|内容
+|Token Check a|
+CSRF(XSRF)対策用Tokenのチェックを行うか否かを設定します。 +
+また設定により、このTokenを重複サブミット（トランザクションの重複起動）対策として利用することも可能です。
+
+No Check:: Tokenのチェックを行いません。
+Check:: 遷移元で指定したTokenを利用し不正な遷移や重複サブミットを検出します。
+
+Tokenのチェックを行う場合は、Tokenの値を送信元画面に埋め込み、リクエストパラメータで送信する必要があります。
+その際のパラメータ名は、 `_t` とする必要があります。
+
+TemplateにてTokenの値を埋め込むためのユーティリティを提供しています。詳細は <<JSPTag-EL,JSPカスタムタグ・EL関数>> また、<<groovytemplate,GroovyTemplate>> を参照ください。
+
+.JSPでの実装例
+[source,JSP]
+----
+<%@ taglib prefix="m" uri="http://iplass.org/tags/mtp"%>
+
+<form>
+:
+:
+<input type="hidden" name="_t" value="${m:token()}"> <1>
+<input type="submit" />
+</form>
+----
+<1> Tokenの値を出力するEL関数です。
+
+
+|use fixed Token a|Tokenチェックに、セッション単位に固定に払いだされる固定Tokenを利用します。CSRF(XSRF)対策のみ必要な場合は固定Tokenを利用可能です。
+
+固定Tokenを利用する場合、送信元画面には固定Tokenの値を埋め込む必要があります。
+
+.JSPでの実装例
+[source,JSP]
+----
+<%@ taglib prefix="m" uri="http://iplass.org/tags/mtp"%>
+
+<form>
+:
+:
+<input type="hidden" name="_t" value="${m:fixToken()}"> <1>
+<input type="submit" />
+</form>
+----
+<1> 固定Tokenの値を出力するEL関数です。
+
+|consume a Token a|このAction実行時にチェックしたTokenを消費します。 +
+消費されたTokenは再利用できません(同一Tokenでリクエストが来た場合、エラーになります)。 +
+重複サブミット（トランザクションの重複起動）を防ぐためには、トランザクションを完了するActionにおいて、このフラグをONにします。
+
+NOTE: 複数の画面をまたがってトランザクションを完了する場合、このフラグをONにする必要があるのは完了画面（および、キャンセル時）です。
+
+Tokenの消費についての例を示します。
+====
+入力画面→確認画面→完了画面
+====
+といった画面遷移がある場合に、トランザクションTokenを利用して
+====
+入力画面：トランザクションToken発行 +
+確認画面：トランザクションToken確認（ただし消費しない）→ consumeチェックなし +
+完了画面：トランザクションToken消費 → consumeチェックあり +
+====
+といった事が可能になります。
+
+
+|rollback on exception|Exception発生時にTokenを消費しません。
+|===
+
+.Client Cache
+[cols="1,3",options="header"]
+|===
+|項目|内容
+|Client Cache a|
+レスポンスのキャッシュ設定を指定します。
+
+Cache:: クライアントへ当該レスポンスのキャッシュを許可します。具体的には `Cache-Control` ヘッダに `private` を指定します。
+
+Cache Public:: 共有キャッシュへ当該レスポンスのキャッシュを許可します。具体的には `Cache-Control` ヘッダに `public` を指定します。
+
+CAUTION: Cache Publicを設定する場合、プロキシサーバやCDNがキャッシュする可能性があり、キャッシュのコントロールが難しくなります。
+不特定多数のユーザーに対して同一のキャッシュが返却されるので、注意が必要です。 +
+例えば、ログイン後のユーザーの個人情報が表示されるページをCache Publicしてしまった場合、そのユーザー以外の人が同一URLにアクセスした場合、本来参照できないはずの別ユーザーの個人情報が参照できてしまいます。
+
+Not Cache:: クライアントへ当該レスポンスをキャッシュしないように指示します。具体的には `Cache-Control` ヘッダに `private, no-store, no-cache, must-revalidate` を指定します。
+
+Default:: service-config内の <<../../serviceconfig/index.adoc#WebFrontendService,WebFrontendService>> の `defaultClientCacheType` の設定が適用されます。
+
+CAUTION: Max Ageの値を指定しない場合、ブラウザにより挙動が異なりますのでご注意ください。
+
+|Max Age |
+クライアントへ当該コンテンツのキャッシュ有効期間（秒）を通知します。 +
+0未満の値は未設定とみなされます。
+
+レスポンスのキャッシュが許可された場合（ `Cache-Control` が `private` の場合 ）、`Cache-Control` ヘッダに `max-age` 属性を追加します。
+
+|===
+
+.Restriction of Request
+[cols="1,3",options="header"]
+|===
+|項目|内容
+|Allow Request Content Types|
+許可するcontentTypeを指定します。未指定の場合は全て許可します。 +
+複数のcontentTypeを指定する場合は、半角スペースで区切ってください。
+
+|Max Request Body Size|
+リクエストボディの最大サイズ(Byte)を指定します。 +
+contentTypeが `application/x-www-form-urlencoded` の場合は適用されません。
+
+|Max File Size|
+リクエストされるファイルの最大サイズ(Byte)を指定します。
+|===
+
+.Parameter Mappings
+[cols="1,3",options="header"]
+|===
+|項目|内容
+|Parameter Name |
+パラメータマッピング機能における、パラメータ名を指定します。 +
+<<Param-Mapping,パラメータマッピング>> を参照ください。
+|Map From |
+パラメータマッピング機能における、マッピング元を指定します。
+|Condition |
+パラメータマッピング機能における、マッピング処理を行う条件を指定します。
+|===
+
+.Execute Commands
+[cols="1,3",options="header"]
+|===
+|項目|内容
+|Command Name |
+Action呼び出し時に実行されるCommandです。 +
+<<Action-Command,Commandの設定>> を参照ください。
+|Init Script |
+Commandのインスタンスの初期化ロジックが設定されているか否かを表示します。
+|===
+
+.Results
+[cols="1,3",options="header"]
+|===
+|項目|内容
+|Status |
+Command実行結果スタータスです。 +
+Resultsでは、Commandの処理結果とそれに対応する出力処理を定義します。
+詳細は<<Action-Result,結果の設定>> を参照ください。
+|Exception Class Name |
+例外クラス名です。
+Command実行時に例外が発生した場合の出力処理を定義します。
+|Type |
+出力処理の種類を示します。
+|Value |
+出力処理の内容を示します。
+|===
+
+===== Server Cache Criteria
+[cols="1,3",options="header"]
+|===
+|項目|内容
+|Cache Criteria Type a|
+サーバキャッシュの設定を行うことにより、
+Actionの実行結果の出力（コンテンツ）をサーバ側でキャッシュすることが可能です。
+機能の詳細は <<Action-ServerCache,サーバキャッシュ設定>> を参照ください。
+
+サーバキャッシュ設定では、キャッシュする際の単位（キャッシュ基準）を定義する必要があります。 +
+Cache Criteria Typeはキャッシュ基準のタイプの設定します。 +
+以下のタイプを指定できます。
+
+JavaClass::
+キャッシュ基準の定義をjavaクラスで実装します。
+ParameterMatch::
+HTTPリクエストパラメータの値を利用してキャッシュ基準を定義します。
+Script::
+キャッシュ基準の定義をGroovy Scriptで実装します。
+Not Cache::
+サーバキャッシュを利用しないように設定します。
+|Time to Live (ms)|
+キャッシュの有効期間（ミリ秒）を設定します。 +
+0以下を指定した場合は無制限になります。
+|Java ClassName|
+（Cache Criteria TypeがJavaClassの場合） +
+キャッシュ基準を定義する `org.iplass.mtp.web.actionmapping.ActionCacheCriteria` を実装する
+java classを指定します。
+|Matching Parameter Names|
+（Cache Criteria TypeがParameterMatchの場合） +
+キャッシュ基準となるパラメーターのキーを設定します。
+|Sctipt|
+（Cache Criteria TypeがScriptの場合） +
+キャッシュ基準を定義するscriptを設定します。
+|===
+
+.Cachable Result Status
+[cols="1,3",options="header"]
+|===
+|項目|内容
+|Status |ここで指定したステータスがCommandから返却された際にキャッシュします。
+* を指定した場合、すべてのステータスにおいてキャッシュします。
+|===
+
+.Cache Related Entities
+[cols="1,3",options="header"]
+|===
+|項目|内容
+|Entity Name |キャッシュしたコンテンツをEntity更新時に無効化したい場合、その関連しているEntityを指定します。
+|Type a|コンテンツとEntityの関連のタイプを指定します。
+更新が発生した時にキャッシュをクリアするエンティティを設定します。
+
+SPECIFIC_ID::
+oid単位で関連を管理します。当該oidのEntityが更新された場合、キャッシュをクリアします。
+
+WHOLE::
+Entity全体で関連を管理します。当該Entityのいずれかのデータが更新された場合、キャッシュをクリアします。
+|===
+
+.Clear Cache
+[cols="1,3",options="header"]
+|===
+|項目|内容
+|Clear Action Cache | 当該アクションのコンテンツキャッシュをクリアします。
+|Clear Tenant Action Cache | テナント全体のアクションのコンテンツキャッシュをクリアします。
+|===
+
+[[Param-Mapping]]
+=== パラメータマッピング
+リクエストに含まれるパラメータを別名にマッピングしたり、URLのパスの一部をパラメータにマッピングすることが可能です。
+
+Parameter Nameに指定したパラメータ名に、Map Fromで指定されたパス、もしくは別パラメータをマッピングします。
+Map Fromには、リクエストURLのパスの一部を表すパターン文字列、もしくは別パラメータ名を指定することが可能です。
+
+==== パスのマッピング
+パスをマッピングする場合、特別なパターン文字列を利用します。
+
+${n}::
++
+`${n}` 形式でパス階層の一部をマッピング可能です。 +
+nはAction名以降のパスの階層数を示します。 +
+`${0}` とした場合Action名より1階層下層のパスの値が、
+`${1}` とした場合Action名より2階層下層のパスの値がマップされます。
+
+${paths}::
++
+`${paths}` とした場合、Action名以降のサブパスがマップされます。
+
+.パスマッピング例
+Action名が `sample/act1` の場合、
+`sample/act1/path1/path2/path3?paramX=fuga` を呼び出した場合、Map Fromに設定した値によって、 それぞれ次の値がパラメータにマップされます。
+
+* ${0} -> path1
+* ${1} -> path2
+* ${paths} -> path1/path2/path3
+
+==== マッピング条件の指定
+Conditionを指定することにより、パラメータマッピングを実行する条件を指定することが可能です。 Conditionはgroovy Scriptで記述可能です。
+
+次の変数がバインドされており条件判断に利用可能です。
+[cols="1,3",options="header"]
+|===
+|変数名 |説明
+|subPath |action名より下層のサブパスを/で分割したString配列
+|fullPath |action名含めたフルパスを/で分割したString配列
+|paramMap |リクエストパラメータのMap
+|===
+
+たとえば、次のようなパラメータマッピング定義がある場合、
+[cols="1,1,2",options="header"]
+|===
+|Name |Map From |Condition
+|defName |${0} |subPath.length==1
+|viewName |${0} |subPath.length==2
+|defName |${1} |subPath.length==2
+|===
+
+action1に対するリクエストパスが、
+
+action1/hogeだった場合::
+defName=hoge
+action1/hoge/fugaだった場合::
+viewName=hoge, defName=fuga
+
+となります。
+
+
+[[Action-Command]]
+=== Commandの設定
+本Actionが呼ばれた際に実行するCommandとその処理方法を設定します。
+
+[cols="1,3",options="header"]
+|===
+|項目 | 内容
+|Execute Command |
+Actionを呼び出された際に実行するCommandです。
+
+|Transaction Propagation a|このCommand実行時のトランザクション制御方法を指定します。
+次のいずれかを指定します。デフォルト値はREQUIREDです。
+
+REQUIRED::
+トランザクションが開始されていなかったら、開始（およびコミット/ロールバック）します。すでにトランザクションが開始されている場合は、そのトランザクションのコンテキストで実行されます。
+REQUIRES_NEW::
+新規にトランザクションを開始（およびコミット/ロールバック）します。既存のトランザクションが存在した場合は、一旦サスペンドされ当該処理完了後、レジュームされます。
+NOT_SUPPORTED::
+トランザクション制御をしません。既存のトランザクションが開始されている場合は、一旦そのトランザクションがサスペンドされ当該処理完了後、レジュームされます。
+SUPPORTS::
+トランザクションが開始されていない場合は、トランザクション制御しません。既にトランザクションが開始されている場合は、そのトランザクションのコンテキストで実行されます。
+
+|Rollback when exception |Command実行時に例外がスローされた場合、自動的にトランザクションをロールバックするか否かを指定します。
+|Throw Exception if setRollbackOnly a|トランザクションが本Command処理用に新規作成された際、
+且つCommand処理中にsetRoobackOnlyされた場合、かつ明示的に例外がスローされなかった場合、iPLAss側で例外扱い（ `org.iplass.mtp.transaction.RollbackException` をスロー）にするか否かの設定です。
+|Init Script a| Commandのインスタンスの初期化Script（Groovy Script）を指定可能です。
+
+対象となるCommandのインスタンスは `cmd` としてバインドされています。 +
+初期化Scriptの例を示します。
+
+[source,groovy]
+----
+cmd.propA = 1000;
+cmd.propB = true;
+----
+
+NOTE: 通常はインスタンスが複数のリクエストで共有されるため、この初期化処理は一度のみ実行されます。 +
+ただしCommand定義にて、`instantiated for each request` 設定を有効化している場合、リクエストの都度、初期化処理が実行されます。
+|===
+
+
+==== 複合Commandの設定
+1つのActionに対して複数のCommandを紐付けすることが可能です。
+
+複数のCommandが紐付けされた場合、デフォルトでは次のような動作になります。
+
+* 定義された順番にCommandを実行
+* 最後に定義されたCommandの実行結果ステータスを全体の実行結果ステータスとする
+
+条件により、処理順を変更するなど複雑な制御が必要な場合、Composite Command Configにて制御Scriptを記述可能です。
+
+
+===== Composite Command Configの設定
+[cols="1,3",options="header"]
+|===
+|項目 | 内容
+|Transaction Propagation a|この複合Command実行時のトランザクション制御方法を指定します。
+
+指定可能な値は、単一のCommand設定のTransaction Propagationの値と同様です。
+デフォルト値はREQUIREDです。
+
+|Rollback when exception |この複合Command実行時に例外がスローされた場合、自動的にトランザクションをロールバックするか否かを指定します。
+
+|Throw Exception if setRollbackOnly a|トランザクションが本複合Command処理用に新規作成された際、
+且つCommand処理中にsetRoobackOnlyされた場合、かつ明示的に例外がスローされなかった場合、iPLAss側で例外扱い（ `org.iplass.mtp.transaction.RollbackException` をスロー）にするか否かの設定です。
+
+|Initilize Script a|
+複数のCommandの初期化処理のスクリプトを設定可能です。
+あらかじめ変数の `cmd` にCommandのインスタンスが配列でバインドされています。
+
+.設定例
+[source,groovy]
+----
+cmd[0].propA = 10
+cmd[1].propB = 'hoge'
+----
+
+上記の場合、一覧の1番目(配列のindex=0)のCommandのプロパティpropAに10、
+2番目(配列のindex=1)のコマンドのプロパティpropBにhogeといった値が設定されます。
+
+NOTE: 複合Commandを構成しているCommand定義にて、`instantiated for each request` 設定を有効化しているものがひとつでも存在する場合、リクエストの都度、初期化処理が実行されます。
+
+
+|Execute Rule Script a| Commandが複数定義された場合に、Commandの実行順やステータスによる処理分岐などの制御をGroovyScriptで記述することが可能です。 +
+実行スクリプトが未指定の場合は定義されたCommandの順番に実行され、実行結果ステータスは最後のCommandの戻り値が利用されます。 +
+
+あらかじめ変数の `cmd` にCommandのインスタンスが配列でバインドされています。
+また、`request` の変数名でRequestContextのインスタンスがバインドされています。
+
+.記述例
+[source,groovy]
+----
+
+if (cmd[0].execute(request) == 'OK') {
+    return cmd[1].execute(request)
+} else {
+    return cmd[2].execute(request)
+}
+----
+
+|===
+
+
+[[Action-Result]]
+=== 結果の設定
+Commandの実行結果に対応した出力内容を設定します。 +
+設定は、実行結果ステータス、もしくは発生した例外クラスごとに設定することが可能です。 +
+
+[cols="1,3",options="header"]
+|===
+|項目 | 内容
+|Status |
+Commandの `execute()` の戻り値のステータス文字列を指定します。 +
+全ての戻り値で同一の出力を行う場合は `*` を指定します。
+
+|Exception Class Name |
+Exceptionのクラス名を指定します。 +
+Commandの `execute()` 実行時に当該の例外が発生した場合、ここに定義された出力を行います。
+
+|Type a|
+出力内容のタイプを指定します。
+次のいずれかを指定します。
+
+Template::
+Templateの内容を出力します。
+<<Result-Template , Result: Template>> を参照ください。
+
+
+DynamicTemplate::
+動的にTemplateを選択し、内容を出力します。
+<<Result-DynamicTemplate , Result: DynamicTemplate>> を参照ください。
+
+Redirect::
+HTTPリダイレクトします。
+<<Result-Redirect , Result: Redirect>> を参照ください。
+
+Stream::
+バイナリストリームを出力します。
+<<Result-Stream , Result: Stream>> を参照ください。
+
+StaticResource::
+静的リソースを出力します。
+<<Result-StaticResource , Result: StaticResource>> を参照ください。
+
+|===
+
+
+[[Result-Template]]
+==== Result: Template
+選択したTemplateを実行し、結果を出力します。
+次の項目の設定をします。
+
+[cols="1,3",options="header"]
+|===
+|項目 | 内容
+|Template |Template定義を指定します。
+|Layout Action a|TemplateにLayout Actionを適用する場合は指定します。
+Layout Actionについては <<Template-Componentization, Templateの部品化>> を参照ください。
+
+NOTE: Template自体にLayout Actionが指定されている場合、本設定（Result: Templateでの設定）が優先されます。
+
+|Set Content Dissposition a|
+有効化すると HTTPレスポンスに `Content-Disposition` ヘッダーが付与されます。
+
+|Content Dissposition Type a|
+
+Attachment::
+`Content-Disposition: attachment` が設定されます。
+
+Inline::
+`Content-Disposition: inline` が設定されます。
+
+Default::
+<<../../serviceconfig/index.adoc#WebFrontendService, WebFrontendService>> で定義されるデフォルト値が適用されます。
+
+
+|FileName AttributeName|
+Content-Dispositionヘッダーのfilename属性に設定する値を指定します。
+
+ダウンロードファイルのファイル名を格納したRequestContext上のattribute名を指定します。 +
+ファイル名自体は、Commandの処理等で事前にRequestContextに格納します。
+
+ファイル名が未指定（RequestContextから指定attribute名で取得した値がnull、もしくはFileName AttributeNameが未設定）の場合は、Template名がファイル名として利用されます。
+|===
+
+[[Result-DynamicTemplate]]
+==== Result: DynamicTemplate
+Templateを動的に選択し、その選択されたTemplateを結果として出力します。
+
+出力するTemplateを選択するロジックはCommand内に記述します。
+選択したTemplate名をRequestContextに格納します。
+
+.Commandでの実装例
+[source, java]
+----
+public class SampleCommand implements Command {
+
+    @Override
+    public String execute(RequestContext request) {
+        //do business logic
+        :
+
+        //resolve Template to output
+        if (someDecision()) {
+            request.setAttribute("templateName", "some/Template1"); <1>
+        } else {
+            request.setAttribute("templateName", "some/Template2");
+        }
+
+        return "SUCCESS";
+    }
+
+    :
+}
+----
+<1> RequestContextに、任意のattribute名でTemplate名を格納します。attribute名はResult: DynamicTemplate定義のTemplate AttributeNameに指定します。
+
+Result: DynamicTemplateでは次の項目の設定をします。
+
+[cols="1,3",options="header"]
+|===
+|項目 | 内容
+|Template AttributeName |RequestContextにTemplate名を格納する際のattribute名を指定します。
+|Layout Action AttributeName a|
+RequestContextにLayout Aciton名を格納する際のattribute名を指定します。
+Layout Actionについては <<Template-Componentization, Templateの部品化>> を参照ください。
+
+NOTE: Template自体にLayout Actionが指定されている場合、本設定（Result: DynamicTemplateでの設定）が優先されます。
+
+|Set Content Dissposition a|
+有効化すると HTTPレスポンスに `Content-Disposition` ヘッダーが付与されます。
+
+|Content Dissposition Type a|
+
+Attachment::
+`Content-Disposition: attachment` が設定されます。
+
+Inline::
+`Content-Disposition: inline` が設定されます。
+
+Default::
+<<../../serviceconfig/index.adoc#WebFrontendService, WebFrontendService>> で定義されるデフォルト値が適用されます。
+
+
+|FileName AttributeName|
+Content-Dispositionヘッダーのfilename属性に設定する値を指定します。
+
+ダウンロードファイルのファイル名を格納したRequestContext上のattribute名を指定します。 +
+ファイル名自体は、Commandの処理等で事前にRequestContextに格納します。
+
+ファイル名が未指定（RequestContextから指定attribute名で取得した値がnull、もしくはFileName AttributeNameが未設定）の場合は、Template名がファイル名として利用されます。
+|===
+
+[[Result-Redirect]]
+==== Result: Redirect
+HTTPリダイレクト（ステータスコード：302）を行います。
+
+リダイレクト先のURL（String）はCommand内にて任意のattribute名にてRequestContextに格納します。
+
+[cols="1,3",options="header"]
+|===
+|項目|内容
+|RedirectPath AttributeName |RequestContextにリダイレクト先のURL（String）を格納する際のattribute名を指定します。
+
+|set Allow ExternalLocation |有効化した場合、外部サイトへのリダイレクトが可能になります。
+|===
+
+[[Result-Stream]]
+==== Result: Stream
+ストリームデータを出力します。
+
+Command内の処理にてRequestContextに格納されたストリームデータを返します。
+ストリームデータは次のいずれかのインスタンスを指定可能です。
+
+java.io.InputStream::
+指定されたInputStreamを出力します。InputStreamのcloseはiPLAssが自動的に行います。
+
+byte[]::
+指定されたbyte[]を出力します。
+
+org.iplass.mtp.entity.BinaryReference::
+<<Result-Stream-BinaryReference, BinaryReferenceの出力>> を参照ください。
+
+org.iplass.mtp.web.ResultStreamWriter::
+<<Result-Stream-ResultStreamWriter, ResultStreamWriterの出力>> を参照ください。
+
+[cols="1,3",options="header"]
+|===
+|項目|内容
+|Stream AttributeName |
+RequestContextにストリームデータを格納する際のattribute名を指定します。
+|ContentType AttributeName a|
+RequestContextにContentTypeを格納する際のattribute名を指定します。
+
+NOTE: 指定されたストリームデータがBinaryReferenceの場合は、値を設定しなくともBinaryReferenceの情報から自動的に解決されます。
+
+|ContentLength AttributeName a|
+RequestContextにContentLengthを格納する際のattribute名を指定します。
+
+NOTE: 指定されたストリームデータがBinaryReference、byte[]の場合は、値を設定しなくと自動的に解決されます。
+
+|Accept Ranges a|
+ファイルダウンロード時にRangeヘッダに対応します。
+ファイルダウンロードのレジュームが可能になります。
+
+Range対応する場合は、同一リクエストパラメータで同一の結果（コンテンツデータ）が返却されることが前提となります（参照透過性が必要）。 +
+また、出力対象のコンテンツデータのサイズが既知（※）であることが前提となります。
+
+※対象データが、BinaryReference、byte[]もしくは、RequestContextにContentLength AttributeNameに指定されるキーで、ContentLengthの値が設定されていること。
+
+|Set Content Dissposition a|
+有効化すると HTTPレスポンスに `Content-Disposition` ヘッダーが付与されます。
+
+|Content Dissposition Type a|
+
+Attachment::
+`Content-Disposition: attachment` が設定されます。
+
+Inline::
+`Content-Disposition: inline` が設定されます。
+
+Default::
+<<../../serviceconfig/index.adoc#WebFrontendService, WebFrontendService>> で定義されるデフォルト値が適用されます。
+
+
+|FileName AttributeName a|
+Content-Dispositionヘッダーのfilename属性に設定する値を指定します。
+
+ダウンロードファイルのファイル名を格納したRequestContext上のattribute名を指定します。 +
+ファイル名自体は、Commandの処理等で事前にRequestContextに格納します。
+
+ファイル名が未指定（RequestContextから指定attribute名で取得した値がnull、もしくはFileName AttributeNameが未設定）の場合は次の値が設定されます。
+
+ストリームデータがBinaryReferenceの場合::
+BinaryReferenceの情報からファイル名を設定します。
+
+ストリームデータがBinaryReference以外の場合::
+Action名がファイル名として利用されます。
+|===
+
+[[Result-Stream-BinaryReference]]
+===== BinaryReferenceの出力
+BinaryReferenceはEntityに定義されるBinaryReference型のプロパティの値です。
+`org.iplass.mtp.entity.EntityManager` のapiを利用し、Entityから取得、
+もしくはlobIdを指定して直接取得することが可能です。
+
+以下にBinaryReferenceを利用してストリームデータを出力するCommand（groovy script）の例を示します。
+
+.実装例（groovy script）
+[source,groovy]
+----
+import org.iplass.mtp.entity.BinaryReference;
+
+def lobId = request.getParamAsLong("lobId");
+BinaryReference br = em.loadBinaryReference(lobId);
+
+request.setAttribute("resultStream", br); <1>
+
+return "SUCCESS";
+----
+<1> Stream AttributeNameに `resultStream` が定義されている場合
+
+
+[[Result-Stream-ResultStreamWriter]]
+===== ResultStreamWriterの出力
+ResultStreamWriterは、動的にストリームデータの出力処理を行いたい場合に利用します。
+`org.iplass.mtp.web.ResultStreamWriter` を実装し、
+そのインスタンスをストリームデータとしてRequestContextに格納します。
+
+.実装例
+[source,java]
+----
+import org.iplass.mtp.command.Command;
+import org.iplass.mtp.command.RequestContext;
+import org.iplass.mtp.web.ResultStreamWriter;
+
+public class SampleCommand implements Command {
+
+	@Override
+	public String execute(RequestContext request) {
+
+		:
+
+		ResultStreamWriter rsw = out -> { <1>
+
+			//write data to out
+			:
+
+			out.write(binaryData);
+			:
+
+		};
+
+		//set ResultStreamWriter and its metadata
+		request.setAttribute("resultStream", rsw); <2>
+		request.setAttribute("contentType", "image/svg+xml"); <3>
+		request.setAttribute("fileName", "sample.svg"); <4>
+
+		return "SUCCESS";
+	}
+
+}
+----
+<1> ResultStreamWriterのインスタンスを生成します。
+<2> Stream AttributeNameに `resultStream` が定義されている場合
+<3> ContentType AttributeNameに `contentType` が定義されている場合
+<4> FileName AttributeNameに `fileName` が定義されている場合
+
+[[Result-StaticResource]]
+==== Result: StaticResource
+選択した静的リソース（Static Resource）を返します。
+Static Resourceは単一のファイル、もしくはzipでまとめられた複数のファイルを表します。
+Static Resource自体の詳細は、 <<StaticResource, Static Resource>> を参照してください。
+
+Static Resourceがzipファイルの場合は、返却するファイルのzip内のパス文字列（entryPath）を指定する必要があります。
+entrypathはRequestContext、またはリクエストパラメータから任意のキー名で取得されます。
+
+[cols="1,3",options="header"]
+|===
+|項目|内容
+|StaticResource|
+別途定義されたStatic Resourceの名前を指定します。
+|EntryPath AttributeName|Static Resourceがzipファイルの場合、zip内のパス文字列（entryPath）を取得する際のキー名を指定します。
+
+Static Resourceの場合、entryPathは、RequestContextのattribute、リクエストパラメータの両方から取得されます。
+
+|Set Content Dissposition a|
+有効化すると HTTPレスポンスに `Content-Disposition` ヘッダーが付与されます。
+
+|Content Dissposition Type a|
+
+Attachment::
+`Content-Disposition: attachment` が設定されます。
+
+Inline::
+`Content-Disposition: inline` が設定されます。
+
+Default::
+<<../../serviceconfig/index.adoc#WebFrontendService, WebFrontendService>> で定義されるデフォルト値が適用されます。
+
+ファイル名は、Static Resourceがzipファイルの場合はentryPathで指定されるファイルから適切に解決します。Static Resourceが単一ファイルの場合は、Action名がファイル名となります。
+|===
+
+==== URLをダイレクトにマッピング
+次のような定義を行うことで、StaticResourceのzip内のファイルをダイレクトにURLにマッピングすることが可能です。
+
+. <<Param-Mapping, パラメータマッピング>> にて、パラメータ名： `entryPath` に `${paths}` をマッピング
+
+. Commandは未指定
+
+. Result: StaticResourceのEntryPath AttributeNameに `entryPath` を指定。
+
+
+上記の設定を行ったActionを `sr` の名前で作成した場合、
+
+https://[server]/[tenantContext]/sr/path/of/entry.jpg
+
+を呼び出した場合、
+zip内の `path/of/entry.jpg` ファイルが出力されます。
+
+CAUTION: URLダイレクトにマッピングした場合、当該Actionを参照可能なユーザーはzip内のファイルはすべて参照可能となることに注意してください。
+
+[[Action-ServerCache]]
+=== サーバキャッシュ設定
+レスポンス結果をサーバでキャッシュする方法を設定します。
+キャッシュ基準、有効期間、キャッシュ可能な結果ステータス、関連するEntityを適切に設定する必要があります。
+
+
+==== キャッシュ基準
+サーバキャッシュ設定では、キャッシュする際の単位（キャッシュ基準）を定義する必要があります。
+キャッシュ基準の定義の方法はいくつか存在します。
+
+===== ParameterMatch
+HTTPリクエストパラメータの一致をもって、キャッシュ単位を制御します。
+指定されたパラメータ名の値が一致する場合、同一のキャッシュとみなします。
+パラメータ名は複数設定が可能です。
+
+===== JavaClass
+キャッシュ基準の定義をjavaクラスで実装します。
+`org.iplass.mtp.web.actionmapping.ActionCacheCriteria` を実装します。
+ActionCacheCriteriaの実装では、
+キャッシュを一意に特定するためのキー（文字列）を返却するように実装します。
+
+.実装例
+[source,java]
+----
+import org.iplass.mtp.auth.AuthContext;
+import org.iplass.mtp.auth.User;
+import org.iplass.mtp.command.RequestContext;
+import org.iplass.mtp.web.actionmapping.ActionCacheCriteria;
+
+/**
+ * Userのランクコードと、パラメータparamAの組み合わせ単位でキャッシュする
+ */
+public class SampleActionCacheCriteria implements ActionCacheCriteria {
+
+	@Override
+	public String createCacheKey(RequestContext request) {
+
+		User user = AuthContext.getCurrentContext().getUser();
+
+		if (user.isAnonymous()) {
+			return null; <1>
+		}
+
+		StringBuilder sb = new StringBuilder();
+		sb.append(user.getRank().getCode());
+		sb.append(",");
+		sb.append(request.getParam("paramA"));
+
+		return sb.toString(); <2>
+	}
+
+}
+----
+<1> nullを返却した場合、当該のリクエストの出力はキャッシュしません。
+<2> Userのランクコード、paramAの値を結合してキャッシュ用のキーを生成しています。
+
+
+===== Script
+キャッシュ基準の定義をGroovy Scriptで実装します。
+キャッシュを一意に特定するためのキー（文字列）を返却するように実装します。
+
+以下の変数がバインドされています。
+
+[cols="1,3",options="header"]
+|===
+|変数名 |説明
+|request |RequestContextのインスタンス
+|user |UserBindingのインスタンス。
+UserBindingについては、 <<groovyscript, Groovy Script>> を参照ください。
+|auth |AuthContextのインスタンス
+|===
+
+.実装例
+[source,java]
+----
+if (user.anonymous) {
+	return null <1>
+}
+
+"${user.rank.code},${request.param.paramA}" <2>
+----
+<1> nullを返却した場合、当該のリクエストの出力はキャッシュしません。
+<2> Userのランクコード、paramAの値を結合してキャッシュ用のキーを生成しています。
+
+
+==== キャッシュに関連するEntity
+キャッシュしたコンテンツをEntity更新時に無効化したい場合、その関連しているEntityを紐付けしておくことで、当該Entityが更新、削除された際にキャッシュが無効化されます。
+
+紐付きの管理の仕方には以下が存在します。
+
+SPECIFIC_ID::
+oid単位で関連を管理します。当該oidのEntityが更新された場合、キャッシュをクリアします。
+
+WHOLE::
+Entity全体で関連を管理します。当該Entityのいずれかのデータが更新された場合、キャッシュをクリアします。
+
+当該Actionの処理中のEntityManager経由のEntity操作は自動的に記録され、キャッシュに紐付けられます。
+EntityManager経由で操作はしていないが、特定のEntityをActionのキャッシュに紐付けしたい場合、
+`org.iplass.mtp.web.actionmapping.ActionUtil` で提供されるメソッドを利用して明示的に紐付けることも可能です。
+
+WARNING: Entity更新有無は、EntityManagerのapiを経由した更新処理を監視します。直接のDB更新した場合などは正常にキャッシュ制御されません。
+
+[[Action-Annotation]]
+=== Action定義（アノテーション）
+JavaにてCommandを実装する場合、クラス自体にアノテーションでAction定義を設定することが可能です。
+単一のCommandに複数のActionMappingをアノテーションすることも可能です。
+
+NOTE: アノテーションで定義されたAction定義はすべてのテナントで有効化されます。
+
+Action定義を行うためのアノテーションは `@ActionMapping` です。設定可能な要素はAdminConsoleでの設定項目に準じます。
+詳細はjavadocを参照ください。
+
+NOTE: Commandクラス以外のクラス、インタフェースに対して@ActionMapping定義することも可能です。ただし、この場合command属性もしくはcompositeCommand属性にてcommandClassを明示的に指定する必要があります。
+
+.アノテーションによる定義のサンプル
+[source,java]
+----
+import org.iplass.mtp.command.annotation.action.ActionMapping;
+:
+
+@ActionMapping(name="tutorial",
+    displayName="チュートリアルアクション",
+	tokenCheck=@TokenCheck,
+    paramMapping=@ParamMapping(name="view", mapFrom="{0}"),
+    result={
+        @Result(status="OK", type=Type.TEMPLATE,
+                value="/template/okview"),
+		@Result(status="NG", type=Type.JSP,
+				value="/jsp/sample/ng.jsp",
+				templateName="sample/ng",
+				layoutActionName="sample/layout")
+    }
+)
+@CommandClass(name="tutorial")
+public class TutorialCommand implements Command {
+    @Override
+    public String execute(RequestContext request) {
+
+        // 処理
+
+        if ( ... ) {
+            return "NG";
+        } else {
+            return "OK";
+        }
+    }
+}
+----

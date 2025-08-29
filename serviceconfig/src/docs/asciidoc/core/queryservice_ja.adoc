@@ -1,0 +1,67 @@
+[[QueryService]]
+=== QueryService
+EQLの外部ヒント句を管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.query.QueryService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.query.QueryService
+----
+
+==== QueryServiceの設定
+QueryServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| externalHintFile | String | ヒント句の外だし機能を利用する場合、ヒント句を設定するプロパティファイルのパス（もしくはclasspath上のリソースパス）。
+| externalHints | HintComment、複数指定可| nameに外部ヒント名、valueにヒント句。
+|===
+
+externalHintFileにプロパティファイルのパスを設定した場合、キー名と対応するヒント句を指定します。
+
+----
+hint1=native(q0t0, 'FORCE INDEX(obj_store__USER_ISTR_index_3)')
+hint2=native(q0t0, 'FORCE INDEX(obj_store__USER_ISTR_index_1)')
+:
+:
+----
+
+EQLにて外部ヒントを利用するには、EQL文で@hint(keyName)を指定することで、プロパティファイルやexternalHintsで指定したヒント句を読み込めます。
+
+.EQL例
+以下のようにEQL文の中に@hintを指定します。
+----
+select /*+ @hint(hint1) */ propA, propB, refX.name from HogeEntity where refX.propFuga='piyo'
+----
+
+内部では@hintの内容が展開され、以下のようになります。
+----
+select /*+ native(q0t0, 'FORCE INDEX(obj_store__USER_ISTR_index_3)') */ propA, propB, refX.name from HogeEntity where refX.propFuga='piyo'
+----
+
+また、org.iplass.mtp.entity.query.hint.Hint#externalHint(String key)メソッドを呼び出すことで、Hint句をJavaインスタンスとして取得できます。
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.query.QueryService</interface>
+		<!--
+			if use external hint, set propertyFile path(file path or classpath's resource path) or add inline.
+		 -->
+		 <!--
+		<property name="externalHintFile" value="/externalHint.properties" />
+
+		<property name="externalHints">
+			<property name="hint1" value="native(...)" />
+			<property name="hint2" value="index(...)" />
+		</property>
+		  -->
+</service>
+----

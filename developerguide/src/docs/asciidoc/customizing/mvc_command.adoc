@@ -1,0 +1,381 @@
+[[Command]]
+== Command
+`org.iplass.mtp.command.Command` を実装する処理ロジックの本体（コード）とそのメタデータです。 Javaもしくは、Groovyで実装が可能です。 iPLAssが提供するjavaBeanへのバインディング機能、バリデーション機能、EntityManagerなどを利用し、リクエストを処理するロジックを記述します。
+
+.Commandの実装例
+[source,java]
+----
+import org.iplass.mtp.command.Command;
+import org.iplass.mtp.command.RequestContext;
+
+public class TutorialCommand implements Command {
+    @Override
+    public String execute(RequestContext request) {
+        String paramX = request.getParam("x");
+
+        boolean success = SomeClass.someMethod(paramX);
+
+        if (success) {
+            return "SUCCESS";
+        } else {
+            return "FAIL";
+        }
+    }
+}
+----
+
+`execute()` メソッド内にリクエストに対する処理を記述します。処理結果を表現するステータス（文字列）を返却するように実装します。
+`org.iplass.mtp.command.RequestContext` はHttpServletRequestを抽象化するインタフェースです。
+
+IMPORTANT: Commandのインスタンスは、デフォルトの設定では、Servletと同様に複数のリクエストから共有されます。フィールドにはリクエストやセッション、ユーザーに依存する情報を保持しないでください。
+
+作成したCommandクラス/コードはメタデータ（Command定義）としてiPLAssに登録する必要があります。
+Command定義はadminConsleから作成、もしくはJavaで記述されたCommandクラス自体にアノテーション記述することより定義可能です。
+
+[[Command-Implements]]
+=== Commandの実装
+Commandの実装パターンは２つ存在します。
+
+[[Command-Implements-Class]]
+==== クラス形式によるCommandの実装
+`org.iplass.mtp.command.Command` インターフェースを実装するクラスを作成します。
+Javaで実装するか、AdminConsole上からGroovyで記述することが可能です。
+
+.実装例(Java)
+[source,java]
+----
+import org.iplass.mtp.command.Command;
+import org.iplass.mtp.command.RequestContext;
+
+public class TutorialCommand implements Command {
+    @Override
+    public String execute(RequestContext request) {
+        String paramX = request.getParam("x");
+
+        boolean success = SomeClass.someMethod(paramX);
+
+        if (success) {
+            return "SUCCESS";
+        } else {
+            return "FAIL";
+        }
+    }
+}
+----
+
+.実装例(Groovy)
+[source,groovy]
+----
+import org.iplass.mtp.command.Command;
+import org.iplass.mtp.command.RequestContext;
+
+class TutorialCommand implements Command {
+
+    String execute(RequestContext request) {
+        def paramX = request.getParam("x")
+
+        def success = SomeClass.someMethod(paramX)
+
+        if (success) {
+            return "SUCCESS"
+        } else {
+            return "FAIL"
+        }
+    }
+}
+----
+
+[[Command-Implements-Script]]
+==== Groovy Script形式によるコマンドの実装
+AdminConsole上からGroovyで記述する際に、Groovy Script形式で記述することが可能です。
+Scriptは最終的に処理結果を表現するステータス（文字列）を返却するように実装します。
+
+.実装例(Groovy Script)
+[source,groovy]
+----
+def paramX = request.getParam("x")
+def success = SomeClass.someMethod(paramX)
+
+success ? "SUCCESS": "FAIL"
+----
+
+Groovy Scriptにはあらかじめ次の変数名でそれぞれのインスタンスがバインドされています。
+
+[cols="1,3a",options="header"]
+|===
+|変数名 | インスタンス
+|request | `org.iplass.mtp.command.RequestContext` のインスタンス
+|em | `org.iplass.mtp.entity.EntityManager` のインスタンス
+|edm | `org.iplass.mtp.entity.definition.EntityDefinitionManager` のインスタンス
+|auth | `org.iplass.mtp.auth.AuthContext` のインスタンス
+|===
+
+[[Command-Admin]]
+=== Command定義（AdminConsole）
+AdminConsoleを利用してCommandを定義する方法を説明します。
+
+==== Command定義の作成
+メニュー右クリックし「コマンドを作成する」を選択します。
+Typeとして、JavaかScriptを選択します。別途編集画面で変更することが可能です。
+
+==== Commandの設定項目
+Commandの編集画面は２つのパートに分かれます。
+
+===== 共通設定
+[cols="1,3",options="header"]
+|===
+|項目 | 内容
+|Name | Command定義名です。 +
+/ 区切りで階層化可能です。 +
+例： gem/auth/LoginCommand
+|Display Name | 表示名です。現状、AdminConsole上でのみ利用されます。
+|Description | Commandの概要文です。現状、AdminConsole上でのみ利用されます。
+|===
+
+===== Command固有設定
+[cols="1,3a",options="header"]
+|===
+|項目|内容
+|Type |
+コマンドの実装方法を選択します。 +
+実装方法の詳細については <<Command-Implements, Commandの実装>> の章を参照してください。
+
+Java::
+Javaにて実装します。
+Script::
+Groovyにて実装します。AdminConsoleより、コードを直接編集します。
+|read only proccess|
+このCommandの処理をreadOnlyトランザクションで実行可能な場合にtrueを指定します。 +
+デフォルト：false
+|instantiated for each request|
+このCommandのインスタンスをリクエスト処理の都度、newする場合にtrueを指定します。 +
+デフォルト：false(同一のインスタンスを共有する)
+|Java ClassName |（TypeがJavaの場合） +
+Commandを実装するJavaクラスを指定します。
+|Script |（TypeがScriptの場合） +
+Commandの処理を実装するGroovyのコードを記述します。
+|===
+
+[[Command-Annotation]]
+=== Command定義（アノテーション）
+JavaにてCommandを実装する場合、Commandクラス自体にアノテーションでCommand定義を設定することが可能です。
+
+NOTE: アノテーションで定義されたCommand定義はすべてのテナントで有効化されます。
+
+Command定義を行うためのアノテーションは `@CommandClass` です。設定可能な要素はAdminConsoleでの設定項目に準じます。
+詳細はjavadocを参照ください。
+
+
+.アノテーションによる定義のサンプル１
+[source,java]
+----
+package sample;
+import org.iplass.mtp.command.annotation.CommandClass;
+
+@CommandClass(name="sample/tutorial", displayName="チュートリアル",
+        description="チュートリアルの説明です")
+public class TutorialCommand implements Command {
+    @Override
+    public String execute(RequestContext request) {
+
+        ：
+        ：
+
+        return "OK";
+    }
+}
+----
+
+アノテーションの要素が未指定の場合はデフォルト値が適用されます。 +
+nameが未指定の場合は、クラス名の"."を"/"に置換したものがnameになります。
+下記の例だと"sample/TutorialCommand"というnameになります。
+
+.アノテーションによる定義のサンプル２
+[source,java]
+----
+package sample;
+import org.iplass.mtp.command.annotation.CommandClass;
+
+@CommandClass
+public class TutorialCommand implements Command {
+    @Override
+    public String execute(RequestContext request) {
+
+        ：
+        ：
+
+        return "OK";
+    }
+}
+----
+
+==== アノテーションされているクラスの解決
+iPLAssにおいて、アノテーションされているクラスは自動解決はされません（意図せぬ定義の読み込みを防ぐため）。
+service-configの <<../../serviceconfig/index.adoc#MetaDataRepository,MetaDataRepository>> の設定にて明示的に読み込むクラスを指定する必要があります。
+
+.設定例
+[source,xml]
+----
+<service>
+    <interface>org.iplass.mtp.impl.metadata.MetaDataRepository</interface>
+    <property name="annotatedClass" value="sample.TutorialCommand" additional="true" />
+    <property name="annotatedClass" value="sample.AnotherCommand" additional="true" />
+
+    :
+    :
+</service>
+----
+
+多数のアノテーションされたクラスが存在する場合、
+設定ファイル上にすべてのクラスを羅列せず、 `@MetaDataSeeAlso` アノテーションを利用することも可能です。
+
+
+.@MetaDataSeeAlsoの利用
+[source,java]
+----
+package sample;
+import org.iplass.mtp.command.annotation.CommandClass;
+import org.iplass.mtp.command.annotation.MetaDataSeeAlso;
+
+@MetaDataSeeAlso({
+    ACommand.class,
+    BCommand.class
+})
+@CommandClass
+public class MainCommand implements Command {
+    @Override
+    public String execute(RequestContext request) {
+
+        ：
+        ：
+
+        return "OK";
+    }
+}
+----
+
+この場合、MainCommandが読み込まれる際に、ACommand、BCommandも同時に読み込まれます。
+
+NOTE: @MetaDataSeeAlsoアノテーションはCommandクラス以外に指定し、そのクラスをservice-configにて指定することも可能です。
+
+
+[[Bean-Param-Mapper]]
+=== パラメータのBean/Entityへのマッピング
+リクエストパラメータの値をBeanやEntityに自動的にマッピングする機能を提供します。
+マッピングを行う場合は、 `org.iplass.mtp.command.beanmapper.BeanParamMapper` を利用します。
+
+.BeanParamMapperの利用例
+[source,java]
+----
+@CommandClass
+public class SampleCommand implements Command {
+    private BeanParamMapper mapper = new BeanParamMapper()
+            .whitelistPropertyNameRegex("^(age|name|details\..*)$"); <1>
+
+    @Override
+    public String execute(RequestContext request) {
+        FormBean bean = new FormBean();
+        mapper.populate(bean, request.getParamMap()); <2>
+
+        :
+        :
+
+        return "OK";
+    }
+}
+----
+<1> BeanParamMapperの初期化を行います。Commandのコンストラクト時に行います。
+<2> beanにパラメータ値を格納します。"age", "name", "details.id" などwhitelistPropertyNameRegexにマッチするパラメータがプロパティにセットされます。
+
+==== パラメータ名のルール
+リクエストパラメータ名（formのinputタグのnameなど）にて、Beanのどのプロパティに値をセットするかを指定します。
+デフォルトの設定では、以下のような命名規則が適用されます。
+
+* パラメータ名と名前が一致するプロパティに値をセットします
+* "."により、ネストされたプロパティを表現します。
+* "[x]"(xは数値)により、List/配列のインデックス指定可能です。
+* "['key']"(keyは任意の文字列)により、Mapのキー指定可能です。
+Mapのキー表現"propA['key']"は、propA.keyと表現も可能です。
+
+CAUTION: パラメータ名、値は改竄の恐れがあることを注意してください。パラメータ値を受ける専用のBean(FormBean)を作成しない場合、whitelistPropertyNameRegexにて設定可能なプロパティを制限することを推奨します。
+
+.formの定義とbeanの呼び出されるメソッドのイメージ
+[cols="1,1",options="header"]
+|===
+|HTML上のFormでの定義 | 呼び出されるメソッドのイメージ
+|<input type="text" name="age" value="25"> | bean.setAge(25)
+|<input type="text" name="accout.name" value="testUser"> | bean.getAccount().setName("testUser")
+|<input type="text" name="details[0].id" value="123"> | bean.getDetails()[0].setId(123)
+|<input type="text" name="map['key1'].id" value="123"> | bean.getMap().get('key1').setId("123")
+|<input type="text" name="map.key1.id" value="123"> | bean.getMap().get('key1').setId("123")
+|===
+
+
+パラメータの値は可能な限りbeanの各プロパティの型に自動変換を行います。 変換出来なかった場合は、 `org.iplass.mtp.command.beanmapper.MappingException` がスローされます。
+
+BeanParamMapperの設定値、詳細はjavadocを参照してください。
+
+
+[[Bean-Validation]]
+=== Bean Validationによる検証
+BeanParamMapperによるマッピング処理の際に、Bean Validationによる検証を同時に行うことが可能です。
+Bean Validationを実行する場合は、withValidationオプションを有効化します。
+
+.BeanParamMapperの利用例
+[source,java]
+----
+@CommandClass
+public class SampleCommand implements Command {
+    private BeanParamMapper mapper = new BeanParamMapper()
+            .withValidation() <1>
+            .whitelistPropertyNameRegex("^(age|name|details\..*)$");
+
+    @Override
+    public String execute(RequestContext request) {
+        FormBean bean = new FormBean();
+        mapper.populate(bean, request.getParamMap()); <2>
+
+        :
+        :
+
+        return "OK";
+    }
+}
+----
+<1> Bean Validaitonを有効化します
+<2> beanにマップする際にBean Validationも実行されます。
+
+
+検証に失敗した場合は、 `org.iplass.mtp.command.beanmapper.MappingException` がスローされます。
+
+==== EntityのBean Validation
+Entityのプロパティの検証を行うValidEntityバリデータを提供します。
+Entity定義の各プロパティに定義されたvalidationの設定に従った検証を実行します。
+
+.ValidEntityの利用例
+[source,java]
+----
+import org.iplass.mtp.beanvalidation.constraints.ValidEntity;
+
+public class SampleBean {
+    private User user;
+
+    @ValidEntity(properties={"accountId", "rank.*", "groups.**"}) <1>
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    :
+    :
+
+}
+----
+<1> propertiesを指定することにより、検証対象プロパティを指定可能です。
+未指定の場合は、ネストされたEntity含め、すべてのプロパティの検証を行います。
+
+ValidEntityの設定値、詳細はjavadocを参照してください。
+

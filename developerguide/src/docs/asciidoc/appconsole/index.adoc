@@ -1,0 +1,8 @@
+= EUC
+:_hreflang-path: developerguide/appconsole/index.html
+:_relative-root-path: ../../
+:_menu-title-ee-only: true
+
+include::about.adoc[]
+
+include::appcon.adoc[]

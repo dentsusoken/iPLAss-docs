@@ -1,0 +1,26 @@
+= Generic Entity Manager (EntityView)
+:_hreflang-path: developerguide/genericentitymanager/entityview/index.html
+:_relative-root-path: ../../../
+
+[[entityview]]
+== EntityView
+GEMはエンティティに対して、検索一覧と詳細画面を自動生成する仕組みを提供しています。
+EntityViewを利用することで、エンティティの検索一覧と詳細画面をカスタマイズし、表示項目の制御や入力方法の変更、ユーザー（ロール）に合わせたレイアウトの設定を可能とします。
+
+include::operationguide.adoc[]
+
+include::genericentityview.adoc[]
+
+include::searchlayout.adoc[]
+
+include::detaillayout.adoc[]
+
+include::bulklayout.adoc[]
+
+include::propertyeditor.adoc[]
+
+include::viewcontrol.adoc[]
+
+include::filter.adoc[]
+
+include::customize.adoc[]

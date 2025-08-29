@@ -1,0 +1,90 @@
+[[ValidationService]]
+=== ValidationService
+入力チェックを行うためのサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.validation.ValidationService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.validation.ValidationService
+----
+
+==== ValidationService
+ValidationServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| beanValidation | <<BeanValidationConfig>> | Bean Validationの設定。
+|===
+
+[[BeanValidationConfig]]
+.BeanValidationConfig
+Bean Validationの設定を行います。
+
+classはorg.iplass.mtp.impl.validation.bean.BeanValidationConfigを指定します。
+以下の項目を指定可能です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| providerClass | String | javax.validation.spi.ValidationProviderの実装クラス名。
+| messageInterpolator | <<MessageInterpolator>> | MessageInterpolatorの設定。
+| properties | Properties、複数指定可 | プロバイダ固有のプロパティ。
+|===
+
+[[MessageInterpolator]]
+.MessageInterpolator
+classにjavax.validation.MessageInterpolatorの実装クラスを指定します。
+
+標準でorg.iplass.mtp.impl.validation.bean.TenantContextMessageInterpolatorを提供しています。
+以下の項目を指定可能です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| messageInterpolatorFactory | <<MessageInterpolatorFactory>> | MessageInterpolatorFactoryの実装クラス名。
+|===
+
+[[MessageInterpolatorFactory]]
+.MessageInterpolatorFactory
+classにorg.iplass.mtp.impl.validation.bean.MessageInterpolatorFactoryの実装クラスを指定します。
+
+標準でorg.iplass.mtp.impl.validation.bean.hibernate.HibernateMessageInterpolatorFactoryを提供しています。
+以下の項目を指定可能です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| resourceBundleLocator | <<ResourceBundleLocator>> | ResourceBundleLocatorの実装クラス名。
+| cachingEnabled | boolean | キャッシュが有効か。
+|===
+
+[[ResourceBundleLocator]]
+.ResourceBundleLocator
+classにorg.hibernate.validator.spi.resourceloading.ResourceBundleLocatorの実装クラスを指定します。
+
+標準でorg.iplass.mtp.impl.validation.bean.hibernate.MessageResourceBundleLocatorを提供しています。
+設定可能な項目はありません。
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.validation.ValidationService</interface>
+	<class>org.iplass.mtp.impl.validation.ValidationService</class>
+	<property name="beanValidation">
+		<property name="providerClass" value="org.hibernate.validator.HibernateValidator" />
+		<property name="messageInterpolator" class="org.iplass.mtp.impl.validation.bean.TenantContextMessageInterpolator">
+			<property name="messageInterpolatorFactory" class="org.iplass.mtp.impl.validation.bean.hibernate.HibernateMessageInterpolatorFactory">
+				<property name="resourceBundleLocator" class="org.iplass.mtp.impl.validation.bean.hibernate.MessageResourceBundleLocator" />
+				<property name="cachingEnabled" null="true" />
+			</property>
+		</property>
+	</property>
+</service>
+----

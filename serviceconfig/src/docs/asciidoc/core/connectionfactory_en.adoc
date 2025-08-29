@@ -1,0 +1,281 @@
+[[ConnectionFactory]]
+=== ConnectionFactory
+This is a service for database connection.
+As a database connection implementation, the connection module using DriverManager and the connection module using DataSource are provided as standards.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.rdb.connection.ConnectionFactory
+----
+
+
+==== Implementing Class Name
+.The connection using DriverManager.
+----
+org.iplass.mtp.impl.rdb.connection.DriverManagerConnectionFactory
+----
+
+.The connection using DataSource
+----
+org.iplass.mtp.impl.rdb.connection.DataSourceConnectionFactory
+----
+
+ 
+.The connection using DataSource (read replica supported version)
+----
+org.iplass.mtp.impl.rdb.connection.ReplicationAwareDataSourceConnectionFactory
+----
+
+==== Settings of DriverManagerConnectionFactory
+Set the database connection information using DriverManager.
+
+===== Configurable Items
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| url | String | URL of the database connection string.
+| user | String | User name used for login.
+| password | String | Password of the user connecting.
+| driver | String | The fully qualified class name of the JDBC driver.
+| warnLogThreshold | int | Time threshold (milliseconds) to output warning log. +
+The default value is 0. +
+If a slow query exceeding the threshold is executed, it will be logged.
+| warnLogBefore | boolean | Specify whether to output the advance warning log. +
+Default is true. +
+Currently, if this flag is true, a prior warning log is logged when an EQL query that does not use INDEX is issued.
+| countSqlExecution | boolean |  Specify whether to count and record how many lines of SQL was executed. The recorded result will be logged along with the log output of the execution unit, such as Action and Web API. +
+The default value is true.
+| transactionIsolationLevel | String | Transaction isolation level. The following can be set.
+
+NONE:: Corresponding to Connection's TRANSACTION_NONE
+READ_UNCOMMITTED:: Corresponding to Connection's TRANSACTION_READ_UNCOMMITTED
+READ_COMMITTED:: Corresponding to Connection's TRANSACTION_READ_COMMITTED
+REPEATABLE_READ:: Corresponding to Connection's TRANSACTION_REPEATABLE_READ
+SERIALIZABLE:: Corresponding to Connection's TRANSACTION_SERIALIZABLE
+| clientInfoMap | String, in format of Map | This specifies the value to be set to the clientInfo of Connection in format of Map.
+The name is the name of the clientInfo, and the value is the key name of the MDC for the value to be set.
+If `thread` is specified for value, the thread name is set.
+| clientInfoMaxLength | int | Specifies the maximum number of characters to be set in the clientInfo of Connection.
+-1 means no limit. +
+The default value is -1.
+| isCreateConnectionIfReadOnlyTransaction | boolean | Specifies whether or not to create a new connection when the transaction to be executed is read-only, instead of using unused connections managed in the framework. If true is specified, a new connection is created. +
+Default is `false`.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>
+	<class>org.iplass.mtp.impl.rdb.connection.DriverManagerConnectionFactory</class>
+
+	<property name="url" value="jdbc:oracle:thin:ADDRESS:PORT:DB" />
+	<property name="user" value="yourName" />
+	<property name="password" value="yourPassword" />
+	<property name="driver" value="oracle.jdbc.driver.OracleDriver" />
+
+	<property name="warnLogThreshold" value="0" />
+
+	<property name="clientInfoMap">
+		<property name="OCSID.CLIENTID" value="thread" />
+		<property name="OCSID.ACTION" value="command" />
+	</property>
+	<property name="clientInfoMaxLength" value="64" />
+	<property name="isCreateConnectionIfReadOnlyTransaction" value="false" />
+</service>
+----
+
+==== Settings of DataSourceConnectionFactory
+Set the connection information of the database using DataSource.
+The DataSource is acquired in one of the following ways:
+
+- Obtain via JNDI
+- Create a DataSource instance directly
+
+===== Configurable Items
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| dataSourceName | String | Data Source Name, the default value is `java:comp/env/jdbc/defaultDS`. +
+Specify when acquiring data via JNDI.
+| jndienv.＜key Name＞ | String, Multiple | JNDI's environment property +
+Specify when acquiring data via JNDI.
+| dataSource | javax.sql.DataSource | Specify an class instance of the implementations of javax.sql.DataSource. +
+Specify this item when you want to create the DataSource instance directly.
+| warnLogThreshold | int |  Time threshold (milliseconds) to output warning log. +
+The default value is 0 +
+If a slow query exceeding the threshold is executed, it will be logged.
+| warnLogBefore | boolean |  Specify whether to output the warning log in advance. +
+The default is true. +
+Currently, if this flag is true, a prior warning log is output when an EQL query that does not use INDEX is issued.
+| countSqlExecution | boolean |  Specify whether to count and record how many lines of SQL was executed. The recorded result will be logged along with the log output of the execution unit, such as Action and Web API. +
+The default value is true.
+| transactionIsolationLevel | String | Transaction isolation level. The following can be selected:
+
+NONE:: Corresponding to Connection's TRANSACTION_NONE
+READ_UNCOMMITTED:: Corresponding to Connection's TRANSACTION_READ_UNCOMMITTED
+READ_COMMITTED:: Corresponding to Connection's TRANSACTION_READ_COMMITTED
+REPEATABLE_READ:: Corresponding to Connection's TRANSACTION_REPEATABLE_READ
+SERIALIZABLE:: Corresponding to Connection's TRANSACTION_SERIALIZABLE
+| clientInfoMap | String, in format of Map | This specifies the value to be set to the clientInfo of Connection in format of Map.
+The name is the name of the clientInfo, and the value is the key name of the MDC for the value to be set.
+If `thread` is specified for value, the thread name is set.
+| clientInfoMaxLength | int | Specifies the maximum number of characters to be set in the clientInfo of Connection.
+-1 means no limit. +
+The default value is -1.
+| isCreateConnectionIfReadOnlyTransaction | boolean | Specifies whether or not to create a new connection when the transaction to be executed is read-only, instead of using unused connections managed in the framework. If true is specified, a new connection is created. +
+Default is `false`.
+|===
+
+===== Example(JNDI)
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>
+	<class>org.iplass.mtp.impl.rdb.connection.DataSourceConnectionFactory</class>
+
+	<property name="dataSourceName" value="java:comp/env/jdbc/sampleDS" />
+	<property name="jndienv.java.naming.factory.initial"
+	    value="custom.JNDIInitialContextFactory" />
+	<property name="jndienv.java.naming.provider.url"
+	    value="custom://server:1234:path/to/context" />
+
+	<property name="warnLogThreshold" value="0" />
+
+	<property name="clientInfoMap">
+		<property name="threadName" value="thread" />
+		<property name="commandName" value="command" />
+	</property>
+	<property name="isCreateConnectionIfReadOnlyTransaction" value="false" />
+</service>
+----
+
+===== Example(Direct)
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>
+	<class>org.iplass.mtp.impl.rdb.connection.DataSourceConnectionFactory</class>
+
+	<property name="dataSource" class="com.zaxxer.hikari.HikariDataSource">
+		<property name="jdbcUrl" value="jdbc:mysql://server:3306/mtdb" />
+		<property name="username" value="user" />
+		<property name="password" value="pass" />
+		<property name="dataSourceProperties">
+			<property name="serverTimezone" value="JST" />
+		</property>
+	</property>
+
+	<property name="warnLogThreshold" value="0" />
+
+	<property name="clientInfoMap">
+		<property name="threadName" value="thread" />
+		<property name="commandName" value="command" />
+	</property>
+	<property name="isCreateConnectionIfReadOnlyTransaction" value="false" />
+</service>
+----
+
+==== Settings of ReplicationAwareDataSourceConnectionFactory
+Set the connection information of the database using DataSource.
+Set the DataSource for original (read-write) and read-replica (read-only) respectively.
+
+NOTE: Since the MySQL JDBC driver supports read replicas by itself, it is possible to support read replicas without using the ReplicationAwareDataSourceConnectionFactory. Please refer to the MySQL documentation for details.
+
+The DataSource for the original and read replicas is acquired in one of the following ways:
+
+- Obtain via JNDI
+- Create a DataSource instance directly
+
+===== Configurable Items
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| dataSourceName | String | Original Data Source Name, the default value is `java:comp/env/jdbc/defaultDS`. +
+Specify when acquiring data via JNDI.
+| replicaDataSourceName | String, Multiple | Data Source Name of the read replica +
+Specify when acquiring data via JNDI. +
+If more than one is specified, they will be assigned randomly when the connection is acquired.
+| jndienv.＜key Name＞ | String, Multiple | JNDI's environment property +
+Specify when acquiring data via JNDI.
+| dataSource | javax.sql.DataSource | Specify an class instance of the implementations of javax.sql.DataSource. +
+Specify this item when you want to create the DataSource instance directly.
+| replicaDataSource | javax.sql.DataSource, Multiple | Specify an class instance of the implementations of javax.sql.DataSource. +
+Specify this item when you want to create the DataSource instance of the read replica directly. +
+If more than one is specified, they will be assigned randomly when the connection is acquired.
+| warnLogThreshold | int |  Time threshold (milliseconds) to output warning log. +
+The default value is 0 +
+If a slow query exceeding the threshold is executed, it will be logged.
+| warnLogBefore | boolean |  Specify whether to output the warning log in advance. +
+The default is true. +
+Currently, if this flag is true, a prior warning log is output when an EQL query that does not use INDEX is issued.
+| countSqlExecution | boolean |  Specify whether to count and record how many lines of SQL was executed. The recorded result will be logged along with the log output of the execution unit, such as Action and Web API. +
+The default value is true.
+| transactionIsolationLevel | String | Transaction isolation level. The following can be selected:
+
+NONE:: Corresponding to Connection's TRANSACTION_NONE
+READ_UNCOMMITTED:: Corresponding to Connection's TRANSACTION_READ_UNCOMMITTED
+READ_COMMITTED:: Corresponding to Connection's TRANSACTION_READ_COMMITTED
+REPEATABLE_READ:: Corresponding to Connection's TRANSACTION_REPEATABLE_READ
+SERIALIZABLE:: Corresponding to Connection's TRANSACTION_SERIALIZABLE
+| clientInfoMap | String, in format of Map | This specifies the value to be set to the clientInfo of Connection in format of Map.
+The name is the name of the clientInfo, and the value is the key name of the MDC for the value to be set.
+If `thread` is specified for value, the thread name is set.
+| clientInfoMaxLength | int | Specifies the maximum number of characters to be set in the clientInfo of Connection.
+-1 means no limit. +
+The default value is -1.
+| isCreateConnectionIfReadOnlyTransaction | boolean | Specifies whether or not to create a new connection when the transaction to be executed is read-only, instead of using unused connections managed in the framework. If true is specified, a new connection is created. +
+Default is `true`.
+|===
+
+===== Example(JNDI)
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>
+	<class>org.iplass.mtp.impl.rdb.connection.ReplicationAwareDataSourceConnectionFactory</class>
+
+	<property name="dataSourceName" value="java:comp/env/jdbc/sampleDS" />
+	<property name="replicaDataSourceName" value="java:comp/env/jdbc/sampleReplicaDS1" />
+	<property name="replicaDataSourceName" value="java:comp/env/jdbc/sampleReplicaDS2" />
+
+	<property name="jndienv.java.naming.factory.initial"
+	    value="custom.JNDIInitialContextFactory" />
+	<property name="jndienv.java.naming.provider.url"
+	    value="custom://server:1234:path/to/context" />
+
+	<property name="warnLogThreshold" value="0" />
+	<property name="isCreateConnectionIfReadOnlyTransaction" value="true" />
+
+</service>
+----
+
+===== Example(Direct)
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>
+	<class>org.iplass.mtp.impl.rdb.connection.ReplicationAwareDataSourceConnectionFactory</class>
+
+	<property name="dataSource" class="com.zaxxer.hikari.HikariDataSource">
+		<property name="jdbcUrl" value="jdbc:postgresql://server:5432/mtdb" />
+		<property name="username" value="user" />
+		<property name="password" value="pass" />
+	</property>
+
+	<property name="replicaDataSource" class="com.zaxxer.hikari.HikariDataSource">
+		<property name="jdbcUrl" value="jdbc:postgresql://replicaServer1:5432/mtdb" />
+		<property name="username" value="user" />
+		<property name="password" value="pass" />
+	</property>
+	<property name="replicaDataSource" class="com.zaxxer.hikari.HikariDataSource">
+		<property name="jdbcUrl" value="jdbc:postgresql://replicaServer2:5432/mtdb" />
+		<property name="username" value="user" />
+		<property name="password" value="pass" />
+	</property>
+
+	<property name="warnLogThreshold" value="0" />
+	<property name="isCreateConnectionIfReadOnlyTransaction" value="true" />
+
+</service>
+----

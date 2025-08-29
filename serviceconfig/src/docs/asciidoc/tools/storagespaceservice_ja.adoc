@@ -1,0 +1,36 @@
+[[StorageSpaceService]]
+=== StorageSpaceService
+StorageSpaceの移行ツールに関するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.tools.storagespace.StorageSpaceService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.tools.storagespace.StorageSpaceServiceImpl
+----
+
+==== StorageSpaceServiceの設定
+StorageSpaceServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| migrateCommitLimit | int | StorageSpace変更時の移行データCommit単位(件数)。
+| cleanupCommitLimit | int | StorageSpace変更後の移行データクリーンアップCommit単位(件数)。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.tools.storagespace.StorageSpaceService</interface>
+	<class>org.iplass.mtp.impl.tools.storagespace.StorageSpaceServiceImpl</class>
+
+	<property name="migrateCommitLimit" value="100" />
+	<property name="cleanupCommitLimit" value="1000" />
+</service>
+----

@@ -1,0 +1,44 @@
+[[Java_JSP_BuildinMethod]]
+=== Buildin EL関数
+
+* iPLAssのJSPタグライブラリに定義されているBuildin EL関数を利用しています。
++
+[source]
+----
+<%@ taglib prefix="m" uri="http://iplass.org/tags/mtp"%> <1>
+----------------------------------------以上略----------------------------------------
+<div class="row">
+    <div class="col-12">
+        <div class="border-top"></div>
+        <nav class="breadcrumb all-breadcrumb">
+            <a class="breadcrumb-item text-primary" href="${m:tcPath()}/samples/ec01/top"> <2>
+            	${m:rs('iplass-wtp-messages', 'samples.ec01.all.breadcrumb.home')} <3>
+            </a>
+            <span class="breadcrumb-item active">
+            	${m:rs('iplass-wtp-messages', 'samples.ec01.inquiry.regist.title')}
+            </span>
+        </nav>
+    </div>
+    <div class="col-12">
+        <span class="h4">${m:rs('iplass-wtp-messages', 'samples.ec01.inquiry.regist.title')}</span>
+        <m:bind bean="${inquiryBean}">
+        <form class="custom-form mt-3" action="${m:tcPath()}/samples/ec01/inquiry/doInquiry" method="post">
+        	<input type="hidden" name="_t" value="${m:token()}"> <4>
+            <div class="form-group row">
+                <div class="col-12 col-md-6 mt-3">
+                    <div>
+                    	<m:bind prop="familyName">
+	                         <label for="${name}" class="col-form-label label-hidden">${m:rs('iplass-wtp-messages', 'samples.ec01.inquiry.regist.familyName')}</label>
+	                         <input type="text" class="form-control border rounded input-hint-visible" name="${name}" value="${value}" placeholder="${m:rs('iplass-wtp-messages', 'samples.ec01.inquiry.regist.familyName')}">
+	                         <small class="form-text text-danger"><m:errors /></small>
+                        </m:bind>
+                    </div>
+                </div>
+----------------------------------------以下略----------------------------------------
+----
+<1> iPLAssのJSPタグライブラリ
+<2> tcPath()：	tenant名まで含むコンテキストパスを取得します。
+<3> rs()：	指定された基底名、キーからResourceBundleに定義された文字列を返します。<<index#Java_JSP_ResourceFiles_Message,多言語メッセージ>>を併せて利用できます。
+<4> token()：	トランザクショントークンを出力します。
++
+※ 他のEL関数の使い方について、`org.iplass.mtp.web.template.ELFunctions` のJavaDocを参照してください。

@@ -1,0 +1,6 @@
+[[Groovy_GTmpl_Entity]]
+=== Entity
+* Groovy／GroovyTemplateを利用する場合、Java／JSP版サンプルアプリのようなMappingClassの作成は不要です。
+
+* Entity多言語対応をしています。 + 
+Admin Console部分の設定で<<../adminconsole/index#AdminConsole_Entity_Mutlilang,Entity多言語対応>>をご参照してください。

@@ -1,0 +1,9 @@
+rootProject.name = 'iPLAss-docs'
+
+include 'developerguide'
+include 'environment'
+include 'eqlreference'
+include 'gettingstarted'
+include 'overview'
+include 'sample'
+include 'serviceconfig'

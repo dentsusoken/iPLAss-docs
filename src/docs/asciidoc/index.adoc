@@ -1,0 +1,7 @@
+:_hreflang-path:
+ifeval::["{lang}" == "ja"]
+include::index_ja.adoc[]
+endif::[]
+ifeval::["{lang}" == "en"]
+include::index_en.adoc[]
+endif::[]

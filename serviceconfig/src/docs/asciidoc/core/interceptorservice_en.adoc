@@ -1,0 +1,184 @@
+[[InterceptorService]]
+=== InterceptorService
+This service manages the interceptors that are called when commands are executed.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.command.InterceptorService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.command.InterceptorService
+----
+
+==== The Settings of InterceptorService
+Set the interceptor to be called for each functional unit to executes commands.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| invoker | <<CommandInterceptor>>, Multiple | The interceptor when the command is explicitly called via CommandInvoker.
+| web | <<CommandInterceptor>>, Multiple | The interceptor of Action.
+| webApi | <<CommandInterceptor>>, Multiple | The interceptor of WebApi.
+| soap | <<CommandInterceptor>>, Multiple | The interceptor of SOAP.
+|===
+
+[[CommandInterceptor]]
+.CommandInterceptor
+Please specify the implementing class of org.iplass.mtp.command.interceptor.CommandInterceptor.
+
+As the standard implementation, the following CommandInterceptor are provided.
+
+- <<InitialInterceptor>>
+- <<AuthInterceptor_w, AuthInterceptor>>
+- <<AuthInterceptor_s, AuthInterceptor(SOAP)>>
+- <<OAuthScopeInterceptor, OAuthScopeInterceptor>>
+- <<LoggingInterceptor_c, LoggingInterceptor>>
+- <<LoggingInterceptor_w, LoggingInterceptor(WebApi)>>
+- <<TokenInterceptor_w, TokenInterceptor>>
+- <<TokenInterceptor_aw, TokenInterceptor(WebApi)>>
+- <<UnavailableInterceptor>>
+- <<TransactionInterceptor>>
+- <<WebApiMetricsInterceptor>>
+
+[[InitialInterceptor]]
+.InitialInterceptor
+Please specify org.iplass.mtp.impl.webapi.interceptors.InitialInterceptor to the class.
+
+It can be used via webApi, and soap.
+
+Interceptor that sets the language and preview time as the initial process for WebApi requests. There is no configurable items for this item.
+
+[[AuthInterceptor_w]]
+.AuthInterceptor(WebApi)
+Please specify org.iplass.mtp.impl.webapi.interceptors.AuthInterceptor to the class.
+
+It can be used via webApi.
+
+This is the interceptor that performs authentication processing using custom headers. There is no configurable items.
+
+[[AuthInterceptor_s]]
+.AuthInterceptor(SOAP)
+Please specify org.iplass.mtp.impl.webapi.soap.interceptors.AuthInterceptor to the class.
+
+It can be used via soap.
+
+This is the interceptor that performs authentication processing using custom headers. There is no configurable items.
+
+[[OAuthScopeInterceptor]]
+.OAuthScopeInterceptor
+Please specify org.iplass.mtp.impl.webapi.interceptors.OAuthScopeInterceptor to the class.
+
+It can be used via webApi.
+
+It will check the scope of OAuth2.0.
+There is no configurable items.
+
+[[LoggingInterceptor_c]]
+.LoggingInterceptor
+Please specify org.iplass.mtp.impl.command.interceptors.LoggingInterceptor to the class.
+
+It can be used via invoker, web, and soap.
+
+It is the interceptor that outputs the command execution result to a log. There are no settings can be changed.
+
+[[LoggingInterceptor_w]]
+.LoggingInterceptor(WebApi)
+Please specify org.iplass.mtp.impl.webapi.interceptors.LoggingInterceptor to the class.
+
+It can be used via webApi.
+
+It is the interceptor that logs the execution results of the WebApi. The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| webapiTrace | boolean | Set whether to output the log of WepApi. The default value is true.
+| logParamName | String, Multiple | Parameter name of the log.
+| logAttributeName | String, Multiple | RequestContext attributeName of the log.
+| noStackTrace | String, Multiple | An exception class that does not output a stack trace.
+When specifying multiple properties, set multiple properties or separate exception classes with a single-byte colon (:).
+| warnLogThresholdOfSqlExecutionCount | int | The threshold of the executed SQL lines to output logs at WARN level. +
+If the SQL lines executed exceeds the threshold in one single request, the log will be output at WARN level. +
+The default value is -1(All logs will be logged at INFO level).
+| warnLogThresholdOfExecutionTimeMillis | long | The threshold of the execution time (milliseconds) to output logs at WARN level. +
+If the execution time exceeds the threshold in one single request, the log will be output at WARN level. +
+The default value is -1(All logs will be logged at INFO level).
+|===
+
+[[TokenInterceptor_w]]
+.TokenInterceptor
+Please specify org.iplass.mtp.impl.web.interceptors.TokenInterceptor to the class.
+
+It can be used via web.
+
+It is the interceptor that checks tokens when a request calls the action. There is no configurable items.
+
+[[TokenInterceptor_aw]]
+.TokenInterceptor(WebApi)
+Please specify org.iplass.mtp.impl.web.interceptors.TokenInterceptor to the class.
+
+It can be used via webApi.
+
+It is the interceptor that checks tokens when a request reaches WebApi. There is no configurable items.
+
+[[UnavailableInterceptor]]
+.[.eeonly]#UnavailableInterceptor#
+Please specify the org.iplass.mtp.impl.webapi.interceptors.UnavailableInterceptor to the class.
+
+It can be used via webApi, soap.
+
+It is the interceptor to toggle maintenance mode on a tenant basis. There is no configurable items.
+
+[[TransactionInterceptor]]
+.TransactionInterceptor
+Please specify org.iplass.mtp.impl.command.interceptors.TransactionInterceptor to the class.
+
+It can be used via invoker, web, webApi, soap.
+
+It is the interceptor that performs the transaction.
+
+
+[[WebApiMetricsInterceptor]]
+.[.eeonly]#WebApiMetricsInterceptor#
+Please specify org.iplass.mtp.impl.micrometer.metrics.web.webapi.WebApiMetricsInterceptor to the class.
+
+This is the interceptor that records WebAPI latency and SQL execute count as metrics, and is added by default when Micrometer module is applied.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| provider | WebApiMetricsTagsProvider | A class that implements org.iplass.mtp.impl.micrometer.metrics.web.webapi.WebApiMetricsTagsProvider. This can be specified if you want to customize the tags that are given to metrics. By default, org.iplass.mtp.impl.micrometer.metrics.web.webapi.DefaultWebApiMetricsTagsProvider is used.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.command.InterceptorService</interface>
+	<class>org.iplass.mtp.impl.command.InterceptorService</class>
+
+	<property name="invoker" class="org.iplass.mtp.impl.command.interceptors.LoggingInterceptor" />
+	<property name="invoker" class="org.iplass.mtp.impl.command.interceptors.TransactionInterceptor" />
+
+	<property name="web" class="org.iplass.mtp.impl.command.interceptors.LoggingInterceptor" />
+	<property name="web" class="org.iplass.mtp.impl.command.interceptors.TransactionInterceptor" />
+	<property name="web" class="org.iplass.mtp.impl.web.interceptors.TokenInterceptor" />
+
+	<property name="webApi" class="org.iplass.mtp.impl.webapi.interceptors.InitialInterceptor" />
+	<property name="webApi" class="org.iplass.mtp.impl.webapi.interceptors.AuthInterceptor" />
+	<property name="webApi" class="org.iplass.mtp.impl.webapi.interceptors.UnavailableInterceptor" />
+	<property name="webApi" class="org.iplass.mtp.impl.webapi.interceptors.OAuthScopeInterceptor" />
+	<property name="webApi" class="org.iplass.mtp.impl.webapi.interceptors.LoggingInterceptor" />
+	<property name="webApi" class="org.iplass.mtp.impl.command.interceptors.TransactionInterceptor" />
+	<property name="webApi" class="org.iplass.mtp.impl.webapi.interceptors.TokenInterceptor" />
+
+	<property name="soap" class="org.iplass.mtp.impl.webapi.interceptors.InitialInterceptor" />
+	<property name="soap" class="org.iplass.mtp.impl.webapi.soap.interceptors.AuthInterceptor" />
+	<property name="soap" class="org.iplass.mtp.impl.webapi.interceptors.UnavailableInterceptor" />
+	<property name="soap" class="org.iplass.mtp.impl.command.interceptors.LoggingInterceptor" />
+	<property name="soap" class="org.iplass.mtp.impl.command.interceptors.TransactionInterceptor" />
+
+</service>
+----

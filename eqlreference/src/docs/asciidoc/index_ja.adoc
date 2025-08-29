@@ -1,0 +1,2249 @@
+= EQLリファレンス
+
+== EQLについて
+EQL（Entity Query Language）はiPLAss内に保存されているEntityを検索するためのクエリ言語です。
+SQLのSELECT文と似た構文となっています。
+SQLにおけるテーブルをEntity、カラムをプロパティと置き換えて考えることができます。
+
+以下にEQLの例を示します。
+
+[source, EQL]
+----
+SELECT oid, name, mail FROM mtp.auth.User WHERE accountId='scott' ORDER BY name
+----
+
+参照プロパティとして定義されている関連するEntityを結合して、値を取得することも可能です。
+
+[source, EQL]
+----
+SELECT oid, name, groups.name //<1>
+    FROM mtp.auth.User WHERE groups.code='G01'
+----
+<1> [参照プロパティ名].[参照先Entityのプロパティ名]のように、.（ドット）区切りで指定することにより参照先のEntityの値を取得・指定可能です。
+
+SQLと同様に集約関数の利用も可能です。
+
+[source, EQL]
+----
+SELECT job, AVG(sal) FROM Employee GROUP BY job
+----
+
+=== 標準的なSQLとの差異
+EQLの文法は標準的なSQLのSELECT文とほぼ同等ですが、次のような差異が存在します。
+
+* Entity間の結合について
++
+参照（Reference）関係が定義されていないEntity同士を結合することはできません。
+参照関係が定義されているEntityにおいて、JOIN句を記述する必要はありません。
++
+[source, SQL]
+.SQLでの結合例
+----
+SELECT job, ename, Department.dname FROM Employee
+    LEFT OUTER JOIN Department
+    ON Employee.deptno=Department.deptno
+----
++
+[source, EQL]
+.EQLでの結合例
+----
+SELECT job, ename, department.dname FROM Employee //<1>
+----
+<1> 事前にdepartmentという参照プロパティ名で参照先エンティティが定義されている必要があります
++
+SQLにおいては、結合の方法を指定可能（外部結合、内部結合、クロス結合）ですが、EQLにおける結合（参照）は常にFrom句に指定されたEntityを核としたLEFT OUTER JOINとなります。
++
+また、SQLではJOIN句にて結合のためのキー項目以外の結合条件の指定も可能ですが、EQLにおいてはキー項目（Entityの場合、oidがキー項目となります）以外の結合条件を追加したい場合は、REFER句を利用します。
++
+[source, SQL, caption=""]
+.SQLでの結合例（キー項目以外に結合条件を指定する場合）
+----
+SELECT job, ename, Department.dname FROM Employee
+    LEFT OUTER JOIN Department ON Employee.deptno=Department.deptno
+    AND Department.dname = 'SALES'
+----
++
+[source, EQL, caption=""]
+.EQLでの結合例（キー項目以外に結合条件を指定する場合）
+----
+SELECT job, ename, department.dname FROM Employee
+  REFER department ON department.dname = 'SALES'
+----
+
+* FROM句におけるサブクエリは未サポート
++
+EQLにおいては、FROM句にサブクエリは指定できません。
+
+* 集合演算子は未サポート
++
+EQLにおいては、集合演算子（UNIONなど）は未サポートです。
+
+* 別名は未サポート
++
+EQLにおいては、Entity名、プロパティ名に別名を付与することはできません。
+
+* Entity名、プロパティ名はcase-sensitive
++
+EQLにおいては、Entity名、プロパティ名はcase-sensitive（大文字・小文字を区別する）です。
+ただし、EQL表現自体（SELECT、FROMなど）はcase-insensitive（大文字・小文字を区別しない）です。
+
+* {asterisk}（アスタリスク）表現の未サポート
++
+EQLにおいては、SELECT句にワイルドカードを表現する{asterisk}（アスタリスク）は指定できません。
+また、集約関数のCOUNTを利用する場合も{asterisk}の指定はできません。
+行数をカウントする場合は、
++
+[source, SQL]
+----
+SELECT COUNT(*) FROM Employee
+----
++
+ではなく、
++
+[source, EQL]
+----
+SELECT COUNT() FROM Employee
+----
++
+と{asterisk}を指定しない表現形式となります。
+
+* 相関サブクエリにおいて結合条件はON句で記述
++
+EQLにおいては、相関サブクエリにおいて外側クエリとの結合条件はON句に記述します。
+
+
+=== EQLの発行方法
+EQLを実行する方法として、2つの方式が存在します。
+EQLを文字列として作成し実行する方式、もしくはEQLを表現するクラス群を用いて実行する方式です。
+
+==== EQL文字列からクエリを発行する
+文字列でEQL文を作成した後、Queryインスタンスを生成しEntityManager経由でクエリを発行します。
+次にサンプルコードを示します。
+
+[source, java]
+----
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.entity.*;
+import org.iplass.mtp.entity.query.*;
+
+:
+:
+
+//EQL文字列からQueryインスタンスを生成
+Query q = new Query("SELECT oid, name, mail FROM mtp.auth.User WHERE accountId='scott' ORDER BY name");
+
+//EntityManagerを利用してクエリを発行
+EntityManager em = ManagerLocator.manager(EntityManager.class);
+SearchResult<Entity> result = em.searchEntity(q);
+
+----
+
+また、PreparedQueryを利用することにより、あらかじめ準備されたEQLのテンプレートにパラメータ変数を渡すことでQueryインスタンスを生成することも可能です。
+次にサンプルコードを示します。
+
+[source, java]
+----
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.entity.*;
+import org.iplass.mtp.entity.query.*;
+
+:
+:
+
+//あらかじめEQLのテンプレートを作成
+PreparedQuery queryTemplate = new PreparedQuery("SELECT oid, name, mail FROM mtp.auth.User WHERE accountId='${aid}' and name='$s{inputVal}' ORDER BY name");//<1>
+
+:
+:
+
+//PreparedQueryから、パラメータaidに値を設定し、Queryインスタンスを生成
+Map<String, Object> bindings = new HashMap<>();
+bindings.put("aid", "scott");
+bindings.put("inputVal", userInputValue);
+Query q = queryTemplate.query(bindings);
+
+//EntityManagerを利用してクエリを発行
+EntityManager em = ManagerLocator.manager(EntityManager.class);
+SearchResult<Entity> result = em.searchEntity(q);
+
+----
+<1> ${パラメータ名}の形でパラメータ定義可能です。Query生成時にそのパラメータ名で値を設定可能です。 また、<<../developerguide/customizing/index.adoc#_エスケープ処理付expression, GroovyTemplateの$s{ …​ }や$sl{ …​ }>>を利用することでエスケープ処理をすることができます。
+
+==== EQLを表現するクラス群からクエリを発行する
+EQLを表現するクラス群を利用してQueryを構築し、EntityManager経由でクエリを発行します。
+EQLを表現するクラス群はorg.iplass.mtp.entity.queryパッケージ以下のクラスです。
+
+次にサンプルコードを示します。
+
+[source, java]
+----
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.entity.*;
+import org.iplass.mtp.entity.query.*;
+
+:
+:
+
+Query q = new Query()
+		.select("oid", "name", "mail")
+		.from("mtp.auth.User")
+		.where(new Equals("accountId", "scott"))
+		.order(new SortSpec("name", SortType.ASC));
+
+EntityManager em = ManagerLocator.manager(EntityManager.class);
+SearchResult<Entity> result = em.searchEntity(q);
+
+----
+
+== 構成要素
+EQLを構成する要素を以下に説明します。
+あわせて、EQLの構文をBNF（Backus-Naur form）にて示します。
+
+[NOTE]
+.BNFを拡張した表現要素の説明
+====
+標準的なBNF表現に次の表現要素を拡張しています。
+
+[ ] = オプションの要素 +
+{ } = グループ化された要素 +
+{asterisk} = 0回以上の繰り返し +
+{plus} = 1回以上の繰り返し +
+"文字列" = 明示的な文字列(BNFの式やシンボルではない)を示す +
+__""説明内容""__ = 実際に指定する値の説明
+
+====
+
+[[query]]
+=== Query
+EQL文全体を表す要素です。
+Entityに対する問い合わせを表現します。
+Queryを構成するためのクラス群はorg.iplass.mtp.entity.queryパッケージ以下に存在します。
+
+.EQL表現の例
+[source, EQL]
+----
+SELECT job, ename, department.dname FROM Employee WHERE ename='john'
+----
+[source, EQL]
+----
+SELECT job, AVG(sal) FROM Employee GROUP BY job
+----
+[source, EQL]
+----
+SELECT job, ename, department.dname FROM Employee
+    REFER department ON department.dname = 'SALES'
+----
+[source, EQL]
+----
+SELECT /*+ no_index(job) native('ORDERED USE_NL_WITH_INDEX(...)') */
+    job, ename, department.dname FROM Employee
+    WHERE job = 'SALESMAN' AND sal > 1000 ORDER BY ename
+    LIMIT 100
+----
+
+.Queryクラス利用例
+[source, java]
+----
+Query q = new Query()
+		.select("job", "ename", "department.dname")
+		.from("Employee")
+		.where(new Equals("ename", "john"));
+----
+[source, java]
+----
+Query q = new Query()
+		.select("job", new Avg("sal"))
+		.from("Employee")
+		.groupBy("job");
+----
+[source, java]
+----
+Query q = new Query()
+		.select(
+        		new EntityField("job"),
+        		new EntityField("ename"),
+        		new EntityField("department.dname"))
+		.from("Employee")
+		.refer("department", new Equals("department.dname", "SALES"));
+----
+[source, java]
+----
+Query q = new Query()
+		.select("job", "ename", "department.dname")
+		.hint(new NoIndexHint("job"))
+		.hint(new NativeHint("ORDERED USE_NL_WITH_INDEX(...)"))
+		.from("Employee")
+		.where(new And().eq("job", "SALESMAN").gt("sal", 1000L))
+		.order(new SortSpec("ename", SortType.ASC))
+		.limit(100);
+----
+
+==== 構文
+<query> ::=:: <select clause> <from clause> [<refer clause> {,<refer clause>}*] [<where clause>] [<group by clause>] [<having clause>] [<order by clause>] [<limit clause>]
+
+<select clause> ::=:: SELECT <hint comment> [DISTINCT] <<value-expression, "<value expression>">> {,<<value-expression, "<value expression>">>}*
+
+<<hint-comment, "<hint comment>">> ::=:: "/\*\+" <hint expression>+ "*/"
+
+<hint expression> ::=:: __""ヒント表現""__
+
+<from clause> ::=:: FROM __""Entity定義名""__
+
+<<refer-clause, "<refer clause>">> ::=:: REFER <reference> [ON <<condition, "<condition>">>] [AS OF NOW | "UPDATE TIME" | <<value-expression, "<value expression>">>]
+
+<where clause> ::=:: WHERE <<condition, "<condition>">>
+
+<group by clause> ::=:: GROUP BY <<value-expression, "<value expression>">> {,<<value-expression, "<value expression>">>}* [ROLLUP | CUBE]
+
+<having clause> ::=:: HAVING <<condition, "<condition>">>
+
+<order by clause> ::=:: ORDER BY <sort spec> {,<sort spec>}*
+
+<sort spec> ::=:: <<value-expression, "<value expression>">> [ASC | DESC] [NULLS FIRST | NULLS LAST]
+
+<<limit-clause, "<limit clause>">> ::=:: LIMIT __""件数""__ [OFFSET __""開始位置""__]
+
+<<subquery, "<subquery>">> ::=:: (<query> [ON <<condition, "<condition>">>])
+
+
+[[hint-comment]]
+==== ヒントコメントについて
+<hint comment>にて、Entity検索時のインデックス利用有無、DBネイティブのヒント句など、検索処理のチューニングを行うことが可能です。
+<hint comment>は、/*+ */で囲まれ、SELECTの直後に配置します。
+複数のヒント表現をスペース区切りで設定可能です。
+
+EQLでは次のヒント表現をサポートします。
+[cols="1,3a", options="header"]
+|===
+| ヒント | 説明
+| bind | EQLに対して、実際にDBにクエリ発行する際にバインド変数（JDBCの場合PrepareStatement）を利用してリテラル値をセットすることを指定するヒントです。
+[source, EQL]
+----
+SELECT /*+ bind */
+    job, ename, department.dname FROM Employee
+    WHERE job = 'SALESMAN' AND sal > 1000 ORDER BY ename
+    LIMIT 100
+----
+上記の場合、'SALESMAN'、1000、100をバインド変数として実行します。
+
+バインド対象のリテラル値にno_bindヒントを付与することで、当該のリテラル値をバインド対象外とすることも可能です。
+[source, EQL]
+----
+SELECT /*+ bind */
+    job, ename, department.dname FROM Employee
+    WHERE job = /*+ no_bind */'SALESMAN' AND sal > 1000 ORDER BY ename
+    LIMIT 100
+----
+上記の場合、1000、100をバインド変数として実行します。
+
+| cache | EQLの実行結果のキャッシュを行うヒントです。
+引数にてキャッシュのスコープ、キャッシュの有効期間（秒）を指定可能です。
+
+キャッシュのスコープは以下のいずれかを設定可能です。
+
+TRANSACTION:: 同一トランザクション内のみ当該キャッシュが有効です。
+
+GLOBAL:: 共有キャッシュとなります。 +
+GLOBALの場合は、有効期間（秒）を指定することが可能です。
+有効期間（秒）未指定の場合は無期限となります（ただし、バックエンドで利用しているCacheStoreの設定で有効期限を設定している場合は、その限り）。
+GLOBALを利用する際は、Entity定義にてqueryCacheを有効化した上で、EQLのヒントを設定する必要があります。
+
+GLOBAL_KEEP:: 共有キャッシュとなります。 +
+有効期間（秒）を指定することが可能です。
+有効期間（秒）未指定の場合は無期限となります（ただし、バックエンドで利用しているCacheStoreの設定で有効期限を設定している場合は、その限り）。
+GLOBAL_KEEPを利用する際は、Entity定義にてqueryCacheを有効化した上で、EQLのヒントを設定する必要があります。 +
+GLOBALとの違いは、GLOBALの場合はキャッシュ対象のEntityデータが更新された場合キャッシュが即座に破棄されますが、GLOBAL_KEEPの場合はキャッシュは更新前の値でキープされたままとなります。
+
+GLOBAL_RELOAD:: 定期的に自動的にリロードする共有キャッシュとなります。 +
+リロードする間隔（秒）の指定が必要です。
+GLOBAL_RELOADを利用する際は、Entity定義にてqueryCacheを有効化した上で、EQLのヒントを設定する必要があります。 +
+GLOBAL_RELOADの場合は、キャッシュがバックエンドで一定間隔で自動的にリロードされます。キャッシュされている間にEntityデータが更新されたとしてもリロードされるまではその値はキャッシュには反映されません。
+
+
+スコープ：TRANSACTIONの場合の記述例
+[source, EQL]
+----
+ select /*+ cache(transaction) */ ename from Employee
+----
+スコープ：GLOBAL、キャッシュ期間：無期限の記述例
+[source, EQL]
+----
+ select /*+ cache */ ename from Employee
+----
+
+スコープ：GLOBAL、キャッシュ期間：10分の記述例
+[source, EQL]
+----
+ select /*+ cache(600) */ ename from Employee
+----
+
+スコープ：GLOBAL_KEEP、キャッシュ期間：無期限の記述例
+[source, EQL]
+----
+ select /*+ cache(keep) */ ename from Employee
+----
+
+スコープ：GLOBAL_KEEP、キャッシュ期間：10分の記述例
+[source, EQL]
+----
+ select /*+ cache(keep, 600) */ ename from Employee
+----
+
+スコープ：GLOBAL_RELOAD、リロード間隔：10分の記述例
+[source, EQL]
+----
+ select /*+ cache(reload, 600) */ ename from Employee
+----
+
+
+| fetch_size | DBにクエリ発行する際のフェッチサイズ（JDBCの場合Statement#setFetchSize(int)）を指定するヒントです。
+[source, EQL]
+----
+SELECT /*+ fetch_size(100) */ job, ename FROM Employee
+----
+
+| index | 引数に指定されたプロパティを明示的に駆動するINDEXとして指定します。
+INDEXとして指定するプロパティはEntity定義にて、INDEX、UNIQUE INDEX指定されている必要があります。
+
+[source, EQL]
+----
+SELECT /*+ index(sal) */
+    job, ename, department.dname FROM Employee
+    WHERE job = 'SALESMAN' AND sal > 1000
+----
+
+,（カンマ）区切りで複数のプロパティを指定可能（ただし、実際にどのINDEXから駆動するかの判断はDBに依存）です。
+
+[source, EQL]
+----
+SELECT /*+ index(sal, department.loc) */
+    job, ename, department.dname FROM Employee
+    WHERE job = 'SALESMAN' AND sal > 1000
+    AND department.loc in('CHICAGO', 'BOSTON')
+----
+
+indexヒントもしくは、no_indexヒントが未指定の場合、どのプロパティのINDEXから駆動するかはDBに依存します。
+
+| native | EQLが変換されたDBネイティブのSQL文（DBがRDBの場合）に付与するヒントを指定可能です。
+引数にてネイティブのヒントを文字列として指定します。
+
+[source, EQL]
+----
+SELECT /*+ native('ORDERED USE_NL_WITH_INDEX(...)') */
+    job, ename, department.dname FROM Employee
+    WHERE job = 'SALESMAN' AND sal > 1000
+    AND department.loc in('CHICAGO', 'BOSTON')
+----
+
+テーブルに対するヒント句（MySQLのindex hintなど）を指定する場合は、第一引数にテーブル名を指定します。
+
+[source, EQL]
+----
+SELECT /*+ native(q0, 'FORCE_INDEX(...)') */
+    job, ename, department.dname FROM Employee
+    WHERE job = 'SALESMAN' AND sal > 1000
+    AND department.loc in('CHICAGO', 'BOSTON')
+----
+
+| no_bind | EQLに対して、実際にDBにクエリ発行する際にバインド変数（JDBCの場合PrepareStatement）を利用しないことを指定するヒントです。
+[source, EQL]
+----
+SELECT /*+ no_bind */
+    job, ename, department.dname FROM Employee
+    WHERE job = 'SALESMAN' AND sal > 1000 ORDER BY ename
+    LIMIT 100
+----
+link:../serviceconfig/index.html#RdbAdapterService[RdbAdapterService] の設定により、EQL発行する際、常時バインドするように設定している場合、特定のEQLをバインドせずに実行するために指定します。
+
+| no_index | 引数に指定されたプロパティを駆動するINDEX選択対象から除外します。
+
+[source, EQL]
+----
+SELECT /*+ no_index(sal) */
+    job, ename, department.dname FROM Employee
+    WHERE job = 'SALESMAN' AND sal > 1000
+----
+
+,（カンマ）区切りで複数のプロパティを指定可能です。
+
+[source, EQL]
+----
+SELECT /*+ index(job, department.loc) */
+    job, ename, department.dname FROM Employee
+    WHERE job = 'SALESMAN' AND sal > 1000
+    AND department.loc in('CHICAGO', 'BOSTON')
+----
+
+indexヒントもしくは、no_indexヒントが未指定の場合、どのプロパティのINDEXから駆動するかはDBに依存します。
+
+| read_only | EQLをリードオンリートランザクションとして発行したい場合、このヒント句を利用可能です。但し、検索時のSearchOptionのresultMode指定が `ResultMode.STREAM` の場合は、リードオンリートランザクションとして発行せず、呼び出し元のトランザクション内で発行されます。
+
+[source, EQL]
+----
+SELECT /*+ read_only */
+    job, ename, department.dname FROM Employee
+----
+
+| suppress_warnings | EQLの警告ログの出力が必要ないことをマークするためのヒント句です。
+EQL発行時に、検索条件にINDEXが付与されたプロパティが利用されていない場合など、警告ログが出力されます。
+当該のEntityのデータ件数が少ないなどの理由で、警告ログの出力を抑制したい場合、このヒント句が利用可能です。
+
+[source, EQL]
+----
+SELECT /*+ suppress_warnings */
+    job, ename, department.dname FROM Employee
+----
+
+| timeout | クエリのタイムアウト秒（JDBCの場合Statement#setQueryTimeout(int)）を設定可能です。
+正確にタイムアウト秒で切断されるかはDBに依存します。
+
+[source, EQL]
+----
+SELECT /*+ timeout(60) */
+    job, ename, department.dname FROM Employee
+----
+
+|===
+
+また、ヒント句を外部のプロパティファイルに定義し、そのプロパティファイルからキー名を指定して読み込むことが可能です。 
+プロパティファイルのパスは link:../serviceconfig/index.html#QueryService[QueryService] に定義します。 
+
+特にnativeヒント句を利用する場合、環境ごとに最適なヒント句が異なる場合があります。このような状況で、環境ごとに異なるヒント句を管理できるようになります。
+
+.プロパティファイルの記述例
+[source, EQL]
+----
+ hint1 = native(q0t0, 'FORCE INDEX(obj_store__USER_ISTR_index_3)')
+ hint2 = native(q0, 'FORCE INDEX(obj_store_ISTR_index_1)')
+ :
+----
+
+外部ヒント句は@hint("キー名")にて指定します。 +
+上記プロパティファイルが定義されている環境において、
+[source, EQL]
+----
+ select /*+ @hint(hint1) */ a, b, c.x, d.x, d.name from SampleEntity where c.x='hoge' and a=1 and b=15
+----
+上記のEQLを発行した場合、これが、
+[source, EQL]
+----
+select /*+ native(q0t0, 'FORCE INDEX(obj_store__USER_ISTR_index_3)') */ a, b, c.x, d.x, d.name from SampleEntity where c.x='hoge' and a=1 and b=15
+----
+と展開されます。 
+
+Queryクラスを利用する場合、Hint.externalHint(String)メソッドにて外部ファイルに定義されるHintをインスタンスとして取得可能です。 
+[source, java]
+----
+Query q = new Query()
+		.select("a", "b", "c.x", "d.x", "d.name")
+		.hint(Hint.externalHint("hint1"))
+		.from("SampleEntity")
+		.where(new And().eq("c.x", "hoge").eq("a", 1L));
+----
+
+
+[[refer-clause]]
+==== REFER句について
+EQLにおいて、基本的にはSQLにおけるJOIN句を明示的に記述する必要はありません。あらかじめEntity定義にて定義される参照プロパティを用い、.（ドット）区切りで指定することで参照先のプロパティを指定可能です。
+
+たとえば、EmployeeエンティティとDepartmentエンティティが定義され、Employeeの参照プロパティ (プロパティ名: department) として、Departmentエンティティへの参照が定義される場合、
+
+[source, EQL]
+----
+SELECT job, ename, department.dname FROM Employee
+    WHERE job = 'SALESMAN' AND sal > 1000
+    AND department.loc in('CHICAGO', 'BOSTON')
+----
+
+と、department.dnameと指定することにより、Departmentのdnameプロパティを指定可能です。
+この場合、結合条件としては、各Entityのプライマリキーであるoidが結合キーとなります。
+結合条件にoidに加えて、別プロパティも指定したい場合、REFER句を利用します。
+
+[source, EQL]
+----
+SELECT job, ename, department.dname FROM Employee
+    REFER department ON department.deptno < 100
+    WHERE job = 'SALESMAN' AND sal > 1000
+    AND department.loc in('CHICAGO', 'BOSTON')
+----
+
+上記の場合、
+oidによる結合に加えて、 `department.deptno < 100` が結合条件として適用されます。
+
+また、REFER句においては、そのほか参照先を結合するためのいくつかのオプションを指定可能です。
+
+.AS OF 句
+AS OF句では、Entityをバージョン管理している場合、参照先のEntityのどの時点のバージョンを結合して取得するかを指定します。
+
+* AS OF NOW
++
+現時点の最新バージョンを取得します。
++
+[source, EQL]
+----
+SELECT job, ename, department.dname FROM Employee
+    REFER department AS OF NOW
+    WHERE job = 'SALESMAN' AND sal > 1000
+----
+
+* AS OF UPDATE TIME
++
+登録、更新時のバージョンを取得します。
++
+[source, EQL]
+----
+SELECT job, ename, department.dname FROM Employee
+    REFER department AS OF UPDATE TIME
+    WHERE job = 'SALESMAN' AND sal > 1000
+----
+
+* AS OF <value expression>
++
+バージョンを明示的に指定するvalue expressionを指定します。
+バージョン管理方式がNumberbase、Statebaseの場合、バージョン番号を指定します。
++
+[source, EQL]
+----
+SELECT job, ename, department.dname FROM Employee
+    REFER department AS OF 3
+    WHERE job = 'SALESMAN' AND sal > 1000
+----
++
+Timebase、SimpleTimebaseの場合、時点を示す日時を指定します。
+たとえば、入社日項目hiredateを持っている場合、
++
+[source, EQL]
+----
+SELECT job, ename, department.dname FROM Employee
+    REFER department AS OF hiredate
+    WHERE job = 'SALESMAN' AND sal > 1000
+----
+と指定可能です。
+
+[[limit-clause]]
+==== LIMIT句について
+検索結果の取得行数を指定可能です。
+
+[source, EQL]
+----
+SELECT job, ename, department.dname FROM Employee
+    LIMIT 100
+----
+
+OFFSET指定は開始位置を指定します。
+0を指定した場合は先頭から開始（未指定を同じ）となります。
+
+[source, EQL]
+----
+SELECT job, ename, department.dname FROM Employee
+    LIMIT 100 OFFSET 1000
+----
+
+[[subquery]]
+==== Subqueryについて
+Subqueryは、IN条件に利用可能です。FROM句への指定はサポートしていません。
+
+また、単一値を返却するSubqueryはScalar subqueryとして利用可能です。Scalar subqueryはValueExpressionと定義されるので、SELECT項目、検索条件の比較項目などとして利用可能です。
+詳細は<<scalar-subquery, Scalar Subquery>>の説明を参照ください。
+
+[[value-expression]]
+=== Value Expression
+単一の値を表す要素です。
+具体的には、リテラル値、Entityのプロパティ、関数、演算結果などです。
+Value Expressionを構成するためのクラス群はorg.iplass.mtp.entity.query.valueパッケージ以下に存在します。
+
+
+.EQL表現の例
+[source, EQL]
+----
+-123
+----
+[source, EQL]
+----
+name
+----
+[source, EQL]
+----
+(10 + sals) * 0.2
+----
+[source, EQL]
+----
+YEAR(dateTimeValue)
+----
+
+.Queryクラス利用例
+[source, java]
+----
+Literal val = new Literal(-123);
+----
+[source, java]
+----
+EntityField val = new EntityField("name");
+----
+[source, java]
+----
+//(10 + sals) * 0.2
+ValueExpression val = new Term(
+        new ParenValue(
+                new Polynomial(new Literal(10)).add(new EntityField("sals"))))
+        .mul(new Literal(0.2));
+----
+[source, java]
+----
+Function val = new Function("YEAR", new EntityField("dateTimeValue"));
+----
+
+==== 構文
+<value expression> ::=:: <polynomial> | <term> | <minus sign> | <paren value>
+
+<polynomial> ::=:: <value expression> {"+" | - <value expression>}*
+
+<term> ::=:: <value expression> {"\*" | / <value expression>}*
+
+<minus sign> ::=:: - <paren value>
+
+<paren value> ::=:: <primary value> | ( <value expression> )
+
+<primary value> ::=:: <aggregate> | <array value> | <case> | <entity field> | <function> | <cast> | <literal> | <scalar subquery> | <window function>
+
+<<aggregate, "<aggregate>">> ::=:: {AVG | MAX | MEDIAN | MIN | MODE | STDDEV_POP | STDDEV_SAMP | SUM | VAR_POP | VAR_SAMP ( <value expression> )} | {COUNT( [DISTINCT] [<value expression>] )} | {LISTAGG( [DISTINCT] <value expression> [,<string literal>]) [<within group spec>]}
+
+<within group spec> ::=:: WITHIN GROUP( ORDER BY <sort spec>  {,<sort spec>}*)
+
+<array value> ::=:: "ARRAY[" <value expression> {,<value expression>}* "]"
+
+<<case, "<case>">> ::=:: CASE WHEN <<condition, "<condition>">> THEN <value expression> {WHEN <<condition, "<condition>">> THEN <value expression>}* [ELSE <value expression>] END
+
+<<entity-field, "<entity field>">> ::=:: <property name> | <reference>.<property name> | <correlated entity field>
+
+<reference> ::=:: <reference name>{.<reference name>}*
+
+<correlated entity field> ::=:: .+{THIS | <entity field> | <reference>} +
+
+<<function, "<function>">> ::=:: {<function name>()} | {<function name>( <value expression> {,<value expression>}* )}
+
+<function name> ::=:: REPLACE | UPPER | LOWER | CONCAT | SUBSTR | INSTR | CHAR_LENGTH | MOD | SQRT | POWER | ABS | CEIL | FLOOR | ROUND | TRUNCATE | SIN | COS | TAN | ASIN | ACOS | ATAN | ATAN2 | YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | DATE_ADD | DATE_DIFF | CURRENT_DATE | CURRENT_TIME | CURRENT_DATETIME | LOCALTIME
+
+<<cast, "<cast>">> ::=:: CAST( <value expression> AS <data type> )
+
+<data type> ::=:: BOOLEAN | STRING | INTEGER | FLOAT | DECIMAL | DATETIME | DATE | TIME | SELECT
+
+<<scalar-subquery, "<scalar subquery>">> ::=:: <<subquery, "<subquery>">>
+
+<<window-function, "<window function>">> ::=:: <window function type> OVER( [<window partition by clause>] [<window order by clause>] )
+
+<window function type> ::=:: {ROW_NUMBER | RANK | DENSE_RANK | PERCENT_RANK | CUME_DIST ()} | <aggregate>
+
+<window partition by clause> ::=:: PARTITION BY <value expression> {,<value expression>}*
+
+<window order by clause> ::=:: ORDER BY <sort spec> {,<sort spec>}*
+
+<<literal, "<literal>">> ::=:: <boolean literal> | <string literal> | <integer literal> | <float literal> | <decimal literal> | <datetime literal> | <date literal> | <time literal> | <select value literal> | NULL
+
+<boolean literal> ::=:: TRUE | FALSE
+
+<string literal> ::=:: '__""文字列""__'
+
+<integer literal> ::=:: __""整数値""__[i|I]
+
+<float literal> ::=:: __""浮動小数点値""__[f|F]
+
+<decimal literal> ::=:: __""固定小数点値""__{g|G}
+
+<datetime literal> ::=:: '__""yyyy-MM-dd HH:mm:ss.SSSフォーマットの日時""__'{m|M}
+
+<date literal> ::=:: '__""yyyy-MM-ddフォーマットの日付""__'{d|D}
+
+<time literal> ::=:: '__""HH:mm:ssフォーマットの時間""__'{t|T}
+
+<select value literal> ::=:: '__""SelectValueのvalue""__'{s|S}
+
+<entity name> ::=:: __""Entityの定義名""__
+
+<property name> ::=:: __""Entityプロパティの定義名""__
+
+<reference name> ::=:: __""Entityの参照プロパティの定義名""__
+
+[[entity-field]]
+==== Entity Field
+<entity field>はEntityに定義されるプロパティの値を表現する要素です。
+Entity定義のプロパティ名を指定します。
+
+[source, EQL]
+----
+name
+----
+
+また、 `__[参照プロパティ名]__.__[参照先Entityのプロパティ名]__`
+のように、.（ドット）区切りで指定することにより参照先のEntityのプロパティの値を取得・指定可能です。
+
+[source, EQL]
+----
+groups.name
+----
+
+CAUTION: LongText型、Binary型のプロパティは<select clause>の項目としてのみ指定可能です。
+<where clause>、<having clause>での条件として利用、また演算、関数を適用した場合の動作は不定です。
+
+
+相関サブクエリを利用する場合、
+<correlated entity field>形式にて外側クエリとの結合条件を指定可能です。
+外側サブクエリの<entity field>を指定する際には、先頭に.（ドット）を付与します。<correlated entity field>はsubqueryのON句でのみ利用可能です。
+詳細は<<scalar-subquery, Scalar Subquery>>の説明を参照ください。
+
+EQLを表現するクラスを利用して生成する場合、
+org.iplass.mtp.entity.query.value.primary.EntityField
+を利用します。
+
+[source, java]
+----
+EntityField prop = new EntityField("intProp");
+----
+
+[source, java]
+----
+EntityField referenceEntityProp = new EntityField("refProp.strProp");
+----
+
+[source, java]
+----
+EntityField correlateProp = new EntityField(".this");
+----
+
+[[literal]]
+==== Literal
+<literal>はリテラル値を表現する要素です。
+EQLで表現可能なリテラル値は以下のものです。
+
+[cols="1,1,3a", options="header"]
+|===
+| 型 | java型 | 説明
+| boolean | java.lang.Boolean
+| bool値を表します。
+EQL表現上、true もしくは falseです。また、case-insensitiveです。
+[source, EQL]
+.EQL表現例
+----
+true
+----
+[source, EQL]
+----
+FALSE
+----
+
+| string | java.lang.String
+| 文字列を表します。
+EQL表現上、'（シングルクォーテーション）で囲まれた文字列で表現します。
+文字列中に'を利用したい場合は、''とシングルクォーテーションを重ねることによりエスケープします。
+[source, EQL]
+.EQL表現例
+----
+'abcテスト文字'
+----
+[source, EQL]
+----
+'I''m a cat.'
+----
+
+| integer | java.lang.Long
+| 整数値を表します。
+java上ではLong値として扱います。
+EQL表現上、数値表現のサフィックスとして、Iもしくはiを指定し整数であることを明示的に示すことも可能です。
+[source, EQL]
+.EQL表現例
+----
+-54
+----
+[source, EQL]
+----
+1234I
+----
+[source, EQL]
+----
+10i
+----
+
+| float | java.lang.Double
+| 浮動小数点値を表します。
+java上ではDouble値として扱います。
+EQL表現上、数値表現のサフィックスとして、Fもしくはfを指定し浮動小数点であることを明示的に示すことも可能です。また、指数表現もサポートします。
+[source, EQL]
+.EQL表現例
+----
+10.5
+----
+[source, EQL]
+----
+1234.123F
+----
+[source, EQL]
+----
+0.12f
+----
+[source, EQL]
+----
+1.5e-5
+----
+
+| decimal | java.math.BigDecimal
+| 固定小数点値を表します。
+EQL表現上、数値表現のサフィックスとして、Gもしくはgを指定します。
+[source, EQL]
+.EQL表現例
+----
+1234.123G
+----
+[source, EQL]
+----
+10001g
+----
+
+| datetime | java.sql.Timestamp
+| ミリ秒精度の日時を表します。
+EQL表現上、'yyyy-MM-dd HH:mm:ss.SSS'、もしくは、タイムゾーン指定する場合'yyyy-MM-dd HH:mm:ss.SSSXXX'形式の文字列とサフィックスとしてMもしくはmを指定します。
+タイムゾーン指定がない場合は、テナントに設定されているタイムゾーンと判断します。
+[source, EQL]
+.EQL表現例
+----
+'2011-11-15 16:03:01.000'M
+----
+[source, EQL]
+----
+'2010-01-30 01:25:01.200'm
+----
+[source, EQL]
+----
+'2010-01-30 01:25:01.200+09:00'M
+----
+
+| date | java.sql.Date
+| 日付を表します。
+EQL表現上、'yyyy-MM-dd'形式の文字列とサフィックスとしてDもしくはdを指定します。
+[source, EQL]
+.EQL表現例
+----
+'2012-12-11'D
+----
+[source, EQL]
+----
+'2011-11-15'd
+----
+
+| time | java.sql.Time
+| 時間を表します。
+EQL表現上、'HH:mm:ss'形式の文字列とサフィックスとしてTもしくはtを指定します。
+[source, EQL]
+.EQL表現例
+----
+'03:01:00'T
+----
+[source, EQL]
+----
+'18:24:15't
+----
+
+| select | org.iplass.mtp. +
+entity.SelectValue
+| SelectValueを表現します。
+EQL表現上、SelectValueのvalueを文字列して指定しサフィックスとしてSもしくはsを指定します。
+[source, EQL]
+.EQL表現例
+----
+'A01'S
+----
+[source, EQL]
+----
+'1's
+----
+
+| null | null
+| null値を表現します。
+EQL表現上、nullで表現します。また、case-insensitiveです。
+バックエンドのDBによっては、null値と''（空文字）の区別がない場合があります。
+[source, EQL]
+.EQL表現例
+----
+null
+----
+[source, EQL]
+----
+NULL
+----
+
+|===
+
+[[function]]
+==== Function
+<function>は単一値（単一行）を対象とする関数を表現する要素です。
+
+EQLを表現するクラスを利用して生成する場合、
+org.iplass.mtp.entity.query.value.primary.Function
+を利用します。
+
+[source, java]
+----
+Function val = new Function("YEAR", new EntityField("dateTimeValue"));//<1>
+----
+[source, java]
+----
+//SELECT name, YEAR(dateTimeValue), DATE_ADD(dateTimeValue, 3, 'DAY')
+//    FROM someEntity WHERE ABS(someNumProp) > 3
+Query q = new Query()
+		.select(
+				new EntityField("name"),
+				new Function("YEAR", new EntityField("dateTimeValue")),//<1>
+				new Function("DATE_ADD",
+				        new EntityField("dateTimeValue"),
+				        new Literal(3L),  new Literal("DAY")))//<1>
+		.from("someEntity")
+		.where(new Greater(new Function("ABS",
+		        new EntityField("someNumProp")), new Literal(3L)));//<1>
+----
+<1> 第一引数で関数名、第二引数以降で関数の引数を指定します。
+
+EQL上表現可能な関数とその引数の説明を以下に示します。
+
+.文字列操作関数
+[cols="1,1,3a", options="header"]
+|===
+| 関数 | 返却型 | 説明
+| REPLACE | string
+| REPLACE(__target__, __from__, __to__)
+
+__target__の文字列中の__from__で表現される文字列を__to__に置換します。
+[source, EQL]
+.EQL表現例
+----
+REPLACE(strProperty, '-', '_')
+----
+
+| UPPER | string
+| UPPER(__target__)
+
+__target__の文字列を大文字変換します。
+[source, EQL]
+.EQL表現例
+----
+UPPER(strProperty)
+----
+
+| LOWER | string
+| LOWER(__target__)
+
+__target__の文字列を小文字変換します。
+[source, EQL]
+.EQL表現例
+----
+LOWER(strProperty)
+----
+
+| CONCAT | string
+| CONCAT(__target1__, __target2__)
+
+__target1__と__target2__の文字列同士を結合します。
+[source, EQL]
+.EQL表現例
+----
+CONCAT('abc', strProp)
+----
+
+| SUBSTR | string
+| SUBSTR(__target__, __beginIndex__, __length__) +
+SUBSTR(__target__, __beginIndex__)
+
+__target__の文字列から文字を切り出します。先頭から切り出す場合__beginIndex__は1です。 +
+__length__を省略した場合は、__target__の末尾まで切り出します。 +
+また、__beginIndex__は負数を指定可能です。
+負数指定した場合、末尾からのindexを指定した形となります。
+[source, EQL]
+.EQL表現例
+----
+SUBSTR(strProp, 3, 3)
+----
+[source, EQL]
+----
+SUBSTR(strProp, 3)
+----
+[source, EQL]
+----
+SUBSTR(strProp, -3)//<1>
+----
+<1> 末尾3文字を抽出する例です。
+
+
+| INSTR | integer
+| INSTR(__target__, __matchStr__)
+
+__matchStr__で指定される文字列が__target__の文字列内において、最初に出現したindexを返します。なお返却される値は、先頭から一致した場合は1が返却されます。
+[source, EQL]
+.EQL表現例
+----
+INSTR('abcdef', 'cd')
+----
+
+| CHAR_LENGTH | integer
+| CHAR_LENGTH(__target__)
+
+__target__で指定される文字列の長さを取得します。
+[source, EQL]
+.EQL表現例
+----
+CHAR_LENGTH(strProp)
+----
+|===
+
+.数値関数
+[cols="1,1,3a", options="header"]
+|===
+| 関数 | 返却型 | 説明
+| MOD | integer / float / decimal
+| MOD(__num1__, __num2__)
+
+剰余の計算（__num1__を__num2__で割った余り）を行います。
+引数の数値の型により返却される型は異なります。
+[source, EQL]
+.EQL表現例
+----
+MOD(numProp, 3)
+----
+
+| SQRT | float
+| SQRT(__num__)
+
+平方根を計算します。
+[source, EQL]
+.EQL表現例
+----
+SQRT(numProp)
+----
+
+| POWER | integer / float / decimal
+| POWER(__base__, __exp__)
+
+累乗（冪乗）を計算します。
+引数の数値の型により返却される型は異なります。
+[source, EQL]
+.EQL表現例
+----
+POWER(numProp, 2)
+----
+
+| ABS | integer / float / decimal
+| ABS(__num__)
+
+絶対値を計算します。
+引数の数値の型により返却される型は異なります。
+[source, EQL]
+.EQL表現例
+----
+ABS(numProp)
+----
+
+| CEIL | integer
+| CEIL(__num__)
+
+小数部を切り上げします。
+[source, EQL]
+.EQL表現例
+----
+CEIL(12.4)
+----
+
+| FLOOR | integer
+| FLOOR(__num__)
+
+小数部を切り下げします。 +
+__num__が負数の場合、注意が必要です。
+TRUNCATE()とは異なり、__num__以下で最大の整数が返却されます。
+FLOOR(-13.5)の場合、-14が返却されます。
+[source, EQL]
+.EQL表現例
+----
+FLOOR(12.4)
+----
+
+| ROUND | integer / decimal
+| ROUND(__num__, __decimalPlace__) +
+ROUND(__num__)
+
+__num__を__decimalPlace__の小数点以下の桁数で四捨五入します（ただし、__num__がfloat型の場合は銀行丸め処理します）。 +
+__decimalPlace__には負数を指定可能です。例えば-1を指定した場合は10の位で四捨五入されます。 +
+__decimalPlace__を省略した場合は、整数として四捨五入されます。
+__decimalPlace__の指定値により返却される型は異なります。__decimalPlace__の指定が、0以下の場合はinteger型で返却されます。それ以外はdecimal型で返却されます。
+
+[source, EQL]
+.EQL表現例
+----
+ROUND(numProp, 3)
+----
+[source, EQL]
+----
+ROUND(25.123)
+----
+[source, EQL]
+----
+ROUND(125, -1)//<1>
+----
+<1> 10の位でROUNDされ130が返却されます。
+
+| TRUNCATE | integer / decimal
+| TRUNCATE(__num__, __decimalPlace__) +
+TRUNCATE(__num__)
+
+__num__を__decimalPlace__の小数点以下の桁数で切り捨てします。 +
+__decimalPlace__には負数を指定可能です。例えば-1を指定した場合は10の位で切り捨てされます。 +
+__decimalPlace__を省略した場合は、整数として切り捨てされます。
+__decimalPlace__の指定値により返却される型は異なります。__decimalPlace__の指定が、0以下の場合はinteger型で返却されます。それ以外はdecimal型で返却されます。 +
+FLOOR()とは異なり、__num__を0に近づける方向に切り捨てされます。
+TRUNCATE(-13.5)とした場合、-13が返却されます。
+
+[source, EQL]
+.EQL表現例
+----
+TRUNCATE(numProp, 3)
+----
+[source, EQL]
+----
+TRUNCATE(25.123)
+----
+[source, EQL]
+----
+TRUNCATE(125, -1)//<1>
+----
+<1> 10の位でTRUNCATEされ120が返却されます。
+
+| SIN | float
+| SIN(__num__)
+
+サインを計算します。
+
+[source, EQL]
+.EQL表現例
+----
+SIN(numProp)
+----
+
+| COS | float
+| COS(__num__)
+
+コサインを計算します。
+
+[source, EQL]
+.EQL表現例
+----
+COS(numProp)
+----
+
+| TAN | float
+| TAN(__num__)
+
+タンジェントを計算します。
+
+[source, EQL]
+.EQL表現例
+----
+TAN(numProp)
+----
+
+| ASIN | float
+| ASIN(__num__)
+
+アークサインを計算します。
+
+[source, EQL]
+.EQL表現例
+----
+ASIN(numProp)
+----
+
+| ACOS | float
+| ACOS(__num__)
+
+アークコサインを計算します。
+
+[source, EQL]
+.EQL表現例
+----
+ACOS(numProp)
+----
+
+| ATAN | float
+| ATAN(__num__)
+
+アークタンジェントを計算します。
+
+[source, EQL]
+.EQL表現例
+----
+ATAN(numProp)
+----
+
+| ATAN2 | float
+| ATAN2(__num1__, __num2__)
+
+`num1 / num2` のアークタンジェントを計算します。
+
+[source, EQL]
+.EQL表現例
+----
+ATAN2(num1Prop, num2Prop)
+----
+|===
+
+.日時関数
+[cols="1,1,3a", options="header"]
+|===
+| 関数 | 返却型 | 説明
+| YEAR | integer
+| YEAR(__datetime__)
+
+__datetime__で指定されるdate型、datetime型の年を取得します。
+
+[source, EQL]
+.EQL表現例
+----
+YEAR(dateProp)
+----
+
+| MONTH | integer
+| MONTH(__datetime__)
+
+__datetime__で指定されるdate型、datetime型の月（1~12）を取得します。
+
+[source, EQL]
+.EQL表現例
+----
+MONTH('2013-12-29'D)
+----
+
+| DAY | integer
+| DAY(__datetime__)
+
+__datetime__で指定されるdate型、datetime型の日（1~31）を取得します。
+
+[source, EQL]
+.EQL表現例
+----
+DAY('1975-11-15 16:03:01.000'M)
+----
+
+| HOUR | integer
+| HOUR(__datetime__)
+
+__datetime__で指定されるdate型、datetime型、time型の時（0~23）を取得します。
+
+[source, EQL]
+.EQL表現例
+----
+HOUR(timeProp)
+----
+
+| MINUTE | integer
+| MINUTE(__datetime__)
+
+__datetime__で指定されるdate型、datetime型、time型の分（0~59）を取得します。
+
+[source, EQL]
+.EQL表現例
+----
+MINUTE('23:41:00'T)
+----
+
+| SECOND | integer
+| SECOND(__datetime__)
+
+__datetime__で指定されるdate型、datetime型、time型の秒（0~59）を取得します。
+
+[source, EQL]
+.EQL表現例
+----
+SECOND('1975-11-15 16:03:01.000'M)
+----
+
+| DATE_ADD | datetime
+| DATE_ADD(__datetime__, __addVal__, __unit__)
+
+__datetime__で指定されるdate型、datetime型、time型に__addVal__の値を加算します。加算する単位は__unit__で指定します。
+__unit__には'YEAR','MONTH','DAY','HOUR','MINUTE','SECOND'を指定可能です。
+
+[source, EQL]
+.EQL表現例
+----
+DATE_ADD(dateProp, 3, 'DAY')
+----
+
+| DATE_DIFF | integer
+| DATE_DIFF(__unit__, __datetime1__, __datetime2__)
+__datetime1__と__datetime2__の差分を__unit__の単位で取得します。
+__datetime1__の方が大きい場合、結果は負の値が返却されます。
+__unit__には'YEAR','MONTH','DAY','HOUR','MINUTE','SECOND'を指定可能です。
+
+[source, EQL]
+.EQL表現例
+----
+DATE_DIFF('YEAR', '2012-01-01'D, dateProp)
+----
+
+| CURRENT_DATE | date
+| CURRENT_DATE()
+
+現在の日付（年月日）を取得します。
+
+[source, EQL]
+.EQL表現例
+----
+CURRENT_DATE()
+----
+
+| CURRENT_TIME | time
+| CURRENT_TIME()
+
+現在の時刻を取得します。
+
+[source, EQL]
+.EQL表現例
+----
+CURRENT_TIME()
+----
+
+| CURRENT_DATETIME | datetime
+| CURRENT_DATETIME()
+
+現在の日時を取得します。
+
+[source, EQL]
+.EQL表現例
+----
+CURRENT_DATETIME()
+----
+
+| LOCALTIME | datetime
+| LOCALTIME(__datetime__)
+
+引数の__datetime__（日時）をテナントに設定されたローカル時間を示す日時に変換します。
+
+[source, EQL]
+.EQL表現例
+----
+LOCALTIME(CURRENT_DATETIME())
+----
+
+CAUTION: SQL Serverにおいてはバージョン2016以上から利用可能です。
+
+|===
+
+[[cast]]
+==== Cast
+<cast>は値のキャストを行う関数です。
+
+CAST( __value__ AS __dataType__ )
+
+__value__の値を__dataType__で指定される型に変換します。
+__dataType__には以下の<literal>の型を指定可能です。
+
+* BOOLEAN
+* STRING
+* INTEGER
+* FLOAT
+* DECIMAL
+* DATETIME
+* DATE
+* TIME
+* SELECT
+
+[source, EQL]
+.EQL表現例
+----
+CAST(10.5 AS STRING)
+----
+
+EQLを表現するクラスを利用して生成する場合、
+org.iplass.mtp.entity.query.value.primary.Cast
+を利用します。
+
+[source, java]
+----
+Cast castVal = new Cast(new EntityField("intProp"), PropertyDefinitionType.STRING);
+----
+
+[[aggregate]]
+==== Aggregate Function
+<aggregate>は複数行を集計するための集計関数を表現する要素です。
+集計関数はクエリにおいて、<group by clause>を利用して集計単位を制御することも可能です。
+
+EQLを表現するクラスを利用して生成する場合、
+org.iplass.mtp.entity.query.value.aggregate
+パッケージ配下のクラスを利用します。
+
+[source, java]
+----
+Avg avg = new Avg("propValue");
+----
+[source, java]
+----
+//SELECT category, COUNT(), AVG(amount) FROM someEntity GROUP BY category
+Query q = new Query()
+		.select(
+				"category",
+				new Count(),
+				new Avg("amount"))
+		.from("someEntity")
+		.groupBy("category");
+----
+
+EQL上表現可能な集計関数とその引数の説明を以下に示します。
+
+[cols="1,1,3a", options="header"]
+|===
+| 関数 | 返却型 | 説明
+| AVG | float
+| AVG(__num__)
+
+__num__で示される数値を集計し平均を算出します。
+[source, EQL]
+.EQL表現例
+----
+AVG(numProperty)
+----
+
+| COUNT | integer
+| COUNT(__target__) +
+COUNT(DISTINCT __target__) +
+COUNT()
+
+__target__の値がnullではない行数をカウントします。 +
+__target__の前にdistinctが指定された場合、重複行を省きカウントします。 +
+また、__target__が指定されない場合は、nullの値も含め行数をカウントします。
+[source, EQL]
+.EQL表現例
+----
+COUNT(someProp)
+----
+[source, EQL]
+----
+COUNT(DISTINCT someProp)
+----
+[source, EQL]
+----
+COUNT()
+----
+
+| LISTAGG | string
+| LISTAGG(__target__) +
+LISTAGG(__target__, '__separatorChar__') +
+LISTAGG(DISTINCT __target__) +
+LISTAGG(DISTINCT __target__, '__separatorChar__') +
+LISTAGG(DISTINCT __target__, '__separatorChar__') WITHIN GROUP(ORDER BY __sortSpec__)
+
+
+__target__の値を文字列として連結します。 +
+__target__の前にdistinctが指定された場合、重複を省き連結します。 +
+__separatorChar__が指定された場合、文字列はそのセパレータで結合されます。未指定の場合は `,` で結合されます。 +
+WITHIN GROUP句で結合順序を指定可能です。
+
+CAUTION: DISTINCT指定、WITHIN GROUP句の省略はOracle19c以降で可能です。 +
+SQL Serverにおいて、SQL Server2017以降で利用可能です。ただしDISTINCTは指定できません。またWITHIN GROUP句での指定に制約があります。
+
+[source, EQL]
+.EQL表現例
+----
+LISTAGG(someProp)
+----
+[source, EQL]
+----
+LISTAGG(someProp, ':')
+----
+[source, EQL]
+----
+LISTAGG(DISTINCT someProp)
+----
+[source, EQL]
+----
+LISTAGG(someProp) WITHIN GROUP(ORDER BY someProp)
+----
+[source, EQL]
+----
+LISTAGG(someProp, ':') WITHIN GROUP(ORDER BY sortProp DESC NULLS LAST)
+----
+
+| MAX | integer / float / decimal
+| MAX(__num__)
+
+__num__で示される数値を集計し最大値を取得します。
+引数の数値の型により返却される型は異なります。
+
+[source, EQL]
+.EQL表現例
+----
+MAX(numProperty)
+----
+
+| MEDIAN | integer / float / decimal
+| MEDIAN(__num__)
+
+__num__で示される数値を集計し中央値を取得します。
+引数の数値の型により返却される型は異なります。
+
+CAUTION: MySQLではサポートされていません。
+
+[source, EQL]
+.EQL表現例
+----
+MEDIAN(numProperty)
+----
+
+| MIN | integer / float / decimal
+| MIN(__num__)
+
+__num__で示される数値を集計し最小値を取得します。
+引数の数値の型により返却される型は異なります。
+
+[source, EQL]
+.EQL表現例
+----
+MIN(numProperty)
+----
+
+| MODE | integer / float / decimal
+| MODE(__num__)
+
+__num__で示される数値を集計し最頻値を取得します。
+引数の数値の型により返却される型は異なります。
+
+CAUTION: MySQLではサポートされていません。
+
+[source, EQL]
+.EQL表現例
+----
+MODE(numProperty)
+----
+
+| STDDEV_POP | float
+| STDDEV_POP(__num__)
+
+__num__で示される数値を集計し母集団標準偏差を算出します。
+[source, EQL]
+.EQL表現例
+----
+STDDEV_POP(numProperty)
+----
+
+| STDDEV_SAMP | float
+| STDDEV_SAMP(__num__)
+
+__num__で示される数値を集計し標本標準偏差を算出します。
+[source, EQL]
+.EQL表現例
+----
+STDDEV_SAMP(numProperty)
+----
+
+| SUM | integer / float / decimal
+| SUM(__num__)
+
+__num__で示される数値を集計し合計値を取得します。
+引数の数値の型により返却される型は異なります。
+
+[source, EQL]
+.EQL表現例
+----
+SUM(numProperty)
+----
+
+| VAR_POP | float
+| VAR_POP(__num__)
+
+__num__で示される数値を集計し母集団分散を算出します。
+[source, EQL]
+.EQL表現例
+----
+VAR_POP(numProperty)
+----
+
+| VAR_SAMP | float
+| VAR_SAMP(__num__)
+
+__num__で示される数値を集計し標本分散を算出します。
+[source, EQL]
+.EQL表現例
+----
+VAR_SAMP(numProperty)
+----
+
+|===
+
+[[window-function]]
+==== Window Function
+<window function>はSQLにおけるWindow関数と同様、結果セットを切り出した領域に集約関数を適用できる関数を表現する要素です。
+
+集約範囲、順番を指定する場合はOVER句（PARTITION BYおよび ORDER BY）によって指定します。
+
+次のようなEntityデータがある場合、
+
+[width=50%, cols="1,1,1", options="header"]
+|===
+| empNo | dept | amount
+| 1 | A | 10
+| 2 | A | 20
+| 3 | B | 50
+| 4 | B | 10
+| 5 | C | 30
+|===
+
+以下のEQL例はamountをdeptNo単位での合計した値を各行に出力します。
+[source, EQL]
+----
+SELECT dept, SUM(amount) OVER(PARTITION BY dept) FROM sample
+----
+
+出力結果は以下です。
+[width=50%, cols="1,2", options="header"]
+|===
+| dept | SUM(amount) OVER( ... )
+| A | 30
+| A | 30
+| B | 60
+| B | 60
+| C | 30
+|===
+
+以下のEQL例はamountをdeptNo単位で、empNoの順で累計した値を各行に出力します。
+[source, EQL]
+----
+SELECT dept, empNo, SUM(amount) OVER(PARTITION BY dept ORDER BY empNo) FROM sample
+----
+
+出力結果は以下です。
+[width=75%, cols="1,1,2", options="header"]
+|===
+| dept | empNo | SUM(amount) OVER( ... )
+| A | 1 | 10
+| A | 2 | 30
+| B | 3 | 50
+| B | 4 | 60
+| C | 5 | 30
+|===
+
+CAUTION: MySQL5.7以前ではネイティブにWindow関数がサポートされていません。
+DBがMySQL5.7以前の場合でWindow関数を利用したい場合は [.eeonly]#エミュレーション機能# を利用することが可能です。ただし、エミュレーション機能では、検索結果を一旦メモリ内にすべて展開するため利用には注意が必要です。
+Window関数のエミュレーション機能を有効化する場合はlink:../serviceconfig/index.html#StoreService[StoreService]の設定が必要です。
+
+EQLを表現するクラスを利用して生成する場合、
+org.iplass.mtp.entity.query.value.window
+パッケージ配下のクラスを利用します。
+
+[source, java]
+----
+WindowAggregate cumulativeSum = new WindowAggregate(new Sum("amount"))
+		.partitionBy("category")
+		.orderBy(new WindowSortSpec("month", SortType.ASC));
+----
+[source, java]
+----
+//SELECT category, month,
+//    SUM(amount) OVER(PARTITION BY category ORDER BY month ASC),
+//    RANK() OVER(ORDER BY amount DESC) FROM someEntity
+Query q = new Query().select(
+		"category",
+		"month",
+		new WindowAggregate(new Sum("amount")).partitionBy("category")
+		        .orderBy(new WindowSortSpec("month", SortType.ASC)),
+		new Rank().orderBy(new WindowSortSpec("amount", SortType.DESC)))
+		.from("someEntity");
+----
+
+EQL上表現可能なWindow関数とその引数の説明を以下に示します。
+
+[cols="1,1,3a", options="header"]
+|===
+| 関数 | 返却型 | 説明
+| AVG | float
+| AVG(__num__) OVER( ... )
+
+__num__で示される数値の平均を算出します。 +
+OVER ( ... )にはPARTITION BY、ORDER BYを任意で指定可能です。
+ORDER BY指定された場合は累積平均（移動平均）を算出します。
+
+[source, EQL]
+.EQL表現例
+----
+AVG(numProperty) OVER(ORDER BY someProp)
+----
+
+| COUNT | integer
+| COUNT(__target__) OVER( ... ) +
+COUNT() OVER( ... )
+
+__target__の値がnullではない行数をカウントします。 +
+__target__が指定されない場合は、nullの値も含め行数をカウントします。
+OVER ( ... )にはPARTITION BY、ORDER BYを任意で指定可能です。
+ORDER BY指定された場合は累積度数を算出します。
+
+[source, EQL]
+.EQL表現例
+----
+COUNT(someProp) OVER(PARTITION BY dept ORDER BY month)
+----
+[source, EQL]
+----
+COUNT() OVER(PARTITION BY dept,year)
+----
+
+| MAX | integer / float / decimal
+| MAX(__num__) OVER( ... )
+
+__num__で示される数値の最大値を取得します。
+引数の数値の型により返却される型は異なります。
+OVER ( ... )にはPARTITION BY、ORDER BYを任意で指定可能です。
+ORDER BY指定された場合は累積最大値を算出します。
+
+
+[source, EQL]
+.EQL表現例
+----
+MAX(numProperty) OVER(PARTITION BY dept)
+----
+
+| MEDIAN | integer / float / decimal
+| MEDIAN(__num__) OVER( ... )
+
+__num__で示される数値の中央値を取得します。
+OVER ( ... )にはPARTITION BYを任意で指定可能です。
+引数の数値の型により返却される型は異なります。
+
+
+[source, EQL]
+.EQL表現例
+----
+MEDIAN(numProperty) OVER(PARTITION BY dept)
+----
+
+| MIN | integer / float / decimal
+| MIN(__num__) OVER( ... )
+
+__num__で示される数値の最小値を取得します。
+引数の数値の型により返却される型は異なります。
+OVER ( ... )にはPARTITION BY、ORDER BYを任意で指定可能です。
+ORDER BY指定された場合は累積最小値を算出します。
+
+[source, EQL]
+.EQL表現例
+----
+MIN(numProperty) OVER(ORDER BY year)
+----
+
+| STDDEV_POP | float
+| STDDEV_POP(__num__) OVER( ... )
+
+__num__で示される数値を集計し母集団標準偏差を算出します。
+OVER ( ... )にはPARTITION BY、ORDER BYを任意で指定可能です。
+ORDER BY指定された場合は累積の母集団標準偏差を算出します。
+
+[source, EQL]
+.EQL表現例
+----
+STDDEV_POP(numProperty) OVER(PARTITION BY year)
+----
+
+| STDDEV_SAMP | float
+| STDDEV_SAMP(__num__) OVER( ... )
+
+__num__で示される数値を集計し標本標準偏差を算出します。
+OVER ( ... )にはPARTITION BY、ORDER BYを任意で指定可能です。
+ORDER BY指定された場合は累積の標本標準偏差を算出します。
+
+[source, EQL]
+.EQL表現例
+----
+STDDEV_SAMP(numProperty)
+----
+
+| SUM | integer / float / decimal
+| SUM(__num__) OVER( ... )
+
+__num__で示される数値を集計し合計値を取得します。
+引数の数値の型により返却される型は異なります。
+OVER ( ... )にはPARTITION BY、ORDER BYを任意で指定可能です。
+ORDER BY指定された場合は累積値を算出します。
+
+[source, EQL]
+.EQL表現例
+----
+SUM(numProperty) OVER(PARTITION BY year ORDER BY month)
+----
+
+| VAR_POP | float
+| VAR_POP(__num__) OVER( ... )
+
+__num__で示される数値を集計し母集団分散を算出します。
+OVER ( ... )にはPARTITION BY、ORDER BYを任意で指定可能です。
+ORDER BY指定された場合は累積の母集団分散を算出します。
+
+[source, EQL]
+.EQL表現例
+----
+VAR_POP(numProperty) OVER(PARTITION BY dept)
+----
+
+| VAR_SAMP | float
+| VAR_SAMP(__num__) OVER( ... )
+
+__num__で示される数値を集計し標本分散を算出します。
+OVER ( ... )にはPARTITION BY、ORDER BYを任意で指定可能です。
+ORDER BY指定された場合は累積の標本分散を算出します。
+
+[source, EQL]
+.EQL表現例
+----
+VAR_SAMP(numProperty) OVER(PARTITION BY dept)
+----
+
+| RANK | integer
+| RANK() OVER( ... )
+
+ORDER BYで示される値のよってランク付けをします。
+同一ランクの行が2行ある場合は、ランクの値は連続しません。
+たとえば、1位の行が2行ある場合は、次のランクの値は3位です。
+OVER ( ... )にはORDER BYは必ず指定が必要です。PARTITION BYを任意で指定可能です。
+
+[source, EQL]
+.EQL表現例
+----
+RANK() OVER(ORDER BY numProp)
+----
+
+| DENSE_RANK | integer
+| DENSE_RANK() OVER( ... )
+
+ORDER BYで示される値によってランク付けをします。
+RANK()関数と異なり、同一ランクの行が2行ある場合でもランクの値は連続します。
+たとえば、1位の行が2行ある場合は、次のランクの値は2位です。
+OVER ( ... )にはORDER BYは必ず指定が必要です。PARTITION BYを任意で指定可能です。
+
+[source, EQL]
+.EQL表現例
+----
+DENSE_RANK() OVER(ORDER BY numProp)
+----
+
+| PERCENT_RANK | float
+| PERCENT_RANK() OVER( ... )
+
+ORDER BYで示される値によってパーセントランク付けをします。
+PERCENT_RANKの戻す値は0から1の範囲です。最初の行は必ず0です。
+OVER ( ... )にはORDER BYは必ず指定が必要です。PARTITION BYを任意で指定可能です。
+
+[source, EQL]
+.EQL表現例
+----
+PERCENT_RANK() OVER(ORDER BY numProp)
+----
+
+| CUME_DIST | float
+| CUME_DIST() OVER( ... )
+
+ORDER BYで示される値によって累積分布を取得します。
+CUME_DISTの戻す値は0から1の範囲です。ただし0を含みません。
+OVER ( ... )にはORDER BYは必ず指定が必要です。PARTITION BYを任意で指定可能です。
+
+[source, EQL]
+.EQL表現例
+----
+CUME_DIST() OVER(ORDER BY numProp)
+----
+
+| ROW_NUMBER | integer
+| ROW_NUMBER() OVER( ... )
+
+ORDER BYで示される値によって行番号を取得します。
+先頭行は1が返されます。
+OVER ( ... )にはORDER BYは必ず指定が必要です。PARTITION BYを任意で指定可能です。
+
+[source, EQL]
+.EQL表現例
+----
+ROW_NUMBER() OVER(ORDER BY dateProp)
+----
+
+|===
+
+[[case]]
+==== CASE式
+<case>は条件分岐を記述可能なValueExpressionです。
+
+CASE WHEN __condition1__ THEN __value1__ +
+  WHEN __condition2__ THEN __value2__ ... +
+  ELSE __valueDefault__ END
+
+__condition1__の条件に一致する場合、__value1__を返します。
+__condition2__の条件に一致する場合、__value2__を返します。
+すべての条件に一致しない場合は、__valueDefault__を返します。
+
+[source, EQL]
+.EQL表現例
+----
+CASE WHEN prop=1 THEN 'ONE' WHEN prop=2 THEN 'TWO' ELSE 'THREE OR MORE' END
+----
+[source, EQL]
+----
+CASE WHEN prop IS NULL THEN 0 ELSE prop END
+----
+
+
+EQLを表現するクラスを利用して生成する場合、
+org.iplass.mtp.entity.query.value.controlflow以下のクラスを利用します。
+
+[source, java]
+----
+Case caseStatement = new Case().when(new Equals("prop", 1L), new Literal("ONE"))
+		.when(new Equals("prop", 2L), new Literal("TWO"))
+		.elseClause(new Literal("THREE OR MORE"));
+----
+
+[[scalar-subquery]]
+==== Scalar Subquery
+<scalar subquery>は単一の値を返却するサブクエリです。ScalarSubQueryはValueExpressionとして、条件式、Select項目として利用可能です。
+また、ScalarSubQueryはON句を利用して相関サブクエリとして利用することも可能です。相関サブクエリは外側のクエリのそれぞれの行に対してON句の結合条件によってサブクエリを実行します。
+
+( SELECT __value__ FROM __entityName__ WHERE __condition__ ... ON .__outerJoinItem
+__=__innerJoinItem__ )
+
+ScalarSubQueryはQueryを( )で囲うことでScalarSubQueryと認識されます。
+相関サブクエリとして実行する際、ON句において、外側のクエリの結合項目の先頭には.(dot)を付与します。
+ON句においては、参照プロパティを指定することも可能です。また、自分自身への参照を表す"THIS"を利用することが可能です。
+
+[source, EQL]
+.EQL表現例
+----
+SELECT propA, (SELECT MAX(propX) FROM SomeEntity) FROM SomeEntity
+----
+[source, EQL]
+----
+SELECT propA, (SELECT SUM(propX) FROM CorrelatedEntity
+    ON .refToCorrelatedEntity.oid=oid)//<1>
+    FROM SomeEntity
+----
+<1> 外側クエリのSomeEntityに定義されているrefToCorrelatedEntity参照のoidと、内側QueryのCorrelatedEntity自体のoidで結合条件としている例です。
+
+[source, EQL]
+----
+SELECT propA, (SELECT SUM(propX) FROM CorrelatedEntity
+    ON .refToCorrelatedEntity=THIS)//<1>
+    FROM SomeEntity
+----
+<1> 参照プロパティで結合している例です。外側クエリのSomeEntityに定義されているrefToCorrelatedEntity参照と、内側QueryのCorrelatedEntity自身への参照で結合条件としている例です。
+
+EQLを表現するクラスを利用して生成する場合、
+org.iplass.mtp.entity.query.value.subquery以下のクラスを利用します。
+
+[source, java]
+----
+Query q = new Query().select("propA", new ScalarSubQuery(
+        new Query().select(new Sum("propX")).from("CorrelatedEntity"),
+				new On(".refToCorrelatedEntity.oid", "oid")))
+		.from("SomeEntity");
+----
+
+[[condition]]
+=== Condition
+条件文を表す要素です。
+具体的には、=(イコール)演算子、IN句、またそれらの論理的組み合わせを表現するAND、OR、NOT条件などです。
+Conditionを構成するためのクラス群はorg.iplass.mtp.entity.query.conditionパッケージ以下に存在します。
+
+
+.EQL表現の例
+[source, EQL]
+----
+propA=123
+----
+[source, EQL]
+----
+name LIKE 'abc%' CI
+----
+[source, EQL]
+----
+propX > 30 AND (propY IN ('1', '2', '3') OR propY IS NULL)
+----
+
+.Queryクラス利用例
+[source, java]
+----
+Equals eq = new Equals("propA", 123);
+----
+[source, java]
+----
+Like like = new Like("name", "abc", MatchPattern.PREFIX, CaseType.CI);
+----
+[source, java]
+----
+//propX > 30 AND (propY IN ('1', '2', '3') OR propY IS NULL)
+Condition condition = new And().gt("propX", 30).and(
+        new Paren(new Or().in("propY", "1", "2", "3").isNull("propY")));
+----
+
+==== 構文
+<condition> ::=:: <and> | <or> | <not> | <paren>
+
+<and> ::=:: <condition> {AND <condition>}*
+
+<or> ::=:: <condition> {OR <condition>}*
+
+<not> ::=:: NOT <paren>
+
+<paren> ::=:: <predicate> | ( <condition> )
+
+<predicate> ::=:: <comparison predicate> | <between> | <contains> | <in> | <is not null> | <is null> | <like>
+
+<comparison predicate> ::=:: <<value-expression, "<value expression>">> <comparison operator> <<value-expression, "<value expression>">>
+
+<comparison operator> ::=:: = | > | >= | < | <= | !=
+
+<between> ::=:: <<value-expression, "<value expression>">> BETWEEN <<value-expression, "<value expression>">> AND <<value-expression, "<value expression>">>
+
+<<contains, "<contains>">> ::=:: CONTAINS('""full text search 検索条件式""')
+
+<<in, "<in>">> ::=:: <simple in> | <row value list in> | <subquery in>
+
+<simple in> ::=:: <<value-expression, "<value expression>">> IN ( <<value-expression, "<value expression>">> {,<<value-expression, "<value expression>">>}* )
+
+<row value list in> ::=:: ( <<value-expression, "<value expression>">> {,<<value-expression, "<value expression>">>}\* ) IN ( <row value list> {,<row value list>}* )
+
+<row value list> ::=:: ( <<value-expression, "<value expression>">> {,<<value-expression, "<value expression>">>}* )
+
+<subquery in> ::=:: (<<value-expression, "<value expression>">> {,<<value-expression, "<value expression>">>}* ) IN <<subquery, "<subquery>">> 
+<is not null> ::=:: <<value-expression, "<value expression>">> IS NOT NULL
+
+<is null> ::=:: <<value-expression, "<value expression>">> IS NULL
+
+<<like, "<like>">> ::=:: <<value-expression, "<value expression>">> LIKE '__""一致パターン文字列""__' [CS | CI]
+
+[[contains]]
+==== Contains条件文
+<contains>はEntityに対する全文検索を行うための条件文です。
+Contains条件文の引数として、Luceneクエリ文字列を指定することが可能です。
+
+NOTE: 全文検索はLuceneを利用して行われるため、Contains句を利用する場合は、link:../serviceconfig/index.html#FulltextSearchService[FulltextSearchService]の設定にてLuceneの動作環境を整える必要があります。
+
+
+CONTAINS('__LuceneQueryExpression__')
+
+CONTAINS句がEQLに含まれる場合、次のように動作します。
+
+. CONTAINS句で指定される__LuceneQueryExpression__がLuceneに対して発行され、Luceneから一致結果のoidが返されます。
+. CONTAINS句はoidを指定するIN句に変換されます。 +
+例：CONTAINS('abc') -> oid IN ('12942', '1115', '32107' ... ) +
+※このときoidに指定される最大件数はFulltextSearchServiceの設定に依存します。
+
+. 変換されたEQLがRDBに対して発行されます。
+
+[source, EQL]
+.EQL表現例
+----
+CONTAINS('abc')
+----
+[source, EQL]
+----
+CONTAINS('abc*')
+----
+[source, EQL]
+----
+CONTAINS('"abc" AND "apache"')
+----
+
+EQLを表現するクラスを利用して生成する場合、
+org.iplass.mtp.entity.query.condition.predicate.Containsクラスを利用します。
+
+[source, java]
+----
+Contains cnt = new Contains("abc*");
+----
+
+[[in]]
+==== In条件文
+<in>は、サブクエリもしくは直接指定される複数の項目値と一致するかを判断する条件文です。
+
+__valueExp__ IN (__val1__, __val2__, ... )
+
+__valueExp__ IN (SELECT __field__ FROM __entityName__)
+
+NOTE: OracleではIN句に直接値を指定する場合、デフォルトでは指定可能な件数は1000件までです。この制限を緩和するため、link:../serviceconfig/index.html#RdbAdapterService[RdbAdapterService]のenableInPartitioningを有効化することが可能です。
+
+
+<row value list>表現を用いて、複数項目に対するIN条件を構築可能です。
+
+(__valueExp1__, __valueExp2__)  IN ((__val11__, __val21__), (__val21__, __val22__), ... )
+
+(__valueExp1__, __valueExp2__)  IN (SELECT __field1__,  __field2__ FROM __entityName__)
+
+[source, EQL]
+.EQL表現例
+----
+propA IN('a', 'b', 'c')
+----
+[source, EQL]
+----
+propA IN(SELECT propX FROM EntityA)
+----
+[source, EQL]
+----
+(propA, propB) IN(('a', 1),('a',2),('b',2))
+----
+[source, EQL]
+----
+(propA, propB) IN(SELECT propX, propY FROM EntityA)
+----
+
+EQLを表現するクラスを利用して生成する場合、
+org.iplass.mtp.entity.query.condition.predicate.Inクラスを利用します。
+
+[source, java]
+----
+In in = new In("propA", "a", "b", "c");
+----
+[source, java]
+----
+In in = new In("propA", new Query().select("propX").from("EntityA"));
+----
+
+[[like]]
+==== Like条件文
+<like>はパターン文字列への一致を判断する条件文です。
+%もしくは_をワイルドカードとして指定が可能です。
+%、_を通常文字として扱う場合のエスケープ文字は\です。\は\\でエスケープされます。
+Case Sensitive、Case Insensitiveで一致するかをそれぞれCS、CI句で指定可能です。
+
+__valueExp__ LIKE '__patternExpression__' [CS | CI]
+
+[source, EQL]
+.EQL表現例
+----
+propA LIKE 'abc%'
+----
+[source, EQL]
+----
+propA LIKE 'let''s go%' CI
+----
+[source, EQL]
+----
+propA LIKE '\\100\_000%'
+----
+
+EQLを表現するクラスを利用して生成する場合、
+org.iplass.mtp.entity.query.condition.predicate.Likeクラスを利用します。
+
+IMPORTANT: パターン文字列を直接指定する場合、%、_、\は自動的にエスケープされないので注意が必要です。MatchPattern指定のコンストラクタ利用を推奨します。
+
+[source, java]
+----
+Like like = new Like("name", "abc%");
+----
+[source, java]
+----
+//ユーザーの入力値からパターン文字列を直接指定する場合はエスケープ処理が必要
+Like like = new Like("name", StringUtil.escapeEqlForLike(userInputValue) + "%");
+----
+[source, java]
+----
+//MatchPatternを指定したコンストラクタの場合、コンストラクタ内でエスケープ処理がされる
+Like like3 = new Like("name", userInputValue, MatchPattern.PREFIX, CaseType.CI);
+----

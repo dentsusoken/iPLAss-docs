@@ -1,0 +1,682 @@
+[[JSPTag-EL]]
+== JSPカスタムタグ・EL関数
+
+iPLAssが提供するJSPで利用可能なカスタムタグ・EL関数の説明です。
+次の宣言により利用可能となります。
+
+[source, JSP]
+----
+<%@taglib prefix="m" uri="http://iplass.org/tags/mtp"%>
+----
+
+=== <auth>
+認可情報に従って制御を行うためのJSPタグです。 特定ロールの場合のみボディコンテンツを表示したり、ボディコンテンツの処理を特権実行するなどの制御が可能です。
+
+.利用例
+[source, JSP]
+----
+<%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@taglib prefix="m" uri="http://iplass.org/tags/mtp"%>
+
+:
+
+<m:auth role="roleA,roleB"> <1>
+  this content only show with role:"roleA" or "roleB".
+  :
+  :
+</m:auth>
+
+
+<m:auth permission="<%=new ActionPermission("some/actionX", new MapActionParameter().put("defName","Hoge"))%>"> <2>
+  this content only show with action permission:"some/actionX?defName=Hoge".
+  :
+  :
+</m:auth>
+
+
+<m:auth privileged="true"> <3>
+  privileged contents.
+
+  <%
+    //some privileged execution
+    :
+    :
+
+  %>
+
+</m:auth>
+----
+<1> roleAまたはroleBの場合のみボディコンテンツを表示します
+<2> some/actionXアクションのAction権限を保持する場合ボディコンテンツを表示します
+<3> ボディコンテンツの処理を特権実行します
+
+==== 指定可能な属性の説明 
+[cols="2,1,1,3a",options="header"]
+|===
+|属性名 |Script可 |デフォルト値 |説明
+|role |* | |ロール名指定します。 +
+当該ロールを保持する場合、ボディコンテンツが出力されます。 複数のロール名をカンマ区切りで指定することが可能です。 複数指定された場合、いずれかのロールを保持する場合にボディコンテンツが出力されます。
+|permission |* | |Permissionのインスタンスを指定します。 +
+当該権限を保持する場合、ボディコンテンツが出力されます。
+|privileged |* |false |trueが指定された場合、ボディコンテンツの出力処理を特権実行します。
+|===
+
+=== <bind>
+Commandの処理結果（Beanに格納されている値、関連するエラー）を画面に表示するためにpageContextにバインドするJSPタグです。
+errorsタグをbindタグと組み合わせて利用することにより、紐付くプロパティ単位にエラーメッセージの出力制御が可能です。
+
+.利用例
+[source, JSP]
+----
+<%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@taglib prefix="m" uri="http://iplass.org/tags/mtp"%>
+
+:
+
+<form>
+  <m:bind bean="${formBean}"> <1>
+
+    <m:bind prop="userName"> <2>
+      user name : <input type="text" value="${value}" name="${name}"> <3>
+      <m:errors /> <4>
+    </m:bind>
+
+    :
+
+    <m:bind prop="mailAddress">
+      mail address : <input type="text" value="${value}" name="${name}"> <m:errors />
+    </m:bind>
+ 
+  :
+
+  </m:bind>
+</form>
+----
+<1> formBeanという名前で参照（RequestやSessionから）されるBeanをバインドします。
+<2> formBeanのプロパティuserNameをバインドします。
+<3> bindタグ内では${value}、${name}でformに指定すべきvalue、nameが取得できます。
+<4> BeanParamMapperでの当該プロパティのマッピングエラー、バリデーションエラーを表示可能です。
+
+==== 指定可能な属性の説明
+[cols="2,1,1,3a",options="header"]
+|===
+|属性名 |Script可 |デフォルト値 |説明
+|bean |* | |バインドするBeanのインスタンスを指定します。
+
+バインドされたBeanは、 `bean` という変数名でpageContextに公開されます。
+公開する際の変数名を変更したい場合は、beanVariableNameにて変数名を変更可能です。
+
+|beanVariableName | |bean  |バインドされたBeanをpageContextに公開する際の変数名を指定可能です。
+|mappingResult |* | |BeanParamMapperでのバインド結果である `org.iplass.mtp.command.beanmapper.MappingResult` のインスタンスを指定可能です。
+
+mappingResultが指定された場合、当該Bean、プロパティに紐付くエラーがバインドされます。
+当該属性が未指定の場合、かつautoDetectErrorsがtrueの場合、mappingResultは自動解決されます。
+バインドされたMappingResultは `mappingResult` という変数名でpageContextに公開されます。 公開する際の変数名を変更したい場合は、mappingResultVariableNameにて変数名を変更可能です。
+
+|autoDetectErrors | |true  |エラー（mappingResult）を自動解決するか否かを指定可能です。
+
+trueが指定された場合、requestから定数： `org.iplass.mtp.web.WebRequestConstants.EXCEPTION` をキーに `org.iplass.mtp.command.beanmapper.MappingException` のインスタンスを取得します。
+インスタンスが存在した場合、その例外からMappingResultのインスタンスを取得します。
+
+|mappingResultVariableName | |mappingResult  |バインドされたMappingResultをpageContextに公開する際の変数名を指定可能です。
+
+|prop |* | |バインドされているBeanのプロパティのパスを指定します。
+EL式の記法によって、ネストされたプロパティを指定可能です。
+
+.EL式での指定例
+ userName
+ accout.mail
+ details[0].id
+
+当該パスが指定されたbindタグの内側ではpageContextにプロパティ名、値、当該プロパティに関連するエラーがバインドされます。
+pageContextに公開される際の変数名は、デフォルトでは以下の名前で公開されます。
+
+name::
+HTTPのパラメータ名として利用可能な形のプロパティのパスです。BeanParamMapperのパラメータ名と同様の形式です。
+value::
+プロパティの値の文字列表現です。文字列表現はhtmlEscape、formatter設定にて制御可能です。
+rawValue::
+生のプロパティの値です。
+errorValue::
+エラーが発生場合の生のプロパティの値です。
+errors::
+当該プロパティに関するエラーが存在する場合、エラーメッセージの `List<String>` のインスタンスです。
+
+公開する際の変数名を変更したい場合はそれぞれ、propertyNameVariableName、propertyValueVariableName、 propertyRawValueVariableName、errorsVariableNameにて変数名を変更可能です。
+
+また、propには、scriptでの指定が可能なので、Bean内にネストされたリストをバインドしたい場合、例えば次のような記述が可能です。
+
+.JSTLのforEachを利用する例
+[source, JSP]
+----
+<m:bind bean="${fb}">
+
+  :
+
+  <c:forEach var="item" items="${fb.children}" varStatus="stat">
+    ${stat.index}.
+    <m:bind prop="children[${stat.index}].name">
+      child name : <input type="text" value="${value}" name="${name}">
+      <m:errors />
+    </m:bind>
+  </c:forEach>
+
+</m:bind>
+----
+
+prop指定と同時にbeanが指定された場合は、そのbeanのプロパティをバインドします。
+beanが未指定の場合は、親タグに指定されるbeanのプロパティをバインドします。
+
+|htmlEscape| |true |value（プロパティの値の文字列表現）を出力する際にhtmlエスケープ処理をするか否かを指定可能です。
+
+CAUTION: このフラグによってエスケープ処理されるのはvalueのみです。name、rawValue、errorValue、errorsの値はエスケープされません。
+
+|formatter |* |DEFAULT_FORMATTER 
+|value（プロパティの値の文字列表現）を出力する際のフォーマット処理を行う `org.iplass.mtp.web.template.ValueFormatter` のインスタンスを指定します。
+
+未指定の場合は、 `ValueFormatter.DEFAULT_FORMATTER` で指定されるデフォルトの処理が適用されます。
+デフォルト処理では値が文字列以外の場合に次のようにフォーマットします。
+
+Integer、Double、BiｇDecimalなどの数値型:: 数値を10進数表現で文字列に変換します。
+SelectValue型:: SelectValueのvalueを出力します。
+BinaryReference型:: BinaryReferenceのlobIdを出力します。
+Date型:: yyyy-MM-dd形式で出力します。
+Time型:: HH:mm:ss形式で出力します。
+Timestamp型もしくは、java.sql.Date、java.sql.Time以外のjava.utilDate型:: yyyy-MM-dd'T'HH:mm:ss.SSSXXX形式で出力します。
+
+beanが指定されているbindタグに指定した場合、配下のプロパティの値に一律適用されます。
+
+formatterを利用せず個別にrawValueからフォーマットすることも可能です。 
+
+.rawValueから直接出力する例
+[source, JSP]
+----
+<m:bind prop="dateProp">
+  <input type="text" value="${m:esc(m:nvl(errorValue, m:fmt(rawValue, 'yyyy/MM/dd')))}" name="${name}">
+</m:bind>
+----
+
+|propertyNameVariableName | |name  |バインドされたプロパティのHTTPパラメータ名をpageContextに公開する際の変数名を指定可能です。
+
+|propertyValueVariableName| |value  |バインドされたプロパティの値の文字列表現をpageContextに公開する際の変数名を指定可能です。
+
+|propertyRawValueVariableName | |rawValue  |バインドされたプロパティの生の値をpageContextに公開する際の変数名を指定可能です。
+
+|propertyErrorValueVariableName | |errorValue  |バインドされたプロパティがエラーの場合、そのエラー値が格納される変数名を指定可能です。
+
+|errorsVariableName | |errors  |バインドされたプロパティに関連するエラーメッセージの `List<String>` をpageContextに公開する際の変数名を指定可能です。
+
+|prefix | | |name（HTTPパラメータ名）を出力する際のprefixを指定します。 
+
+NOTE: HTTPリクエストをBeanParamMapperでマッピングする場合、BeanParamMapperのparamPrefixの値と一致させる必要があります。
+
+|propertyDelimiter | |.  |name（HTTPパラメータ名）を出力する際のネストされたプロパティのデリミタを指定します。
+
+NOTE: HTTPリクエストをBeanParamMapperでマッピングする場合、BeanParamMapperのpropertyDelimiterの値と一致させる必要があります。
+
+|indexPrefix | |[ |name（HTTPパラメータ名）を出力する際のインデックス指定のプレフィックス文字を指定します。
+
+NOTE: HTTPリクエストをBeanParamMapperでマッピングする場合、BeanParamMapperのindexPrefixの値と一致させる必要があります。
+
+|indexPostfix | |] |name（HTTPパラメータ名）を出力する際のインデックス指定のポストフィックス文字を指定します。
+
+NOTE: HTTPリクエストをBeanParamMapperでマッピングする場合、BeanParamMapperのindexPostfixの値と一致させる必要があります。
+|===
+
+=== <errors>
+エラーが存在する場合、エラー内容をフォーマットしてhtml出力するJSPタグです。
+errorsタグが記述される場所、設定される属性値により、出力される内容が異なります。
+
+* bindタグ配下、かつprop指定がある場合
++
+当該プロパティに紐付くエラーがある場合、エラーを出力します。
++
+.利用例
+[source, JSP]
+----
+<m:bind bean="${formBean}">
+  :
+  
+  <m:bind prop="userName">
+    user name : <input type="text" value="${value}" name="${name}">
+    <m:errors /> <1>
+  </m:bind>
+  :
+  
+</m:bind>
+----
+<1> formBeanのuserNameに紐付くエラーがある場合にエラー内容が出力されます。
+
+
+* bindタグ配下、かつprop指定がない場合
++
+当該Beanに紐付くエラーがある場合、そのすべてのエラーを出力します。
++
+.利用例
+[source, JSP]
+----
+<m:bind bean="${formBean}">
+  <m:errors /> <1>
+  :
+
+  <m:bind prop="userName">
+    user name : <input type="text" value="${value}" name="${name}">
+  </m:bind>
+  :
+  
+</m:bind>
+----
+<1> formBeanに紐付くすべてのエラー内容が出力されます。
+
+* bindタグ配下ではない場合
++
+requestから定数： `org.iplass.mtp.web.WebRequestConstants.EXCEPTION` をキーに例外を取得しそのメッセージを出力します。 
++
+当該Exceptionが `org.iplass.mtp.command.beanmapper.MappingException` の場合::
+その例外に保持されるMappingResultのメッセージを出力します。
++
+当該Exceptionが `org.iplass.mtp.ApplicationException` の場合::
+その例外のメッセージを出力します。
++
+当該Exceptionがそれ以外の場合::
+固定のシステム例外メッセージを出力します。
+
+* タグ属性にて明示的にerrorsを指定した場合
++
+指定されたインスタンスにより適切にメッセージ出力します。 出力内容については属性の説明：errorsを参照してください。
+
+==== 指定可能な属性の説明
+[cols="2,1,1,3a",options="header"]
+|===
+|属性名 |Script可 |デフォルト値 |説明
+|errors |* | |出力するエラー対象を指定します。
+指定されたエラー対象により適切にエラーメッセージ出力します。
+
+`String` の場合::
+指定されたStringを出力します。
+`org.iplass.mtp.command.beanmapper.MappingError` の場合::
+指定されたMappingErrorのerrorMessagesを出力します。
+`org.iplass.mtp.command.beanmapper.MappingResult` の場合::
+指定されたMappingResultが保持するMappingErrorのerrorMessagesを出力します。
+`org.iplass.mtp.command.beanmapper.MappingException` の場合::
+指定されたMappingExceptionのMappingResultの内容を出力します。
+`org.iplass.mtp.ApplicationException` の場合::
+指定されたApplicationExceptionのmessageを出力します。
+`Throwable` の場合::
+固定のシステム例外メッセージを出力します。
+`List<String>`、配列の場合::
+指定されたリスト、配列の内容を1件ずつ出力します。
+それ以外の場合::
+指定されたインスタンスのtoString()を出力します。
+
+|delimiter | |<br> |エラーメッセージが複数ある場合のデリミタを指定可能です。
+
+|header | |<span class=\"error\">  |エラーメッセージを出力する際、先頭に出力する内容を指定可能です。
+
+|footer | |</span> |エラーメッセージを出力する際、最後に出力する内容を指定可能です。
+
+|htmlEscape | |true |エラーメッセージを出力する際にhtmlエスケープ処理をするか否かを指定可能です。
+
+|errorsVariableName | |errors  |エラーをpageContextに公開する際の変数名を指定可能です。
+また、この変数名は親のbindタグでpageContextに公開されたエラーを探す場合の変数名としても利用されます。
+|===
+
+==== メッセージ出力内容をカスタムする
+
+タグ内のBODYにJSPコードを記述することにより、エラーメッセージ出力内容をカスタマイズすることが可能です。
+
+.カスタマイズ例
+[source, JSP]
+----
+<%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@taglib prefix="m" uri="http://iplass.org/tags/mtp"%>
+
+:
+
+<m:errors>
+  <span>
+  <b>エラーが発生しました</b><br>
+  エラー内容：${errors}
+  </span>
+</m:errors>
+----
+
+カスタマイズ出力する場合は、delimiter、header、footer、htmlEscapeの設定は利用されません。 
+
+
+=== <include>
+JSP内に別Action、Templateの出力を取り込むためのJSPタグです。
+
+.利用例（Actionをinclude）
+[source, JSP]
+----
+<%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@taglib prefix="m" uri="http://iplass.org/tags/mtp"%>
+
+:
+
+<m:include action="your/action/path" />
+ 
+----
+
+.利用例（Templateをinclude）
+[source, JSP]
+----
+<%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@taglib prefix="m" uri="http://iplass.org/tags/mtp"%>
+
+:
+
+<m:include template="your/template/path" />
+ 
+----
+
+==== 指定可能な属性の説明
+[cols="2,1,1,3a",options="header"]
+|===
+|属性名 |Script可 |デフォルト値 |説明
+|action |* | |includeするActionの名前を指定します。
+actionもしくは、templateのいずれかの指定が必要です。
+|template |* | |includeするTemplateの名前を指定します。
+actionもしくは、templateのいずれかの指定が必要です。
+|===
+
+
+=== <renderContent>
+LayoutアクションのJSPにおいて、実際のコンテンツを表示する箇所を指定するJSPタグです。
+
+.利用例
+[source, JSP]
+----
+<%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@taglib prefix="m" uri="http://iplass.org/tags/mtp"%>
+
+:
+
+<div id="main">
+  <!-- ここにメインコンテンツが出力される -->
+  <m:renderContent />
+</div>
+
+----
+
+[[jsp_esc_func]]
+=== esc()
+引数のStringをHTML出力用にエスケープします。
+
+.利用例
+[source, JSP]
+----
+${m:esc(bean.user.name)}
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|String | HTMLエスケープしたいStringを指定します。
+|===
+
+==== 戻り値
+エスケープ処理されたString。
+
+
+=== escJs()
+引数のStringをJavaScript出力用にエスケープします。
+
+.利用例
+[source, JSP]
+----
+${m:escJs(bean.user.name)}
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|String | JavaScriptエスケープしたいStringを指定します。
+|===
+
+==== 戻り値
+エスケープ処理されたString。
+
+=== escXml()
+引数のStringをXML(XHTML)出力用にエスケープします。
+
+.利用例
+[source, JSP]
+----
+${m:escXml(bean.user.name)}
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|String | XMLエスケープしたいStringを指定します。
+|===
+
+==== 戻り値
+エスケープ処理されたString。
+
+
+
+=== token()
+トランザクショントークンの値を出力します。
+
+.利用例
+[source, JSP]
+----
+<input type="hidden" name="_t" value="${m:token()}">
+----
+
+==== 引数
+なし
+
+==== 戻り値
+新規に発行されたトークン文字列。
+
+=== fixToken()
+固定トークン（セッション単位の固定値）の値を出力します。
+CSRF(XSRF)対策用に利用可能です。
+
+.利用例
+[source, JSP]
+----
+<input type="hidden" name="_t" value="${m:fixToken()}">
+----
+
+==== 引数
+なし
+
+==== 戻り値
+セッション単位に固定のトークン文字列。
+
+
+=== fmt()
+指定の第一引数の値を第二引数で指定されるパターンでフォーマット出力します。
+
+.利用例
+[source, JSP]
+----
+<input type="text" name="endDate" value="${m:fmt(dateVal, 'yyyy/MM/dd')}">
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|Object | フォーマット対象の値には、Dateのインスタンスもしくは、Numberのインスタンスを指定可能です。 
+|String | 値がDate型の場合は、SimpleDateFormatにて定義されるpattern、 Number型の場合は、DecimalFormatにて定義されるpatternを指定可能です。
+|===
+
+==== 戻り値
+フォーマットされたString。
+
+
+=== msg()
+Message定義（メタデータ）として登録されているメッセージを出力します。
+
+.利用例
+[source, JSP]
+----
+${m:msg('path/to/MessageCategory', 'M101')}
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|String | Message定義の名前（カテゴリ名）を指定します。
+|String | Message定義のメッセージのID指定します。
+|===
+
+==== 戻り値
+当該カテゴリ、IDで特定されるメッセージ文言。
+
+
+=== msgp()
+Message定義（メタデータ）として登録されているメッセージを、指定のパラメータを埋め込み出力します。
+
+.利用例
+[source, JSP]
+----
+${m:msgp('path/to/MessageCategory', 'M102', bean.messageParams)}
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|String | Message定義の名前（カテゴリ名）を指定します。
+|String | Message定義のメッセージのID指定します。
+|Object | メッセージに埋め込むパラメータ（単一のオブジェクト、もしくは配列、もしくはCollectionのインスタンス）を指定可能です。 
+|===
+
+==== 戻り値
+当該カテゴリ、IDで特定されるメッセージ文言パラメータ埋め込みした文字列。
+
+
+=== nvl()
+第一引数がnullであった場合、第二引数を返却します。
+
+.利用例
+[source, JSP]
+----
+${m:nvl(testVal, 'testVal is null')}
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|Object | nullではなかった場合、この値が返却されます。
+|Object | 第一引数がnullであった場合のデフォルト値を指定します。
+|===
+
+==== 戻り値
+第一引数がnullであった場合、第二引数を返却。
+
+
+=== prefs()
+Preference定義の値を取得します。
+
+.利用例
+[source, JSP]
+----
+${m:prefs('path/to/preferenceName')}
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|String | Preferenceを特定する名前を指定します。
+|===
+
+==== 戻り値
+PreferenceにruntimeClassが指定されている場合は、そのクラスのインスタンスが取得されます。 +
+runtimeClass指定がない場合、かつPreferenceSetの場合は、Mapが取得されます。 +
+Preferenceの場合は、valueに定義されているStringが取得されます。
+
+
+=== rc()
+RequestContextのインスタンスを取得します。
+
+NOTE: JSPの暗黙変数 `request` から透過的にRequestContextの値を取得可能です。 この関数は、明示的にRequestContextのインスタンスを取得したい場合に利用可能です。 
+
+.利用例
+[source, JSP]
+----
+${m:rc().session.getAttribute('cart').count}
+----
+
+==== 引数
+[cols="1,3",options="header"]
+なし
+
+==== 戻り値
+`org.iplass.mtp.command.RequestContext` のインスタンス
+
+
+=== rs()
+指定された基底名、キーからResourceBundleに定義された文字列を返します。
+
+.利用例
+[source, JSP]
+----
+${m:rs('resource-bundle-name', 'key')}
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|String | ResourceBundleの基底名（bundle name）を指定します。
+|String | ResourceBundleのキー名を指定します。
+|===
+
+==== 戻り値
+ResourceBundleに定義された文字列。
+
+
+=== rsp()
+指定された基底名、キーからResourceBundleに定義された文字列を返します。
+第三引数には、文字列に埋め込むパラメータを指定可能です。
+
+.利用例
+[source, JSP]
+----
+${m:rsp('resource-bundle-name', 'key2', params)}
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|String | ResourceBundleの基底名（bundle name）を指定します。
+|String | ResourceBundleのキー名を指定します。
+|Object | メッセージに埋め込むパラメータ（単一のオブジェクト、もしくは配列、もしくはCollectionのインスタンス）を指定可能です。 
+|===
+
+==== 戻り値
+ResourceBundleに定義された文字列にパラメータ埋め込みした文字列。
+
+
+=== tcPath()
+テナントコンテキストパスを出力します。
+テナントコンテキストパスは `ServletContextPath + tenantURL` で定義される、
+APサーバ上でテナントまでを特定するルート相対パスです。
+
+.利用例
+[source, JSP]
+----
+<a href="${m:tcPath()}/path/to/action">link</a>
+----
+
+==== 引数
+[cols="1,3",options="header"]
+なし
+
+==== 戻り値
+テナントコンテキストパス

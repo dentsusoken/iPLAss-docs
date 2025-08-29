@@ -1,0 +1,34 @@
+[[InfinispanService]]
+=== InfinispanService
+This is the service to manages Infinispan.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.infinispan.InfinispanService
+----
+
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.infinispan.InfinispanService
+----
+
+
+==== The settings of InfinispanService
+InfinispanService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| configurationFile | String | Set the setting file of Infinispan.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.infinispan.InfinispanService</interface>
+		<property name="configurationFile" value="infinispan.xml" />
+</service>
+----

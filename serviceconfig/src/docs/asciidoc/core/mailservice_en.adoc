@@ -1,0 +1,381 @@
+[[MailService]]
+=== MailService
+This is a service for managing email template definitions (metadata) and sending emails.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.mail.MailService
+----
+
+
+==== Implementing Class Name
+.Mail transmission by JavaMail
+----
+org.iplass.mtp.impl.mail.MailServiceImpl
+----
+
+.[.eeonly]#Mail transmission by Amazon SES#
+----
+org.iplass.mtp.impl.mail.AWSMailService
+----
+
+.[.eeonly]#Mail transmission by SendGrid#
+----
+org.iplass.mtp.impl.sendgrid.SendGridMailServiceImpl
+----
+
+
+==== Settings of MailServiceImpl
+The MailServiceImpl are configurable when using standard mail transmission (JavaMail). +
+You can set the standard properties defined in JavaMail, the properties of each provider implementation, and the properties extended with iPLAss.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| mail.smtp.host | String, required  | The SMTP server host name.
+| mail.smtp.port | int | SMTP server port number. the default is 25.
+| mail.smtp.connectiontimeout | int | Set the timeout threshold for establishing SMTP connections.(in millisecond)
+The default value is 60000 (1 minutes).
+| mail.smtp.timeout | int | Set the timeout threshold for communicating with SMTP connections.(in millisecond)
+The default value is 60000 (1 minutes).
+| mail.pop3.connectiontimeout | int | Set the timeout threshold for establishing POP3 connections.(in millisecond)
+The default value is 60000 (1 minutes).
+| mail.pop3.timeout | int | Set the timeout threshold for communicating with POP3 connections.(in millisecond)
+The default value is 60000 (1 minutes).
+| mail.* | - a|	Other standard properties defined in JavaMail and properties of each provider implementation can be set. such as
+
+`mail.host` +
+`mail.smtp.from` +
+`mail.smtp.auth` +
+`mail.transport.protocol` +
+etc.
+| mail.smtp.popbeforesmtp | boolean | Set true if authenticating by POP should be done before SMTP. The default value is false. +
+Properties extended with iPLAss.
+| mail.pop3.auth.id | String | User ID for POP before SMTP authentication. +
+This Settings of is effective when mail.smtp.popbeforesmtp is true. +
+Properties extended with iPLAss.
+| mail.pop3.auth.password | String | User password for POP before SMTP authentication. +
+This Settings of is effective when mail.smtp.popbeforesmtp is true. +
+Properties extended with iPLAss.
+| mail.smtp.auth.id | String | User ID for SMTP authentication. +
+This Settings of is effective when mail.smtp.auth is true. +
+Properties extended with iPLAss.
+| mail.smtp.auth.password | String | Password for SMTP authentication. +
+This Settings of is effective when mail.smtp.auth is true. +
+Properties extended with iPLAss.
+| mail.charset | String | The default charset for mail. +
+For example, specify `utf-8`. +
+Properties extended with iPLAss.
+| mail.encoding | String | Default encoding for mail. +
+For example, specify `base64`. +
+Properties extended with iPLAss.
+| debug | boolean | When debugging is enabled, trace is print to the standard output console.
+| listener | <<SendMailListener>>, Multiple | Listener for outgoing mail.
+| retryIntervalMillis | long | Retry interval when email transmission fails (milliseconds).
+| retryCount | int | The number of retry attempts for email transmission to fail.
+| smimeHandler | <<SmimeHandler>> | Handler when using S/MIME.
+|===
+
+[[SendMailListener]]
+.SendMailListener
+Please specify the implementing class of org.iplass.mtp.mail.SendMailListener.
+
+As the standard implementation, the following SendMailListener are provided.
+
+- <<LoggingSendMailListener>>
+- <<MetricsSendMailListener>>
+
+[[LoggingSendMailListener]]
+.LoggingSendMailListener
+Please specify org.iplass.mtp.mail.listeners.LoggingSendMailListener to the class.
+
+It’s SendMailListener that logs the mail transmission events.
+There are no settings that can be configured.
+
+[[MetricsSendMailListener]]
+.[.eeonly]#MetricsSendMailListener#
+Please specify org.iplass.mtp.impl.micrometer.metrics.mail.MetricsSendMailListener to the class.
+
+It’s SendMailListener with the metric collection function by Micrometer.
+There are no settings that can be configured.
+
+[[SmimeHandler]]
+.SmimeHandler
+When using MailServiceImpl, the standard class to support digital signature and encryption by S/MIME are provided: org.iplass.mtp.impl.mail.smime.SmimeHandler
+The following configurable items are available:
+|====================
+| Item | Value | Description
+cmsAlgorithmName | String | CMS (Cryptographic Message Syntax) cryptographic algorithm name. The default value is `AES128_CBC`.
+| signatureAlgorithmMap | <<SignatureAlgorithmMap>> | Mapping of digital signature algorithm.
+| certStore | <<SmimeCertStore>> | Store class that stores certificates and private keys used in S / MIME.
+|====================
+
+[[SignatureAlgorithmMap]]
+.SignatureAlgorithmMap
+Set the mapping of digital signature algorithm.
+The following items can be set.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| name | String | The key of digital signature algorithm
+| value | String | The digital signature algorithm.
+|===
+
+[cols="1,3", options="header"]
+Default Settings
+|===
+| name | value
+| RSA | SHA256withRSA
+| DSA | SHA256withDSA
+| EC | SHA256withECDSA
+|===
+
+[[SmimeCertStore]]
+.SmimeCertStore
+Please specify the implementing class of org.iplass.mtp.impl.mail.smime.SmimeCertStore.
+
+As a standard implementation, a simple implementation based on java.security.KeyStore are provided: org.iplass.mtp.impl.mail.smime.SimpleSmimeCertStore.
+Certificates stored in KeyStore are treated as trusted, including client certificates.
+At runtime, only the validity period is checked, and the certificate chain is not verified.
+|====================
+| Item | Value | Description
+| keyStoreType | String | KeyStore type. The default value is `PKCS12`.
+| keyStoreProvider | String | KeyStore provider name. If not set, the system will use the first provider that supports the specified KeyStore type from the list of registered security providers, starting with the highest priority provider.
+| keyStoreFilePath | String | File path of KeyStore where entries for signature creation and encryption are stored.
+| keyStorePassword | String | KeyStore password.
+| keyPasswordMap | <<KeyPasswordMap>> | Defines the mapping to the password so to restore the key associated with the entry.
+| keyStoreReloadIntervalMinutes | String | KeyStore reload interval (minutes). The default value is `Long.MAX_VALUE`.
+|====================
+
+[[KeyPasswordMap]]
+.KeyPasswordMap
+Configure about the map to restore the password associated with the entry.
+The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| name | String | The alter name of the entry.(the mail address of the sender or the receiver.)
+| value | String | Password for restoring the private key associated with the entry.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.mail.MailService</interface>
+	<class>org.iplass.mtp.impl.mail.MailServiceImpl</class>
+
+	<!-- SMTP Settings  -->
+	<!-- SMTP server host -->
+	<property name="mail.smtp.host" value="XXXXXXXX"/>
+	<!-- SMTP server port normal:25 / submission port:587 / SSL:465 -->
+	<property name="mail.smtp.port" value="25"/>
+	<!-- Time out Settings -->
+	<property name="mail.smtp.connectiontimeout" value="60000"/>
+	<property name="mail.smtp.timeout" value="60000"/>
+
+    <!--
+		The mail.smtp.host property is recognized in preference to the mail.host property, so if the two values are the same,
+		You can send mail with only the mail.smtp.host property.
+		However, the mail.host property is used internally to generate a Message-ID header.
+		If the mail.host property is not explicitly specified, the Message-ID header may not be generated correctly.
+	 -->
+	<property name="mail.host" value="XXXXXXXX"/>
+
+	<!-- Default Charset -->
+	<property name="mail.charset" value="utf-8"/>
+
+	<property name="mail.encoding" value="base64"/>
+
+	<!-- S/MIME Settings -->
+	<!-- Use the digital signature and encryption features of  -->
+	<property name="smimeHandler" class="org.iplass.mtp.impl.mail.smime.SmimeHandler">
+		<property name="cmsAlgorithmName" value="AES128_CBC" />
+		<property name="signatureAlgorithmMap">
+			<property name="RSA" value="SHA256withRSA" />
+			<property name="DSA" value="SHA256withDSA" />
+			<property name="EC" value="SHA256withECDSA" />
+		</property>
+		<property name="certStore" class="org.iplass.mtp.impl.mail.smime.SimpleSmimeCertStore" >
+			<property name="keyStoreType" value="yourOwnKeyStoreType" />
+			<property name="keyStoreProvider" value="yourOwnKeyStoreProvider" />
+			<property name="keyStoreFilePath" value="yourOwnKeyStoreFilePath" />
+			<property name="keyStorePassword" value="yourOwnKeyStorePassword" />
+			<property name="keyPasswordMap">
+				<property name="test1@contract.dentsusoken.com" value="yourOwnKeyPassword1" />
+				<property name="test2@contract.dentsusoken.com" value="yourOwnKeyPassword2" />
+			</property>
+			<property name="keyStoreReloadIntervalMinutes" value="60" />
+		</property>
+	</property>
+
+	<!-- ■ for develop only (additional="true) ■ -->
+	<!-- When debugging outgoing mail, enable the followings. -->
+	<!--
+	<property name="listener" class="org.iplass.mtp.mail.listeners.LoggingSendMailListener" additional="true"/>
+	 -->
+</service>
+----
+
+==== [.eeonly]#Settings of AWSMailService#
+When using Amazon SES, it is needed to configure about AWSMailService. +
+When using AWSMailService, AWS authentication settings must be made in AWSSetting. However, note that the clientConfiguration of AWSSetting cannot be applied.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| mail.charset | String | The default charset for mail. +
+For example, specify `utf-8`. +
+| mail.encoding | String | Default encoding for mail. +
+For example, specify `base64`. +
+| mail.aws.host | String | SES endpoint can be specified. +
+If not specified, the default endpoint will be used.
+| debug | boolean | When debugging is enabled, trace is output to the standard output.
+| listener | <<SendMailListener_a>>, Multiple | Listener for outgoing mail.
+| retryIntervalMillis | long | Retry interval when email transmission fails (milliseconds).
+| retryCount | int | The number of retry attempts for email transmission to fail.
+|===
+
+[[SendMailListener_a]]
+.SendMailListener
+It is similar to the <<SendMailListener>> in MailServiceImpl.
+
+===== Example
+Similar to MailServiceImpl.
+
+==== [.eeonly]#Settings of SendGridMailServiceImpl#
+To use SendGrid, please specify and configure the SendGridMailServiceImpl.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| checkBounce | boolean | Set whether to check bounce list and block list before sending the mail. The default value is false.
+| checkBouncePattern | String | The mail address to be checked for bounce list and block list. The format to specify is Regular expression.
+| httpClientConfig | <<HttpClientConfig>> | Settings of HTTP client.
+| httpTransport | <<HttpTransport>> | Settings of the HTTP requests toward WebApi.
+| mailApiClient | <<MailClient>> | Settings of the mail client.
+| deleteBouncePattern | String | Configure about the mail address that should be deleted if it was in the bounce, block list of the SendGrid. The format to specify is Regular expression.
+| bounce | <<BounceClient>> | Bounce client.
+| block | <<BlockClient>> | Block client.
+| listener | <<SendMailListener_s, SendMailListener>>, Multiple | The listener for sending the mail.
+| retryIntervalMillis | long | The retry interval when the transmission fails.(in millisecond)
+| retryCount | int | The number of retry attempts for email transmission to fail.
+|===
+
+[[HttpClientConfig]]
+.HttpClientConfig
+Please specify org.iplass.mtp.impl.http.HttpClientConfig to the class.
+
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| connectionTimeout | int | Timeout in milliseconds for establishing an HTTP connection. The default value is 30000 (30 seconds).
+| soTimeout | int | socket timeout (SO_TIMEOUT) (milliseconds) during HTTP communication. The default value is 30000 (30 seconds).
+| poolingMaxTotal | int | Maximum number of pools for http connections. The default value is 20.
+| poolingDefaultMaxPerRoute | int | Maximum number of http connections per domain. The default value is 2.
+| poolingTimeToLive | int | Lifetime of pooled http connections (milliseconds). The default is unlimited.
+| proxyHost | String | Proxy server host.
+| proxyPort | int | Proxy server port number.
+| httpClientBuilderFactory | <<HttpClientBuilderFactory, HttpClientBuilderFactory>> | Specify this if you want to create a custom HttpClientBuilder.
+|====================
+
+[[HttpClientBuilderFactory]]
+.HttpClientBuilderFactory
+Please specify the implementation class of org.iplass.mtp.impl.http.HttpClientBuilderFactory to the class.
+
+The following HttpClientBuilderFactory is provided as standard.
+
+* <<MicrometerHttpClientBuilderFactory>>
+
+[[HttpTransport]]
+.HttpTransport
+Please specify org.iplass.mtp.impl.sendgrid.apiclient.HttpTransportImpl to the class.
+
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| apiUser | String, required | Set the user ID of SendGrid, or a fixed string: `apikey` (if you use the API Key instead of a password).
+| apiKey | String, required | Set the password, or API Key of SendGrid.
+| webApiRoot | String, required  | Set the URL for this SendGrid API.
+|====================
+
+[[MailClient]]
+.MailClient
+Please specify org.iplass.mtp.impl.sendgrid.apiclient.MailClientImpl to the class.
+
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| charset | String | The charset code of the mail.
+|====================
+
+[[BounceClient]]
+.BounceClient
+Please specify org.iplass.mtp.impl.sendgrid.apiclient.BounceClientImpl to the class.
+
+BounceClientImpl does not have configurable items.
+
+[[BlockClient]]
+.BlockClient
+Please specify org.iplass.mtp.impl.sendgrid.apiclient.BlockClientImpl to the class.
+
+BlockClientImpl does not have configurable items.
+
+[[SendMailListener_s]]
+.SendMailListener
+It is similar to the <<SendMailListener>> in MailServiceImpl.
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.mail.MailService</interface>
+	<class>org.iplass.mtp.impl.sendgrid.SendGridMailServiceImpl</class>
+	<!-- If you don't want to check the bounce list and block list before sending the mail, please set the checkBounce to false. -->
+	<!-- 
+	<property name="checkBounce" value="false" />
+ 	-->
+	<!-- The mail address to be checked for bounce list and block list. -->
+	<property name="checkBouncePattern" value=".*@ldap.dentsusoken.com|.*@contract.dentsusoken.com" />
+ 	<property name="httpClientConfig" class="org.iplass.mtp.impl.http.HttpClientConfig">
+		<property name="connectionTimeout" value="30000" />
+		<property name="soTimeout" value="30000" />
+		<!-- ■ for develop only ■ -->
+		<!-- 
+		<property name="proxyHost" value="proxyhost.dentsusoken.com" />
+		<property name="proxyPort" value="8080" />
+		 -->
+	</property>
+	<property name="httpTransport" class="org.iplass.mtp.impl.sendgrid.apiclient.HttpTransportImpl">
+		<!-- SendGrid authentication key -->
+		<property name="apiUser" value="yourOwnApiUser" />
+		<property name="apiKey" value="yourOwnApiKey" />
+		<!-- SendGrid endpoint -->
+		<property name="webApiRoot" value="https://api.sendgrid.com/api" />
+	</property>
+	
+	<property name="mailApiClient" class="org.iplass.mtp.impl.sendgrid.apiclient.MailClientImpl">
+		<!-- The charset of the mail -->
+		<property name="charset" value="UTF-8" />
+	</property>
+	
+	<!-- The mail address to be deleted from the list when an address is listed in the SendGrid bounce or block list. -->
+	<property name="deleteBouncePattern" value=".*@ldap.dentsusoken.com|.*@contract.dentsusoken.com" />
+	
+	<property name="bounce" class="org.iplass.mtp.impl.sendgrid.apiclient.BounceClientImpl" />
+	<property name="block" class="org.iplass.mtp.impl.sendgrid.apiclient.BlockClientImpl" />
+
+	<!-- ■ for develop only (additional="true") ■ -->
+	<!-- 
+	<property name="listener" class="org.iplass.mtp.mail.listeners.LoggingSendMailListener" additional="true"/>
+	 -->
+</service>
+----

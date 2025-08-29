@@ -1,0 +1,58 @@
+[[RedisService]]
+=== RedisService
+This service manages Redis.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.redis.RedisService
+----
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.redis.RedisService
+----
+
+==== The settings of RedisService
+RedisService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| redisServers | <<RedisServer>>, Multiple | The settings of the Redis server.
+|===
+
+[[RedisServer]]
+.RedisServer
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| serverName | String | The server name that is the identifier of the RedisServer.
+| host | String | Host of the Redis server.
+| port | int | Port number of the Redis server. Default value is 6379.
+| timeout | long | Connection timeout.
+| database | int | Database number.
+| userName | String | User name.
+| password | String | Password.
+| ssl | boolean | Set to true for SSL communication. Default value is false.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.redis.RedisService</interface>
+
+	<property name="redisServers">
+		<property name="serverName" value="RedisServer-1" />
+		<property name="host" value="192.168.0.1" />
+		<property name="port" value="6379" />
+	</property>
+	<property name="redisServers">
+		<property name="serverName" value="RedisServer-2" />
+		<property name="host" value="192.168.0.2" />
+		<property name="port" value="6379" />
+	</property>
+</service>
+----

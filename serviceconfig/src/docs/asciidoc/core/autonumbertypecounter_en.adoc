@@ -1,0 +1,74 @@
+[[AutoNumberTypeCounter]]
+=== AutoNumberTypeCounter
+This is the service to manage the numbering system of AutoNumber Type.
+The definition of CounterService, which is employed when using AutoNumber type as Entity property, will be discussed.
+The setting on whether to allow jumps on numbers can be configured.
+If allowed, please refer to the settings of `AutoNumberTypeCounterAcceptSkip`.
+If not allowed, please refer to the Settings of `AutoNumberTypeCounterNoSkip`.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.counter.CounterService
+----
+
+==== Implementing Class Name
+.Without Cache
+----
+org.iplass.mtp.impl.counter.RdbTableCounterService
+----
+
+.With Cache
+----
+org.iplass.mtp.impl.counter.CachableRdbTableCounterService
+----
+
+==== Settings of RdbTableCounterService
+RdbTableCounterService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| separateTransaction | boolean | Whether to separate transactions when numbering. The default value is false.
+| retryCount | int | Number of times to retry when numbering fails. The default value is 3.
+| counterTypeName | String | Name of the numbering type. The default value is `defaultCounter`
+|===
+
+==== Settings of CachableRdbTableCounterService
+CachableRdbTableCounterService can be configured.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| separateTransaction | boolean | Specify whether to separate the transactions when counting. The default value is false.
+| retryCount | int | Set the retry attempt counts when the numbering fails. The default is 3.
+| counterTypeName | String | Set the counter type name. The default value is `defaultCounter`
+| cacheSize | int | Cache size. The default value is 20.
+|===
+
+===== Example
+[source, xml]
+----
+<service name="AutoNumberTypeCounterAcceptSkip">
+	<interface>org.iplass.mtp.impl.counter.CounterService</interface>
+	<!-- without cache RdbTableCounterService -->
+	<!--
+	<class>org.iplass.mtp.impl.counter.RdbTableCounterService</class>
+	<property name="counterTypeName" value="AutoNumberTypeCounter" />
+	<property name="separateTransaction" value="true" />
+	<property name="retryCount" value="3" />
+	 -->
+	<!-- with cache RdbTableCounterService -->
+	<class>org.iplass.mtp.impl.counter.CachableRdbTableCounterService</class>
+	<property name="counterTypeName" value="AutoNumberTypeCounter" />
+	<property name="cacheSize" value="20" />
+	<property name="retryCount" value="3" />
+</service>
+<service name="AutoNumberTypeCounterNoSkip">
+	<interface>org.iplass.mtp.impl.counter.CounterService</interface>
+	<class>org.iplass.mtp.impl.counter.RdbTableCounterService</class>
+	<property name="counterTypeName" value="AutoNumberTypeCounter" />
+	<property name="separateTransaction" value="false" />
+</service>
+----

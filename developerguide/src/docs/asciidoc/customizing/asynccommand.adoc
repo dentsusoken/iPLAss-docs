@@ -1,0 +1,121 @@
+[[AsyncCommand]]
+== 非同期処理(AsyncCommand)
+AsyncCommandは、カスタムで作成したCommandを非同期で実行するためのメタデータです。
+
+=== AsyncCommand定義（AdminConsole）
+
+==== AsyncCommandの作成
+AsyncCommandアイコンを右クリックして「非同期コマンドを作成する」を選択してください。
+
+==== AsyncCommandの設定項目
+
+===== 固有設定
+
+[cols="1,4",options="header"]
+|====
+|項目|内容
+|Exception Handling Mode a|
+非同期タスクの処理中に例外が発生した場合の挙動を指定するモードです。以下の3つから選択します。
+
+RESTART::
+非同期コマンドの処理をロールバックした後に再実行します。
+ABORT::
+非同期コマンドの処理を中断します。
+ABORT_LOG_FATAL::
+非同期コマンドの処理を中断し、FATALとしてログ出力します。
+|Queue Name|
+非同期実行する際のキューを指定します。未指定の場合はデフォルトキューを利用します。
+|GropuingKey Attribute Name|
+非同期処理実行時のgroupingKeyを利用する場合の、attribute名です。 +
+グループキーを設定すると、そのグループのタスクは必ず同一のタスク実行Workerで実行されます。前後関係のある処理の場合に設定して下さい。 +
+尚、タスクＩＤのカウンターにキャッシュを利用している場合、同一のタスク実行Worker内での順序が保障されなくなりますのでご注意ください。
+|Execute Commands|非同期実行するコマンドを選択します。 +
+設定方法はActionと同様です。「<<Action-Command,Commandの設定>>」の章を参照下さい。
+|====
+
+=== 利用方法
+
+==== RdbQueueServiceの設定
+非同期実行は、Queueを利用して管理します。
+このため、service-configにてRdbQueueServiceのuseQueueをtrueにする必要あります。 +
+詳細は<<../../serviceconfig/index.adoc#RdbQueueService,RdbQueueService>>を参照してください。
+
+==== AsyncCommandの実行
+
+非同期コマンドは呼び出し元コマンドのロジック内からCommandInvokerを利用して実行します。
+
+.サンプル(非同期処理呼び出しコマンド)
+[source,java]
+----
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.command.CommandInvoker;
+import org.iplass.mtp.command.async.AsyncRequestContext;
+
+:
+
+public class SampleCommand implements Command {
+
+	@Override
+	public String execute(RequestContext request) {
+
+		// 非同期処理コマンドのリクエスト設定
+		AsyncRequestContext asyncRequest = new AsyncRequestContext(); <1>
+		asyncRequest.setAttribute("key", "value");
+
+		// 処理非同期処理呼び出し
+		CommandInvoker invoker = ManagerLocator.manager(CommandInvoker.class);
+		long taskId = invoker.executeAsync("TutorialAsync", asyncRequest); <2>
+
+		return "OK";
+	}
+}
+----
+<1> AsyncRequestContextは実行する際Serializeされ、一度DBに格納されます。
+このためセットする属性は、 `Serializable` を実装している必要があります。 +
+また大きなオブジェクトを渡す場合は、Entityなどの形で保存して、AsyncRequestContextへは
+そのキーであるoidを渡すようにしてください。
+<2> 実行するとタスクIDが返ります。別途実行状態を確認する際に利用します。
+
+==== 実行状態の確認
+AdminConsoleのToolsに用意されているQueueExplorerを利用して、Queue毎に積まれているタスクの一覧表示や、
+過去の実行履歴、未完了のタスクのキャンセルといった操作が可能です。 +
+詳細は<<../support/index.adoc#tools_queueexplorer, QueueExplorer>> の説明を参照ください。
+
+[[AsyncCommand-Annotation]]
+=== AsyncCommand定義（アノテーション）
+JavaにてCommandを実装する場合、クラス自体にアノテーションでAsyncCommand定義を設定することが可能です。
+単一のCommandに複数のAsyncCommandをアノテーションすることも可能です。
+
+NOTE: アノテーションで定義されたAsyncCommand定義はすべてのテナントで有効化されます。
+
+AsyncCommand定義を行うためのアノテーションは `@AsyncCommand` です。設定可能な要素はAdminConsoleでの設定項目に準じます。
+詳細はjavadocを参照ください。
+
+NOTE: Commandクラス以外のクラス、インタフェースに対して@AsyncCommand定義することも可能です。ただし、この場合command属性もしくはcompositeCommand属性にてcommandClassを明示的に指定する必要があります。
+
+.アノテーションによる定義のサンプル
+[source,java]
+----
+import org.iplass.mtp.command.annotation.async.AsyncCommand;
+:
+
+@AsyncCommand(name="tutorial",
+    displayName="非同期Commandサンプル",
+	exceptionHandlingMode = ExceptionHandlingMode.ABORT_LOG_FATAL
+)
+@CommandClass(name="tutorial")
+public class TutorialCommand implements Command {
+    @Override
+    public String execute(RequestContext request) {
+
+        // 処理
+        
+        if ( ... ) {
+            return "NG";
+        } else {
+            return "OK";
+        }
+    }
+}
+----
+

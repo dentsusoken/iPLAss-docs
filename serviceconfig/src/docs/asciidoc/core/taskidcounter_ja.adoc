@@ -1,0 +1,65 @@
+[[TaskIdCounter]]
+=== TaskIdCounter
+RdbQueueServiceを利用する場合にタスクIDの採番を行うサービスです。
+タスクのグループ化の設定により、利用する設定が変わります。
+グループ化の指定が無い場合は `TaskIdCounter` の設定を、指定がある場合は `TaskIdCounterGrouping` の設定を利用します。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.counter.CounterService
+----
+
+==== 実装クラス名
+.キャッシュなし
+----
+org.iplass.mtp.impl.counter.RdbTableCounterService
+----
+
+.キャッシュあり
+----
+org.iplass.mtp.impl.counter.CachableRdbTableCounterService
+----
+
+==== RdbTableCounterServiceの設定
+RdbTableCounterServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| separateTransaction | boolean | 採番時にトランザクションを分けるか。デフォルト値はfalseです。
+| retryCount | int | 採番失敗時にリトライする回数。デフォルト値は3です。
+| counterTypeName | String |  採番タイプの名前。デフォルト値は `defaultCounter` です
+|===
+
+==== CachableRdbTableCounterServiceの設定
+CachableRdbTableCounterServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| separateTransaction | boolean | 採番時にトランザクションを分けるか。デフォルト値はfalseです。
+| retryCount | int | 採番失敗時にリトライする回数。デフォルト値は3です。
+| counterTypeName | String |  採番タイプの名前。デフォルト値は `defaultCounter` です
+| cacheSize | int | キャッシュサイズ。デフォルト値は20です。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service name="TaskIdCounter">
+	<interface>org.iplass.mtp.impl.counter.CounterService</interface>
+	<class>org.iplass.mtp.impl.counter.CachableRdbTableCounterService</class>
+	<property name="counterTypeName" value="TaskIdCounter" />
+	<property name="cacheSize" value="20" />
+	<property name="retryCount" value="3" />
+</service>
+<service name="TaskIdCounterGrouping">
+	<interface>org.iplass.mtp.impl.counter.CounterService</interface>
+	<class>org.iplass.mtp.impl.counter.RdbTableCounterService</class>
+	<property name="counterTypeName" value="TaskIdCounter" />
+	<property name="separateTransaction" value="true" />
+	<property name="retryCount" value="3" />
+</service>
+----

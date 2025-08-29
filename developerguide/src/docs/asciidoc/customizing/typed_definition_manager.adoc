@@ -1,0 +1,91 @@
+[[typed_definition_manager]]
+== TypedDefinitionManager
+`org.iplass.mtp.definition.TypedDefinitionManager` を継承した各メタデータ用のManagerインタフェースを使用して、メタデータをソースコードから直接変更することが可能です。
+例えば、Entity定義を操作する場合には `org.iplass.mtp.entity.definition.EntityDefinitionManager` を、Message定義を操作する場合には `org.iplass.mtp.message.MessageManager` を使用します。
+詳細は、link:../../javadoc/org/iplass/mtp/definition/TypedDefinitionManager.html[javadoc]を参照してください。
+
+.（例１）EntityDefinitionManagerによるEntity操作
+[source,java]
+----
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.entity.definition.EntityDefinitionManager;
+import org.iplass.mtp.entity.definition.PropertyDefinition;
+import org.iplass.mtp.entity.definition.properties.StringProperty;
+import org.iplass.mtp.entity.definition.properties.BooleanProperty;
+import org.iplass.mtp.entity.definition.EntityDefinition;
+
+EntityDefinitionManager entityDefinitionManager = ManagerLocator.getInstance()
+                .getManager(EntityDefinitionManager.class);
+
+PropertyDefinition propertyDefinition1 = new StringProperty();
+propertyDefinition1.setName("string");
+propertyDefinition1.setDisplayName("文字列");
+propertyDefinition1.setMultiplicity(1);
+
+PropertyDefinition propertyDefinition2 = new BooleanProperty();
+propertyDefinition2.setName("boolean");
+propertyDefinition2.setDisplayName("論理値");
+propertyDefinition2.setMultiplicity(1);
+
+List<PropertyDefinition> propertyList = new ArrayList<>();
+propertyList.add(propertyDefinition1);
+propertyList.add(propertyDefinition2);
+
+EntityDefinition entityDefinition = new EntityDefinition();
+entityDefinition.setName("test.SampleEntity");
+entityDefinition.setDisplayName("サンプルEntity");
+entityDefinition.setPropertyList(propertyList);
+
+// Entity定義の作成
+entityDefinitionManager.create(entityDefinition);
+
+// Entity定義の更新
+EntityDefinition entityDefinitionUpdate = entityDefinitionManager.get("test.SampleEntity");
+entityDefinitionUpdate.setDescription("これはサンプルEntityです。");
+entityDefinitionManager.update(entityDefinitionUpdate);
+
+// Entity定義の削除
+entityDefinitionManager.remove("test.SampleEntity");
+----
+
+.（例２）MessageManagerによるメッセージ操作
+[source,java]
+----
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.message.MessageManager;
+import org.iplass.mtp.message.MessageItem;
+import org.iplass.mtp.message.MessageCategory;
+import org.iplass.mtp.definition.LocalizedStringDefinition;
+
+MessageManager messageManager = ManagerLocator.getInstance().getManager(MessageManager.class);
+
+List<LocalizedStringDefinition> localizedStringDefinitionList = new ArrayList<>();
+LocalizedStringDefinition localizedStringDefinition1 = new LocalizedStringDefinition();
+localizedStringDefinition1.setLocaleName("en");
+localizedStringDefinition1.setStringValue("This is a sample message.");
+localizedStringDefinitionList.add(localizedStringDefinition1);
+
+MessageItem messageItem1 = new MessageItem();
+messageItem1.setMessageId("M0001");
+messageItem1.setMessage("これはサンプルです。");
+messageItem1.setLocalizedMessageList(localizedStringDefinitionList);
+
+Map<String, MessageItem> messageItems = new HashMap<>();
+messageItems.put(messageItem1.getMessageId(), messageItem1);
+
+MessageCategory messageCategory = new MessageCategory();
+messageCategory.setName("test/sample");
+messageCategory.setDisplayName("サンプルメッセージ");
+messageCategory.setMessageItems(messageItems);
+
+// メッセージ定義の作成
+messageManager.create(messageCategory);
+
+// メッセージ定義の更新
+MessageCategory messageCategoryUpdate = messageManager.get("test/sample");
+messageCategoryUpdate.setDisplayName("サンプルメッセージ（アップデート）");
+messageManager.update(messageCategoryUpdate);
+
+// メッセージ定義の削除
+messageManager.remove("test/sample");
+----

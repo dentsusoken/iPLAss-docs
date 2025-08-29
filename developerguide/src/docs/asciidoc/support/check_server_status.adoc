@@ -1,0 +1,61 @@
+[[check_server_status]]
+== サーバー状態確認
+サーバー状態を確認する為に、以下の機能を用意しています。 +
+アプリケーションサーバーの公開判断や、コンテナ運用などで活用ください。
+
+=== 起動状態の確認
+アプリケーションの起動状態の確認には「HTTP リクエスト」を利用します。
+
+==== HTTP リクエスト
+次の URL に GET リクエストを行います。
+
+URL: `(http|https)://<host><:port>/<context>/checkStatus` +
+（ 例: `https://example.com/iplass/checkStatus` ）
+
+.HTTP ステータス
+* 200(OK)
+** アプリケーションサーバー起動
+** RDB接続可能
+* 500(Internal Server Error)
+** アプリケーションサーバー起動
+** RDB接続不可
+* 上記以外
+** アプリケーションサーバーが起動中、もしくは起動に失敗している
+
+=== 暖気状態の確認
+アプリケーションの暖気状態の確認には、「ファイル」と「HTTP リクエスト」の２通りの確認方法があります。 +
+暖気については、以下を参照してください。
+
+- <<../performance/index.adoc#application_warmup, Developer Guide - パフォーマンスチューニング - アプリケーション暖気>>
+- <<../../serviceconfig/index.adoc#WarmupService, Configuration - WarmupService>> 
+
+
+==== ファイル
+サーバー内のファイルを確認することで、状態を確認することができます。ファイルが存在する場合、暖気処理が終了（正常／異常）しています。 +
+ファイルの確認のためには、<<../../serviceconfig/index.adoc#WarmupService, Configuration - WarmupService>> で statusFile プロパティ、enabled プロパティの設定が必要です。
+
+WarmupService の statusFile が `/path/to/warmup_status` の場合、以下のファイルが作成されます。
+
+.正常終了時
+- /path/to/warmup_status （ファイルには、complete が記載されている）
+- /path/to/warmup_status.complete （空ファイル）
+
+.異常終了時
+- /path/to/warmup_status （ファイルには、failed が記載されている）
+- /path/to/warmup_status.failed （空ファイル）
+
+==== HTTP リクエスト
+次の URL に GET リクエストを行います。
+
+URL: `(http|https)://<host><:port>/<context>/warmupStatus` +
+（ 例: `https://example.com/iplass/warmupStatus` ）
+
+.HTTP ステータス
+* 200(OK)
+** 暖気処理完了
+* 404(Not Found)
+** 暖気処理が無効（enabled プロパティが未指定もしくは false が設定されている）
+* 500(Internal Server Error)
+** 暖気処理が失敗
+* 503(Service Unavailable)
+** 暖気処理を実行中。しばらく時間おいてリクエストすると、完了もしくは失敗に変化する。

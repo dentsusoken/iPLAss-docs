@@ -1,0 +1,755 @@
+=== WAMモジュールの設定
+
+[[wam_serviceconfig]]
+==== service-config
+WAMモジュールを有効化するには、link:../../serviceconfig/index.html#WamService[WamService]が設定された `wam-service-config.xml` をincludeする必要があります。
+設定方法については<<initial_setting,初期設定>>を参照してください。
+
+[[wam_wampreference]]
+==== Preference
+WAMモジュールの設定には<<../customizing/index.adoc#Preference, Preference機能>>を利用します。
+
+以下はデフォルトで提供しているWAMのPreferenceです。必要に応じて設定内容を変更してください。
+
+
+.wam/wamPreference
+WAM全般の設定です。
+
+.Runtime Class Name
+----
+org.iplass.wam.api.WamPreference
+----
+
+[cols="1,3,1", options="header"]
+|===
+|項目
+|説明
+|初期値
+
+|wamUserIdentifierRole
+|WAMユーザーを識別するためのロール
+|WAM
+
+|homeUrl
+|認証後にリダイレクトされる画面のURL。 +
+サイトのホームページを指定してください。iPLAssサーバー内のページである必要はありません。`wam/index` にサンプル実装が定義されています。
+|https://[your_apps_home_page_fqdn]/
+
+|customCssPath
+|独自のCSSを組み込みたい場合に指定します。
+パスの先頭に `${contextPath}` を指定した場合はテナントコンテキストパスに、 `${staticContentPath}` を指定した場合は静的コンテントパスに置き換えられます。
+|
+
+|faviconPath
+|faviconを設定したい場合に指定します。
+パスの先頭に `${contextPath}` を指定した場合はテナントコンテキストパスに、 `${staticContentPath}` を指定した場合は静的コンテントパスに置き換えられます。
+|
+
+|accountPolicy
+|サインアップ設定の `initialAccountPolicy` が未指定の場合に、作成されたユーザーに割り当てられるアカウントポリシー(認証ポリシー)です。
+|WAM
+
+|signUp
+|<<wam_wampreference_signUp,signUp>>参照
+|
+
+|settings
+|<<wam_wampreference_settings,settings>>参照
+|
+
+|verification
+|<<wam_wampreference_verification,verification>>参照
+|
+
+|recovery
+|<<wam_wampreference_recovery,recovery>>参照
+|
+
+|manageSite
+|<<wam_wampreference_manageSite,manageSite>>参照
+|
+
+|idProvider
+|<<wam_wampreference_idProvider_fb,idProvider(FaceBook)>>参照
+|
+
+|idProvider
+|<<wam_wampreference_idProvider_tw,idProvider(X)>>参照
+|
+
+|idProvider
+|<<wam_wampreference_idProvider_gg,idProvider(Google)>>参照
+|
+
+|idProvider
+|<<wam_wampreference_idProvider_yh,idProvider(Yahoo)>>参照
+|
+|===
+
+[[wam_wampreference_signUp]]
+.signUp
+サインアップ時の設定です。
+
+[cols="1,4a,1", options="header"]
+|===
+|項目
+|説明
+|初期値
+
+|accountIdProperty
+|ユーザーIDを直接入力させず、それ以外の項目をユーザーIDとして利用する場合に指定します。
+例えば、メールアドレス(mail)のようなユーザーに対して一意となる項目を指定します。
+|
+
+|listener
+|アクティベーション完了時に実行するリスナー。
+`org.iplass.wam.auth.signup.SignUpListener` の実装クラス、またはGroovyScriptを指定します。
+|
+
+|initialGroup
+|初期設定するグループのコード、複数指定可能。
+|WAM
+
+|activatedGroup
+|アクティベーション後に設定するグループのコード、複数指定可能。
+|
+
+|initialAccountPolicy
+|初期設定するアカウントポリシー(認証ポリシー)
+|
+
+|activatedAccountPolicy
+|アクティベーション後に設定するアカウントポリシー(認証ポリシー)
+|
+
+|captcha
+| `org.iplass.wam.auth.signup.Captcha` の実装クラスを指定します。 標準で以下の実装を提供します。
+
+
+org.iplass.wam.auth.signup.captchas.ReCaptcha::
+ReCAPTCHAを使用します。 `version` 項目に使用するバージョンを指定します。 +
+使用可能なバージョンは、 `V2`、`V3`、`ENTERPRISE_SCORE`、`ENTERPRISE_CHECKBOX` です。
+
+|
+
+|signUpLayoutName
+|登録時に利用する `wam.auth.UserSignUp` エンティティの詳細画面定義のレイアウト名(View名)
+|signUpLayout
+
+|activateByOutOfBandVerification
+|メール等を利用した本人確認を実施するかを指定します。
+|true
+
+|authenticationPolicyWithoutTwoStepVerification
+|2段階認証の有効化/無効化（2段階認証ポリシーの切り替え）で利用する認証ポリシー（2段階認証が設定されていない認証ポリシー）
+|
+|authenticationPolicyWithTwoStepVerification
+|2段階認証の有効化/無効化（2段階認証ポリシーの切り替え）で利用する認証ポリシー（2段階認証が設定されている認証ポリシー）
+|
+|===
+
+[[wam_wampreference_settings]]
+.settings
+セルフメンテナンスで利用する設定です。
+
+[cols="1,4,1", options="header"]
+|===
+|項目
+|説明
+|初期値
+
+|settingsLayoutName
+|個人情報の編集時に利用する `mtp.auth.User` エンティティの詳細画面定義のレイアウト名(View名)
+|
+|showAuthApplication
+|セルフメンテナンス画面にアプリケーション情報を表示するかを指定します。 +
+表示する設定にした場合、ユーザーに設定されているOAuthのクライアント情報のメンテナンス(削除)が可能になります。
+|true
+|showRememberMe
+|セルフメンテナンス画面に自動ログイン情報を表示するかを指定します。 +
+表示する設定にした場合、ユーザーがRememberMeを設定しているか、また設定している場合にメンテナンス(削除)が可能になります。
+|true
+|===
+
+[[wam_wampreference_verification]]
+.verification
+メール、SMSなどのユーザーの本人確認(アクティベーション)に利用する項目に関する設定です。
+
+[cols="1,4,1", options="header"]
+|===
+|項目
+|説明
+|初期値
+
+|type
+|verification方式を一意に識別するための名称
+|email
+
+|propertyName
+|検証に利用する `mtp.auth.User`（および、`wam.auth.UserSignUp`）エンティティのプロパティ名
+|mail
+
+|verifier
+|アクティベーション処理時に利用するlink:../../serviceconfig/index.html#OutOfBandVerifier[OutOfBandVerifier]のverifier名
+|email
+
+|validDurationMinute
+|検証処理の有効期間（分）
+|1440
+
+|maxFailureCount
+|検証処理の最大失敗許容回数。-1を指定した場合はvalidDurationMinute間であれば何度でも失敗可能となります。
+|-1
+|===
+
+[[wam_wampreference_recovery]]
+.recovery
+パスワードリカバリに関する設定です。
+
+[cols="1,4,1", options="header"]
+|===
+|項目
+|説明
+|初期値
+
+|propertyForSecretQuestion
+|パスワードリカバリで使用する秘密の質問となるプロパティ名。
+複数指定可能。
+|lastName
+
+|propertyForSecretQuestion
+|同上
+|firstName
+
+|propertyForSecretQuestion
+|同上
+|mail
+|===
+
+[[wam_wampreference_manageSite]]
+.manageSite
+管理対象サイトの設定です。サイト毎に設定します。
+
+[cols="1,4,1", options="header"]
+|===
+|項目
+|説明
+|初期値
+
+|siteId
+|管理対象サイトを識別するIDを設定します。
+WAMプラグインモジュールに設定したものと同じ文字列を設定します。
+|local
+
+|siteSecret
+|管理対象サイトのシークレットキーを設定します。
+WAMプラグインモジュールに設定したものと同じ文字列を設定します。
+|123
+
+|siteDomain
+|管理対象サイトのドメイン名を設定します。
+|[homeUrlDomain]
+
+|httpsOnly
+|接続可能なプロトコルをhttpsのみに設定します。
+|false
+
+|mappingActionPath
+|管理対象サイトのコンテンツ閲覧権限チェックに利用されるiPLAssのAction権限設定で、Action名と管理対象サイトのコンテンツのURLパスをマッピングする際にAction名のprefixとして利用される文字列を設定します。
+|local
+
+|userInfoSupplier
+|`org.iplass.wam.siteauth.UserInfoSupplier` の実装クラスを指定します。ユーザー情報取得WebApiで返却する情報をカスタマイズする際に利用します。 + 
+未指定の場合、`org.iplass.wam.siteauth.DefaultUserInfoSupplier` が適用されます。DefaultUserInfoSupplierでは、 `publicUserProperty` で指定した `mtp.auth.User` エンティティのプロパティを返却するように実装されています。
+|
+
+|publicUserProperty
+|ユーザー情報取得WebApiで返却するユーザー情報に含まれる `mtp.auth.User` エンティティのプロパティ名を指定します。複数指定可能です。
+|
+
+
+|authCallbackUrl
+|WAM機能の認証フローにおいて、ログイン完了後にiPLAssから管理対象サイトへリダイレクトする際に使用されるURLです。
+当該URLは、サイトコンテンツのURLに該当しない任意のURLを設定してください。
+
+形式は以下の通りです。
+
+http[s]://<サイトのドメイン名>/<任意のパス>
+
+[red]#WAMプラグインモジュールにおける設定と異なり、URL全体(http[s]～)を記述する点に注意してください。 `/<任意のパス>` の部分をWAMプラグインモジュールの設定と一致させます。#
+|http://[homeUrlDomain]/wamauthcallback
+|===
+
+[[wam_wampreference_idProvider_fb]]
+.idProvider(Facebook)
+Facebookのアカウントで認証を行う際の設定です。
+
+Facebook側にはリダイレクト先として以下の3つのURLを設定してください。
+----
+http(s)://[server]/[appContext]/[tenantName]/wam/auth/idpcb
+http(s)://[server]/[appContext]/[tenantName]/wam/signup/idpcb/[providerName]
+http(s)://[server]/[appContext]/[tenantName]/wam/settings/idpcb/[providerName]
+----
+
+.Runtime Class Name
+----
+org.iplass.wam.auth.idp.facebook.FacebookIdProvider
+----
+
+[cols="1,4,1", options="header"]
+|===
+|項目
+|説明
+|初期値
+
+|clientId
+|アプリで発行されたApp ID
+|yourClientId
+
+|clientSecret
+|アプリで発行されたApp Secret
+|yourClientSecret
+
+|iconUrl
+|ログイン画面表示用ラベルにロゴ画像を表示する場合に設定します。設定する値は画像のURLです。 +
+URLの指定方法については、<<../multitenant/index.adoc#url_definition, URLの指定>>を参照してください。
+|-
+
+|buttonLabel
+|ログイン画面表示用のラベル
+|<span> Facebook</span>
+
+|buttonStyle
+|ログイン画面表示用ラベルのスタイル
+|color: #3b5998
+
+|supportSelfRegistration
+|ユーザー自らIdProviderとの紐づけ、解除を設定可能とするか否か
+|true
+|===
+
+[[wam_wampreference_idProvider_tw]]
+.idProvider(X)
+X（Twitter）のアカウントで認証を行う際の設定です。
+
+X（Twitter）側にはCallback先として以下の3つのURLを設定してください。
+----
+http(s)://[server]/[appContext]/[tenantName]/wam/auth/idpcb
+http(s)://[server]/[appContext]/[tenantName]/wam/signup/idpcb/[providerName]
+http(s)://[server]/[appContext]/[tenantName]/wam/settings/idpcb/[providerName]
+----
+
+
+.Runtime Class Name
+----
+org.iplass.wam.auth.idp.twitter.TwitterIdProvider
+----
+
+[cols="1,1,1", options="header"]
+|===
+|項目
+|説明
+|初期値
+
+|consumerKey
+|アプリで発行されたコンシューマキー
+|yourConsumerKey
+
+|consumerSecret
+|アプリで発行されたコンシューマーシークレット
+|yourConsumerSecret
+
+|iconUrl
+|ログイン画面表示用ラベルにロゴ画像を表示する場合に設定します。設定する値は画像のURLです。 +
+URLの指定方法については、<<../multitenant/index.adoc#url_definition, URLの指定>>を参照してください。
+|-
+
+|buttonLabel
+|ログイン画面表示用のラベル
+|<span> Twitter</span>
+
+|buttonStyle
+|ログイン画面表示用ラベルのスタイル
+|color: #4099FF
+
+|supportSelfRegistration
+|ユーザー自らIdProviderとの紐づけ、解除を設定可能とするか否か
+|true
+|===
+
+[[wam_wampreference_idProvider_gg]]
+.idProvider(Google)
+Googleのアカウントで認証を行う際の設定です。
+
+WARNING: idProvider(Google)の替わりに、 <<wam_wampreference_idProvider_oidc>>  を利用することを推奨します。認証連携におけるきめ細かな設定が可能です。
+
+OpenID Provider側にはリダイレクト先として以下の3つのURLを設定してください。
+----
+http(s)://[server]/[appContext]/[tenantName]/wam/auth/idpcb
+http(s)://[server]/[appContext]/[tenantName]/wam/signup/idpcb/[providerName]
+http(s)://[server]/[appContext]/[tenantName]/wam/settings/idpcb/[providerName]
+----
+
+.Runtime Class Name
+----
+org.iplass.wam.auth.idp.openidconnect.OpenIdConnectIdProvider
+----
+
+[cols="1,1,4,1", options="header"]
+|===
+2+|項目
+|説明
+|初期値
+
+2+|providerName
+|プロバイダ名
+|Google
+
+2+|authUri
+|認証先のURL
+|https://accounts.google.com/o/oauth2/v2/auth
+
+2+|tokenUri
+|トークンのURL
+|https://oauth2.googleapis.com/token
+
+2+|userInfoUri
+|ユーザー情報取得URL
+|https://openidconnect.googleapis.com/v1/userinfo
+
+2+|clientId
+|アプリで発行されたクライアントID
+|yourClientId
+
+2+|clientSecret
+|アプリで発行されたクライアントシークレット
+|yourClientSecret
+
+2+|iconUrl
+|ログイン画面表示用ラベルにロゴ画像を表示する場合に設定します。設定する値は画像のURLです。 +
+URLの指定方法については、<<../multitenant/index.adoc#url_definition, URLの指定>>を参照してください。
+|-
+
+2+|buttonLabel
+|ログイン画面表示用のラベル
+|<span> Google</span>
+
+2+|buttonStyle
+|ログイン画面表示用ラベルのスタイル
+|color: #dd4b39
+
+2+|supportSelfRegistration
+|ユーザー自らIdProviderとの紐づけ、解除を設定可能とするか否か
+|true
+
+2+|subjectName
+|ユーザーのフルネームの属性名
+|name
+
+2+|attributeMapping
+|プロバイダ側のプロフィールの属性値と iPLAss上の `User` エンティティのプロパティの値をマッピングする設定
+|-
+
+|
+|propertyName
+| `User` エンティティのプロパティ（メールアドレス）
+|mail
+
+|
+|profileAttributeName
+|プロバイダ側の属性値（メールアドレス）
+|email
+
+2+|attributeMapping
+|プロバイダ側のプロフィールの属性値と iPLAss上の `User` エンティティのプロパティの値をマッピングする設定
+|-
+
+|
+|propertyName
+| `User` エンティティのプロパティ（ユーザーの名）
+|firstName
+
+|
+|profileAttributeName
+|プロバイダ側の属性値（ユーザーの名）
+|given_name
+
+2+|attributeMapping
+|プロバイダ側のプロフィールの属性値と iPLAss上の `User` エンティティのプロパティの値をマッピングする設定
+|-
+
+|
+|propertyName
+| `User` エンティティのプロパティ（ユーザーの姓）
+|lastName
+
+|
+|profileAttributeName
+|プロバイダ側の属性値（ユーザーの姓）
+|family_name
+
+2+|attributeMapping
+|プロバイダ側のプロフィールの属性値と iPLAss上の `User` エンティティのプロパティの値をマッピングする設定
+|-
+
+|
+|propertyName
+| `User` エンティティのプロパティ（ユーザーの言語）
+|language
+
+|
+|profileAttributeName
+|プロバイダ側の属性値（ユーザーの優先ロケール）
+|locale
+|===
+
+
+[[wam_wampreference_idProvider_yh]]
+.idProvider(Yahoo)
+Yahoo!のアカウントで認証を行う際の設定です。
+
+WARNING: idProvider(Yahoo)の替わりに、 <<wam_wampreference_idProvider_oidc>>  を利用することを推奨します。認証連携におけるきめ細かな設定が可能です。
+
+OpenID Provider側にはリダイレクト先として以下の3つのURLを設定してください。
+----
+http(s)://[server]/[appContext]/[tenantName]/wam/auth/idpcb
+http(s)://[server]/[appContext]/[tenantName]/wam/signup/idpcb/[providerName]
+http(s)://[server]/[appContext]/[tenantName]/wam/settings/idpcb/[providerName]
+----
+
+.Runtime Class Name
+----
+org.iplass.wam.auth.idp.openidconnect.OpenIdConnectIdProvider
+----
+
+[cols="1,1,2,2", options="header"]
+|===
+2+|項目
+|説明
+|初期値
+
+2+|providerName
+|プロバイダ名
+|Yahoo!
+
+2+|authUri
+|認証先のURL
+|https://auth.login.yahoo.co.jp/yconnect/v2/authorization
+
+2+|useNonce
+|リプレイアタック対策有無を設定
+|true
+
+2+|tokenUri
+|トークンのURL
+|https://auth.login.yahoo.co.jp/yconnect/v2/token
+
+2+|tokenEndPointAuthType
+|トークンエンドポイント認証タイプ固定文字列（初期値から変更不要）
+|BASIC
+
+2+|clientId
+|アプリで発行されたクライアントID
+|yourClientId
+
+2+|clientSecret
+|アプリで発行されたクライアントシークレット
+|yourClientSecret
+
+2+|userInfoUri
+|ユーザー情報取得URL
+|https://userinfo.yahooapis.jp/yconnect/v2/attribute
+
+2+|subjectName
+|ユーザーのフルネームの属性名
+|name
+
+2+|iconUrl
+|ログイン画面表示用ラベルにロゴ画像を表示する場合に設定します。設定する値は画像のURLです。 +
+URLの指定方法については、<<../multitenant/index.adoc#url_definition, URLの指定>>を参照してください。
+|-
+
+2+|buttonLabel
+|ログイン画面表示用のラベル
+|<span> Yahoo!</span>
+
+2+|buttonStyle
+|ログイン画面表示用ラベルのスタイル
+|color: #ff0033
+
+2+|supportSelfRegistration
+|ユーザー自らIdProviderとの紐づけ、解除を設定可能とするか否か
+|true
+
+2+|attributeMapping
+|プロバイダ側のプロフィールの属性値と iPLAss上の `User` エンティティのプロパティの値をマッピングする設定
+|-
+
+|
+|propertyName
+| `User` エンティティのプロパティ（メールアドレス）
+|mail
+
+|
+|profileAttributeName
+|プロバイダ側の属性値（メールアドレス）
+|email
+
+2+|attributeMapping
+|プロバイダ側のプロフィールの属性値と iPLAss上の `User` エンティティのプロパティの値をマッピングする設定
+|-
+
+|
+|propertyName
+| `User` エンティティのプロパティ（ユーザーの名）
+|firstName
+
+|
+|profileAttributeName
+|プロバイダ側の属性値（ユーザーの名）
+|given_name
+
+2+|attributeMapping
+|プロバイダ側のプロフィールの属性値と iPLAss上の `User` エンティティのプロパティの値をマッピングする設定
+|-
+
+|
+|propertyName
+| `User` エンティティのプロパティ（ユーザーの姓）
+|lastName
+
+|
+|profileAttributeName
+|プロバイダ側の属性値（ユーザーの姓）
+|family_name
+
+2+|attributeMapping
+|プロバイダ側のプロフィールの属性値と iPLAss上の `User` エンティティのプロパティの値をマッピングする設定
+|-
+
+|
+|propertyName
+| `User` エンティティのプロパティ（ユーザーの言語）
+|language
+
+|
+|profileAttributeName
+|プロバイダ側の属性値（ユーザーの優先ロケール）
+|locale
+|===
+
+[[wam_wampreference_idProvider_oidc]]
+.idProvider(汎用OpenID Provider)
+OpenID Connect準拠のOpenID Providerのアカウントで認証を行う際の設定です。
+認証連携における詳細の設定は <<../oauth/index.adoc#OpenIDConnect, OpenIDConnect定義>> にて行います。
+
+OpenID Provider側にはリダイレクト先として以下の3つのURLを設定してください。
+----
+http(s)://[server]/[appContext]/[tenantName]/wam/auth/idpcb
+http(s)://[server]/[appContext]/[tenantName]/wam/signup/idpcb/[providerName]
+http(s)://[server]/[appContext]/[tenantName]/wam/settings/idpcb/[providerName]
+----
+
+.Runtime Class Name
+----
+org.iplass.wam.auth.idp.oidc.OpenIdConnectIdProvider
+----
+
+[cols="1,1,2,2", options="header"]
+|===
+2+|項目
+|説明
+|設定例
+
+2+|providerName
+|プロバイダ名
+|okta
+
+2+|definitionName
+|<<../oauth/index.adoc#OpenIDConnect, OpenIDConnect定義>>の定義名
+|okta
+
+2+|definitionNameResolver
+|`org.iplass.wam.auth.idp.oidc.OpenIdConnectDefinitionNameResolver` の実装クラスを指定します。
+OpenIDConnect定義名を動的に解決したい場合に利用します。 + 
+未指定の場合はdefinitionNameに指定されたOpenIDConnect定義が利用されます。
+|sample.CustomDefinitionNameResolver
+
+2+|iconUrl
+|ログイン画面表示用ラベルにロゴ画像を表示する場合に設定します。設定する値は画像のURLです。 +
+URLの指定方法については、<<../multitenant/index.adoc#url_definition, URLの指定>>を参照してください。
+|path/to/icon.png
+
+2+|buttonLabel
+|ログイン画面表示用のラベル
+|<span>Okta</span>
+
+2+|buttonStyle
+|ログイン画面表示用ラベルのスタイル
+|color: #007dc1
+
+2+|supportSelfRegistration
+|ユーザー自らIdProviderとの紐づけ、解除を設定可能とするか否か
+|true
+
+2+|attributeMapping
+|プロバイダ側のプロフィールの属性値と iPLAss上の `User` エンティティのプロパティの値をマッピングする設定。attributeMappingは複数の設定が可能。
+|
+
+|
+|propertyName
+| `User` エンティティのプロパティ名を指定
+|mail
+
+|
+|profileAttributeName
+|プロバイダ側の属性名を指定
+|email
+|===
+
+[[wam_wampreference_idProvider_saml]]
+.idProvider(SAML)
+SAML準拠のID Providerのアカウントで認証を行う際の設定です。
+認証連携における詳細の設定は <<../saml/index.adoc#serviceprovidersetting, SAML定義（ServiceProviderの設定）>> にて行います。
+
+なお、SAMLIdProviderはユーザー自身によるアカウントの紐づけ、解除操作には対応しておりません。事前のプロビジョニング、もしくはAutoUserProvisioningHandlerの仕組みにてJITプロビジョニングする必要があります。
+
+.Runtime Class Name
+----
+org.iplass.wam.auth.idp.saml.SamlIdProvider
+----
+
+[cols="1,1,2,2", options="header"]
+|===
+2+|項目
+|説明
+|設定例
+
+2+|providerName
+|プロバイダ名
+|okta
+
+2+|definitionName
+|<<../saml/index.adoc#serviceprovidersetting, SAML定義>>の定義名
+|okta
+
+2+|definitionNameResolver
+|`org.iplass.wam.auth.idp.saml.SamlDefinitionNameResolver` の実装クラスを指定します。
+SAML定義名を動的に解決したい場合に利用します。 + 
+未指定の場合はdefinitionNameに指定されたSAML定義が利用されます。
+|sample.CustomDefinitionNameResolver
+
+2+|iconUrl
+|ログイン画面表示用ラベルにロゴ画像を表示する場合に設定します。設定する値は画像のURLです。 +
+URLの指定方法については、<<../multitenant/index.adoc#url_definition, URLの指定>>を参照してください。
+|path/to/icon.png
+
+2+|buttonLabel
+|ログイン画面表示用のラベル
+|<span>Okta</span>
+
+2+|buttonStyle
+|ログイン画面表示用ラベルのスタイル
+|color: #007dc1
+
+|===

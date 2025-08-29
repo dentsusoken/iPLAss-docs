@@ -1,0 +1,113 @@
+=== カスタマイズ
+コンシューマ向けのユーザー登録画面や編集画面など独自に画面を作成している場合の認証情報の制御について説明します。
+
+==== ユーザーの登録
+ユーザーの登録は、汎用画面と同様に `User` エンティティを登録することで実行されます。
+`User` エンティティに設定されている `UserEntityEventListener` によって、 `t_account` テーブルに連携されます。
+
+==== パスワード指定登録
+`User` エンティティにはパスワードがないので、Entityの登録だけではパスワードは指定できません。
+`User` エンティティにパスワードを指定して登録してください。
+`UserEntityEventListener` によって、パスワードが登録されます。
+
+NOTE: 認証ポリシーの `Create Account With Specific Password` を有効にする必要があります。
+
+----
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.entity.EntityManager;
+import org.iplass.mtp.auth.User;
+
+EntityManager em = ManagerLocator.manager(EntityManager.class);
+
+//ユーザーの作成
+User user = new User();
+user.setAccountId("xxx");
+user.setAccountPolicy("xxxxx"); //Create Account With Specific Passwordを指定したもの
+user.setPassword("xxxxxx"); //パスワードをセット
+・・・・
+
+//登録
+em.insert(user);
+----
+
+==== パスワード変更
+パスワードの変更は、AuthManagerを利用して行います。
+変更前のパスワードと変更後のパスワードが必要です。
+
+[source, java]
+----
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.auth.AuthManager;
+import org.iplass.mtp.auth.login.Credential;
+import org.iplass.mtp.auth.login.IdPasswordCredential;
+import org.iplass.mtp.auth.login.CredentialUpdateException;
+
+AuthManager auth = ManagerLocator.manager(AuthManager.class);
+
+//旧、新のCredentialを生成
+Credential oldCredential = new IdPasswordCredential(accountId, oldPass);
+Credential newCredential = new IdPasswordCredential(accountId, newPass);
+
+//パスワード更新
+try {
+    auth.updateCredential(oldCredential, newCredential);
+} catch (CredentialUpdateException e) {
+    // エラー処理
+}
+----
+
+==== パスワードリセット
+パスワードのリセットは、AuthManagerを利用して行います。
+
+[source, java]
+----
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.auth.AuthManager;
+import org.iplass.mtp.auth.login.Credential;
+import org.iplass.mtp.auth.login.IdPasswordCredential;
+import org.iplass.mtp.auth.login.CredentialUpdateException;
+
+AuthManager auth = ManagerLocator.manager(AuthManager.class);
+
+//アカウントIDを指定したCredentialを生成
+Credential credential = new IdPasswordCredential(id, null);
+
+//パスワードリセット
+try {
+    auth.resetCredential(credential);
+} catch (CredentialUpdateException e) {
+    // エラー処理
+}
+----
+
+==== パスワード指定リセット
+パスワードを指定したリセットは、AuthManagerを利用して行います。
+
+標準では、管理者のみパスワードのリセットが可能になっています。
+もし管理者以外にパスワード指定によるリセットを許可する場合は、テナント設定の「ユーザー管理者ロール」に
+リセットを許可するロールを指定します。 +
+詳細はテナントの<<../multitenant/index.adoc#tenant_auth, 認証設定>>を参照してください。
+
+NOTE: 認証ポリシーの `Reset Password With Specific Password` を有効にする必要があります。
+
+[source, java]
+----
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.auth.AuthManager;
+import org.iplass.mtp.auth.login.Credential;
+import org.iplass.mtp.auth.login.IdPasswordCredential;
+import org.iplass.mtp.auth.login.CredentialUpdateException;
+
+AuthManager auth = ManagerLocator.manager(AuthManager.class);
+
+String newPassword = "xxxxx";
+//アカウントIDを指定したCredentialを生成
+Credential credential = new IdPasswordCredential(id, newPassword);
+
+//パスワードリセット
+try {
+    auth.resetCredential(credential);
+} catch (CredentialUpdateException e) {
+    // エラー処理
+}
+----

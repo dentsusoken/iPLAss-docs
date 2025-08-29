@@ -1,0 +1,58 @@
+[[MessageService]]
+=== MessageService
+リソースバンドルを管理するためのサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.message.MessageService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.message.MessageService
+----
+
+==== MessageServiceの設定
+MessageServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| resourceBundle | <<ResourceBundleConfig>>、複数指定可| ResourceBundleConfigの設定。
+|===
+
+[[ResourceBundleConfig]]
+.ResourceBundleConfig
+classはorg.iplass.mtp.impl.message.ResourceBundleConfigを指定します。
+
+標準でorg.iplass.mtp.impl.query.QuerySyntaxRegisterを提供しています。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| baseBundleNamePattern | String | バンドル名のパターン。
+| formats | String、複数指定可 | ファイルのフォーマット。`mtp.message` を指定した場合はMessage定義をリソースバンドルとして扱います。
+| fallbackToSystemLocale | boolean | リソースバンドルを検索する際にシステムロケールをフォールバックするか。
+|===
+
+==== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.message.MessageService</interface>
+	<class>org.iplass.mtp.impl.message.MessageService</class>
+	<property name="resourceBundle">
+		<property name="baseBundleNamePattern" value="^org/iplass/.*$" />
+		<property name="formats" value="java.class" />
+		<property name="formats" value="java.properties" />
+		<property name="fallbackToSystemLocale" value="false" />
+	</property>
+	<property name="resourceBundle">
+		<property name="formats" value="mtp.message" />
+		<property name="formats" value="java.class" />
+		<property name="formats" value="java.properties" />
+		<property name="fallbackToSystemLocale" value="false" />
+	</property>
+</service>
+----

@@ -1,0 +1,27 @@
+[[tutorial_advanced]]
+= チュートリアル（アドバンス）
+:_relative-root-path: ../../
+:toclevels: 2
+
+== 前提条件
+本チュートリアルは以下を前提条件としています。
+チュートリアルを進めるにあたり、以下のいずれかを実施し、Webアプリケーションが動作する環境を準備してください。
+
+* <<../gettingstarted/index.adoc#Introduction, Install and Run>>
+* <<../installguide/index.adoc#ConstructionEnvironment, Eclipse開発環境の構築>>
+* <<../docker/index.adoc#DockerEnvironmentConstruction, Dockerで環境構築>>
+* チュートリアル実施にあたり、Enterprise Editionでのみ実施可能なものがあります。
++
+オープンソース版の環境をEnterprise Editionにアップグレードする場合は、<<../../environment/index.adoc#UpgradeToEnterpriseEdition, Enterprise Editionへのアップグレード>>を参照してください。
++
+Dockerの場合、Enterprise Edition版のDockerイメージを利用してください。
+
+include::description_ja.adoc[]
+
+include::customize_ja.adoc[]
+
+
+== 次のステップ
+GroovyやJava/JSPを利用して独自の画面、処理を組み込む場合、 <<../introductioncustomize/index.adoc#,チュートリアル（カスタマイズ）>> を実施してみてください。
+
+それぞれの機能の詳細を理解したい場合は、 <<../../developerguide/index.adoc#,Developer Guide>> を参照し、いろいろと定義を変更してみてください。

@@ -1,0 +1,35 @@
+[[IPAddressHistoryStoreService]]
+=== [.eeonly]#IPAddressHistoryStoreService#
+過去にアクセスされたIPアドレスの保持を行うためのサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.auth.authenticate.ipaddress.IPAddressHistoryStoreService
+----
+
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.auth.authenticate.ipaddress.UserEntityIPAddressHistoryStoreService
+----
+
+
+==== UserEntityIPAddressHistoryStoreServiceの設定
+過去にアクセスされたIPアドレスのUserEntityへの保持について設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| storePropertyName | String | IPアドレスの保持に利用するUserEntityのプロパティ名。デフォルト値は `ipAddressHistory` です。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.auth.authenticate.ipaddress.IPAddressHistoryStoreService</interface>
+	<class>org.iplass.mtp.impl.auth.authenticate.ipaddress.UserEntityIPAddressHistoryStoreService</class>
+	<property name="storePropertyName" value="ipAddressHistory" />
+</service>
+----

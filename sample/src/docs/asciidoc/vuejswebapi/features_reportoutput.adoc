@@ -1,0 +1,3 @@
+[[VueJS_WebAPI_ReportOutput]]
+=== ReportOutput
+Vue.js版の注文明細ダウンロード機能は、Java/JSP版の<<../javajsp/index#Java_JSP_ReportOutput,ReportOutput>>と同じ実装になっていますので、そちらの説明を参照してください。

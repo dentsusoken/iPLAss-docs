@@ -1,0 +1,66 @@
+= Developer Guide
+:_hreflang-path: developerguide/index.html
+ifdef::env-github,env-browser[:outfilesuffix: .adoc]
+
+ifeval::["{lang}" == "en"]
+
+[WARNING]
+====
+The English Version of this documentation is under construction.
+====
+
+endif::[]
+
+本ドキュメントは開発者向けにiPLAssの個別の機能、操作方法、実装方法を説明したものです。
+
+== <<./metadata/index.adoc#, メタデータ管理>>
+
+== <<./datamanagement/index.adoc#, データ管理>>
+
+== <<./genericentitymanager/index.adoc#, GEM（Generic Entity Manager）>>
+
+== <<./mobiledesigncomponents/index.adoc#, [.eeonly]#MDC（Mobile Design Components）# >>
+
+== <<./customizing/index.adoc#, カスタムロジックの組込>>
+
+== <<./webapi/index.adoc#, Web API>>
+
+== <<./report/index.adoc#, 帳票出力>>
+
+== <<./authentication/index.adoc#, 認証>>
+
+== <<./authorization/index.adoc#, 認可>>
+
+== <<./oauth/index.adoc#, OAuth / OpenID Connect >>
+
+== <<./saml/index.adoc#, [.eeonly]#SAML# >>
+
+== <<./i18n/index.adoc#, 多言語対応>>
+
+== <<./notification/index.adoc#, 通知>>
+
+== <<./multitenant/index.adoc#, マルチテナント>>
+
+== <<./entitylisting/index.adoc#, [.eeonly]#汎用検索（Entity Listing）# >>
+
+== <<./aggregation/index.adoc#, [.eeonly]#定型集計# >>
+
+== <<./simplebi/index.adoc#, [.eeonly]#簡易BI# >>
+
+== <<./workflow/index.adoc#, [.eeonly]#ワークフロー# >>
+
+== <<./schedule/index.adoc#, [.eeonly]#スケジューラ# >>
+
+== <<./support/index.adoc#, 開発・運用サポート>>
+
+== <<./eclipseplugin/index.adoc#, Eclipse Plugin (非推奨)>>
+
+== <<./gradleplugin/index.adoc#, Gradle Plugin>>
+
+== <<./appconsole/index.adoc#, [.eeonly]#EUC# >>
+
+== <<./wam/index.adoc#, [.eeonly]#WAM（Web Account Manager）# >>
+
+== <<./performance/index.adoc#, パフォーマンスチューニング >>
+
+== <<./securitycoding/index.adoc#, セキュリティ対策>>

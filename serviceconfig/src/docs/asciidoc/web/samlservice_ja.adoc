@@ -1,0 +1,94 @@
+[[SamlService]]
+=== [.eeonly]#SamlService#
+SAML認証を行うためのサービスです。
+IdPとして動作させる場合、またSP側からIdPに送信するメッセージに署名を行う場合に証明書ストアの設定が必要です。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.auth.authenticate.saml.SamlService
+----
+
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.auth.authenticate.saml.SamlService
+----
+
+
+==== SamlServiceの設定
+SAML認証を利用する場合、SamlServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| validateSchema| boolean | SAMLメッセージをXMLSchema定義に従っているかを検証します。デフォルト値はfalseです。
+| keyStore | <<SamlKeyStore>>  | 証明書ストアの設定です。
+| setAddressToSubjectConfirmationData | boolean | AssertionのSubjectConfirmationDataにAddressを含めるかどうか。デフォルト値はtrueです。
+| assertionLifetimeMinutes | int | SAMLアサーションの有効期間。デフォルト値は5（分）です。
+| allowedClockSkewMinutes | int | 許容されるクロックスキュー時間。デフォルト値は5（分）です。
+
+iPLAssがSPモードで動作する場合、SubjectConfirmationDataのNotOnOrAfterの検証時に考慮されます。
+
+iPLAssがIdPモードで動作する場合、発行するSAMLアサーションの有効期間（SubjectConfirmationDataのNotOnOrAfter、及びConditionsのNotBefore、NotOnOrAfter）がこのクロックスキュー時間によって次のように拡張されます。
+
+`NotBefore` = `IssueInstant - allowedClockSkewMinutes` +
+`NotOnOrAfter` = `IssueInstant + assertionLifetimeMinutes + allowedClockSkewMinutes`
+
+|===
+
+////
+これはアプリ側で指定することもなさそうだし一覧には表示しない
+| jsr105Provider | String | java.security.Providerの実装クラス名を設定します。
+////
+
+[[SamlKeyStore]]
+.SamlKeyStore
+IdPとして動作させる場合、SP側（iPLAss側）でSAMLメッセージに署名を行う場合に定義が必要です。
+秘密鍵及び証明書（以下エントリと記述）は、KeyStoreに格納します。
+エントリは、複数登録可能です。
+（複数の暗号化アルゴリズム対応するため、また証明書ロールオーバーのため）
+
+classはorg.iplass.mtp.impl.auth.authenticate.saml.SamlKeyStoreを指定します。
+以下の項目を設定可能です。
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| keyStoreType | String | KeyStoreのタイプ。デフォルト値は `JKS` です
+| keyStoreFilePath | String　| 署名作成の為のエントリが格納されるKeyStoreのファイルパス。
+| keyStorePassword | String | KeyStoreのパスワード。
+| keyPassword | String | 秘密鍵のkeyPassword。
+| myCertificate| String、複数指定可 | KeyStore内のエントリのうち、署名に利用するものを絞り込みたい場合にエントリのalias。
+| defaultSignatureAlgorithm | String | デフォルトの署名アルゴリズムを指定してください。デフォルト値は `SHA256withRSA` です。
+| keyStoreReloadIntervalDays | int  | keyStoreのファイルの再読み込み間隔（日数）。
+未指定の場合は、リロードは行いません。
+| rollOverStrategy | <<CertificateRollOverStrategy>> | 証明書の有効期間が迫った場合のロールオーバー方式。
+デフォルト値は `OLDER` です。
+| rollOverDaysBeforeExpire | long | rollOverStrategyが `BEFORE_N_DAYS` の場合に、切り替える日数。
+|===
+
+[[CertificateRollOverStrategy]]
+.CertificateRollOverStrategy
+証明書の有効期間が迫った場合のロールオーバー方式を指定します。
+複数の（新旧の）証明書がKeyStore内にある場合、どちらを利用するかを判断する方式です。
+
+OLDER:: 有効期間が切れるまで、有効期間が短い（NotAfterが古い）証明書を利用
+NEWER:: 有効期間内である証明書のうち、より有効期間が長い（NotAfterが新しい）証明書を利用
+BEFORE_N_DAYS:: 有効期間が切れるrollOverDaysBeforeExpire日前に切り替える
+
+===== 設定例
+[source, xml]
+----
+<service>
+  <interface>org.iplass.mtp.impl.auth.authenticate.saml.SamlService</interface>
+  <property name="keyStore" class="org.iplass.mtp.impl.auth.authenticate.saml.SamlKeyStore">
+    <property name="keyStoreFilePath" value="/app/.keystore" />
+    <property name="keyStorePassword" value="yourOwnKeyStorePassword" />
+    <property name="keyPassword" value="yourOwnKeyPassword" />
+    <property name="keyStoreReloadIntervalDays" value="1" />
+    <property name="rollOverStrategy" value="BEFORE_N_DAYS" />
+    <property name="rollOverDaysBeforeExpire" value="5" />
+
+  </property>
+</service>
+----

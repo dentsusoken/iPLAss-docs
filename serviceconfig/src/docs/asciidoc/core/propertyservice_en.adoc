@@ -1,0 +1,40 @@
+[[PropertyService]]
+=== PropertyService
+This is the service to manage property.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.entity.property.PropertyService
+----
+
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.entity.property.PropertyService
+----
+
+
+==== Settings of PropertyService
+PropertyService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| longTextInlineStoreMaxLength | int | Maximum size (in String.length) for storing LongText type strings internally. The default value is 1024. The maximum size set from the beginning of the character string is retained inside the DataStore record without being saved in the LobStore.
+If the varcharColumnLength defined in <<StorageSpaceMap>> of StoreService is less than longTextInlineStoreMaxLength, the StorageSpaceMap setting takes precedence.
+| remainInlineText | boolean | Whether to store LongText type strings internally for search. The default value is false. However, the part that exceeds the character string length that can be held inside the record will not be searched.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.entity.property.PropertyService</interface>
+
+	<!-- if longtext property value length is over this byte, offstorage to LOB -->
+	<property name="longTextInlineStoreMaxLength" value="1024" />
+	<!-- To enable search long text property, this flag set to true. note:Search text limit is longTextInlineStoreMaxLength. And storage space more consume. -->
+	<property name="remainInlineText" value="false" />
+</service>
+----

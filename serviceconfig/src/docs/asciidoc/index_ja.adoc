@@ -1,0 +1,18 @@
+[[serviceconfigreference]]
+= 設定（service-config）リファレンス
+:_hreflang-path: serviceconfig/index.html
+:base-package: org.iplass.mtp.
+:toclevels: 2
+
+iPLAss全体に対する設定はXMLベースの設定ファイルにて行います。
+設定ファイルはservice-configファイルと呼称します。
+本ドキュメントでは、service-configファイルの形式の説明、および設定可能な項目について説明します。
+
+include::servicedefine_ja.adoc[]
+
+include::servicelist_ja.adoc[]
+
+include::servicedetail_ja.adoc[]
+
+//log
+include::logback_ja.adoc[]

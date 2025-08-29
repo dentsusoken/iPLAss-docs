@@ -1,0 +1,245 @@
+[[micrometer]]
+== [.eeonly]#メトリクス収集#
+アプリケーションメトリクスを収集し、モニタリングシステムに連携する機能を提供します。 +
+メトリクス収集および、モニタリングシステムへの連携の実装として、link:https://micrometer.io/[Micrometer^]を利用したモジュールを標準で提供します。
+
+=== サポートするメトリクス
+以下に示すメトリクスの収集を標準でサポートしています。 +
+どのメトリクスを収集対象とするかは、設定ファイルで指定可能です。また、カスタムのメトリクスを登録することも可能です。詳細は、 <<../../serviceconfig/index.adoc#MicrometerService, MicrometerService>> を参照してください。 +
+iPLAssでは、全てのメトリクスに対して、基盤側で `host` タグを自動付与しており、その値には、デフォルトでサーバのホスト名が入ります。
+
+NOTE: サーバ側でIPv6が有効になっている場合、ホスト名が正しく解決されない場合があります。 +
+その場合、 `mtp.server.myserverid` システムプロパティで明示的に指定することが可能です。
+
+==== 標準メトリクス
+NOTE: 標準メトリクスの収集には、Micrometerのcoreモジュールを使用しています。iPLAssで利用しているMicrometer(coreモジュール)のバージョンは、 `1.6.2` です。 +
+一部表記していないメーターも存在しています。取得可能な全てのメーターの詳細は、Micrometer(coreモジュール)のMeterBinderのJavaDocを参照してください（デフォルトで使用しているMeterBinderの一覧は、<<../../serviceconfig/index.adoc#MicrometerService, MicrometerService>> を参照してください）。
+
+* JVMメモリ
+** 領域別のJVMメモリ使用量、割り当て量、上限値
+*** メーター名： `jvm.memory.{used, committed, max}`
+*** タグ情報
+**** `area`：ヒープ or 非ヒープ
+**** `id` ：領域名
+
+** バッファプールのメモリ使用量、バッファ数、総容量
+*** メーター名： `jvm.buffer.{memory.used, count, total.capacity}`
+*** タグ情報
+**** `id` ：バッファプール名
+
+* ガベージコレクション（GC）
+** GC発生回数、GCによる停止時間の合計、最大値
+*** メーター名： `jvm.gc.pause`
+*** タグ情報
+**** `action`：ガベージコレクタが実行したアクション（マイナーGC or メジャーGC）
+**** `cause` ：ガベージコレクションの発生原因 
+
+* JVMスレッド
+** ライブスレッド数、デーモンスレッド数、ライブスレッド数のピーク値
+*** メーター名： `jvm.threads.{live, daemon, peak}`
+
+* クラスローダー
+** ロード/アンロードされたクラス数
+*** メーター名： `jvm.classes.{loaded, unloaded}`
+
+* CPUメトリクス
+** システム全体のCPU使用率、JVMプロセスのCPU使用率
+*** メーター名： `{system, process}.cpu.usage`
+
+* ファイル記述子メトリクス
+** 開いているファイル記述子の数、許可されるオープンファイルの最大数
+*** メーター名： `process.files.{open, max}`
+
+* Logbackメトリクス
+** ログレベル別のイベント回数
+*** メーター名： `logback.events` 
+*** タグ情報
+**** `level`：ログレベル
+
+* 稼働時間メトリクス
+** アプリケーションの開始時間、稼働時間
+*** メーター名： `process.{start.time, uptime}`
+
+* Tomcatメトリクス
+** アクティブなセッションの現在数、最大数
+*** メーター名： `tomcat.sessions.active.{current, max}`
+** セッションの生成数、期限切れによる失効数、上限拒否数
+*** メーター名： `tomcat.sessions.{created, expired, rejected}` 
+** 処理中のスレッド数、待機中のスレッド数 
+*** メーター名： `tomcat.threads.{busy, current}`
+** アクティブなコネクション数、KeepAlive接続数
+*** メーター名： `tomcat.connections.{current, keepalive.current}`
+** 各サーブレットが受信したリクエスト総数、エラーレスポンス総数
+*** メーター名： `tomcat.servlet.{request, error}` 
+** Tomcatコンテナが処理したリクエスト総数、エラーレスポンス総数
+*** メーター名： `tomcat.global.{request, error}` 
+** トラフィック合計
+*** メーター名： `tomcat.global.{sent, received}` 
+
+* コネクションプール統計
+** アクティブなコネクションの現在数、最大数
+*** メーター名： `{commons.dbcp2, tomcat.dbcp2, hikaricp}.connections.{active, max}`
+** アイドル状態のコネクションの現在数、最小数
+*** メーター名： `{commons.dbcp2, tomcat.dbcp2, hikaricp}.connections.{idle, min}`
+
+* HttpClientメトリクス
+** 各Httpリクエストのリクエスト時間と回数
+*** メーター名： `httpcomponents.httpclient.request`
+*** タグ情報
+**** `httpclient`：HttpClientを利用するService名
+**** `method`：Httpメソッド
+**** `status`：レスポンスの HTTP ステータスコード
+** Httpコネクションのプールの最大数
+*** メーター名： `httpcomponents.httpclient.pool.total.max`
+*** タグ情報
+**** `httpclient`：HttpClientを利用するService名
+** 待機中のコネクション数
+*** メーター名： `httpcomponents.httpclient.pool.total.pending` 
+*** タグ情報
+**** `httpclient`：HttpClientを利用するService名
+** アイドル状態のコネクション数、実行中のコネクション数
+*** メーター名： `httpcomponents.httpclient.pool.total.pending`
+*** タグ情報
+**** `httpclient`：HttpClientを利用するService名
+**** `state`：アイドル状態 or 実行状態
+
+==== iPLAss独自メトリクス
+* CacheStore統計
+** キャッシュサイズ
+*** メーター名： `mtp.cache.size` 
+*** タグ情報
+**** `namespace`：対象のCacheStoreのnamespace
+** ヒット回数/ミス回数（デフォルトでは、Queryキャッシュ、ActionContentキャッシュのみ）
+*** メーター名： `mtp.cache.gets`
+*** タグ情報
+**** `namespace`：対象のCacheStoreのnamespace
+**** `result`：ヒット or ミス
+
+* Entity操作メトリクス
+** EntityのCRUD操作のレイテンシ、処理回数（記録する粒度は、Entity × 操作タイプ）
+*** メーター名： `mtp.entity`
+*** タグ情報
+**** `entity`：対象のEntity定義名
+**** `type`：Entityの操作タイプ（SEARCH、LOAD、COUNT、INSERT、UPDATEなど）
+**** `entity_type`：対象のEntity定義名 + Entityの操作タイプ
+
+* Action/WebAPIメトリクス
+** Action/WebAPIのレイテンシ、呼び出し回数
+*** メーター名： `mtp.{action, webapi}.requests`
+*** タグ情報
+**** `method`：HTTPメソッド
+**** `exception`：リクエストの処理中にスローされた例外
+**** `uri`：Action/WebAPIのパス。<<../../serviceconfig/index.adoc#PathResolver, PathResolver>>を適用し、タグに紐づける値を解決します。
+**** `[custom_uri]`（タグ名は設定により可変）：カスタムで<<../../serviceconfig/index.adoc#PathResolver, PathResolver>>を適用し、タグに紐づける値を解決します。階層の深さが指定できる実装をデフォルトで提供します。
+**** `uri_method`：Action/WebAPIのパス（<<../../serviceconfig/index.adoc#PathResolver, PathResolver>>を適用し、タグに紐づける値を解決します） + Httpメソッド
+** Action/WebAPIのSQL発行回数
+*** メーター名： `mtp.sql.execute`
+*** タグ情報
+**** `method`：HTTPメソッド
+**** `exception`：リクエストの処理中にスローされた例外
+**** `uri`：Action/WebAPIのパス。<<../../serviceconfig/index.adoc#PathResolver, PathResolver>>を適用し、タグに紐づける値を解決します。
+**** `[custom_uri]`（タグ名は設定により可変）：カスタムで<<../../serviceconfig/index.adoc#PathResolver, PathResolver>>を適用し、タグに紐づける値を解決します。階層の深さが指定できる実装をデフォルトで提供します。
+**** `uri_method`：Action/WebAPIのパス（<<../../serviceconfig/index.adoc#PathResolver, PathResolver>>を適用し、タグに紐づける値を解決します） + Httpメソッド
+**** `type`：ACTION or WEBAPI
+
+* 認証系のログ
+** 認証試行に対する成功回数/失敗回数（Credential別）
+*** メーター名： `mtp.auth.{success, failure}`
+*** タグ情報
+**** `credential`：認証に利用したCredental
+
+* 非同期処理系のログ
+** 非同期処理に対する成功回数/失敗回数（Queue別）
+*** メーター名： `executor.{success, failure}`
+*** タグ情報
+**** `queue_name`：Queueの名前
+** 非同期処理に対するタイムアウト数（Queue別）
+*** メーター名： `executor.timeout`
+*** タグ情報
+**** `queue_name`：Queueの名前
+** 非同期処理に対する実行時間（Queue別）
+*** メーター名： `executor`
+*** タグ情報
+**** `queue_name`：Queueの名前
+
+* AWS S3系のログ
+** AWS S3のリクエスト時間と回数
+*** メーター名： `s3.request`
+*** タグ情報
+**** `bucket_name`：S3のバケット名
+**** `method`：HTTPメソッド
+**** `status`：レスポンスのHTTPステータスコード
+
+* メール系のログ
+** メール送信処理に対する成功回数/失敗回数
+*** メーター名： `mail.{success, failure}`
+** メール送信処理に対する実行時間
+*** メーター名： `mail.executionTime`
+
+* プッシュ系のログ
+** プッシュ送信処理に対する成功回数/失敗回数
+*** メーター名： `push.{success, failure}`
+** プッシュ送信処理に対する実行時間
+*** メーター名： `push.executionTime`
+
+* SMS系のログ
+** SMS送信処理に対する成功回数/失敗回数
+*** メーター名： `sms.{success, failure}`
+** SMS送信処理に対する実行時間
+*** メーター名： `sms.executionTime`
+
+=== サポートするモニタリングシステム
+以下のモニタリングシステムへのメトリクス連携を標準でサポートします。 +
+どのモニタリングシステムを利用するかは、設定ファイルで指定可能です。 詳細は、 <<../../serviceconfig/index.adoc#MicrometerService, MicrometerService>> を参照してください。
+
+* <<elasticsearch, Elasticsearch>>
+* <<jmx, JMX>>
+* <<prometheus, Prometheus>>
+* <<cloudwatch, CloudWatch>>
+* <<newrelic, New Relic>>
+* <<logging, Logging>>
+
+
+[[elasticsearch]]
+==== Elasticsearch
+Elasticsearchは、オープンソースの検索・分析プラットフォームです。 +
+使用するElasticsearchのホストやメトリクスの送信間隔、メトリクスを格納するインデックスなどをservice-configファイルで指定可能です。
+
+[[jmx]]
+==== JMX
+JMX（Java Management Extensions）は、Java アプリケーションを管理するための仕様です。 +
+メトリクスを格納するJMXドメインや全てのメトリクスに共通して付与する接頭辞などをservice-configファイルで指定可能です。
+
+[[prometheus]]
+==== Prometheus
+Prometheusは、定期的にアプリケーションからメトリクスをスクレイピングする、プル型で動作するように設計されたオープンソースのモニタリングシステムです。 +
+iPLAssでは、Prometheusのスクレイプエンドポイントを以下の通り公開します。
+
+[source,url]
+----
+http://[server]/[servletContextPath]/prometheus
+----
+
+[[cloudwatch]]
+==== CloudWatch
+Amazon CloudWatchは、Amazon Web Servicesが提供するSaaSのモニタリング/オブザーバビリティサービスです。 +
+メトリクスをCloudWatchに送信する際に使用される名前空間やメトリクスの送信間隔などをservice-configファイルで指定可能です。
+
+[[newrelic]]
+==== New Relic
+New Relicは、SaaSのオブザーバビリティサービスです。 +
+New Relicで利用されるサービス名やメトリクスの送信間隔などをservice-configファイルで指定可能です。
+
+[[logging]]
+==== Logging
+メトリクスをログ出力します。 +
+メトリクスの送信間隔などをservice-configファイルで指定可能です。
+
+=== 動作手順
+Micrometerモジュールを動作させるには、以下のステップが必要になります。
+
+. Micrometerモジュール（`org.iplass.ee:iplass-ee-micrometer`）を実行時の依存関係に追加する(build.gradle)。
+. web.xmlにて、WebFragment `mtp_micrometer` をスキャンする（skeletonプロジェクト利用の場合、コメントアウトを外す）。
+. mtp-service-config.xmlにて、Micrometerモジュールのデフォルト設定である `micrometer-service-config.xml` を読み込むように設定する（コメントアウトを外す）。
+. mtp-service-config.xmlにて、収集したいメトリクスや利用したいモニタリングシステムに併せて、必要な設定を記述する。また、必要な依存関係をbuild.gradleに追加する。 +
+詳細は、<<../../serviceconfig/index.adoc#MicrometerService, MicrometerService>> を参照してください。

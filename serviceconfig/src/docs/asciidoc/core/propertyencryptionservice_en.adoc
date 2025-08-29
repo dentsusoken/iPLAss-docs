@@ -1,0 +1,115 @@
+[[PropertyEncryptionService]]
+=== [.eeonly]#PropertyEncryptionService#
+This is a service that performs encryption in units of properties.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.properties.extend.crypt.PropertyEncryptionService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.properties.extend.crypt.PropertyEncryptionService
+----
+
+==== Settings of PropertyEncryptionService
+PropertyEncryptionService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| encryptionSettings | <<EncryptionSetting>>, Multiple | Specify how to encrypt.
+A standard provided class or a custom EncryptionSetting that implements the EncryptionSetting interface.
+You can roll over encryption logic by defining multiple encryptionSettings for different versions.
+Newly stored values are encrypted using the last defined encryptionSettings.
+| cachePrivateKeyInMemory | boolean | Whether to cache secret key in memory. The default value is false.
+| logEncryptProperty | boolean | Set whether to log the encrypted property with the value before encryption. The default value is true.
+| encryptValueLogExpression | String | Indicate how the character string is outputted when encrypted. Default will be `"\***"`.
+|===
+
+[[EncryptionSetting]]
+.EncryptionSetting
+It will define how the encryption is executed.
+
+Please specify the implementing class of org.iplass.mtp.impl.properties.extend.crypt.EncryptionSetting.
+
+For our standard, the following EncryptionSetting are provided.
+
+* <<PBKDF2EncryptionSetting>>
+* <<KeyStoreEncryptionSetting>>
+
+
+[[PBKDF2EncryptionSetting]]
+.PBKDF2EncryptionSetting
+With this, encryption will be processed by PBKDF2 (Password-Based Key Drivation Function).
+
+Please specify org.iplass.mtp.impl.properties.extend.crypt.PBKDF2EncryptionSetting to the class.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| version | String | Version of encryption algorithms.
+Specify a unique number if multiple encryptionSettings definitions are employed.
+| keyFactoryAlgorithm | String | Key generation algorithm.
+The default value is `PBKDF2WithHmacSHA256`.
+| keySalt | String | Salt when generating the key.
+If not specified, the system default value is used.
+| keyStretch | int | Number of stretches during key generation.
+The default value is 2048.
+| cipherAlgorithm | String | Block encryption algorithm.
+The default value is `AES`.
+| keyLength | int | Key length. The default value is 128.
+| keyPassword | String | The password string from which the key is generated.
+|===
+
+[[KeyStoreEncryptionSetting]]
+.KeyStoreEncryptionSetting
+With this, the encryption will be processed by KeyStore file.
+
+Please specify org.iplass.mtp.impl.properties.extend.crypt.KeyStoreEncryptionSetting to the class.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| version | String | Version of encryption algorithm settings.
+Specify a unique number in multiple encryptionSettings definitions.
+| cipherAlgorithm | String | Block encryption algorithm.
+The default value is `AES`.
+| keyLength | int | Key length. The default value is 128.
+| keyStoreType | String | The type of keyStore that stores the private key.
+The default value is `JCEKS`.
+| keyStoreFilePath | String | File path of keyStore file.
+| keyStorePassword | String | The keyStore password.
+| keyAlias | String | Alias name of the private key stored in keyStore.
+| keyPassword | String | Password for obtaining the private key stored in keyStore.
+|===
+
+
+===== Example
+[source, xml]
+----
+<service>
+    <interface>org.iplass.mtp.impl.properties.extend.crypt.PropertyEncryptionService</interface>
+    <property name="encryptionSettings" class="org.iplass.mtp.impl.properties.extend.crypt.PBKDF2EncryptionSetting">
+        <property name="version" value="1" />
+        <property name="keyPassword" value="yourOwnPass" />
+    </property>
+    <property name="encryptionSettings" class="org.iplass.mtp.impl.properties.extend.crypt.KeyStoreEncryptionSetting">
+        <property name="version" value="2" />
+		<property name="keyStoreFilePath" value="yourOwnKeyStoreFilePass" />
+		<property name="keyStorePassword" value="yourOwnKeyStorePassword" />
+		<property name="keyAlias" value="yourOwnKeyAliasName" />
+		<property name="keyPassword" value="yourOwnKeyPassword" />
+    </property>
+	<!--
+		By default the secret key is cached in memory.
+		For enhanced security,
+		set cachePrivateKeyInMemory to false if you do not want to cache secret keys in memory.
+	 -->
+	<property name="cachePrivateKeyInMemory" value="true" />
+</service>
+----
+
+Since keyPassword and keyStorePassword are confidential information, handle them with care.
+Use strategy such as tightening the access rights of the configuration file or obfuscating the configuration file to protect the information please.

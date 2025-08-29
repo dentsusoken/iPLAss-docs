@@ -1,0 +1,103 @@
+[[Groovy_GTmpl_WebAPI]]
+=== WebApiとの連携
+
+Ajaxを利用することで、GroovyTemplateでWebApiと連携することが出来ます。一般消費者向け画面で全文検索処理を例として説明していきます。
+
+* 開発者ガイド<<../../developerguide/webapi/index#, WebApi>>を参照してください。 + 
+以下はここで利用しているWebApiです。
++
+image:images/sample-ec_groovy-gtmpl-tenant-webapi-fulltextsearch.png[align=left]
++
+[cols="1,2"]
+|===
+h|WebApi名|samples/ec01/search/fulltextSearch
+|===
+
+* WebApiを利用しているテンプレート
++
+image:images/sample-ec_groovy-gtmpl-tenant-webapi-search.png[align=left]
++
+[cols="1,2"]
+|===
+h|Template名|samples/ec01/search/search
+|===
++
+[source]
+----
+----------------------------------------GroovyTemplateの部分略----------------------------------------
+<script type="text/javascript">
+function fullTextSearch() {
+	var productName = \$("#productName").val();
+	var categoryOid = \$("#categoryList").attr("category-item-selected");
+	if(productName == "") {
+		\$("#helpId").html("${msg('samples/ec01/general', 'samples.ec01.search.nokeyword')}");
+		return false;
+	}
+    var param = "{\"productName\":\"" + productName + "\",\"categoryOid\":\"" + categoryOid +"\"}";
+    \$.ajax({
+        type: "POST",
+        contentType: "application/json",
+        url:"${tcPath()}/api/samples/ec01/search/fulltextSearch", <1>
+       	dataType: "json",
+		data: param,
+		success: function(commandResult){
+    		if (commandResult.exceptionType != null) { <2>
+				alert("${msg('samples/ec01/general', 'samples.ec01.search.jsError')}"+ commandResult.exceptionType +"\\n"+commandResult.exceptionMessage);
+				return;
+			}
+    		if(commandResult.status == "SUCCESS"){
+    			if(commandResult.defaultResult != null && commandResult.defaultResult.length > 0){
+    				var resultHtml = ListSearchResult(commandResult.defaultResult, productName); <3>
+    				\$("#searchResultDiv").html(resultHtml);
+    			}
+    			else{
+    				\$("#helpId").html("${msg('samples/ec01/general', 'samples.ec01.search.keyword')}： " + productName + ", " + "${msg('samples/ec01/general', 'samples.ec01.search.noResult')}");
+    			}
+    		}
+		}
+	});
+}
+function dropdownSelect(item){
+	var t = \$(item);
+	var v = t.attr("category-item-value");
+	\$("#categoryList").text(t.html()).attr("category-item-selected", v);
+}
+function ListSearchResult(entities, productName){ <4>
+	var yen = "${msg('samples/ec01/general', 'samples.ec01.all.yen')}";
+	var html =  "<div class=\"col-12 mb-2\">";
+		html += "	<h4>${msg('samples/ec01/general', 'samples.ec01.search.result')}" + productName + "</h4>";
+		html += "</div>";
+	for(var i =0; i < entities.length; i++){
+		var name = entities[i].name;
+		var price = isNaN(entities[i].price)? "" : entities[i].price;
+		var imageUrl = "${tcPath()}/samples/ec01/resource/bin?id=" + entities[i].productImg.lobId + "&type=productImg";
+		var detailUrl = "${tcPath()}/samples/ec01/product/detail?productId=" + entities[i].oid;
+		html += "<div class=\"col-12 col-md-4\">";
+		html += "	<div class=\"card border-light border-0\">";
+		html += "	    <a href=\"" + detailUrl + "\" class=\"h-100\">";
+		html += "	       <img class=\"card-img-top img-thumbnail img-fluid all-product-img\" src=" + imageUrl + " alt=\"" + name + "\">";
+		html += "	    </a>";
+		html += "	    <div class=\"card-body pt-md-1 text-center\">";
+		html += "	       <div>";
+		html += "	           <a href=\""+ detailUrl +"\" class=\"card-link text-dark\">" + name + "</a>";
+		html += "	        </div>";
+		html += "	        <div class=\"all-price\">";
+		html += "              <span>" + price + "</span>" + yen;
+		html += "	        </div>";
+		html += "	    </div>";
+		html += "	</div>";
+		html += "</div>";
+	}
+	return html;
+}
+</script>
+----------------------------------------以下略----------------------------------------
+----
+<1> WebApiによる検索処理を呼び出します。
+<2> 検索処理でエラーが発生した場合、クライアント側での処理。
+<3> 返された検索処理の結果を取得し、クライアント側の描画処理を呼び出します。
+<4> 検索結果の描画処理。
+
+* 動作確認
++
+動作結果はJava／JSP版と同じなので、そちらの<<../javajsp/index#Java_JSP_WebAPI_Operation_Check,動作確認>>画面を参照してくださん。

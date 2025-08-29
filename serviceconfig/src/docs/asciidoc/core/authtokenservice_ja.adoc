@@ -1,0 +1,278 @@
+[[AuthTokenService]]
+=== AuthTokenService
+認証トークンを管理するためのサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.auth.authenticate.token.AuthTokenService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.auth.authenticate.token.AuthTokenService
+----
+
+==== AuthTokenServiceの設定
+AuthTokenServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| storeMap | <<AuthTokenStore>>、Map形式 | AuthTokenStoreの設定。
+keyにstore名を指定し、Map形式で定義します。
+最低限、 `default` といった名前のAuthTokenStoreを１つ定義する必要があります。
+
+| handler | <<AuthTokenHandler>>、複数指定可 | AuthTokenHandlerの設定。
+|===
+
+[[AuthTokenStore]]
+.AuthTokenStore
+classはorg.iplass.mtp.impl.auth.authenticate.token.AuthTokenStoreの実装クラスを指定します。
+
+標準で、以下のAuthTokenStoreを提供します。
+
+- <<RdbAuthTokenStore>>
+- <<CachableAuthTokenStore>>
+- <<CacheOnlyAuthTokenStore>>
+
+[[RdbAuthTokenStore]]
+.RdbAuthTokenStore
+classはorg.iplass.mtp.impl.auth.authenticate.token.RdbAuthTokenStoreを指定します。
+
+RDBで認証トークンを管理します。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| saveDetailAsJson | boolean | 
+AuthTokenをJSON形式で保存するか否かを指定します。
+JSON形式で保存する場合、JacksonのObjectMapperを利用してAuthTokenの属性値が保存されます（JSON形式で保存する場合は、保存対象のAuthTokenを実装するクラスがそれに対応している必要があります）。 +
+falseの場合は、Javaデフォルトのシリアライズ機構にてバイナリデータとして保存されます。 +
+デフォルト値はfalseです。
+| authTokenStore | <<AuthTokenStore>> | 
+認証トークンを保存する実際のAuthTokenStoreです。
+|===
+
+
+
+[[CachableAuthTokenStore]]
+.CachableAuthTokenStore
+classはorg.iplass.mtp.impl.auth.authenticate.token.CachableAuthTokenStoreを指定します。
+
+内包するauthTokenStoreにキャッシュ機能を付与します。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| cacheStoreName | String | 
+<<CacheService, CacheService>> に定義されるCacheStore（CacheStoreFactory）の名前を指定します。
+未指定の場合のデフォルト値は `mtp.auth.cachableAuthTokenStore/DEFAULT` です。
+| authTokenStore | <<AuthTokenStore>> | 
+認証トークンを保存する実際のAuthTokenStoreです。
+|===
+
+[[CacheOnlyAuthTokenStore]]
+.CacheOnlyAuthTokenStore
+classはorg.iplass.mtp.impl.auth.authenticate.token.CacheOnlyAuthTokenStoreを指定します。
+
+CachableAuthTokenStoreと異なり、バックエンドの永続化先を持たず、CacheStoreのみに保存します。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| cacheStoreName | String a| 
+<<CacheService, CacheService>> に定義されるCacheStore（CacheStoreFactory）の名前を指定します。
+未指定の場合のデフォルト値は `mtp.auth.cacheOnlyAuthTokenStore/DEFAULT` です。
+
+CAUTION: クラスタ環境においては、CacheStoreFactoryはRedisCacheStoreFactoryなど複数のAPサーバから同一のキャッシュを参照可能なCacheStoreFactoryを利用してください。
+
+|===
+
+[[AuthTokenHandler]]
+.AuthTokenHandler
+classはorg.iplass.mtp.impl.auth.authenticate.token.AuthTokenHandlerの実装クラスを指定します。
+
+標準で、以下のAuthTokenHandlerを提供します。
+
+- <<RememberMeTokenHandler>>
+- <<SimpleAuthTokenHandler>>
+- <<TimeBasedOneTimePasswordHandler>>
+- <<AccessTokenHandler>>
+- <<OAuthClientCredentialHandler>>
+- <<WebhookAuthTokenHandler>>
+- <<CookieRiskEvaluationTokenHandler>>
+
+[[RememberMeTokenHandler]]
+.RememberMeTokenHandler
+classはorg.iplass.mtp.impl.auth.authenticate.rememberme.RememberMeTokenHandlerを指定します。
+
+RememberMeTokenを取り扱います。以下の項目を設定可能です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| store | String | 使用するAuthTokenStoreの名前。未指定の場合は、 `default` のAuthTokenStoreが使用されます。
+| type | String | 種別。未設定の場合、 `REMME` となります。
+| hashSettings | <<AuthTokenHandler_HashSetting, HashSetting>>、複数指定可 | Tokenのハッシュ化有無、方式の設定。
+未指定の場合はプレーンテキストで保存します。
+| secureRandomGeneratorName | String | <<SecureRandomService, SecureRandomService>> に定義されるToken文字列の生成器を指定。
+未設定の場合、 `default`  のSecureRandomGeneratorが利用されます。
+| visible | boolean | `AuthTokenInfoList` 経由で可視かどうか。デフォルト値はtrueです。
+|===
+
+[[AuthTokenHandler_HashSetting]]
+.HashSetting
+classはorg.iplass.mtp.impl.auth.authenticate.token.HashSettingを指定します。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| version | String | バージョンを特定する文字列を指定。
+| hashAlgorithm | String | ハッシュのアルゴリズムを指定。 `SHA-256` など。
+| stretchCount | int | ストレッチ回数。デフォルトは1です。
+|===
+
+[[SimpleAuthTokenHandler]]
+.SimpleAuthTokenHandler
+classはorg.iplass.mtp.impl.auth.authenticate.simpletoken.SimpleAuthTokenHandlerを指定します。
+
+SimpleAuthTokenを取り扱います。
+SimpleAuthTokenはそれ自体が紐付くユーザーとしてのアクセスを許可します。
+SimpleAuthTokenは明示的に削除されるまで永続的に有効です。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| store | String | 使用するAuthTokenStoreの名前。未指定の場合は、 `default` のAuthTokenStoreが使用されます。
+| type | String | 種別。未設定の場合、 `SAT` となります。
+| hashSettings | <<AuthTokenHandler_HashSetting, HashSetting>>、複数指定可 | Tokenのハッシュ化有無、方式の設定。
+未指定の場合はプレーンテキストで保存します。
+| secureRandomGeneratorName | String | <<SecureRandomService, SecureRandomService>> に定義されるToken文字列の生成器を指定。
+未設定の場合、 `default`  のSecureRandomGeneratorが利用されます。
+| visible | boolean | `AuthTokenInfoList` 経由で可視かどうか。デフォルト値はtrueです。
+|===
+
+[[TimeBasedOneTimePasswordHandler]]
+.[.eeonly]#TimeBasedOneTimePasswordHandler#
+classはorg.iplass.mtp.impl.auth.authenticate.timebased.TimeBasedOneTimePasswordHandlerを指定します。
+このAuthTokenHandlerは、2段階認証機能における時間ベース認証にて利用されます。
+2段階認証の認証におけるシークレットキーを取り扱います。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| store | String | 使用するAuthTokenStoreの名前。未指定の場合は、 `default` のAuthTokenStoreが使用されます。
+| type | String | 種別。未設定の場合、 `TSK` となります。
+| timeStepWindowSize | int | time stepの有効期間。1を設定した場合、現在のtime stepの前後1ステップのワンタイムパスワードも有効とみなします。デフォルト値は1です。 +
+1ステップの時間は30秒固定です。
+|===
+
+[[AccessTokenHandler]]
+.AccessTokenHandler
+classはorg.iplass.mtp.impl.auth.oauth.token.opaque.AccessTokenHandlerを指定します。
+
+OAuth2.0のAccessTokenおよび、RefreshTokenを取り扱います。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| store | String | 使用するAuthTokenStoreの名前。未指定の場合は、 `default` のAuthTokenStoreが使用されます。
+| refreshTokenStore | String | RefreshTokenの保存に使用するAuthTokenStoreの名前。未指定の場合は、 `default` のAuthTokenStoreが使用されます。
+| type | String | AccessTokenを識別するための種別。未設定の場合、 `OAT` となります。
+| refreshTokenType | String | RefreshTokenの種別。未設定の場合、 `ORT` となります。
+| hashSettings | <<AuthTokenHandler_HashSetting, HashSetting>>、複数指定可 | Tokenのハッシュ化有無、方式の設定。
+未指定の場合はプレーンテキストで保存します。この設定はAccessToken、RefreshToken両方に適用されます。
+| secureRandomGeneratorName | String | <<SecureRandomService, SecureRandomService>> に定義されるAccessTokenのToken文字列の生成器を指定。
+未設定の場合、 `default`  のSecureRandomGeneratorが利用されます。
+| refreshTokenSecureRandomGeneratorName | String | <<SecureRandomService, SecureRandomService>> に定義されるRefreshTokenのToken文字列の生成器を指定。
+未設定の場合、 `default`  のSecureRandomGeneratorが利用されます。
+| visible | boolean | `AuthTokenInfoList` 経由で可視かどうか。デフォルト値はtrueです。
+|===
+
+[[OAuthClientCredentialHandler]]
+.OAuthClientCredentialHandler
+classはorg.iplass.mtp.impl.auth.oauth.OAuthClientCredentialHandlerを指定します。
+
+OAuth2.0における、ClientおよびResourceServerのCredential（client_id、client_secret）を取り扱います。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| store | String | 使用するAuthTokenStoreの名前。未指定の場合は、 `default` のAuthTokenStoreが使用されます。
+| type | String | 種別の定義です。 +
+Client用には `OC` を指定します。
+ResourceServer用には `ORS` を指定します。
+| hashSettings | <<AuthTokenHandler_HashSetting, HashSetting>>、複数指定可 | Tokenのハッシュ化有無、方式の設定。
+未指定の場合はプレーンテキストで保存します。
+| secureRandomGeneratorName | String | <<SecureRandomService, SecureRandomService>> に定義されるToken文字列の生成器を指定。
+未設定の場合、 `default`  のSecureRandomGeneratorが利用されます。
+| oldCredentialValidDays | int | 過去に生成したCredentialの有効期間（日）を指定可能です。
+未指定の場合は過去のCredentialは即座に破棄されます。
+|===
+
+[[WebhookAuthTokenHandler]]
+.WebhookAuthTokenHandler
+classはorg.iplass.mtp.impl.webhook.WebhookAuthTokenHandlerを指定します。
+
+Webhook通知におけるWebhookEndPointの認証情報を取り扱います。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| store | String | 使用するAuthTokenStoreの名前。未指定の場合は、 `default` のAuthTokenStoreが使用されます。
+
+| type | String | WebhookAuthTokenを識別するための種別。デフォルト値は、 `WEBHOOKATH` です。
+|===
+
+[[CookieRiskEvaluationTokenHandler]]
+.[.eeonly]#CookieRiskEvaluationTokenHandler#
+classはorg.iplass.mtp.impl.auth.authenticate.builtin.policy.riskevals.web.CookieRiskEvaluationTokenHandlerを指定します。
+
+このAuthTokenHandlerは、2段階認証機能におけるリスクベース認証（CookieToken）にて利用されます。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| store | String | 使用するAuthTokenStoreの名前。未指定の場合は、 `default` のAuthTokenStoreが使用されます。
+| type | String | 種別。未設定の場合、 `RBA` となります。
+| hashSettings | <<AuthTokenHandler_HashSetting, HashSetting>>、複数指定可 | Tokenのハッシュ化有無、方式の設定。
+未指定の場合はプレーンテキストで保存します。
+| secureRandomGeneratorName | String | <<SecureRandomService, SecureRandomService>> に定義されるToken文字列の生成器を指定。
+未設定の場合、 `default`  のSecureRandomGeneratorが利用されます。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.auth.authenticate.token.AuthTokenService</interface>
+	<property name="storeMap">
+		<property name="default" class="org.iplass.mtp.impl.auth.authenticate.token.RdbAuthTokenStore" />
+		<property name="cache" class="org.iplass.mtp.impl.auth.authenticate.token.CachableAuthTokenStore">
+			<property name="authTokenStore" class="org.iplass.mtp.impl.auth.authenticate.token.RdbAuthTokenStore" />
+		</property>
+	</property>
+
+	<property name="handler" class="org.iplass.mtp.impl.auth.authenticate.rememberme.RememberMeTokenHandler">
+		<property name="type" value="REMME" />
+		<property name="store" value="default" />
+	</property>
+	<property name="handler" class="org.iplass.mtp.impl.auth.authenticate.simpletoken.SimpleAuthTokenHandler">
+		<property name="type" value="SAT" />
+		<property name="store" value="cache" />
+		<property name="secureRandomGeneratorName" value="moreSecure" />
+		<property name="hashSettings">
+			<property name="version" value="1" />
+			<property name="hashAlgorithm" value="SHA-256" />
+		</property>
+	</property>
+</service>
+----

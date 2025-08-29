@@ -1,0 +1,190 @@
+[[Transaction]]
+== Transaction
+カスタムロジック内でトランザクション制御を行う場合は、 `org.iplass.mtp.transaction.Transaction` インタフェースを利用します。
+
+NOTE: ActionやWebApiから呼び出されるCommandは自動的にトランザクション制御が開始されます。
+
+NOTE: 現状、iPLAssはグローバルトランザクションをサポートしません。 +
+Transactionインタフェースの操作は単一のJDBC Connectionに対するローカルトランザクションとして機能します。
+
+.Transactionの利用例
+[source,java]
+----
+import org.iplass.mtp.transaction.Transaction;
+:
+
+EntityManager em = ...
+:
+
+
+//新規にトランザクションを起動
+Transaction.requiresNew(t -> { <1>
+	Entity e = new GenericEntity();
+	e.setName("test");
+	
+    //ロールバック時に実行する処理を追加
+    t.afterRollback(() -> {
+        System.err.println("Rollback!");
+    });
+	
+	em.insert(e);
+}); <1>
+
+----
+<1> この間のコードが別トランザクション( `REQUIRES_NEW` )で処理されます
+
+`Transaction` インタフェースの詳細はjavadocを参照ください。
+
+=== Propagation
+トランザクションはPropagation（伝播方法）を指定して開始します。
+`org.iplass.mtp.transaction.Propagation` に種別が定義されます。
+また、それぞれのPropagationの種別で呼び出すためのメソッドが `Transaction` インタフェースに定義されています。
+
+.Propagationの種別
+[cols="1,3a",options="header"]
+|===
+|種別 | 説明
+|REQUIRED |
+トランザクションが開始されていなかったら、開始（およびコミット/ロールバック）します。すでにトランザクションが開始されている場合は、そのトランザクションのコンテキストで実行されます。
+
+.Transactionの利用例
+[source,java]
+----
+Transaction.required(t -> {
+    //トランザクション処理
+    :
+    
+});
+----
+もしくは、
+[source,java]
+----
+Transaction.with(Propagation.REQUIRED, t -> {
+    //トランザクション処理
+    :
+    
+});
+----
+
+|REQUIRES_NEW |
+新規にトランザクションを開始（およびコミット/ロールバック）します。既存のトランザクションが存在した場合は、一旦サスペンドされ当該処理完了後、レジュームされます。
+
+.Transactionの利用例
+[source,java]
+----
+Transaction.requiresNew(t -> {
+    //トランザクション処理
+    :
+    
+});
+----
+もしくは、
+[source,java]
+----
+Transaction.with(Propagation.REQUIRES_NEW, t -> {
+    //トランザクション処理
+    :
+    
+});
+----
+
+|NOT_SUPPORTED |
+トランザクション制御をしません。既存のトランザクションが開始されている場合は、一旦そのトランザクションがサスペンドされ当該処理完了後、レジュームされます。
+
+.Transactionの利用例
+[source,java]
+----
+Transaction.with(Propagation.NOT_SUPPORTED, t -> {
+    //トランザクション外の処理
+    :
+    
+});
+----
+
+|SUPPORTS |
+トランザクションが開始されていない場合は、トランザクション制御しません。既にトランザクションが開始されている場合は、そのトランザクションのコンテキストで実行されます。
+
+.Transactionの利用例
+[source,java]
+----
+Transaction.with(Propagation.SUPPORTS, t -> {
+    //トランザクション外の処理
+    :
+    
+});
+----
+|===
+
+=== TransactionListener
+トランザクション処理のコミット・ロールバック時に実行する追加の処理を実行可能です。 +
+`org.iplass.mtp.transaction.TransactionListener` インタフェースを実装し、 `Transaction` のインスタンスに登録、もしくは関数インタフェースを直接 `Transaction` のインスタンスに登録します。
+
+また、実行中のトランザクションのコンテキストに、紐付けて保持したい属性を `Transaction#setAttribute()/getAttribute()` で保持、取得可能です。
+
+.TransactionListenerの利用例
+[source,java]
+----
+import org.iplass.mtp.transaction.Transaction;
+import org.iplass.mtp.transaction.TransactionListener;
+:
+
+class SampleListener implements TransactionListener {
+	@Override
+	public void afterCommit(Transaction t) {
+		String myInfo = (String) t.getAttribute("myInfo");
+		System.out.println("commit:" + myInfo);
+	}
+
+	@Override
+	public void afterRollback(Transaction t) {
+		String myInfo = (String) t.getAttribute("myInfo");
+		System.out.println("rollback:" + myInfo);
+	}
+}
+
+:
+:
+
+void someMethod() {
+	Transaction.required(t -> {
+		t.addTransactionListener(new SampleListener()); <1>
+		
+		//トランザクション処理
+		:
+		:
+		
+		t.setAttribute("myInfo", "in transaction"); <2>
+	});
+	
+}
+
+----
+<1> TransactionのインスタンスにTransactionListenerを登録
+<2> TransactionListenerに渡す属性をセット
+
+
+.関数インタフェースでTransactionListenerを登録
+[source,java]
+----
+import org.iplass.mtp.transaction.Transaction;
+import org.iplass.mtp.transaction.TransactionListener;
+:
+
+void someMethod() {
+	Transaction.required(t -> {
+		
+		t.afterCommit(() -> {
+			String myInfo = (String) t.getAttribute("myInfo");
+			System.out.println("commit:" + myInfo);
+		});
+		
+		//トランザクション処理
+		:
+		:
+		
+		t.setAttribute("myInfo", "in transaction");
+	});
+	
+}
+
+----

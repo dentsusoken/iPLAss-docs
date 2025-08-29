@@ -1,0 +1,521 @@
+[[GemCustomize]]
+== カスタム処理の組み込み
+
+[[GemCustomize_Search]]
+=== カスタム検索処理
+検索一覧や選択画面で、検索処理、CSVダウンロード処理の実行前後に独自の処理を組み込むことができます。
+
+以下のインターフェースを実装したJavaクラスまたはUtilityClassを作成してください。
+作成したクラスを検索一覧のEQLカスタム処理クラスに指定します。
+
+====
+org.iplass.mtp.view.generic.SearchQueryInterrupter
+====
+
+.処理一覧
+[cols="1,1,1,1a",options="header"]
+|===
+|メソッド
+|引数
+|戻り値
+|処理内容
+
+.4+|beforeSearch
+|RequestContext
+.4+|SearchQueryContext
+.4+|検索前処理を行います。
+|SearchFormView
+|Query
+|SearchQueryType
+
+.5+|afterSearch
+|RequestContext
+.5+|List<ValidateError>
+.5+|検索後処理を行います。
+afterSearchではEntity1レコード毎に処理が呼ばれます。
+|SearchFormView
+|Query
+|Entity
+|SearchQueryType
+|===
+
+.SearchQueryInterrupterの例
+`SearchQueryInterrupter` 上、`beforeSearch` `afterSearch` はデフォルト実装されています。
+必要に応じてオーバーライドします。
+
+例えば `beforeSearch` では、クエリのカスタマイズ結果や検索時のオプションを設定したSearchQueryContextを返すように実装します。
+
+[source,java]
+----
+import org.iplass.gem.command.Constants;
+import org.iplass.mtp.command.RequestContext;
+import org.iplass.mtp.entity.query.Query;
+import org.iplass.mtp.view.generic.SearchFormView;
+import org.iplass.mtp.view.generic.SearchQueryContext;
+import org.iplass.mtp.view.generic.SearchQueryInterrupter;
+
+public class SampleSearchQueryInterrupter implements SearchQueryInterrupter {
+
+	@Override
+	public SearchQueryContext beforeSearch(RequestContext request, SearchFormView view, Query query, SearchQueryType type) {
+
+		//Queryに対するカスタマイズ処理
+		query.getWhere().・・・・・
+
+		if (type == SearchQueryType.SEACH) {
+			//検索時のカスタマイズ
+
+		} else if (type == SearchQueryType.CSV) {
+			//CSVダウンロード時のカスタマイズ
+			if (Boolean.valueOf(request.getParam(Constants.CSV_IS_FOR_UPLOAD)) {
+				// Upload形式
+			} else {
+				// Upload形式以外
+			}
+		}
+
+		//SearchQueryContextを生成
+		SearchQueryContext context = new SearchQueryContext(query);
+
+		//特権実行する場合
+		context.setDoPrivileged(true);
+
+		//Entity権限における限定条件を適用せずに検索を実行する参照先名
+		//特権実行する場合は無視されます
+		context.setWithoutConditionReferenceName("ref1", "ref2");
+
+		return context;
+	}
+
+}
+----
+
+.クエリのカスタマイズ
+beforeSearch内ではクエリをカスタマイズし、Selectの対象を追加やWhere句に条件を追加といったことができ、検索結果に反映することができます。
+
+また、 `org.iplass.mtp.entity.query.ASTTransformer` インターフェースを利用することで、クエリに設定されている式自体をカスタマイズすることも可能になります。
+ASTTransformerはデザインパターンのVisitorパターンを利用してクエリを解析します。
+
+以下は検索条件を取り出し、特定の項目に対する条件が指定されていた場合に値を書き換えるサンプルになります。
+下記サンプルでは、ASTTransformerの実装クラスのASTTransformerSupportを継承した独自の無名クラスを作成し、特定のEQLの条件クラスが来た場合にクエリをカスタマイズしています。
+
+[source,java]
+----
+Condition condition = query.getWhere().getCondition();
+if (condition != null) {
+	condition.accept(new ASTTransformerSupport() {
+
+		@Override
+		public ASTNode visit(Equals equals) {
+			encriptName(equals);
+			return super.visit(equals);
+		}
+
+		@Override
+		public ASTNode visit(NotEquals notEquals) {
+			encriptName(notEquals);
+			return super.visit(notEquals);
+		}
+
+		@Override
+		public ASTNode visit(Greater greater) {
+			encriptName(greater);
+			return super.visit(greater);
+		}
+
+		@Override
+		public ASTNode visit(GreaterEqual greaterEqual) {
+			encriptName(greaterEqual);
+			return super.visit(greaterEqual);
+		}
+
+		@Override
+		public ASTNode visit(Lesser lesser) {
+			encriptName(lesser);
+			return super.visit(lesser);
+		}
+
+		@Override
+		public ASTNode visit(LesserEqual lesserEqual) {
+			encriptName(lesserEqual);
+			return super.visit(lesserEqual);
+		}
+	});
+}
+
+
+private void encriptName(ComparisonPredicate predicate) {
+	if (predicate.getPropertyName().equals("name")
+        && predicate.getValue() != null
+        && predicate.getValue() instanceof Literal) {
+		Literal literal = (Literal) predicate.getValue();
+		if (literal.getValue() instanceof String) {
+			String value = (String) literal.getValue();
+			predicate.setValue(new Literal(CipherUtil.encrypt(value)));
+		}
+	}
+}
+----
+
+[[GemCustomize_CsvUpload]]
+=== カスタムCSVアップロード処理
+検索画面でのCSVアップロード時に独自の処理を組み込むことができます。
+
+以下のインターフェースを実装したJavaクラスまたはUtilityClassを作成してください。
+作成したクラスを検索条件設定の `カスタムCSVアップロード処理クラス名` に指定します。
+
+====
+org.iplass.mtp.view.generic.SearchFormCsvUploadInterrupter
+====
+
+.処理一覧
+[cols="1,1,1,2a",options="header"]
+|===
+|メソッド
+|引数
+|戻り値
+|処理内容
+
+.4+|dataMapping
+|row(int)
+.4+|なし
+.4+|CSVデータから登録用のデータをマッピングします。
+
+CsvRegistrationType で登録の種類を判断できます。
+
+INSERT:: 新規追加。
+UPDATE:: 更新。
+DELETE:: 削除。
+
+|Entity
+|EntityDefinition
+|CsvRegistrationType
+
+.4+|beforeRegister
+|row(int)
+.4+|List<ValidateError>
+.4+|当該メソッド内に設定した処理内容が、Entityの登録・更新・削除前に実施されます。
+|Entity
+|EntityDefinition
+|CsvRegistrationType
+
+.4+|afterRegister
+|row(int)
+.4+|List<ValidateError>
+.4+|当該メソッド内に設定した処理内容が、Entityの登録・更新・削除後に実施されます。
+|Entity
+|EntityDefinition
+|CsvRegistrationType
+
+|insertOption
+|InsertOption
+|InsertOption
+|新規登録時のInsertOptionを制御します。
+
+標準の登録対象プロパティの判定は、CSVのヘッダ情報または検索条件設定の `CSVアップロード登録項目` により制御されます。登録対象以外のプロパティは null 値が設定されます。
+
+|updateOption
+|UpdateOption
+|UpdateOption
+|更新時のUpdateOptionを制御します。
+標準の更新対象プロパティの判定は、CSVのヘッダ情報または検索条件設定の `CSVアップロード更新項目` により制御されます。
+
+|deleteOption
+|DeleteOption
+|DeleteOption
+|削除時のDeleteOptionを制御します。
+
+|columnNameMap
+|EntityDefinition
+|Map<String, String>
+|CSVのヘッダ名をカスタマイズしたい場合に指定します。keyをプロパティ名、valueを出力列名としてマッピングを定義します。
+nullを返す場合、またはMapに該当がない場合は、標準の形式で出力します。
+
+.2+|sampleCsvData
+|EntityDefinition
+.2+|List<Entity>
+.2+|サンプルCSVとして出力したいEntityデータを返します。引数で出力対象のプロパティが渡されます。nullを返す場合、プロパティ型に応じてランダムな値を出力します。
+|List<PropertyDefinition>
+
+|===
+
+カスタムCSVアップロード処理の各メソッドは以下のように呼ばれます。
+
+. CSVデータの1行分を読み込みます。
+. `_useCtrl` フラグの有無、ユニークキー値と既存データの有無により、新規、更新、削除を判断します。
+. `dataMapping` が実行され、処理対象のEntityが作成されます。
+. `beforeRegister` が実行されます。
+. Entityを登録します。 +
+新規の場合:: `insertOption` が実行されます。
+更新の場合:: `updateOption` が実行されます。
+削除の場合:: `deleteOption` が実行されます。
+. `afterRegister` が実行されます。
+
+`beforeRegister` `afterRegister` でValidateErrorを返した場合、
+またはいずれかでエラーが発生した場合、ロールバックされます。
+`beforeRegister` でValidateErrorを返した場合にも登録処理は実行しませんが、
+ `afterRegister` 処理は呼び出します。
+
+.CSVヘッダのカスタマイズ
+`columnNameMap` を実装することで、CSVヘッダを変更することが可能です。
+Upload形式のCSVダウンロード、サンプルCSVダウンロード、CSVアップロード処理時に参照します。
+
+[source,java]
+----
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.iplass.mtp.entity.definition.EntityDefinition;
+import org.iplass.mtp.view.generic.SearchFormCsvUploadInterrupter;
+
+public class SampleSearchFormCsvUploadInterrupter implements SearchFormCsvUploadInterrupter {
+
+	@Override
+	public Map<String, String> columnNameMap(EntityDefinition definition) {
+
+		// 列名を表示名だけで出力する
+		return definition.getPropertyList().stream()
+			.collect(Collectors.toMap(
+					property -> property.getName(),
+					property -> property.getDisplayName()));
+	}
+
+}
+----
+
+NOTE: ヘッダをカスタマイズする場合は、<<searchcondition_setting, 検索条件の設定>> の `CSVダウンロード時表示名を出力しない` をONにすることを検討してください。
+
+[[GemCustomize_Registration]]
+=== カスタム登録処理
+編集画面での登録・更新時に独自の処理を組み込むことができます。
+
+以下のインターフェースを実装したJavaクラスまたはUtilityClassを作成してください。
+作成したクラスを詳細画面のカスタム登録処理クラスに指定します。
+
+====
+org.iplass.mtp.view.generic.RegistrationInterrupter
+====
+
+.処理一覧
+[cols="1,1,1,2a",options="header"]
+|===
+|メソッド
+|引数
+|戻り値
+|処理内容
+
+.4+|dataMapping
+|Entity
+.4+|なし
+.4+|新規登録用のデータにリクエストのデータをマッピングします。
+|RequestContext
+|EntityDefinition
+|FormView
+
+|isSpecifyAllProperties
+|-
+|boolean
+|更新対象の範囲を制御します。
+
+true:: getAdditionalPropertiesで設定した戻り値のみを更新対象とする
+false:: 汎用登録処理が自動で設定した更新対象にgetAdditionalPropertiesの戻り値を追加する
+
+|getAdditionalProperties
+|-
+|String[]
+|更新対象のプロパティを指定します。
+
+* 参照型プロパティで表示タイプに `NestTable` を指定している場合、または `参照セクション` を利用している場合、参照先エンティティの各プロパティに対する更新を制御することも可能です。 +
+** 例えば、`reference` という参照型プロパティで、参照先エンティティの `name` プロパティを更新対象に含める場合、 `reference.name` のように指定します。
+**  `NestTable` 、 `参照セクション` の更新制御には、以下の4パターンが存在します。
+*** `参照型プロパティとして更新対象外` 、且つ `参照先エンティティのプロパティも全て更新対象外` の場合 +
+・ 参照先エンティティの登録、削除不可（参照自体の更新不可） +
+・ 既存の参照先エンティティのプロパティも更新不可能
+
+*** `参照型プロパティとして更新対象外` であるが、 `参照先エンティティのプロパティが更新対象に含まれている` 場合 +
+・ 参照先エンティティの登録、削除不可（参照自体の更新不可） +
+・ 既存の参照先エンティティは、更新対象として指定されたプロパティのみ更新可能
+
+*** `参照型プロパティとして更新対象` 、且つ `参照先エンティティのプロパティが全て更新対象外` の場合 +
+・ 参照先エンティティの登録、削除が可能（参照自体を更新可能） +
+・ 既存の参照先エンティティのプロパティも全て更新可能
+
+*** `参照型プロパティとして更新対象` であり、 `参照先エンティティのプロパティも更新対象に含まれている` 場合 +
+・ 参照先エンティティの登録、削除が可能（参照自体を更新可能） +
+・ 既存の参照先エンティティのプロパティは、更新対象として指定されたプロパティのみ更新可能。参照先エンティティで登録される新規データは、更新対象外のプロパティは `null` で登録
+
+.5+|beforeRegister
+|Entity
+.5+|List<ValidateError>
+.5+|当該メソッド内に設定した処理内容が、Entityの登録・更新前に実施されます。
+|RequestContext
+|EntityDefinition
+|FormView
+|RegistrationType
+
+.5+|afterRegister
+|Entity
+.5+|List<ValidateError>
+.5+|当該メソッド内に設定した処理内容が、Entityの登録・更新後に実施されます。
+|RequestContext
+|EntityDefinition
+|FormView
+|RegistrationType
+|===
+
+カスタム登録処理の各メソッドは以下のように呼ばれます。
+
+.新規登録の処理順序
+. カスタム登録処理のdataMappingが実行され、新規登録用のEntityが作成されます。
+. 参照型のデータを登録します。
+. カスタム登録処理のbeforeRegisterが実行されます。
+. Entity(本データ)を登録します。
+. 被参照の参照型のデータを登録します。
+. カスタム登録処理のafterRegisterが実行されます。
+
+いずれかでエラーが発生した場合、ロールバックされます。
+
+.更新の処理順序
+. カスタム登録処理のdataMappingが実行され、更新用のEntityが作成されます。
+. 参照型のデータを登録します。
+. カスタム登録処理のbeforeRegisterが実行されます。
+. Entity(本データ)を更新します。 +
+isSpecifyAllPropertiesがtrue:: カスタム登録処理のgetAdditionalPropertiesで設定した戻り値のみを更新対象にする
+isSpecifyAllPropertiesがfalse:: 汎用登録処理が自動で設定した更新対象に、カスタム登録処理のgetAdditionalPropertiesの戻り値を追加する
+. 被参照の参照型のデータを登録します。
+. カスタム登録処理のafterRegisterが実行されます。
+
+いずれかでエラーが発生した場合、ロールバックされます。
+
+[[GemCustomize_Load]]
+=== カスタムロード処理
+詳細表示、編集画面でEntityのロード時に独自の処理を組み込むことができます。
+
+以下のインターフェースを実装したJavaクラスまたはUtilityClassを作成してください。
+作成したクラスを詳細画面のカスタムロード処理クラスに指定します。
+
+====
+org.iplass.mtp.view.generic.LoadEntityInterrupter
+====
+
+.処理一覧
+[cols="1,1,1,1a",options="header"]
+|===
+|メソッド
+|引数
+|戻り値
+|処理内容
+
+.5+|beforeLoadEntity
+|RequestContext
+.5+|LoadEntityContext
+.5+|ロード前処理を行います。
+Entityの表示時(詳細画面、編集画面)、登録/更新後のデータ取得、登録/更新時の比較用元データ取得時に呼ばれます。
+|FormView
+|String
+|LoadOption
+|LoadType
+
+.5+|afterLoadEntity
+|RequestContext
+.5+|なし
+.5+|ロード後処理を行います。
+|FormView
+|Entity
+|LoadOption
+|LoadType
+
+.7+|beforeLoadReference
+|RequestContext
+.7+|LoadEntityContext
+.7+|参照プロパティに対するロード前処理を行います。
+画面表示時(ネストテーブル、参照セクション)、多重度が1ではない被参照データの更新時(ネストテーブルのみ)に呼ばれます。
+|FormView
+|String
+|LoadOption
+|ReferenceProperty
+|Element
+|LoadType
+
+.7+|afterLoadReference
+|RequestContext
+.7+|なし
+.7+|参照プロパティに対するロード後処理を行います。
+|FormView
+|Entity
+|LoadOption
+|ReferenceProperty
+|Element
+|LoadType
+
+.6+|beforeSearchMassReference
+|RequestContext
+.6+|SearchQueryContext
+.6+|大量データ用参照セクションの検索前処理を行います。
+大量データセクションはロードではなくQueryでの検索を行うため、SearchQueryContextを返します。
+|FormView
+|Query
+|ReferenceProperty
+|MassReferenceSection
+|OutputType
+
+.7+|afterSearchMassReference
+|RequestContext
+.7+|なし
+.7+|大量データ用参照セクションの検索後処理を行います。
+検索されたEntity1レコード毎に処理が呼ばれます。
+|FormView
+|Query
+|ReferenceProperty
+|MassReferenceSection
+|Entity
+|OutputType
+
+|===
+
+
+[[GemCustomize_BulkOperation]]
+=== カスタム一括処理
+
+一括削除処理、一括更新画面で複数のEntityに対する一括操作時に独自の処理を組み込むことができます。
+
+以下のインターフェースを実装したJavaクラスまたはUtilityClassを作成してください。
+作成したクラスをカスタム一括削除処理クラス、またはカスタム一括更新処理クラスに指定します。
+
+====
+org.iplass.mtp.view.generic.BulkOperationInterrupter
+====
+
+.処理一覧
+[cols="1,1,1,1a",options="header"]
+|===
+|メソッド
+|引数
+|戻り値
+|処理内容
+
+.5+|beforeOperation
+|List<Entity>
+.5+|BulkOperationContext
+.5+|複数のEntityに対する一括操作前の処理を行います。
+戻り値 `BulkOperationContext` にバリデーションエラーメッセージを設定することが可能です。
+それに、エンティティリストを設定することで一括操作対象の絞込みが可能です。
+
+更新時:: エンティティに `oid` と `バージョン` 及び `更新日時` を設定しなければなりません。
+削除時:: エンティティの `oid` と `バージョン` が必須な項目です。
+
+|RequestContext
+|EntityDefinition
+|FormView
+|BulkOperationType
+
+
+.5+|afterOperation
+|List<Entity>
+.5+|なし
+.5+|複数のEntityに対する一括操作後の処理を行います。
+|RequestContext
+|EntityDefinition
+|FormView
+|BulkOperationType
+|===

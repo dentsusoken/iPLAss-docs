@@ -1,0 +1,61 @@
+[[SecureRandomService]]
+=== SecureRandomService
+ランダム文字列を生成するための設定を管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.util.random.SecureRandomService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.util.random.SecureRandomService
+----
+
+==== SecureRandomServiceの設定
+SecureRandomServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| default | <<SecureRandomGeneratorConfig>> | 標準のSecureRandomGeneratorConfigの設定。
+| 任意の文字列 | <<SecureRandomGeneratorConfig>> | 認証トークン生成時に使用するSecureRandomGeneratorConfigの設定。
+nameにはSecureRandomGeneratorの任意の名前を指定します。
+|===
+
+[[SecureRandomGeneratorConfig]]
+.SecureRandomGeneratorConfig
+ランダム文字列を生成するための設定です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| numBitsOfSecureRandomToken | int | ランダム文字列のbit。デフォルトは128(bit)です。encode指定またはradixOfSecureRandomTokenの値が64に指定されている場合は、8の倍数に繰り上げて処理されます。
+| radixOfSecureRandomToken | int | ランダム文字列化する際の基数。デフォルトは16です。
+設定可能な値は2-36もしくは64です。encode指定ある場合は、そちらを優先します。
+| useStrongSecureRandom | boolean | ランダム生成時のSecureRandomをSecureRandom.getInstanceStrong()するか否か。
+デフォルトはfalseです。algorithm指定ある場合は、そちらを優先します。
+| algorithm | String | SecureRandom生成時のalgorithm。デフォルトは未指定です。
+| provider | String | SecureRandom生成時のprovider。デフォルトは未指定です。
+| encode | String | SecureRandom生成時のencode。デフォルトは未指定です。設定可能な値はbase32もしくはbase64です。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.util.random.SecureRandomService</interface>
+	<class>org.iplass.mtp.impl.util.random.SecureRandomService</class>
+	<property name="default">
+		<property name="numBitsOfSecureRandomToken" value="128" />
+		<property name="radixOfSecureRandomToken" value="16" />
+		<property name="useStrongSecureRandom" value="false" />
+	</property>
+	<property name="authTokenGenerator">
+		<property name="numBitsOfSecureRandomToken" value="192" />
+		<property name="radixOfSecureRandomToken" value="32" />
+		<property name="useStrongSecureRandom" value="false" />
+	</property>
+</service>
+----

@@ -1,0 +1,58 @@
+[[MessageService]]
+=== MessageService
+A service for managing resource bundles.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.message.MessageService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.message.MessageService
+----
+
+==== Settings of MessageService
+MessageService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| resourceBundle | <<ResourceBundleConfig>>, Multiple| Set the ResourceBundleConfig here.
+|===
+
+[[ResourceBundleConfig]]
+.ResourceBundleConfig
+Please specify org.iplass.mtp.impl.message.ResourceBundleConfig to the class.
+
+As the standard implementation, org.iplass.mtp.impl.query.QuerySyntaxRegister are provided.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| baseBundleNamePattern | String | Bundle name pattern.
+| formats | String, Multiple | File format. When `mtp.message` is specified, Message definition is handled as a resource bundle.
+| fallbackToSystemLocale | boolean | Whether to fall back the system locale when searching for resource bundles.
+|===
+
+==== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.message.MessageService</interface>
+	<class>org.iplass.mtp.impl.message.MessageService</class>
+	<property name="resourceBundle">
+		<property name="baseBundleNamePattern" value="^org/iplass/.*$" />
+		<property name="formats" value="java.class" />
+		<property name="formats" value="java.properties" />
+		<property name="fallbackToSystemLocale" value="false" />
+	</property>
+	<property name="resourceBundle">
+		<property name="formats" value="mtp.message" />
+		<property name="formats" value="java.class" />
+		<property name="formats" value="java.properties" />
+		<property name="fallbackToSystemLocale" value="false" />
+	</property>
+</service>
+----

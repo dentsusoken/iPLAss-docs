@@ -1,0 +1,33 @@
+[[EntityCsvImportService]]
+=== EntityCsvImportService
+The service manages CSV import of Entity.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.csv.EntityCsvImportService
+----
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.csv.EntityCsvImportService
+----
+
+==== The settings of EntityCsvImportService
+EntityCsvImportService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| canCreateUserWithSpecificPassword | boolean | Allow password specification on Insert of User entity? Default value is `false` .
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.csv.EntityCsvImportService</interface>
+
+	<property name="canCreateUserWithSpecificPassword" value="true" />
+</service>
+----

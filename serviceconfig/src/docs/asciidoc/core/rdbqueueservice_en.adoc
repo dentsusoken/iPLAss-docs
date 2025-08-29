@@ -1,0 +1,137 @@
+[[RdbQueueService]]
+=== RdbQueueService
+This is the queue service using RDB.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.async.rdb.RdbQueueService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.async.rdb.RdbQueueService
+----
+
+==== Settings of RdbQueueService
+The configurable items of RdbQueueService are listed below.
+
+===== Configurable Items
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| useQueue | boolean | Whether to use queue. The default is false.
+| queue | <<QueueConfig>> | Set the queue for asynchronous executions. 
+The standard definition of the queue are depicted below.
+
+[horizontal]
+default:: The default queue used when the queue is not specified by asynchronous task.
+csvupload:: Queue used for CSV upload in GEM pages.
+
+| cleanupHistoryOnInit | boolean | Set whether to delete the history logs when the service was initialized. The default is false.
+| historyHoldDay | int | Indicate how many days of the history records to be kept when deleting history log. The default is 1.
+| workerFactory | <<WorkerFactory>> | Specify the Factory class that make the worker by custom. If not defined, set org.iplass.mtp.impl.async.rdb.DefaultWorkerFactory.
+|===
+
+[[QueueConfig]]
+.QueueConfig
+Please specify org.iplass.mtp.impl.async.rdb.QueueConfig to the class.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| id | int | A unique ID.
+0, 1 are already occupied, so please choose other ids.
+| name | String | The name for the queue.
+Displayed when an asynchronous task selects a queue.
+| resultRemainingTime | long | The time (in milliseconds) threshold to move the task to the history. Tasks older than the time specified from now will be moved. The default value is 86400000 (1 day).
+| strictSequence | boolean | When GroupingKey is set for a task and strictSequence is true, the task ID is set sequentially for each group.
+| selectWorkerOnSubmit | boolean | Whether to allocate workers to tasks which GroupingKey is not set. The default value is false.
+| worker | <<WorkerConfig>> | Specify the worker that processes the queue.
+|===
+
+[[WorkerConfig]]
+.WorkerConfig
+Please specify org.iplass.mtp.impl.async.rdb.WorkerConfig to the class.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| pollingInterval | long | Queue polling interval in milliseconds. The default value is 30000.
+| actualWorkerSize | int | You can set the number of actual workers processing the queue in parallel. The default value is 1.
+| virtualWorkerSize | int | Number of virtual workers to allocate to the queue. The default value is 16.The virtualWorkerSize is set to the same value for the same queue definition in the system. Each virtual worker is assigned to actual workers.
+| executionTimeout | long | Specify how long until the execution timeout (in milliseconds). The default value is 180000.
+| restartDelay | long | Task retry interval in milliseconds. The default value is 30000.
+| maxRetryCount | int | Task retry count. The default is 100.
+| wakeupOnSubmit | boolean | Whether to start next task immediately after the current task is submitted. The default value is true.
+Currently only valid when `local` is set to true.
+| trace | boolean | Whether to output logs. The default value is true.
+| local | boolean a| Whether to process the task in the queue locally or distributed remotely. The default value is true.
+
+.For distributed processing (local=false)
+Explicitly specify the worker ID to be executed by this node in a system property of the following form. The worker ID is a sequential number from 0 to a number less than the value specified for actualWorkerSize.
+
+mtp.async.rdb.workers=[queueName]:[id]:[id],...
+
+Example: +
+`mtp.async.rdb.workers=default:0:2,csvupload:0:2:4`
+
+This node executes the tasks assigned to worker IDs 0 and 2 in the default queue and worker IDs 0, 2, and 4 in the csvupload queue.
+| newProcessPerTask | boolean | Whether or not to run the worker in a new separate process. The default value is false.
+| javaCommand | String | The Java command for starting a worker in a separate process.
+| vmArgs | String, Multiple | VM arguments to pass to `javaCommand`.
+| redirectFile | String | Indicate the file that is the standard output destination and standard error output destination of the process.
+|===
+
+[[WorkerFactory]]
+.WorkerFactory
+Please specify org.iplass.mtp.impl.async.rdb.WorkerFactory to the class.
+
+In standard, the following WorkerFactory are provided.
+
+- <<DefaultWorkerFactory>>
+- <<MetricsWorkerFactory>>
+
+[[DefaultWorkerFactory]]
+.DefaultWorkerFactory
+Please specify org.iplass.mtp.impl.async.rdb.DefaultWorkerFactory to the class. +
+It's default WorkerFactory. There is no configurable items.
+
+[[MetricsWorkerFactory]]
+.[.eeonly]#MetricsWorkerFactory#
+Please specify org.iplass.mtp.impl.micrometer.metrics.async.MetricsWorkerFactory to the class. +
+It's WorkerFactory for collecting metrics. Make the worker that collects the number of successful/unsuccessful asynchronous execution, the number of timeout, execution time as metrics.
+And it collects the metrics of worker running in the same process. +
+This is configurable when the Micrometer module is added to the dependency. There is no configurable items.
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.async.rdb.RdbQueueService</interface>
+	<!-- if use async rdb service set to true -->
+	<property name="useQueue" value="true" />
+
+    <property name="queue" class="org.iplass.mtp.impl.async.rdb.QueueConfig" additional="true">
+        <property name="id" value="2" />
+        <property name="name" value="customQueue" />
+        <property name="worker" class="org.iplass.mtp.impl.async.rdb.WorkerConfig">
+            <property name="pollingInterval" value="60000" />
+            <property name="actualWorkerSize" value="1" />
+        </property>
+    </property>
+
+    <property name="queue" class="org.iplass.mtp.impl.async.rdb.QueueConfig" additional="true">
+        <property name="id" value="3" />
+        <property name="name" value="customProcessWorkerQueue" />
+        <property name="worker" class="org.iplass.mtp.impl.async.rdb.WorkerConfig">
+            <property name="pollingInterval" value="60000" />
+            <property name="actualWorkerSize" value="1" />
+            <property name="newProcessPerTask" value="true" />
+            <property name="javaCommand" value="java" />
+            <property name="vmArgs" value="-cp" />
+            <property name="vmArgs" value="/build/classes/:/build/lib/*" />
+            <property name="vmArgs" value="-Dmtp.config=/worker-service-config.xml" />
+        </property>
+    </property>
+</service>
+----

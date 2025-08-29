@@ -1,0 +1,62 @@
+[[SecureRandomService]]
+=== SecureRandomService
+The service to manage the settings of random text array generations.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.util.random.SecureRandomService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.util.random.SecureRandomService
+----
+
+==== Settings of SecureRandomService
+The configurable items for SecureRandomService are listed below.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| default | <<SecureRandomGeneratorConfig>> | Standard settings of SecureRandomGeneratorConfig 。
+| Any Text Array | <<SecureRandomGeneratorConfig>> | This is the settings of SecureRandomGeneratorConfig, which will be used to generate text array.
+For name, any name of SecureRandomGenerator can be specified.
+|===
+
+[[SecureRandomGeneratorConfig]]
+.SecureRandomGeneratorConfig
+The Settings for random text generations.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| numBitsOfSecureRandomToken | int | The bit for random text array. The default is 128(bit).  If encode has values set or radixOfSecureRandomToken has 64 set, It is processed in multiples of 8.
+| radixOfSecureRandomToken | int | The base number for random text arrays. The default is 16.
+The available values are in the range of 2~36 and can also be 64. If encode has values set, the priority goes to encode.
+| useStrongSecureRandom | boolean | Set whether to call SecureRandom.getInstanceStrong() for SecureRandom.
+The default is false. If algorithm has values set, the priority goes to algorithms.
+| algorithm | String | The algorithms for SecureRandom generation. The default is unspecified.
+| provider | String | The provider for SecureRandom generation. The default is unspecified.
+| encode | String | The encode for SecureRandom generation. The default is unspecified.
+The available values are base32 and base64.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.util.random.SecureRandomService</interface>
+	<class>org.iplass.mtp.impl.util.random.SecureRandomService</class>
+	<property name="default">
+		<property name="numBitsOfSecureRandomToken" value="128" />
+		<property name="radixOfSecureRandomToken" value="16" />
+		<property name="useStrongSecureRandom" value="false" />
+	</property>
+	<property name="authTokenGenerator">
+		<property name="numBitsOfSecureRandomToken" value="192" />
+		<property name="radixOfSecureRandomToken" value="32" />
+		<property name="useStrongSecureRandom" value="false" />
+	</property>
+</service>
+----

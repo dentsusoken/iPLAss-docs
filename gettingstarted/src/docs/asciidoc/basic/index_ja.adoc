@@ -1,0 +1,20 @@
+[[tutorial_basic]]
+= チュートリアル（ベーシック）
+:_relative-root-path: ../../
+:toclevels: 2
+
+== 前提条件
+本チュートリアルは以下を前提条件としています。
+チュートリアルを進めるにあたり、以下のいずれかを実施し、Webアプリケーションが動作する環境を準備してください。
+
+* <<../gettingstarted/index.adoc#Introduction, Install and Run>>
+* <<../installguide/index.adoc#ConstructionEnvironment, Eclipse開発環境の構築>>
+* <<../docker/index.adoc#DockerEnvironmentConstruction, Dockerで環境構築>>
+
+include::operation_ja.adoc[]
+
+include::usermanagement_ja.adoc[]
+
+== 次のステップ
+より深くiPLAssの機能を理解するために、 <<../advanced/index.adoc#,チュートリアル（アドバンス）>> を実施してみてください。
+

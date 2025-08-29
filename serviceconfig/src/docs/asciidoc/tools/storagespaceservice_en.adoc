@@ -1,0 +1,36 @@
+[[StorageSpaceService]]
+=== StorageSpaceService
+Services of migration tools for StorageSpace.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.tools.storagespace.StorageSpaceService
+----
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.tools.storagespace.StorageSpaceServiceImpl
+----
+
+==== The settings of StorageSpaceService
+StorageSpaceService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| migrateCommitLimit | int | data commit batch size (number of cases) when migrating StorageSpace.
+| cleanupCommitLimit | int | Migrated data cleanup batch size (number of cases) after the StorageSpace was fully migrated.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.tools.storagespace.StorageSpaceService</interface>
+	<class>org.iplass.mtp.impl.tools.storagespace.StorageSpaceServiceImpl</class>
+
+	<property name="migrateCommitLimit" value="100" />
+	<property name="cleanupCommitLimit" value="1000" />
+</service>
+----

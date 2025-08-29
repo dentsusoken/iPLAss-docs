@@ -1,0 +1,866 @@
+[[servicedefine]]
+== service-configファイルについて
+service-configファイルはxml形式で記述されます。
+また、複数に分割定義されたファイルをマージすることが可能です。
+
+.service-configファイルの記述例
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE serviceDefinition>
+<serviceDefinition>
+    <inherits>/mtp-core-service-config-mysql.xml</inherits>
+    <inherits>/mtp-web-service-config.xml</inherits>
+
+	<service>
+		<interface>org.iplass.mtp.impl.web.WebFrontendService</interface>
+
+		<property name="staticContentPath" value="/iplass-skeleton" />
+	</service>
+
+	<service>
+		<interface>org.iplass.mtp.impl.lob.LobStoreService</interface>
+
+		<property name="binaryStore" class="org.iplass.mtp.impl.lob.lobstore.file.FileLobStore">
+			<property name="rootDir" value="/lobs" />
+			<property name="overwriteFile" value="false" />
+		</property>
+
+		<property name="longTextStore" class="org.iplass.mtp.impl.lob.lobstore.rdb.RdbLobStore" />
+    </service>
+
+	:
+	:
+
+</serviceDefinition>
+----
+
+
+service-configファイルではService単位で設定を行っていきます。
+
+=== Serviceとは
+ServiceとはiPLAss上で規定されるコンポーネントです。
+実体は `org.iplass.mtp.spi.Service` を実装するjavaクラスです。
+service-configファイルからこの各種Serviceの属性を設定することが可能です。
+
+=== service-configファイルの指定方法
+iPLAss起動時に利用されるservice-configファイルは次のいずれかの形で読み込まれます。
+
+==== クラスパス、ファイルパスから自動解決
+起動時に明示的にservice-configファイルを指定しない場合は、クラスパス直下、もしくはファイルシステムのルートパスからmtp-service-config.xmlを取得します。
+Webアプリケーションとしてデプロイする場合、 `/WEB-INF/classes/` 直下などにmtp-service-config.xmlを配置可能です。
+
+==== 明示的に指定する場合
+ファイルを明示的に指定する場合には以下の３つの方法があります。
+
+- VM引数 +
+VM引数を使用する場合はキー名を"mtp.config"にてservice-configファイルのパスを指定します。
++
+----
+-Dmtp.config=/app-service-config.xml
+----
+
+- web.xml +
+param-name要素に"mtp.config"を指定し、param-value要素に読み込むservice-configファイルを指定します。
++
+[source,xml]
+----
+<context-param>
+	<param-name>mtp.config</param-name>
+	<param-value>/app-service-config.xml</param-value>
+</context-param>
+----
+
+- コード上から +
+EntryPointBuilderクラスのconfig(String)メソッドにてservice-configファイルを指定します。
++
+[source,java]
+----
+import org.iplass.mtp.runtime.EntryPoint;
+
+:
+:
+
+//initialize EntryPoint on application startup
+EntryPoint entryPoint = EntryPoint.builder()
+        .config("/app-service-config.xml").build();
+
+----
+
+指定されたファイル名（パス）を元に、クラスパス上のリソースパスとして、またファイルシステム上のファイルパスとして、ファイルを検索します。
+
+[[splitting_the_service_config_file]]
+=== service-configファイルの分割
+service-configファイルは、定義の一部を別ファイルに分割して管理することが可能です。
+例えば、環境依存部分の設定を別ファイルとして切り出し管理することが可能です。
+また、iPLAssが定義するデフォルト値が設定されたservice-configファイルが提供されているので、それをベースとし、デフォルトから変更する箇所のみをオーバーライトすることも出来ます。
+デフォルト値が設定されたservice-configファイルはiPLAssの各モジュールのjar内に格納されています。
+
+以下にデフォルト値を提供するservice-configファイルの一覧を示します。
+
+[cols="1,2", options="header"]
+|===
+| ファイルパス | 説明
+| /mtp-core-service-config.xml | iPLAssのcoreサービスに関するデフォルト設定です。
+| /mtp-core-service-config-mysql.xml | mysql8以上を利用する場合のiPLAssのcoreサービスに関するデフォルト設定です。/mtp-core-service-config.xmlの内容を継承しています。
+| /mtp-core-service-config-mysql-5.7.xml | mysql5.7を利用する場合のiPLAssのcoreサービスに関するデフォルト設定です。/mtp-core-service-config.xmlの内容を継承しています。
+| /mtp-core-service-config-mysql_pseudo_128.xml | mysql8を利用し、かつ疑似パーティション機能（128パーティション）を利用する場合のiPLAssのcoreサービスに関するデフォルト設定です。/mtp-core-service-config-mysql.xmlの内容を継承しています。
+| /mtp-core-service-config-aurora_mysql.xml | Amazon Aurora(mysql5.7)を利用し、かつ疑似パーティション機能（128パーティション）を利用する場合のiPLAssのcoreサービスに関するデフォルト設定です。/mtp-core-service-config-mysql-5.7.xmlの内容を継承しています。
+| /mtp-core-service-config-oracle.xml | Oracleを利用する場合のiPLAssのcoreサービスに関するデフォルト設定です。/mtp-core-service-config.xmlの内容を継承しています。
+| /mtp-core-service-config-oracle_pseudo.xml | Oracleを利用し、かつ疑似パーティション機能（32パーティション）を利用する場合のiPLAssのcoreサービスに関するデフォルト設定です。/mtp-core-service-config-oracle.xmlの内容を継承しています。
+| /mtp-core-service-config-oracle_pseudo_128.xml | Oracleを利用し、かつ疑似パーティション機能（128パーティション）を利用する場合のiPLAssのcoreサービスに関するデフォルト設定です。/mtp-core-service-config-oracle.xmlの内容を継承しています。
+| /mtp-core-service-config-postgre.xml | PostgreSQLを利用する場合のiPLAssのcoreサービスに関するデフォルト設定です。/mtp-core-service-config.xmlの内容を継承しています。
+| /mtp-core-service-config-postgre_pseudo.xml | PostgreSQLを利用し、かつ疑似パーティション機能（32パーティション）を利用する場合のiPLAssのcoreサービスに関するデフォルト設定です。/mtp-core-service-config-postgre.xmlの内容を継承しています。
+| /mtp-core-service-config-postgre_pseudo_128.xml | PostgreSQLを利用し、かつ疑似パーティション機能（128パーティション）を利用する場合のiPLAssのcoreサービスに関するデフォルト設定です。/mtp-core-service-config-postgre.xmlの内容を継承しています。
+| /mtp-core-service-config-sqlserver.xml | SQLServerを利用する場合のiPLAssのcoreサービスに関するデフォルト設定です。/mtp-core-service-config.xmlの内容を継承しています。
+| /mtp-core-service-config-sqlserver_pseudo.xml | SQLServerを利用し、かつ疑似パーティション機能（32パーティション）を利用する場合のiPLAssのcoreサービスに関するデフォルト設定です。/mtp-core-service-config-sqlserver.xmlの内容を継承しています。
+| /mtp-core-service-config-sqlserver_pseudo_128.xml | SQLServerを利用し、かつ疑似パーティション機能（128パーティション）を利用する場合のiPLAssのcoreサービスに関するデフォルト設定です。/mtp-core-service-config-sqlserver.xmlの内容を継承しています。
+| /mtp-web-service-config.xml | iPLAssのwebモジュールに関するデフォルト設定です。
+| /mtp-tools-service-config.xml | AdminConsole、Toolsバッチから利用されるtoolsモジュールに関するデフォルト設定です。
+| /gem-service-config.xml | gemモジュールに関する設定です。
+| [.eeonly]#/mdc-service-config.xml# | mdcモジュールに関するデフォルト設定です。Enterprise Editionで利用可能です。
+| /adminconsole-service-config.xml | AdminConsoleに関するデフォルト設定です。
+| /infinispan-service-config.xml | infinispanに関するデフォルト設定です。
+| /redis-service-config.xml | redisに関するデフォルト設定です。
+| [.eeonly]#/appconsole-service-config.xml# | appConsoleに関するデフォルト設定です。Enterprise Editionで利用可能です。
+| [.eeonly]#/aws-service-config.xml# | awsに関するデフォルト設定です。Enterprise Editionで利用可能です。
+| [.eeonly]#/wam-service-config.xml# | wamモジュールに関するデフォルト設定です。Enterprise Editionで利用可能です。
+| [.eeonly]#/micrometer-service-config.xml# | micrometerモジュールに関するデフォルト設定です。Enterprise Editionで利用可能です。
+|===
+
+
+分割されたファイルは、実行時に1つのservice-configファイルとしてマージされます。
+同一Serviceの定義が複数のファイルに存在した場合のマージのされ方は、設定ファイルで指定が可能です。
+
+.mysql利用、かつgemとAdminConsoleを利用する場合のファイルの記述例
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE serviceDefinition>
+<serviceDefinition>
+    <inherits>/mtp-core-service-config-mysql.xml</inherits>
+	<inherits>/mtp-web-service-config.xml</inherits>
+	<inherits>/mtp-tools-service-config.xml</inherits>
+	<inherits>/gem-service-config.xml</inherits>
+	<inherits>/adminconsole-service-config.xml</inherits>
+
+    <!-- 以下、デフォルト値をオーバーライトする設定を記述 -->
+	<service>
+		<interface>org.iplass.mtp.impl.lob.LobStoreService</interface>
+
+		<property name="binaryStore" class="org.iplass.mtp.impl.lob.lobstore.file.FileLobStore">
+			<property name="rootDir" value="/lobs" />
+			<property name="overwriteFile" value="false" />
+		</property>
+
+		<property name="longTextStore" class="org.iplass.mtp.impl.lob.lobstore.rdb.RdbLobStore" />
+    </service>
+
+	:
+	:
+
+</serviceDefinition>
+----
+
+詳しくはservice-configファイルの構成の説明を参照ください。
+
+=== service-configファイルの構成
+.serviceDefinition要素
+service-configのルート要素です。
+
+- 属性
++
+[cols="1,1,3", options="header"]
+|===
+| 属性名 | 型 | 説明
+| preprocess | boolean |
+このservice-configファイルの <<preprocess,プリプロセス>> 処理を実施する場合trueを指定します。
+|===
+
+- 子要素
++
+[cols="1,1,3", options="header"]
+|===
+| 要素名 | 型 | 説明
+| inherits | String、複数指定可 |
+この設定ファイルが継承元とする設定ファイルを指定します。
+継承元のService定義が読み込まれた後、本体のservice-configファイルに記述された定義が適用されます。
+| includes | String、複数指定可 | この設定ファイルに取り込む設定ファイルを設定します。
+本体のservice-configファイルの設定をincludeした設定ファイルで上書きします。
+| service | <<ServiceConfig, service>>、複数指定可 | サービスの定義を設定します。
+|===
+
+[[ServiceConfig]]
+.service要素
+個々のサービスの定義を行う要素です。
+
+- 属性
++
+[cols="1,1,3", options="header"]
+|===
+| 属性名 | 型 | 説明
+| name | String | サービス名を設定します。未指定の場合は子要素interface（インタフェース名）がサービス名となります。
+| ifnone | boolean | このサービスが継承元または取り込み先に存在しない場合にのみ定義します。デフォルト値はfalseです。
+| inherit | boolean | このサービスが継承元または取り込み先に存在する場合は元のサービス定義を継承します。デフォルト値はtrueです。 +
+サービス名、interface、depend、propertyが継承されます。
+| final | boolean | このサービス定義の上書きを禁止します。デフォルト値はfalseです。
+|===
+
+- 子要素
++
+[cols="1,1,3", options="header"]
+|===
+| 要素名 | 型 | 説明
+| interface | String、必須 | インタフェース名を設定します。インタフェース名は完全修飾名を設定します。
+| class | String | クラス名を設定します。クラス名は完全修飾名を設定してください。未指定の場合はinterfaceがclassとして扱われます。
+| depend | String、複数指定可 | 依存サービスを設定します。サービス名を指定します。
+| property | <<Property, property>>、複数指定可 | サービスのプロパティを設定します。
+| bean | <<Bean, bean>>、複数指定可 | サービス内で利用するBeanのインスタンスを設定します。定義されたBeanのインスタンスはproperty要素から参照可能です。複数のプロパティ要素から同一のBeanのインスタンスを参照したい場合、bean要素を利用します。
+|===
+
+[[Property]]
+.property要素
+サービスのプロパティを定義する要素です。 +
+プロパティの要素がjavaBeans形式の場合、再帰的にproperty要素を設定することが可能です。
+また、ref属性にて別途定義されたbean要素を参照することも可能です。
+
+
+- 属性
++
+[cols="1,1,3", options="header"]
+|===
+| 属性名 | 型 | 説明
+| name | String | プロパティ名を設定します。
+| value | String | プロパティの値を設定します。
+| class | String | プロパティがjavaBeansの場合、そのクラス名を設定します。クラス名は完全修飾名を設定してください。
+| builder | String | プロパティの値の生成処理をカスタマイズしたい場合、ObjectBuilderクラス名を指定します。クラス名は完全修飾名を設定してください。
+詳細は <<ObjectBuilder, 設定値生成のカスタマイズ>> を参照ください。
+| ref | String | プロパティがjavaBeansの場合、 <<Bean, bean要素>> で定義されるnameを指定可能です。refの指定は、value、class指定より優先されます。
+| ifnone | boolean | このプロパティが継承元または取り込み先に存在しない場合にのみ定義します。デフォルト値はfalseです。
+| inherit | boolean | このプロパティが継承元または取り込み先に存在する場合は元のプロパティ定義を継承します。デフォルト値はtrueです。
+| final | boolean | このプロパティ定義の上書きを禁止します。デフォルト値はfalseです。
+| encrypted | boolean | 暗号化された値であるかを設定します。デフォルト値はfalseです。
+| additional | boolean | このプロパティと同一名のプロパティが継承元または取り込み先に存在する場合、継承や上書きせずに追加するかを設定します。デフォルト値はfalseです。
+|===
++
+
+- 子要素
++
+[cols="1,1,3", options="header"]
+|===
+| 要素名 | 型 | 説明
+| value | String | プロパティの値を設定します。設定可能な値は文字列型です。属性のvalueの両方が設定された場合は属性のvalueが優先されます。
+| property | <<Property, property>>、複数指定可 | ネストされたプロパティの定義を設定します。
+| arg | <<Property, property>>、複数指定可 | Beanのコンストラクタにインジェクションする値を指定可能です。
+指定可能な属性、要素はproperty型と同様です。
+コンストラクタインジェクションする際のnameは、 `arg0` 、 `arg1` のようにarg[引数順]を指定します。
+| buildScript | String | プロパティの値の生成処理をカスタマイズしたい場合、GroovyScript形式で記述します。詳細は <<ObjectBuilder, 設定値生成のカスタマイズ>> を参照ください。
+
+|===
+
+[[Bean]]
+.bean要素
+サービス内で利用するBeanのインスタンスを定義する要素です。 +
+定義されたBeanのインスタンスはproperty要素から参照可能です。複数のプロパティ要素から同一のBeanのインスタンスを参照したい場合、bean要素を利用します。
+
+- 属性
++
+[cols="1,1,3", options="header"]
+|===
+| 属性名 | 型 | 説明
+| name | String | Beanの名前を設定します。
+| class | String | Beanのクラス名を設定します。クラス名は完全修飾名を設定してください。
+| builder | String | Beanの生成処理をカスタマイズしたい場合、ObjectBuilderクラス名を指定します。クラス名は完全修飾名を設定してください。
+詳細は <<ObjectBuilder, 設定値生成のカスタマイズ>> を参照ください。
+| ifnone | boolean | このbean定義が継承元または取り込み先に存在しない場合にのみ定義します。デフォルト値はfalseです。
+| inherit | boolean | このbean定義が継承元または取り込み先に存在する場合は元のbean定義を継承します。デフォルト値はtrueです。
+| final | boolean | このbean定義の上書きを禁止します。デフォルト値はfalseです。
+| additional | boolean | このbean定義と同一名のbeanが継承元または取り込み先に存在する場合、継承や上書きせずに追加するかを設定します。デフォルト値はfalseです。
+|===
++
+
+- 子要素
++
+[cols="1,1,3", options="header"]
+|===
+| 要素名 | 型 | 説明
+| property | <<Property, property>>、複数指定可 | Beanのプロパティの定義を設定します。
+| arg | <<Property, property>>、複数指定可 | Beanのコンストラクタにインジェクションする値を指定可能です。
+指定可能な属性、要素はproperty型と同様です。
+コンストラクタインジェクションする際のnameは、 `arg0` 、 `arg1` のようにarg[引数順]を指定します。
+| buildScript | String | Beanの生成処理をカスタマイズしたい場合、GroovyScript形式で記述します。詳細は <<ObjectBuilder, 設定値生成のカスタマイズ>> を参照ください。
+
+|===
+
+==== Collectionへの対応
+
+配列、List、Map形式をサポートします。
+
+配列、Listの値を設定する場合は、name属性の値が同じ<property>要素を複数定義することにより表現します。
+
+.intListプロパティに配列をセットする例
+[source,xml]
+----
+<service>
+    :
+    :
+    <property name="intList" value="1" />
+    <property name="intList" value="3" />
+    <property name="intList" value="5" />
+
+
+</service>
+----
+
+Mapの値を設定する場合は、ネストした<property>要素にてnameにMapのkeyを指定します。
+
+.stringMapプロパティに配列をセットする例
+[source,xml]
+----
+<service>
+    :
+    :
+    <property name="stringMap" >
+        <property name="key1" value="value1" />
+        <property name="key2" value="value2" />
+        <property name="key3" value="value3" />
+    </property>
+
+
+</service>
+----
+
+==== 設定例
+- javaBeansへのプロパティの設定例
++
+以下のようなjavaBeansに対して、
++
+[source,java]
+----
+public class SampleBean {
+    private int num;
+    private String condition;
+    private List<ChildBean> children;
+    private ChildBean2 child2;
+
+    //getters, seters...
+    public int getNum() {
+        return this.num;
+    }
+
+    :
+    :
+
+}
+
+public class ChildBean {
+    private int age;
+    private String name;
+
+    //getters, seters...
+    public int getAge() {
+        return this.age;
+    }
+
+    :
+    :
+}
+
+public class ChildBean2 {
+    private int age;
+    private String name;
+
+    private Map<String, Point> pointMap;
+
+    //constructor with args
+    public ChildBean2(int age, String name) {
+        this.age = age;
+        this.name = name;
+    }
+
+    :
+    :
+}
+
+public class Point {
+    private int x;
+    private int y;
+
+    //getters, seters...
+    public int getX() {
+        return this.x;
+    }
+
+    :
+    :
+}
+
+----
++
+次のように値を設定するすることが可能です。
++
+[source,xml]
+----
+<service>
+    :
+    :
+
+    <property name="sample" class="SampleBean">
+        <property name="num" value="123" />
+        <property name="condition" value="conditionStr" />
+        <property name="children" class="ChildBean">
+            <property name="age" value="5" />
+            <property name="name" value="abc" />
+        </property>
+        <property name="children" class="ChildBean">
+            <property name="age" value="3" />
+            <property name="name" value="def" />
+        </property>
+
+        <property name="child2" class="ChildBean2">
+            <arg name="arg0" value="10" />
+            <arg name="arg1" value="ghi" />
+
+            <property name="pointMap">
+                <property name="p1" class="Point">
+                    <property name="x" value="3" />
+                    <property name="y" value="15" />
+                </property>
+                <property name="p2" class="Point">
+                    <property name="x" value="7" />
+                    <property name="y" value="30" />
+                </property>
+            </property>
+        </property>
+    </property>
+
+</service>
+----
+
+- bean要素の利用例
++
+以下のようなjavaBeansに対して、
++
+[source,java]
+----
+public class SampleBean1 {
+    private SharedBean sharedBean;
+
+    //getters, seters...
+    public SharedBean getSharedBean() {
+        return this.sharedBean;
+    }
+
+    :
+    :
+
+}
+
+public class SampleBean2 {
+    private SharedBean sharedBean;
+
+    //getters, seters...
+    public SharedBean getSharedBean() {
+        return this.sharedBean;
+    }
+
+    :
+    :
+
+}
+
+public class SharedBean {
+    private int age;
+    private String name;
+
+    //getters, seters...
+    public int getAge() {
+        return this.age;
+    }
+
+    :
+    :
+}
+
+----
++
+次のように値を設定するすることにより、SampleBean1とSampleBean2のsharedBeanに同一のインスタンスをセットすることが可能です。
++
+[source,xml]
+----
+<service>
+    :
+    :
+
+    <property name="sample1" class="SampleBean1">
+        <property name="sharedBean" ref="sb" />
+    </property>
+
+    <property name="sample2" class="SampleBean2">
+        <property name="sharedBean" ref="sb" />
+    </property>
+
+    <bean name="sb" class="SharedBean">
+        <property name="age" ref="15" />
+        <property name="name" ref="abc" />
+    </bean>
+
+</service>
+----
+
+NOTE: 定義による同一のBeanのインスタンスを参照可能な範囲はService内のみです。
+Service間を跨いで同一のインスタンスを利用したい場合は、明示的にServiceのインタフェース（アクセッサメソッドなど）を経由して利用します。
+
+[[ObjectBuilder]]
+=== 設定値生成のカスタマイズ
+ObjectBuilderを利用し、propertyの値、beanのインスタンス生成処理をカスタマイズすることが可能です。
+
+- ObjectBuilderクラス指定による生成
++
+org.iplass.mtp.spi.ObjectBuilderインタフェースを実装するクラスを作成し、property要素、bean要素のbuilder属性に指定します。
++
+.ObjectBuilderの実装例
+[source,java]
+----
+import org.iplass.mtp.spi.ObjectBuilder;
+
+public class SampleObjectBuilder implements ObjectBuilder<SampleBean> {
+
+	private String propAFromNestProperty;
+
+	@Override
+	public void setProperties(Map<String, Object> properties) { <1>
+		propAFromNestProperty = (String) properties.get("propA");
+	}
+
+	@Override
+	public SampleBean build() { <2>
+		SampleBean bean = new SampleBean(System.currentTimeMillis());
+		bean.setPropA(propAFromNestProperty);
+		return bean;
+	}
+}
+
+
+public class SampleBean {
+
+	private String propA;
+	:
+
+	public SampleBean(long someDynamicParam) {
+		:
+		:
+	}
+
+	public String getPropA() {
+		return propA;
+	}
+
+	public void setPropA(String propA) {
+		this.propA = propA;
+	}
+}
+----
+<1> setProperties() メソッドを実装することにより、ネストされたproperty要素に定義されている値を取得することも可能です。
+<2> build()メソッドでインスタンスを生成します
++
+.設定ファイルの記述例
+[source,xml]
+----
+<service>
+    :
+    :
+
+    <property name="sample1" builder="SampleObjectBuilder">
+        <property name="propA" value="abc" />
+    </property>
+
+
+</service>
+----
++
+上記の設定により、sample1の値はSampleObjectBuilderで生成されたSampleBeanのインスタンスが設定されます（propAの値は設定ファイルで設定した形で）。
+
+
+- buildスクリプトによる生成
++
+ObjectBuilderの生成処理をGroovyScriptで記述することも可能です。
+GroovyScriptはbuildScript要素で記述します。
++
+GroovyScriptでは次の変数がバインドされます。
++
+[cols="1,3", options="header"]
+|===
+|変数名 |説明
+|name |property要素もしくはbean要素に指定されたname属性の値。
+|value |property要素に指定されたvalue属性（もしくはvalue要素）の値。
+|className |property要素もしくはbean要素に指定されたclass属性の値。
+|properties |property要素もしくはbean要素にネストして指定されたproperty要素。keyにname、valueにpropertyの設定値が格納されたMap形式のインスタンス。
+|args |property要素もしくはbean要素にネストして指定されたargs要素。keyにname、valueにargsの設定値が格納されたMap形式のインスタンス。
+|===
++
+.設定ファイルの記述例
+[source,xml]
+----
+<service>
+    :
+    :
+
+    <property name="sample1">
+        <buildScript>
+			SampleBean sb = new SampleBean(System.currentTimeMillis());
+			sb.propA = properties.propA;
+			return sb;
+		</buildScript>
+        <property name="propA" value="abc" />
+    </property>
+
+
+</service>
+----
++
+上記の設定により、propAの値は設定ファイルから取得したSampleBeanのインスタンスが設定されます。
+
+[[obfuscation]]
+=== 設定値の難読化
+service-configファイルに記載される値を難読化出来ます。
+難読化する手順は以下の通りです。
+
+.難読化方法の設定
+難読化方式の設定を記述した暗号化プロパティファイル（crypt.properties）を作成します。
+
+以下の項目を設定できます。
+
+[cols="1,4a", options="header"]
+|===
+|項目名|設定値
+|propertyValueCoder|org.iplass.mtp.impl.core.config.PropertyValueCoderを実装するクラス名を指定する。
+PropertyValueCoderには文字列をエンコード/デコードする処理を実装する。
+以下の実装をデフォルトで提供。
+
+<<DefaultPropertyValueCoder>>::
+パスフレーズより難読化された値をエンコード/デコード
+
+<<SecretsManagerPropertyValueCoder>>::
+AWS Secrets Managerのシークレットに登録された設定値を取得
+
+未指定の場合はDefaultPropertyValueCoderが適用される。
+|===
+
+[[DefaultPropertyValueCoder]]
+.DefaultPropertyValueCoder
+classはorg.iplass.mtp.impl.core.config.DefaultPropertyValueCoderを指定します。
+
+[cols="1,4a", options="header"]
+|===
+|項目名|設定値
+|keyFactoryAlgorithm|暗号化のための鍵生成アルゴリズム。
+未指定の場合はデフォルト値（PBKDF2WithHmacSHA256）
+|keySalt|鍵生成時のsalt。
+未指定の場合はデフォルト値
+|keyStretch|鍵生成時のストレッチ回数。
+未指定の場合はデフォルト値
+|keyLength|鍵のbit長。
+未指定の場合はデフォルト値（128）
+|cipherAlgorithm|暗号化アルゴリズム。
+未指定の場合はデフォルト値（AES）
+|passphraseSupplier|org.iplass.mtp.impl.core.config.PassphraseSupplierを実装するクラス名を指定する。
+PassphraseSupplierには鍵生成時のパスフレーズを取得する処理を実装する。
+以下の実装をデフォルトで提供。
+
+org.iplass.mtp.impl.core.config.PropertyFilePassphraseSupplier::
+プロパティファイルよりパスフレーズを取得
+
+org.iplass.mtp.impl.core.config.ConsolePassphraseSupplier::
+標準入力よりパスフレーズを入力
+
+org.iplass.mtp.impl.core.config.SystemEnvironmentVariablePassphraseSupplier::
+システム環境変数（MTP_CONFIG_PASSPHRASE）にてパスフレーズを指定。
+（javaシステム変数ではない）
+
+[.eeonly]#org.iplass.mtp.impl.aws.secretsmanager.SecretsManagerPassphraseSupplier#::
+AWS Secrets Managerのシークレットに登録されているpassphraseより取得。
+
+未指定の場合はPropertyFilePassphraseSupplierが適用される。
+|passphrase|PropertyFilePassphraseSupplierを利用する場合、パスフレーズを指定。
+|aws.secretName|SecretsManagerPassphraseSupplierを利用する場合、シークレット名を指定。AWS認証情報として、デフォルトの認証情報プロバイダーチェーンを使用しています。
+|===
+
+例として、デフォルトの難読化設定を利用する場合、以下のように設定します。
+
+.crypt.propertiesの設定例
+----
+passphrase=hogehoge
+----
+
+[[SecretsManagerPropertyValueCoder]]
+.[.eeonly]#SecretsManagerPropertyValueCoder#
+classはorg.iplass.mtp.impl.aws.secretsmanager.SecretsManagerPropertyValueCoderを指定します。
+
+[cols="1,4a", options="header"]
+|===
+|項目名|設定値
+|aws.secretName|シークレット名を指定。AWS認証情報として、デフォルトの認証情報プロバイダーチェーンを使用しています。
+|===
+
+例として、AWS Secrets Managerのシークレットに登録された設定値を取得する場合、以下のように設定します。
+
+.crypt.propertiesの設定例
+----
+propertyValueCoder=org.iplass.mtp.impl.aws.secretsmanager.SecretsManagerPropertyValueCoder
+aws.secretName=test
+----
+
+.プロパティファイルの指定
+VM引数、もしくはweb.xmlのcontext-paramでpropertiesファイルへのパス（ClassLoaderのResourceとしてのパス、もしくはfileパス）を指定します。
+または、EntryPointBuilderクラスのcrypt(String)メソッドにてパスを指定します。
+
+[horizontal]
+パラメータ名:: mtp.config.crypt
+
+.VM引数での設定例
+----
+-Dmtp.config.crypt=/crypt.properties
+----
+
+.web.xmlでの設定例
+----
+<context-param>
+  <param-name>mtp.config.crypt</param-name>
+  <!-- ■ crypt config file ■ -->
+  <param-value>/crypt.properties</param-value>
+</context-param>
+----
+
+.コード上からの設定例
+[source,java]
+----
+import org.iplass.mtp.runtime.EntryPoint;
+
+:
+:
+
+//initialize EntryPoint on application startup
+EntryPoint entryPoint = EntryPoint.builder()
+        .config("/app-service-config.xml")
+        .crypt("/crypt.properties").build();
+----
+
+.難読化対象テキストの難読化
+<<../developerguide/support/index.adoc#_encoder, Encoder>>を利用して難読化を行います。
+難読化の際にcrypt.propertiesを利用します。
+passphraseについてはコンソールから直接入力で指定します。
+
+
+.service-configへ設定
+難読化したテキストをservice-configファイルに設定します。
+併せてpropertyの属性としてencrypted="true"を指定します。
+
+----
+<property name="password" value="39y04KVcitPsSAQtXgvc=" encrypted="true" />
+----
+
+.[.eeonly]#AWS Secrets Managerによる設定値の取得#
+SecretsManagerPropertyValueCoderを利用し、AWS Secrets Managerのシークレットに登録された設定値を取得します。AWS Secrets Managerのシークレットに設定値をKey-Value形式で事前に登録しておきます。
+
+.service-configへ設定
+AWS Secrets Managerのシークレットに登録されている設定値のキーをservice-configファイルに設定します。
+併せてpropertyの属性としてencrypted="true"を指定します。
+
+----
+<property name="password" value="passwordKey" encrypted="true" />
+----
+
+[[preprocess]]
+=== プリプロセッサ
+service-configファイルのプリプロセス処理を実行することが可能です。
+プリプロセス処理を有効化(serviceDefinition要素の属性preprocessにtrueを指定)した場合、service-configファイルは読み込み前にGroovyTemplateとして実行されます。
+
+例えば、環境依存の設定値をシステムプロパティや環境変数などから取得することが可能です。
+
+CAUTION: `$` `\` はGroovyTemplateでは予約語となります。 +
+プリプロセス処理を有効化する場合、設定ファイル中の `$` は `\$` 、 `\` は `\\`  のようにエスケープが必要になります。
+
+
+.プリプロセス処理の記述例（システムプロパティから取得）
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE serviceDefinition>
+<serviceDefinition preprocess="true"> <1>
+
+	:
+	:
+
+	<service>
+		<interface>org.iplass.mtp.impl.lob.LobStoreService</interface>
+
+		<property name="binaryStore" class="org.iplass.mtp.impl.lob.lobstore.file.FileLobStore">
+			<property name="rootDir" value="${System.getProperty('lobStoreDir')}" /> <2>
+		</property>
+	</service>
+
+
+</serviceDefinition>
+----
+<1> serviceDefinitionにpreprocess="true"を指定します
+<2> システムプロパティlobStoreDirを読み込みます
+
+
+.プリプロセス処理の記述例（環境変数から取得）
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE serviceDefinition>
+<serviceDefinition preprocess="true"> <1>
+
+	:
+	:
+
+	<service>
+		<interface>org.iplass.mtp.impl.lob.LobStoreService</interface>
+
+		<property name="binaryStore" class="org.iplass.mtp.impl.lob.lobstore.file.FileLobStore">
+			<property name="rootDir" value="${System.getenv('LOB_STORE_DIR')}" /> <2>
+		</property>
+	</service>
+
+
+</serviceDefinition>
+----
+<1> serviceDefinitionにpreprocess="true"を指定します
+<2> 環境変数LOB_STORE_DIRを読み込みます
+
+.プリプロセス処理の記述例（複雑な例）
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE serviceDefinition>
+<serviceDefinition preprocess="true"> <1>
+	<!-- <%
+	// プロパティファイルから制御フラグを取得
+	def props = new Properties()
+	getClass().getResource('/dev.properties').withInputStream {
+		props.load(it)
+	}
+
+	def rdb = props.getProperty('rdb', 'mysql')
+	def includeAdmin = props.getProperty('includeAdmin', 'true')
+
+	%> --> <2>
+
+	<inherits>/mtp-core-service-config-${rdb}.xml</inherits>
+	<inherits>/mtp-web-service-config.xml</inherits>
+ 	<inherits>/mtp-tools-service-config.xml</inherits>
+	<inherits>/gem-service-config.xml</inherits>
+	<!-- <% if (includeAdmin == 'true') {%> -->
+	<inherits>/adminconsole-service-config.xml</inherits>
+	<!-- <%}%> -->
+
+	:
+	:
+
+</serviceDefinition>
+----
+<1> serviceDefinitionにpreprocess="true"を指定します
+<2> <% %>にScriptを記述可能です

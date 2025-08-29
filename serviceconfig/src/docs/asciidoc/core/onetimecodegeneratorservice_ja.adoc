@@ -1,0 +1,144 @@
+[[OnetimeCodeGeneratorService]]
+=== [.eeonly]#OnetimeCodeGeneratorService#
+二段階認証のワンタイム認証コードを生成するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.auth.authenticate.onetime.OnetimeCodeGeneratorService
+----
+
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.auth.authenticate.onetime.OnetimeCodeGeneratorService
+----
+
+
+==== OnetimeCodeGeneratorServiceの設定
+ワンタイム認証コードの生成について設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| generator | <<OnetimeCodeGenerator>>、複数指定可 | ワンタイム認証コードの生成器の設定。
+|===
+
+[[OnetimeCodeGenerator]]
+.OnetimeCodeGenerator
+classはorg.iplass.mtp.impl.auth.authenticate.onetime.OnetimeCodeGeneratorの実装クラスを指定します。
+
+標準で、外部送信するワンタイム認証コードを生成するorg.iplass.mtp.impl.auth.authenticate.onetime.outofband.OutOfBandOnetimeCodeGeneratorを提供します。
+OutOfBandOnetimeCodeGeneratorの設定可能な項目は以下になります。
+
+[[OutOfBandOnetimeCodeGenerator]]
+.OutOfBandOnetimeCodeGenerator
+外部送信するワンタイム認証コードを生成するワンタイム認証コード生成器です。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| name | String | ワンタイム認証コード生成器の名前。
+| maxFailureCount | int | 最大認証失敗回数。デフォルト値は5です。
+| lifetimeSeconds | long | ワンタイム認証コードの有効時間。デフォルト値は180（3分）です。
+| store | <<OnetimeCodeStore>> | ワンタイム認証コードの保持方式。
+| sender | <<OutOfBandSender>> | ワンタイム認証コードの外部送信方式。
+| strategy | <<GenerateStrategy>> | ワンタイム認証コードの生成方式。
+|===
+
+[[OnetimeCodeStore]]
+.OnetimeCodeStore
+classはorg.iplass.mtp.impl.auth.authenticate.onetime.OnetimeCodeStoreの実装クラスを指定します。
+
+標準で、ワンタイム認証コードをセッションに格納するorg.iplass.mtp.impl.auth.authenticate.onetime.SessionOntimeCodeStoreを提供します。
+SessionOntimeCodeStoreは設定変更可能な項目はありません。
+
+[[OutOfBandSender]]
+.OutOfBandSender
+classはorg.iplass.mtp.impl.auth.authenticate.onetime.outofband.OutOfBandSenderの実装クラスを指定します。
+
+標準で、ワンタイム認証コードをメール送信するorg.iplass.mtp.impl.auth.authenticate.onetime.outofband.MailOutOfBandSenderと、
+SMS送信するorg.iplass.mtp.impl.auth.authenticate.onetime.outofband.SmsOutOfBandSenderを提供します。
+
+[[MailOutOfBandSender]]
+.MailOutOfBandSender
+classはorg.iplass.mtp.impl.auth.authenticate.onetime.outofband.MailOutOfBandSenderを指定します。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| mailTemplate | String | ワンタイム認証コードを送信するメールのテンプレート。
+| fromAddress | String | 送信元メールアドレス。
+テナントのメール送信設定で設定されているFromアドレスとは別のメールアドレスを使用する場合に設定します。
+|====================
+
+[[SmsOutOfBandSender]]
+.SmsOutOfBandSender
+classはorg.iplass.mtp.impl.auth.authenticate.onetime.outofband.SmsOutOfBandSenderを指定します。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| smsTemplate | String | ワンタイム認証コードを送信するSMSのテンプレート。
+| fromPhoneNumber | String | 送信元電話番号。<<SmsService, SmsService>>で設定されているdefaultFromとは別の電話番号を使用する場合に設定します。
+|====================
+
+[[GenerateStrategy]]
+.GenerateStrategy
+classはorg.iplass.mtp.impl.auth.authenticate.onetime.outofband.GenerateStrategyの実装クラスを指定します。
+
+標準で、数値のワンタイム認証コードを生成するorg.iplass.mtp.impl.auth.authenticate.onetime.outofband.NumberGenerateStrategyを提供します。
+NumberGenerateStrategyは以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| numberOfDigits | int | 数値の桁数。デフォルト値は6です。
+|====================
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.auth.authenticate.onetime.OnetimeCodeGeneratorService</interface>
+	<property name="generator"
+	   class="org.iplass.mtp.impl.auth.authenticate.onetime.outofband.OutOfBandOnetimeCodeGenerator">
+		<property name="name" value="outOfBandByMail" />
+		<property name="maxFailureCount" value="5" />
+		<property name="lifetimeSeconds" value="180" />
+		<property name="store"
+		    class="org.iplass.mtp.impl.auth.authenticate.onetime.SessionOntimeCodeStore" />
+		<property name="sender"
+		    class="org.iplass.mtp.impl.auth.authenticate.onetime.outofband.MailOutOfBandSender">
+			<property name="mailTemplate" value="mtp/auth/onetime/SendCode" />
+			<!-- if use another "from address" instead of tenant default "from address".
+			<property name="fromAddress" value="noreply@xxx.dentsusoken.com" />
+			 -->
+		</property>
+		<property name="strategy"
+		    class="org.iplass.mtp.impl.auth.authenticate.onetime.outofband.NumberGenerateStrategy">
+			<property name="numberOfDigits" value="6" />
+		</property>
+	</property>
+	<property name="generator"
+	    class="org.iplass.mtp.impl.auth.authenticate.onetime.outofband.OutOfBandOnetimeCodeGenerator">
+		<property name="name" value="outOfBandBySms" />
+		<property name="maxFailureCount" value="5" />
+		<property name="lifetimeSeconds" value="180" />
+		<property name="store"
+		    class="org.iplass.mtp.impl.auth.authenticate.onetime.SessionOntimeCodeStore" />
+		<property name="sender"
+		    class="org.iplass.mtp.impl.auth.authenticate.onetime.outofband.SmsOutOfBandSender">
+			<property name="smsTemplate" value="mtp/auth/onetime/SendCodeSms" />
+			<!-- if use another "from phone number" instead of SMSService's defaultFrom.
+			<property name="fromPhoneNumber" value="+1234..." />
+			 -->
+		</property>
+		<property name="strategy"
+		    class="org.iplass.mtp.impl.auth.authenticate.onetime.outofband.NumberGenerateStrategy">
+			<property name="numberOfDigits" value="6" />
+		</property>
+	</property>
+</service>
+----

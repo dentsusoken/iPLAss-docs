@@ -1,0 +1,170 @@
+[[condition_format]]
+== 各種条件の書式
+条件として指定する方法には、GroovyScript形式で `true` / `false` を返す記述と、
+PreparedQuery（GroovyTemplate）形式で記述する方式が存在します。
+
+=== GroovyScript形式
+GroovyScript形式で条件を設定するEntityは以下になります。
+
+[cols="1,1a,1,4a", options="header"]
+|===
+|Entity|設定項目|バインド変数|バインド内容
+.3+|ロール .3+|ロール条件,条件文|user|ユーザー情報が取得できます。
+|session|セッション情報が取得できます。（バッチなど、APサーバ経由の起動以外の場合はバインドされません。）
+|request|リクエストの情報が取得できます。また、下記の情報が取得可能です。
+
+* header情報 +
+例えば「HTTP Headerの"user-agent"に、Firefoxという文字が入っていること」という条件は以下のようになります。
++
+[source, Groovy]
+----
+request.header.'user-agent'.contains('Firefox')
+----
+
+* Actionか、WebApiなのか +
++
+request.action:: `true` の場合はActionとしての呼び出し、 `false` の場合はWeb経由ではない呼び出し（バッチから直起動等）
+request.webApi:: `true` の場合はWebApiとしての呼び出し、 `false` の場合はWeb経由ではない呼び出し（バッチから直起動等）
+
+.5+|Action権限 .5+|許可条件|user|ユーザー情報が取得できます。
+|session|セッション情報が取得できます。
+|action|Action名が取得できます。
+|parameter|リクエストパラメータの値が取得できます。
+|request|リクエストの情報が取得できます。
+.5+|WebApi権限 .5+|許可条件|user|ユーザー情報が取得できます。
+|session|セッション情報が取得できます。
+|webApi|WebApi名が取得できます。
+|parameter|リクエストパラメータの値が取得できます。
+|request|リクエストの情報が取得できます。
+.4+|Workflow権限 .4+|許可条件|user|ユーザー情報が取得できます。
+|session|セッション情報が取得できます。（バッチなど、APサーバ経由の起動以外の場合はバインドされません。）
+|workflow|workflow名が取得できます。
+|parameter|リクエストパラメータの値が取得できます。
+|===
+
+=== PreparedQuery形式
+PreparedQuery（GroovyTemplate）形式で条件を設定するEntityは以下になります。
+
+[cols="1,1,1,4a", options="header"]
+|===
+|Entity|設定項目|バインド変数|バインド内容
+.2+|Entity権限 .2+|参照可能範囲条件 +
+登録可能範囲条件 +
+更新可能範囲条件 +
+削除可能範囲条件|user|ユーザー情報が取得できます。
+|session|セッション情報が取得できます。（バッチなど、APサーバ経由の起動以外の場合はバインドされません。）
+.2+|Cube権限 .2+|参照可能範囲条件|user|ユーザー情報が取得できます。
+|session|セッション情報が取得できます。（バッチなど、APサーバ経由の起動以外の場合はバインドされません。）
+|===
+
+特定のグループに対応した条件が必要で、範囲条件内に直接グループコードを記述する必要がある（環境に依存する自動採番のoidでは無く、固定値のグループコードを利用したい）場合、toGroupOidを利用した下記コードが利用可能です。
+
+[source, GroovyTemplate]
+----
+groups.oid in (${toIn(toGroupOid(['G01','G02']))})
+----
+
+ユーザーの所属グループのoidを直接利用したい場合は"user.groupOid"等をご利用下さい。
+
+[[format]]
+=== 特殊なバインド変数
+バインド変数の利用方法、書式について説明します。
+
+==== ユーザー情報
+ユーザーに紐づく情報は条件式内で `user.プロパティ名` と記述することで利用可能です。
+例えば、 `user.accountId` でユーザーの `accountId` が取得できます。
+GroovyScript形式の場合は `user.プロパティ名` で取得可能です。
+PreparedQueryの場合は `${user.プロパティ名}` と変数を `${}` で囲う必要があります。
+
+ユーザーEntityに設定済のプロパティ以外にも取得可能な情報は以下になります。
+
+[cols="1,3a", options="header"]
+|===
+|プロパティ名|内容
+|admin|Admin権限をもつユーザー場合 `true` になります。Admin権限設定項目です。
+|temporary|temporaryユーザーの場合 `true` になります。 +
+temporaryユーザーはtemporaryユーザー用の権限（条件に `user.temporary=true` を設定）を設定しない限り、
+特権実行やPublicが指定されたAction等を除き、Action、Entity、WebApi、Workflow全ての処理が実行できません。
+尚、temporaryユーザーはバッチにより定期的に削除されます。
+|anonymous|anonymousユーザーの場合 `true` になります。
+|localAdmin|共有テナント時のみ有効で、紐づいているテナントでAdmin権限を持つユーザーの場合は `true` 、それ以外は `false` になります。
+|otherTenant|共有テナント時のみ有効で、他テナントに紐づくユーザーの場合は `true` 、それ以外は `false` になります。
+|tenantId|テナントIDが返却します。
+|groupCodeWithChildren|所属するグループの子グループも含めグループコードを返却します。
+|groupCodeWithParents|所属するグループの親グループも含めグループコードを返却します。
+|groupOidWithChildren|所属するグループの子グループも含めoidを返却します。
+|groupOidWithParents|所属するグループの親グループも含めoidを返却します。
+|groupOid|属しているグループ情報全てを配列で返却します。
+|===
+
+また、 `user.memberOf` という関数が利用できます。
+
+[cols="1,3a", options="header"]
+|===
+|項目名|内容
+|memberOf(グループコード)|対象グループに属している場合は `true` 、それ以外は `false` になります。
+所属グループの親グループを指定した場合も `true` になります。
+所属グループの子グループを指定した場合は `false` になります。
+|===
+
+==== リクエスト情報
+アプリ側でログイン時や任意の処理等でパラメータにセットした値を取得する事が可能です。
+
+[source, groovy]
+----
+def value = parameter.パラメータ名
+
+def value = parameter.getValue("パラメータ名")<1>
+----
+<1> パラメータ名に"."が含まれている場合に利用されることを想定
+
+また、下記のようにin句を利用可能です。
+この場合、defNameがHogeEntityもしくはFugaEntityだった場合にtrueが返ります。
+
+[source, groovy]
+----
+parameter.in('defName', 'HogeEntity', 'FugaEntity')
+----
+
+==== セッション情報
+アプリ側でログイン時や任意の処理等でセッションにセットした値を取得する事が可能です。
+
+[source, groovy]
+----
+def value = session.項目名;
+
+def value = session.getAttribute("項目名");<1>
+----
+<1> 項目名に"."が含まれている場合に利用されることを想定
+
+[[custom_processing]]
+=== カスタム処理の利用
+独自で作成したユーティリティクラス等をインポートし利用する事が可能です。
+複雑な処理で抽出した条件をwhere句としたい場合等に利用して下さい。
+
+例えば、 `org.iplass.sample.SampleUtil` クラスを利用したい場合は以下のように記述します。 +
+インポートの仕方がGroovyScript形式と、PreparedQuery（GroovyTemplate）形式で異なります。
+
+* GroovyScript形式の場合 +
++
+[source, Groovy]
+----
+import org.iplass.sample.SampleUtil;
+
+return SampleUtil.isAccess();
+----
++
+上記のような条件をAction権限に設定することで、Action権限の制御をユーティリティクラスで制御できます。
+
+* PreparedQuery(GroovyTemplate)形式の場合 +
++
+[source, GroovyTemplate]
+----
+<%@import org.iplass.sample.SampleUtil%>
+<%
+String tempOid = SampleUtil.getOid();
+%>
+oid = ${tempOid}
+----
++
+TestUtilクラスのgetOid()メソッドにより返却されるoidを条件としたEQLとなります。

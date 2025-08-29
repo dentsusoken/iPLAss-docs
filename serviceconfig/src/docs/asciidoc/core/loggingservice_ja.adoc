@@ -1,0 +1,40 @@
+[[LoggingService]]
+=== LoggingService
+ログ全般に関する設定を行うサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.logging.LoggingService
+----
+
+==== 実装クラス名
+.ログにLogbackを利用するLoggingService
+----
+org.iplass.mtp.impl.logging.logback.LogbackLoggingService
+----
+
+==== LoggingServiceの設定
+ログ出力に関する設定項目の設定をします。
+当サービスの機能により、テナント毎にログ出力の条件を動的に切り替えることが可能となります。
+この機能を有効化するためには合わせてLogbackの設定（logback.xml）にて、 `org.iplass.mtp.impl.logging.logback.LogConditionTurboFilter` を有効化する必要があります。
+当該機能が有効化された場合、AdminConsole等を介してログ出力条件を動的に切り替えることが可能となります。
+
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| maxAgeSecondsOfLogCondition | long | 
+ログ出力条件の有効期限に設定可能な最大の生存期間（秒）。
+デフォルト値は-1（無期限）です。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.logging.LoggingService</interface>
+	<class>org.iplass.mtp.impl.logging.logback.LogbackLoggingService</class>
+	<property name="maxAgeSecondsOfLogCondition" value="86400" />
+</service>
+----

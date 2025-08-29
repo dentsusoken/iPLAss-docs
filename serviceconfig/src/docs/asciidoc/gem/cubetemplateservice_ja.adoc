@@ -1,0 +1,67 @@
+[[CubeTemplateService]]
+=== [.eeonly]#CubeTemplateService#
+Cube集計のカスタムメジャーのテンプレートを管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.aggregation.unit.cube.CubeTemplateService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.aggregation.unit.cube.CubeTemplateService
+----
+
+==== CubeTemplateServiceの設定
+CubeTemplateServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| templateSettings | <<CubeTemplateSetting>>、複数指定可 | カスタムメジャーに利用するテンプレートの設定。
+|===
+
+[[CubeTemplateSetting]]
+.CubeTemplateSetting
+classはorg.iplass.mtp.impl.aggregation.unit.cube.CubeTemplateSettingを指定します。
+
+カスタムメジャーに利用するテンプレート設定です。以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| displayLabel | String | 表示ラベル。
+| valueExpressionTemplate | String | カスタムメジャー用の式。式中に埋め込まれた${1}はCubeのアイテム名に置換されます。
+| locale | String | ロケール。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.aggregation.unit.cube.CubeTemplateService</interface>
+	<class>org.iplass.mtp.impl.aggregation.unit.cube.CubeTemplateService</class>
+	<property name="templateSettings" class="org.iplass.mtp.impl.aggregation.unit.cube.CubeTemplateSetting">
+		<property name="displayLabel" value="10刻み" />
+		<property name="valueExpressionTemplate" value="CASE WHEN ${1} &lt; 10 THEN '0' WHEN ${1} &lt; 20 THEN '10' WHEN ${1} &lt; 30 THEN '20' WHEN ${1} &lt; 40 THEN '30' WHEN ${1} &lt; 50 THEN '40' WHEN ${1} &lt; 60 THEN '50' WHEN ${1} &lt; 70 THEN '60' ELSE '70' END" />
+		<property name="locale" value="ja" />
+	</property>
+	<property name="templateSettings" class="org.iplass.mtp.impl.aggregation.unit.cube.CubeTemplateSetting">
+		<property name="displayLabel" value="10 increments" />
+		<property name="valueExpressionTemplate" value="CASE WHEN ${1} &lt; 10 THEN '0' WHEN ${1} &lt; 20 THEN '10' WHEN ${1} &lt; 30 THEN '20' WHEN ${1} &lt; 40 THEN '30' WHEN ${1} &lt; 50 THEN '40' WHEN ${1} &lt; 60 THEN '50' WHEN ${1} &lt; 70 THEN '60' ELSE '70' END" />
+		<property name="locale" value="en" />
+	</property>
+<!--
+	<property name="templateSettings" class="org.iplass.mtp.impl.aggregation.unit.cube.CubeTemplateSetting">
+		<property name="displayLabel" value="" />
+		<property name="valueExpressionTemplate" value="" />
+		<property name="locale" value="ja" />
+	</property>
+	<property name="templateSettings" class="org.iplass.mtp.impl.aggregation.unit.cube.CubeTemplateSetting">
+		<property name="displayLabel" value="" />
+		<property name="valueExpressionTemplate" value="" />
+		<property name="locale" value="en" />
+	</property>
+-->
+</service>
+----

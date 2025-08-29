@@ -1,0 +1,54 @@
+[[EntryPoint]]
+== EntryPoint
+EntryPointを利用することで、Servletコンテナ外のコード上から直接iPLAssの初期化や破棄、また特定のテナントやユーザーを指定して処理を実行させることが可能です。 
+例えばバッチ処理やSpring等iPLAss以外のアプリケーション内のコードからiPLAssの処理を実行可能です。
+
+NOTE: EntryPointは当該クラスがロードされるクラスローダ単位に一つのみ存在可能です。
+
+
+=== EntryPointの利用例
+EntryPointを用いたバッチ処理の実装例です。
+
+.EntryPointBatchSample.java
+[source,java]
+----
+import org.iplass.mtp.runtime.EntryPoint;
+import org.iplass.mtp.auth.login.IdPasswordCredential;
+  :
+  :
+
+public class EntryPointBatchSample {
+	public static void main(String[] args) throws Exception {
+
+		// テナントID
+		int tenantId = 1;
+		// 認証情報
+		String id = "XXXXX";
+		String password = "XXXXXXXXXX";
+		Credential credential = new IdPasswordCredential(id, password);
+		
+		// EntryPointの初期化
+		EntryPoint entryPoint = EntryPoint.builder()
+				.config("/mtp-service-config.xml") <1>
+				.build();
+		
+		// バッチ処理の実行
+		entryPoint.withTenant(tenantId).withLang("en").withAuth(credential).run(() -> { <2>
+		    // バッチの処理を記述
+			:
+
+		});
+		
+		// EntryPointの破棄
+		entryPoint.destroy(); <3>
+	}
+}
+----
+<1> 設定ファイル（service-config.xml）のパスを指定します。 未指定の場合のデフォルト値は、`/mtp-service-config.xml` です。
+<2> 必要な情報を設定して処理を実行します。実装例では、テナントID、言語、認証情報をセットしています。
+<3> バッチ終了時にEntryPointを破棄し、リソースを解放します。
+
+
+=== 設定ファイル
+バッチの動作に必要な設定を、指定したファイルへ定義しておく必要があります。 +
+設定の詳細については、<<../../serviceconfig/index.adoc#, 設定（service-config）リファレンス>>を参照してください。

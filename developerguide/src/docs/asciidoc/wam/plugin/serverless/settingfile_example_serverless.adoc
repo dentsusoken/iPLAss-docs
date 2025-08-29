@@ -1,0 +1,57 @@
+[[wamsettingfile_ex_serverless]]
+==== 設定方法/設定例
+
+Serverless(JavaScript)版のWAMプラグインモジュールでは、スケルトンプロジェクトの `src/config.ts` 内の `defineConfig関数` を実装することでWAMプラグインモジュールの設定を行います。
+
+* 設定項目の詳細は<<wamsettingfile, WAMプラグインモジュールの設定>>を参照してください。
+
+
+.サンプル
+[source, javascript]
+----
+export default defineConfig(() => ({
+  // iPLAssサーバー側(=WAM本体)のURL
+  wamBaseUrl: "https://my.iplass.jp/myiplassapp/mytenant/",
+
+  // iPLAssサーバー側(=WAM本体)からのコールバックを受け取るURLパス
+  wamAuthCallbackPath: "/wamauthcallback",
+
+  // 管理対象サイトID
+  siteId: "local",
+
+  // 管理対象サイトSecret
+  siteSecret: "123",
+
+  // 管理対象サイト側で権限チェックを行う（WAMで保護する）パターンを示す正規表現
+  protectedPattern: [{ domain: "mysite.example.com", pathPattern: /^\/protect\/.*$/ },],
+
+  // 許可対象のIPが含まれるかどうかチェックするリクエストヘッダー名
+  allowedIpHeaderName: "True-Client-IP",
+
+  // 500エラー画面URL
+  systemErrorPageUrl: "/error/500.html",
+
+  // 503エラー画面URL
+  unavailableErrorPageUrl: "/error/503.html",
+
+  // 403エラー画面URL
+  forbiddenErrorPageUrl: "/error/403.html",
+
+  // エラー発生時のデフォルトのリダイレクト先URL
+  defaultErrorRedirectUrl: "/error/default.html",
+
+  // デバッグモード
+  debug: false,
+
+  // ヘッダーにiPLAssのユーザー情報を格納するかの判定フラグ
+  mapUserAttribute: false,
+
+  // ヘッダーにiPLAssのユーザー情報を格納する場合に利用する
+  attributeMap: [
+    { headerName: "x-wam-user-id", userAttributeName: "accountId" }
+  ],
+
+  // クライアントIPを許可APIのリクエストに含めるか
+  includeClientIpToPermissionRequest: true
+}));
+----

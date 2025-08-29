@@ -1,0 +1,74 @@
+= カスタムロジック
+:_hreflang-path: developerguide/customizing/index.html
+:_relative-root-path: ../../
+:toclevels: 2
+:example-caption!:
+:figure-caption!:
+:table-caption!:
+
+カスタムロジックを記述する際に利用する、MVCパターンベースのフレームワークの説明です。
+
+== フレームワークの概要
+Java/JavaEEの上に構成されたMVCパターンに沿ったWebアプリケーションフレームワークです。
+java、JSPまた、Groovy、Groovy Template（GroovyベースのJSPライクなテンプレート言語）でコーディングが可能です。
+Groovy/Groovy Templateでロジックを作成した場合、それらのアプリケーションへの反映はコンパイル・warデプロイの必要なく即座に行われます。
+
+iPLAssにおけるModel、View、Controllerはそれぞれ次のように位置付けられます。
+
+Model::
+EntityがModelに相当します。
+定義されたEntityはカスタムロジック上では `org.iplass.mtp.entity.Entity` として参照可能です。Entityデータの操作は `org.iplass.mtp.entity.EntityManager` インタフェースを介して行います。
+検索処理は、 <<../../eqlreference/index.adoc#, EQL(Entity Query Language)>> というSQLライクなDSLで記述可能です。
+また `org.iplass.mtp.entity.EntityEventListener` にて、登録、更新、削除時などのタイミングで任意のロジックを追加することが可能です。
+
+View::
+iPLAssにおいて、ViewはTemplateと呼称します。
+Templateは実装手段、出力する内容により、いくつかの種類が存在します。
+主にhtmlなどのテキストデータを出力する為のJspTemplate、GroovyTemplateやバイナリ出力用のTemplate、帳票出力用のTemplateなどが存在します。
+JspTemplateは実装手段としてJSPを利用します。GroovyTemplateはGroovyベースのJSPライクなDSLで記述します。
+
+Controller::
+iPLAssにおいて、ControllerはCommandとAction定義から構成されます。
+
+* Command +
+`org.iplass.mtp.command.Command` を実装する処理ロジックの本体です。
+Javaもしくは、Groovyで実装が可能です。
+iPLAssが提供するjavaBeanへのバインディング機能、バリデーション機能、EntityManagerなどを利用し、リクエストを処理するロジックを記述します。
+
+* Action定義 +
+ルーティング制御を行うための定義です。
+URLのパス単位に、そのパスが呼び出された場合の対応するCommandと処理結果により表示するTemplateを定義します。
+
+
+GEMモジュール、WAMモジュール、MDCモジュール自体もこのMVCフレームワーク上に構築されています。それぞれのモジュール内にカスタムのTemplateやActionを組み込むことも可能です。
+
+あわせて、カスタムロジックのコーディングをサポートする為の機能群、java apiを提供します。
+
+
+include::manager.adoc[]
+
+include::typed_definition_manager.adoc[]
+
+include::mvc_command.adoc[]
+
+include::mvc_template.adoc[]
+
+include::mvc_action.adoc[]
+
+include::transaction.adoc[]
+
+include::utilityclass.adoc[]
+
+include::preference.adoc[]
+
+include::asynccommand.adoc[]
+
+include::staticresource.adoc[]
+
+include::customservice.adoc[]
+
+include::entrypoint.adoc[]
+
+include::jsptagel.adoc[]
+
+include::groovytemplate.adoc[]

@@ -1,0 +1,45 @@
+[[AsyncTaskService]]
+=== AsyncTaskService
+基盤内部でタスクを非同期実行するためのサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.async.AsyncTaskService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.async.thread.ThreadingAsyncTaskService
+----
+
+==== ThreadingAsyncTaskServiceの設定
+ThreadingAsyncTaskServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| corePoolSize | int | 非同期処理のためのスレッドプールのサイズ。
+アイドル状態であってもプール内に維持されるスレッドの数です。デフォルト値は4です。
+| threadPoolType | String a| スレッドプールのタイプ。
+未指定の場合、threadPoolTypeは `cached` に設定され、maximumPoolSize以上のリクエストがあるとRejectedExecutionExceptionが発生します。
+
+fixed:: corePoolSizeで指定された固定数のスレッドを再利用するスレッドプールを使用します。
+single:: 単一のワーカー・スレッドを使用します。
+cached:: maximumPoolSizeで指定された可変数のスレッドを再利用するスレッドプールを使用します。
+| maximumPoolSize | int | スレッドプール内で使用可能なスレッドの最大数。
+-1が設定された場合はintの最大値が設定されます。デフォルト値は-1です。
+| keepAliveTime | long | threadPoolTypeが `cached` で、スレッドの数がcorePoolSizeよりも多い場合に、余分なアイドル状態のスレッドが終了する前に新しいタスクを立ち上げるまでに待機する最大時間（ミリ秒）です。
+デフォルト値は60000（1分）です。
+| useResourceHolder | boolean | ResourceHolderを使用するか。デフォルト値はtrueです。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.async.AsyncTaskService</interface>
+	<class>org.iplass.mtp.impl.async.thread.ThreadingAsyncTaskService</class>
+	<property name="maximumPoolSize" value="256" />
+</service
+----

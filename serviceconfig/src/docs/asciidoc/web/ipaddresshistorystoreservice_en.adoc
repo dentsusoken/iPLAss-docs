@@ -1,0 +1,35 @@
+[[IPAddressHistoryStoreService]]
+=== [.eeonly]#IPAddressHistoryStoreService#
+This is a service for holding IP addresses accessed in the past.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.auth.authenticate.ipaddress.IPAddressHistoryStoreService
+----
+
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.auth.authenticate.ipaddress.UserEntityIPAddressHistoryStoreService
+----
+
+
+==== The settings of UserEntityIPAddressHistoryStoreService
+The user can configure about how to retain the IP address accessed in the past in UserEntity.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| storePropertyName | String | Property name of UserEntity used to hold IP address. The default value is `ipAddressHistory`.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.auth.authenticate.ipaddress.IPAddressHistoryStoreService</interface>
+	<class>org.iplass.mtp.impl.auth.authenticate.ipaddress.UserEntityIPAddressHistoryStoreService</class>
+	<property name="storePropertyName" value="ipAddressHistory" />
+</service>
+----

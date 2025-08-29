@@ -1,0 +1,62 @@
+[[VueJS_WebAPI_Resources_Metadata]]
+=== メタデータ定義
+* コマンドのメタデータ定義。 + 
+ここではWebApiのコマンドをメタデータとして登録しています。アプリの起動時に読み込まれます。
++
+コマンドのメタデータ定義ファイル
++
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/java/samples/ec01/command/metadata/CommandList.java
+|===
+
+* 他のメタデータ定義
++
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/resources/samples-ec01-ce-metadata.xml
+|===
++
+ここでは二種類のメタデータが用意されています。
++
+[source]
+----
+metaDataList
+	┣ contextPath (name=/entity) <1>
+	┣ contextPath (name=/property/select) <1>
+	┣ contextPath (name=/template)　※　帳票出力機能と管理トップ画面 <1>
+	┣ contextPath (name=/view/calendar)	<1>
+	┣ contextPath (name=/view/generic) <1>
+	┣ contextPath (name=/view/menu/item) <1>
+	┣ contextPath (name=/view/menu/tree) <1>
+	┣ contextPath (name=/view/top) <1>
+	┣ contextPath (name=/view/treeview) <1>
+	┣ contextPath (name=/view/filter) <1>
+	┗ contextPath (name=/template)　<2>	
+----
+<1> Admin Consoleで作成したメタデータです。Packaging機能もしくはMetaDataExplorer機能を利用することでエクスポートしたものです。
+<2> Templateのメタデータ定義は手で作成しています。 + 
+※ 帳票出力機能と管理トップ画面のTemplate定義はAdmin Consoleで作成し、エクスポートしています。 + 
+※ このサンプルではクライアント側の画面がVue.jsで実装されているので、管理用の<<../adminconsole/index#AdminConsole_Product_BulkUpdate,在庫一括更新画面>>のTemplate定義のみメタデータに登録する必要があります。
++
+手で作成したTemplate定義。
++
+[source]
+----
+----------------------------------------以上略----------------------------------------
+<contextPath name="/template">
+	<!-- Backoffice pages start -->
+	<metaDataEntry>
+		<metaData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:type="metaJspTemplate">
+			<name>samples/ec01/backoffice/stock/stockUpdate</name>
+			<displayName>在庫一括更新画面</displayName>
+			<path>/jsp/samples/ec01/backOffice/stock/stockUpdate.jsp</path>
+			<layoutId>/action/gem/layout/defaultLayout</layoutId>
+			<contentType>text/html; charset=utf-8</contentType>
+		</metaData>
+	</metaDataEntry>
+	<!-- Backoffice pages end -->
+</contextPath>
+----------------------------------------以下略----------------------------------------
+----

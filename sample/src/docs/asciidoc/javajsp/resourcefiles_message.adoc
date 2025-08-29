@@ -1,0 +1,43 @@
+[[Java_JSP_ResourceFiles_Message]]
+=== メッセージファイル
+* JSPテンプレートで特定のResourceBundleに定義された文字列を取得することが出来るので、言語別にプロパティファイルを作成することで多言語利用が可能です。 + 
++
+[cols="1,2"]
+|===
+h|ファイル名|iplass-wtp-messages_ja.properties
+|===
++
+[source]
+----
+samples.ec01.all.breadcrumb.home                = ホーム
+samples.ec01.all.pagination.next                = 次へ
+samples.ec01.all.pagination.prev                = 前へ
+samples.ec01.all.yen                            = 円
+samples.ec01.backoffice.stockUpdate.doUpdate    = 一括更新
+samples.ec01.backoffice.stockUpdate.product     = 商品名
+samples.ec01.backoffice.stockUpdate.stock       = 在庫数
+samples.ec01.backoffice.stockUpdate.title       = 在庫一括更新
+samples.ec01.cart.info.checkOut                 = お会計
+samples.ec01.cart.info.emptyMsg.p1              = カートが空になっています。
+----------------------------------------以下略----------------------------------------
+----
++
+[cols="1,2"]
+|===
+h|ファイル名|iplass-wtp-messages_en.properties
+|===
++
+[source]
+----
+samples.ec01.all.breadcrumb.home                = Home
+samples.ec01.all.pagination.next                = Next
+samples.ec01.all.pagination.prev                = Prev
+samples.ec01.all.yen                            = Yen
+samples.ec01.backoffice.stockUpdate.doUpdate    = Bulk update
+samples.ec01.backoffice.stockUpdate.product     = Product name
+samples.ec01.backoffice.stockUpdate.stock       = Stock
+samples.ec01.backoffice.stockUpdate.title       = Stock bulk update
+samples.ec01.cart.info.checkOut                 = Check out
+samples.ec01.cart.info.emptyMsg.p1              = Your cart is currently empty.
+----------------------------------------以下略----------------------------------------
+----

@@ -1,0 +1,231 @@
+[[RdbAdapterService]]
+=== RdbAdapterService
+各種RDBとのインターフェースとなるRdbAdapterを管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.rdb.adapter.RdbAdapterService
+----
+
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.rdb.adapter.RdbAdapterService
+----
+
+
+==== RdbAdapterServiceの設定
+RdbAdapterを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| adapter | <<RdbAdapter>> | 標準のRdbAdapterの設定。
+| "adapter"以外の任意の文字列 | <<RdbAdapter>>、複数指定可 | RdbAdapterの設定。
+|===
+
+[[RdbAdapter]]
+.RdbAdapter
+classはorg.iplass.mtp.impl.rdb.adapter.RdbAdapterの実装クラスを指定します。
+
+標準で
+
+* Oracleを利用するorg.iplass.mtp.impl.rdb.oracle.OracleRdbAdapter
+* MySQLを利用するorg.iplass.mtp.impl.rdb.mysql.MysqlRdbAdapter
+* PostgreSQLを利用するorg.iplass.mtp.impl.rdb.postgresql.PostgreSQLRdbAdapter
+* SQL Serverを利用するorg.iplass.mtp.impl.rdb.sqlserver.SqlServerRdbAdapter
+
+を提供します。各々のRdbAdapterの設定可能な項目は以下になります。
+
+[[OracleRdbAdapter]]
+.OracleRdbAdapter
+Oracleを利用するRdbAdapterです。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| lockTimeout | int | 行レベルロックが解放されるまでのタイムアウト（秒）。0が設定された場合はロックの解放を待ちません(FOR UPDATE NOWAIT)。マイナスの値が設定された場合はロックが解放されるまで待機します。デフォルト値は0です。
+| timestampFunction | String | タイムスタンプを取得するFunction。デフォルト値は `CURRENT_TIMESTAMP(3)` です。
+| addMonthsFunction | String | 月を加算するFunction。デフォルト値は `ADD_MONTHS` です。
+| monthsBetweenFunction | String | 2つの日付の差を取得するFunction。デフォルト値は `MONTHS_BETWEEN` です。
+| isUseSubQueryForIndexJoin | boolean | 相関副問い合わせを使ってIndexテーブルを利用した結合を行うか。デフォルト値はtrueです。
+| optimizerHint | String | オプティマイザ・ヒント。デフォルト値は `FIRST_ROWS(100)` です。
+| enableInPartitioning | boolean | IN演算子の1000件制限を緩和する変換処理を行うか。デフォルト値はfalseです。
+緩和する変換処理とは、IN(1,2,...)を1000件単位で(IN(1,2,...) OR IN(1001, 1002,...))とORで分割することです。
+| escapeFullwidthWildcard | boolean | 全角文字 `％` と `＿` をエスケープ処理するか。デフォルト値はfalseです。
+利用するバージョンが11gR2patch2以前の場合はワイルドカードとして扱われるためtrueを設定してください。
+| enableBindHint | boolean | bindヒント句を有効にするか。デフォルト値はtrueです。
+| alwaysBind | boolean | EQLをSQLに変換する際に常にバインド変数化するか。デフォルト値はtrueです。
+| thresholdCountOfUsePrepareStatement | int | 複数の更新（追加）を一括で処理する際の、PrepareStatementを利用するかを判断するための閾値。デフォルト値は50です。
+| batchSize | int | バッチ更新を利用する際の推奨バッチサイズ。デフォルト値は100です。
+| maxFetchSize | int | フェッチする際の最大サイズ。デフォルト値は100です。
+| defaultFetchSize | int | 
+フェッチする際のデフォルトサイズ。デフォルト値は0です。
+0が指定された場合の実際のフェッチサイズはJDBCドライバに依存します。
+| defaultQueryTimeout | int | クエリ実行時のタイムアウト（秒）。0が指定された場合はタイムアウトしません。デフォルト値は0です。
+| useFetchFirstClause | boolean | Oracle 12cから利用可能なFETCH FIRST句を使うか。デフォルト値はtrueです。
+| rdbTimeZone | String | RDBのタイムゾーンがiPLAssが動作するJVMのものと異なる場合、RDBのタイムゾーンを指定します。
+| maxViewNameLength | int | ビュー名の最大長。デフォルト値は128です。
+| listaggDefaultSeparator | String | LISTAGG集約関数利用時のデフォルトのセパレータです。デフォルト値は `,` です。
+| bindDateAsString | boolean a| Date型をPrepareStatementでバインドする際にjava.sql.Date型で直接バインドせず、TO_DATE関数経由でString型でバインドするか否かを設定します。デフォルトはtrueです。
+
+NOTE: Date型のままバインドした際、サマータイム切替日に意図せず時刻が設定されてしまう事象に対する制御項目です。Oracle JDBCドライバのシステムプロパティ　`oracle.jdbc.DateZeroTime=true` を設定する場合bindDateAsStringの値はfalseで構いません。
+|===
+
+[[MysqlRdbAdapter]]
+.MysqlRdbAdapter
+MySQLを利用するRdbAdapterです。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| useFractionalSecondsOnTimestamp | boolean | タイムスタンプにミリ秒含めるか。デフォルト値はtrueです。
+| supportOptimizerHint | boolean | オプティマイザヒントをサポートするか。デフォルト値はtrueです。
+| optimizeCountQuery | boolean | 件数カウントクエリーを最適化するかどうか。デフォルト値はtrueです。
+| localTemporaryTableManageOutsideTransaction | boolean | ローカル一時テーブルをトランザクションの外で管理するかを指定します。デフォルト値はfalseです。
+| localTemporaryTableCreatedByDataSource | boolean | ローカル一時テーブルがデータソースで作成されるかを指定します。デフォルト値はfalseです。
+| timestampMethod | String | タイムスタンプ取得関数。デフォルト値は `NOW(3)` です。
+| enableBindHint | boolean | bindヒント句を有効にするか。デフォルト値はfalseです。
+| batchSize | int | バッチ更新を利用する際の推奨バッチサイズ。デフォルト値は100です。
+| thresholdCountOfUsePrepareStatement | int | 複数の更新（追加）を一括で処理する際の、PrepareStatementを利用するかを判断するための閾値。デフォルト値は-1です。
+| maxFetchSize | int | フェッチする際の最大サイズ。デフォルト値は100です。
+| defaultFetchSize | int | 
+フェッチする際のデフォルトサイズ。デフォルト値は-1（明示的にセットしない）です。
+0が指定された場合の実際のフェッチサイズはJDBCドライバに依存します。
+| defaultQueryTimeout | int | クエリ実行時のタイムアウト（秒）。0が指定された場合はタイムアウトしません。デフォルト値は0です。
+| supportWindowFunction | boolean | Window関数をサポートするか。デフォルト値はtrueです。Window関数をサポートしないバージョン5.7以前のMySQLを利用の場合はfalseを設定してください。
+| rdbTimeZone | String | RDBのタイムゾーンがiPLAssが動作するJVMのものと異なる場合、RDBのタイムゾーンを指定します。
+| maxViewNameLength | int | ビュー名の最大長。デフォルト値は64です。
+| listaggDefaultSeparator | String | LISTAGG集約関数利用時のデフォルトのセパレータです。デフォルト値は `,` です。
+| needMultiTableTrick | boolean a| UPDATE/DELETE文発行時、条件にサブクエリが利用される場合のパフォーマンス改善対策を実施するか否か。デフォルトはfalseです。
+
+NOTE: MySQL8.0.20以前を利用する場合は有効化すること推奨します。
+|===
+
+[[PostgreSQLRdbAdapter]]
+.PostgreSQLRdbAdapter
+PostgresSQLを利用するRdbAdapterです。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| supportOptimizerHint | boolean | オプティマイズヒントをサポートするか。デフォルト値はfalseです。
+| timestampFunction | String | タイムスタンプを取得するFunction。デフォルト値は `CURRENT_TIMESTAMP(3)` です。
+| escapeBackslash | boolean | バックスラッシュをエスケープするか。デフォルト値はfalseです。
+| enableBindHint | boolean | bindヒント句を有効にするか。デフォルト値はfalseです。
+| batchSize | int | バッチ更新を利用する際の推奨バッチサイズ。デフォルト値は100です。
+| maxFetchSize | int | フェッチする際の最大サイズ。デフォルト値は100です。
+| defaultFetchSize | int | 
+フェッチする際のデフォルトサイズ。デフォルト値は10です。
+0が指定された場合の実際のフェッチサイズはJDBCドライバに依存します。
+| defaultQueryTimeout | int | クエリ実行時のタイムアウト（秒）。0が指定された場合はタイムアウトしません。デフォルト値は0です。
+| lockTimeout | int | ロック時のタイムアウト（秒）。0が指定された場合はタイムアウトしません。デフォルト値は0です。
+| rdbTimeZone | String | RDBのタイムゾーンがiPLAssが動作するJVMのものと異なる場合、RDBのタイムゾーンを指定します。
+| maxViewNameLength | int | ビュー名の最大長。デフォルト値は63です。
+| listaggDefaultSeparator | String | LISTAGG集約関数利用時のデフォルトのセパレータです。デフォルト値は `,` です。
+| useStandardListaggFunction | boolean | SQL2016標準ベースのLISTAGG集約関数表現を利用するか否かを設定します。
+falseの場合はSTRING_AGGを利用します。
+デフォルト値はfalseです。
+|===
+
+[[SQLServerRdbAdapter]]
+.SQLServerRdbAdapter
+SQL Serverを利用するRdbAdapterです。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| timestampFunction | String | タイムスタンプを取得するFunction。デフォルト値は `GETDATE()` です。
+| addMonthsFunction | String | 月を加算するFunction。デフォルト値は `DATEADD` です。
+| monthsBetweenFunction | String | 2つの日付の差を取得するFunction。デフォルト値は `DATEDIFF` です。
+| isUseSubQueryForIndexJoin | boolean | 相関副問い合わせを使ってIndexテーブルを利用した結合を行うか。デフォルト値はtrueです。
+| enableBindHint | boolean | bindヒント句を有効にするか。デフォルト値はfalseです。
+| alwaysBind | boolean | EQLをSQLに変換する際に常にバインド変数化するか。デフォルトはfalseです。
+SQL Serverではプロシージャが持つことのできるパラメーター数の最大が2,100個のためtrueに設定する場合はこの最大数を超えないようにしてください。
+| batchSize | int | バッチ更新を利用する際の推奨バッチサイズ。デフォルト値は100です。
+| thresholdCountOfUsePrepareStatement | int | 複数の更新（追加）を一括で処理する際の、PrepareStatementを利用するかを判断するための閾値。デフォルト値は50です。
+| maxFetchSize | int | フェッチする際の最大サイズ。デフォルト値は100です。
+| defaultFetchSize | int | 
+フェッチする際のデフォルトサイズ。デフォルト値は0です。
+0が指定された場合の実際のフェッチサイズはJDBCドライバに依存します。
+| defaultQueryTimeout | int | クエリ実行時のタイムアウト（秒）。0が指定された場合はタイムアウトしません。デフォルト値は0です。
+| lockTimeout | int | 行レベルロックが解放されるまでのタイムアウト（秒）。0が設定された場合はロックの解放を待ちません(NOWAIT)。
+マイナスの値が設定された場合はロックが解放されるまで待機します。デフォルト値は0です。
+| optimizerHint | String | オプティマイザ・ヒント。デフォルト値は `FAST 100` です。
+| rdbTimeZone | String | RDBのタイムゾーンがiPLAssが動作するJVMのものと異なる場合、RDBのタイムゾーンを指定します。
+| timeZoneMap | Map形式 | javaのTime Zone IDとSQL Server上でのTime Zone IDのマッピングを定義します。nameにJavaのTime Zone ID、valueにSQL ServerのTime Zone IDを指定する形で定義します。
+| maxViewNameLength | int | ビュー名の最大長。デフォルト値は128です。
+| listaggDefaultSeparator | String | LISTAGG集約関数利用時のデフォルトのセパレータです。デフォルト値は `,` です。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.rdb.adapter.RdbAdapterService</interface>
+
+	<!--
+		for oracle
+		::configable property::
+			lockTimeout :
+				(seconds), 0=for update no wait, -1=for update
+			enableInPartitioning :
+				enables IN clause's limitation avoidance (do partition IN clause by 1000 items unit).
+			escapeFullwidthWildcard :
+				when use oracle11gR2patch2(11.2.0.2.0) or before, set true this property
+			optimizerHint :
+				default hint clause of SQL generated by EQL.
+			useFetchFirstClause :
+				use FETCH FIRST clause rather than use ROWNUM (on oracle 12c).
+	-->
+	<property name="adapter" class="org.iplass.mtp.impl.rdb.oracle.OracleRdbAdapter" inherit="false">
+		<property name="lockTimeout" value="0" />
+		<property name="enableInPartitioning" value="false" />
+		<property name="escapeFullwidthWildcard" value="false" />
+		<property name="optimizerHint" value="FIRST_ROWS(100)" />
+		<property name="alwaysBind" value="true" />
+		<property name="thresholdCountOfUsePrepareStatement" value="50" />
+		<property name="batchSize" value="100" />
+		<property name="defaultQueryTimeout" value="0" />
+		<property name="useFetchFirstClause" value="false" />
+	</property>
+
+	<!--
+		for mysql
+		::configable property::
+			supportOptimizerHint :
+				mysql5.7から利用可能なOptimizer Hintsを利用する場合trueを設定
+	-->
+	<property name="adapter" class="org.iplass.mtp.impl.rdb.mysql.MysqlRdbAdaptor" inherit="false">
+		<property name="defaultQueryTimeout" value="0" />
+		<property name="supportOptimizerHint" value="false" />
+	</property>
+
+	<!-- for postgresql -->
+	<property name="postgresql"
+	    class="org.iplass.mtp.impl.rdb.postgresql.PostgreSQLRdbAdapter" inherit="false" />
+
+	<!--
+		for sqlserver
+		::configable property::
+			lockTimeout :
+				(seconds), 0=for update no wait, -1=for update
+			optimizerHint :
+				default hint clause of SQL generated by EQL.
+	-->
+	<property name="adapter" class="org.iplass.mtp.impl.rdb.sqlserver.SqlServerRdbAdapter" inherit="false">
+		<property name="alwaysBind" value="false" />
+		<property name="defaultQueryTimeout" value="0" />
+		<property name="lockTimeout" value="0" />
+		<property name="optimizerHint" value="FAST 100" />
+		<property name="rdbTimeZone" value="Asia/Tokyo" />
+		<property name="timeZoneMap">
+			<property name="Asia/Tokyo" value="Tokyo Standard Time" />
+			<property name="America/Los_Angeles" value="Pacific Standard Time" />
+			:
+			:
+		</property>
+	</property>
+</service>
+----

@@ -1,0 +1,36 @@
+[[ScriptService]]
+=== ScriptService
+A service that manages the execution of dynamic scripts.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.script.ScriptService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.script.GroovyScriptService
+----
+
+==== Settings of ScriptService
+The settings of ScriptService are listed below.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| debug | boolean | Specify whether to log the script debug information.
+| initScript | String, Multiple| The initial GroovyScript.
+| staticImport | String, Multiple| Specify the method to import static GroovyScript.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.script.ScriptService</interface>
+	<class>org.iplass.mtp.impl.script.GroovyScriptService</class>
+	<property name="initScript" value="/org/iplass/mtp/impl/script/InitScript.gr" />
+	<property name="initScript" value="/org/iplass/mtp/impl/script/EnterpriseInitScript.gr" />
+</service>
+----

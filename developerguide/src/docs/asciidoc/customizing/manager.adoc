@@ -1,0 +1,271 @@
+[[EntityManager]]
+== EntityManager
+カスタムロジックからEntityのデータに対する操作を行う場合は、
+`org.iplass.mtp.entity.EntityManager` を利用します。
+
+Entity定義の詳細については、<<../datamanagement/index.adoc#ref_entity, Entity>> の説明を参照ください。
+
+
+.EntityManagerの利用例
+[source, java]
+----
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.entity.DeleteOption;
+import org.iplass.mtp.entity.Entity;
+import org.iplass.mtp.entity.EntityManager;
+import org.iplass.mtp.entity.GenericEntity;
+import org.iplass.mtp.entity.SearchResult;
+import org.iplass.mtp.entity.UpdateOption;
+import org.iplass.mtp.entity.query.Query;
+import org.iplass.mtp.entity.query.condition.expr.And;
+import org.iplass.mtp.entity.query.condition.predicate.Like.MatchPattern;
+
+:
+
+EntityManager em = ManagerLocator.manager(EntityManager.class);
+
+//Entityの登録
+Entity e = new GenericEntity("samples.SampleEntity");
+e.setName("nameOfEntity");
+e.setValue("customProp", "propValue");
+String oid = em.insert(e);
+
+
+//Entityの読み込み
+e = em.load(oid, "samples.SampleEntity");
+
+
+//Entityの更新
+e.setValue("customProp", "propValue2");
+em.update(e, new UpdateOption().add("customProp"));
+
+
+//Entityの検索
+//select oid, name, customProp from samples.SampleEntity where name='nameOfEntity' and customProp like 'propValue%'
+Query q = new Query()
+		.select(Entity.OID, Entity.NAME, "customProp")
+		.from("samples.SampleEntity")
+		.where(new And()
+				.eq(Entity.NAME, "nameOfEntity")
+				.like("customProp", "propValue", MatchPattern.PREFIX));
+
+//文字列からクエリを生成する場合
+//Query q = new Query("select oid, name, customProp from samples.SampleEntity where name='nameOfEntity' and customProp like 'propValue%'");
+
+SearchResult<Entity> res = em.searchEntity(q);
+
+
+//Entityの削除
+em.delete(e, new DeleteOption(false));
+
+----
+
+以下に主要な処理、メソッドの概要を記述します。
+`EntityManager` のapiの詳細は、javadocを参照ください。
+
+
+=== 読み込み (load)
+load処理は、対象となるEntityの定義名、oid（Entityを一意に特定するためのキー、オブジェクトID）で特定されるEntityのデータを1件取得する処理です。 +
+Entityをバージョン管理している場合は、特定のバージョンを指定し取得することも可能です。 +
+loadの結果は `org.iplass.mtp.entity.Entity` のインスタンスとして返却されます。
+Entity定義にて、Java Mapping Classを指定している場合は、そのクラスのインスタンスが返却されます。 
+未指定の場合は、 `org.iplass.mtp.entity.GenericEntity` のインスタンスが返却されます。 +
+load時には、読み込み方法を指定するオプション（`org.iplass.mtp.entity.LoadOption`）を指定することが可能です。
+
+`org.iplass.mtp.entity.EntityEventListener` にて、load時のカスタム処理を組み込むことが可能です。EntityEventListenerの詳細は <<../datamanagement/index.adoc#ref_entity_event_listener, EventListener>> を参照ください。
+
+=== 検索 (search)
+検索条件を指定して、Entityのリストを取得することが可能です。 +
+検索条件は、EQL (Entity Query Language)にて指定します。
+EQLの詳細は、 <<../../eqlreference/index.adoc#, EQLリファレンス>> を参照ください。
+
+==== searchEntity()
+`searchEntity()` は、結果としてEntityのインスタンスを返却します。select項目としては、Entityのプロパティとして定義されているもののみ取得可能です。
+
+1対多の参照関係を持つEntityを構造化して取得することも可能です。
+検索時のオプション `org.iplass.mtp.entity.SearchOption` で指定可能です。
+例えば、
+1件のUserエンティティに対して、2件のGroupエンティティが関連付けされている場合
+
+* 構造化した場合（returnStructuredEntityをtureとした場合）
++
+検索結果には、1件のUserエンティティが返却されます。Userエンティティのgroupsプロパティには、長さ2のGroupエンティティ配列が設定されています。
+
+* 構造化しない場合
++
+構造化しない場合は、RDBのテーブルを結合した表形式のまま行が返却されます。 +
+つまり、検索結果には、2件のUserエンティティが返却されます。Userエンティティのgroupsプロパティには、それぞれGroupエンティティ1件ずつ設定されています。
+
+`org.iplass.mtp.entity.EntityEventListener` にて、検索時のカスタム処理を組み込むことが可能です。EntityEventListenerの詳細は <<../datamanagement/index.adoc#ref_entity_event_listener, EventListener>> を参照ください。
+
+==== search()
+`search()` は、Entity定義に含まれるプロパティとは異なる形式の検索結果を取得する目的で利用します。 +
+結果としてObject[]のインスタンスを返却します。 +
+select項目としては、演算項目、集計関数や、スカラーサブクエリなども指定可能です。
+
+==== count()
+`count()` は、指定のEQLの結果件数を取得します。
+
+NOTE: 1対多の関連を持つEntityを検索するEQLの場合は注意が必要です。
+from句に指定されたEntityの件数ではなく、それぞれのEntityが結合された状態の行数が返却されます。
+
+==== callback
+検索結果が大量件数になる可能性がある場合、callbackを利用することで、検索結果をストリーム処理可能です。
+
+.callbackの例
+[source, java]
+----
+EntityManager em = ManagerLocator.manager(EntityManager.class);
+:
+
+Query query = ...;
+
+em.searchEntity(query, entity -> {
+	//handle entity
+	System.out.println(entity);
+	
+	return true; <1>
+});
+----
+<1> callbackにてfalseを返却した場合、そこで処理を中断します。
+
+=== 登録 (insert)
+insert処理は、Entityのインスタンスを登録する処理です。 +
+登録されたインスタンスにはoid（一意のID、オブジェクトID）が付与されます。 +
+登録時の処理のオプションを `org.iplass.mtp.entity.InsertOption` で指定可能です。
+
+`org.iplass.mtp.entity.EntityEventListener` にて、登録時のカスタム処理を組み込むことが可能です。EntityEventListenerの詳細は <<../datamanagement/index.adoc#ref_entity_event_listener, EventListener>> を参照ください。
+
+
+=== 更新 (update)
+update処理はEntityのインスタンスのプロパティの値を更新する処理です。 +
+更新対象のプロパティは、 `org.iplass.mtp.entity.UpdateOption` で指定します。
+また、処理時のタイムスタンプによる楽観ロック制御の有無などを制御可能です。
+
+`org.iplass.mtp.entity.EntityEventListener` にて、更新時のカスタム処理を組み込むことが可能です。EntityEventListenerの詳細は <<../datamanagement/index.adoc#ref_entity_event_listener, EventListener>> を参照ください。
+
+=== 削除 (delete)
+delete処理はEntityのインスタンスを削除する処理です。 +
+`org.iplass.mtp.entity.DeleteOption` にて、処理時のタイムスタンプによる楽観ロック制御、論理削除とするか否か（ごみ箱に入れるか否か）などを制御可能です。
+
+`org.iplass.mtp.entity.EntityEventListener` にて、削除時のカスタム処理を組み込むことが可能です。EntityEventListenerの詳細は <<../datamanagement/index.adoc#ref_entity_event_listener, EventListener>> を参照ください。
+
+=== 一括更新 (updateAll)
+updateAll処理は更新対象のEntityの条件を指定し、一括でプロパティの値を更新する処理です。 +
+更新対象の条件、更新する値は `org.iplass.mtp.entity.UpdateCondition` で指定します。
+
+.一括更新の例
+[source,java]
+----
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.entity.EntityManager;
+import org.iplass.mtp.entity.UpdateCondition;
+import org.iplass.mtp.entity.query.value.ValueExpression;
+import org.iplass.mtp.entity.query.condition.expr.And;
+:
+
+EntityManager em = ManagerLocator.manager(EntityManager.class);
+
+String defName = "samples.SampleEntity";
+
+UpdateCondition cond = new UpdateCondition(defName)
+		.value("propA", Boolean.TRUE)
+		.value("propB", ValueExpression.newValue("mod(propB, 7)") <1>
+		.where(new And()
+		        .eq("propX", "1")
+			    .eq("propY", "10"));
+
+int updateCount = em.updateAll(cond);
+----
+<1> 更新値には、値もしくは、数式（ValueExpression）を指定可能です
+
+
+一括更新は以下の制約があります。
+
+* 楽観ロック（タイムスタンプのチェック）は行われません
+* EventListenerは呼び出されません
+* Binary、LongText、AutoNumber、Referenceは更新できません
+* NamePropertyに指定しているプロパティは更新できません
+
+
+=== 一括削除 (deleteAll)
+deleteAll処理は削除対象のEntityの条件を指定し、一括で削除する処理です。 +
+削除対象の条件は `org.iplass.mtp.entity.DeleteCondition` で指定します。
+
+.一括削除の例
+[source,java]
+----
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.entity.EntityManager;
+import org.iplass.mtp.entity.DeleteCondition;
+import org.iplass.mtp.entity.query.condition.expr.And;
+:
+
+EntityManager em = ManagerLocator.manager(EntityManager.class);
+
+String defName = "samples.SampleEntity";
+
+DeleteCondition cond = new DeleteCondition(defName)
+		.where(new And()
+		        .eq("propX", "1")
+			    .eq("propY", "10"));
+
+int deleteCount = em.deleteAll(cond);
+----
+
+一括削除は以下の制約があります。
+
+* 楽観ロック（タイムスタンプのチェック）は行われません
+* EventListenerは呼び出されません
+* Binary、LongTextをPropertyとしてもつEntityは削除できません
+* 親子関係（COMPOSITION）のReferencePropertyをもつEntityは削除できません
+
+=== バルク更新 (bulkUpdate)
+bulkUpdate処理は、 `org.iplass.mtp.entity.bulkupdate.BulkUpdatable` で指定される一連のEntityを一括で更新（Insert/Update/Delete）する処理です。 +
+更新処理の際は、EntityEventListenerの呼び出しや、Validation、タイムスタンプチェック、CascadeDelete処理などは実行されません。 +
+外部データの取り込み、初期データImportなどの大量データを一括で取り込む場合の利用を想定しています。
+
+NOTE: bulkUpdateを実行するユーザーは、当該Entityに対して登録、更新、削除権限を範囲条件なしに保有している必要があります。
+
+NOTE: バージョン管理時はバージョン番号を明示的に指定する必要があります。
+
+.バルク更新の例
+[source,java]
+----
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.entity.Entity;
+import org.iplass.mtp.entity.EntityManager;
+import org.iplass.mtp.entity.GenericEntity;
+import org.iplass.mtp.entity.bulkupdate.BulkUpdatable;
+import org.iplass.mtp.entity.bulkupdate.BulkUpdateEntity;
+import org.iplass.mtp.entity.bulkupdate.BulkUpdateEntity.UpdateMethod;
+import org.iplass.mtp.entity.query.Query;
+:
+
+EntityManager em = ManagerLocator.manager(EntityManager.class);
+
+String defName = "test";
+String propertyName = "propX";
+
+Query query = new Query()
+		.select(Entity.OID, Entity.NAME, propertyName)
+		.from(defName);
+final List<Entity> entityList = em.searchEntity(query).getList();
+
+int[] counter = {0};
+BulkUpdatable bulkUpdatable = BulkUpdatable.as(defName)
+		.updateProperties(propertyName)
+		.onNext(() -> {
+			if (counter[0] == entityList.size()) {
+				return null;
+			}
+			GenericEntity entity = (GenericEntity) entityList.get(counter[0]);
+			entity.setValue(propertyName, "customValue");
+
+			BulkUpdateEntity ret = new BulkUpdateEntity(UpdateMethod.UPDATE, entity);
+			counter[0]++;
+			return ret;
+		});
+
+em.bulkUpdate(bulkUpdatable);
+----

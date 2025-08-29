@@ -1,0 +1,55 @@
+[[EntityWebApiService]]
+=== EntityWebApiService
+This service manages EntityWebApi.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.webapi.EntityWebApiService
+----
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.webapi.EntityWebApiService
+----
+
+==== The settings of EntityWebApiService
+EntityWebApiService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| maxLimit | int | Maximum number of EntityWebApi acquisitions.
+
+NOTE: If `tabular=ture` is specified in the Web API parameter, or if Accept is `text/csv` , this restriction does not apply.
+| throwSearchResultLimitExceededException | boolean | Specify true if you want to throw an exception when the number of acquisitions exceeds maxLimit. The default value is false.
+| csvDateTimeFormat | String | Date format of the DateTime type EntityData, when returning the result of EntityWebApi Query searches in CSV format. If not specified, the runtime LocaleFormat will be used.
+| csvDateFormat | String | Date format of the Date type EntityData, when returning the result of EntityWebApi Query searches in CSV format. If not specified, the runtime LocaleFormat will be used.
+| csvTimeFormat | String | Date format of the Time type EntityData, when returning the result of EntityWebApi Query searches in CSV format. If not specified, the runtime LocaleFormat will be used.
+| loadWithMappedByReference | boolean | The default value of whether to acquire the referenced (mapped by) property in Load of EntityWebApi. The default value is false.
+| listWithMappedByReference | boolean | The default value of whether to acquire the referenced (mapped by) property in Query of EntityWebApi. The default value is false.
+| csvListWithMappedByReference | boolean | The default value of whether to acquire the referenced (mapped by) property in Query of EntityWebApi that returned in CSV format.
+If not set, the setting value of listWithMappedByReference will be applied.
+
+CAUTION: Setting flag for backward compatibility. This setting flag will be deleted in a future version.
+| enableNativeHint | boolean | Enable/disable Native Hint specification when calling EntityWebApi. Default value is false.
+| permitRolesToSpecifyOptions | String, Multiple | Set a role that allows you to specify control options when calling EntityWebApi. For Admin users, control options are available even if no role is set.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.webapi.EntityWebApiService</interface>
+	<property name="maxLimit" value="1000" />
+	<property name="csvDateTimeFormat" value="yyyy/MM/dd HH:mm:ss" />
+	<property name="csvDateFormat" value="yyyy/MM/dd" />
+	<property name="csvTimeFormat" value="HH:mm:ss" />
+
+	<property name="loadWithMappedByReference" value="true" />
+
+	<property name="permitRolesToSpecifyOptions" value="RoleA" />
+	<property name="permitRolesToSpecifyOptions" value="RoleB" />
+
+</service>
+----

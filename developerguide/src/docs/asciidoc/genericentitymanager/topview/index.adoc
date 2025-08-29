@@ -1,0 +1,17 @@
+= Generic Entity Manager (TopView)
+:_hreflang-path: developerguide/genericentitymanager/topview/index.html
+:_relative-root-path: ../../../
+
+[[topview]]
+== TopView
+ログイン時にTop画面に表示する部品や、画面右上の名前クリック時に表示されるユーザーメニューの内容等を管理しています。
+お知らせやカレンダーの他、既存のテンプレートやGroovyTemplateでのカスタマイズができます。
+
+<<../menu/index.adoc#menu, Menu>>と併せてロールと連動していて、ロール毎にTopViewとMenuを管理できます。
+（<<role, ロールとの連動>>）
+
+include::operationguide.adoc[]
+
+include::setting.adoc[]
+
+include::role.adoc[]

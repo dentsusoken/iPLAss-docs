@@ -1,0 +1,84 @@
+[[OidCounter]]
+=== OidCounter
+oidの採番を行うサービスです。
+採番を行うCounterServiceを利用します。
+RDBのシーケンス採番機能の有無で設定を変える必要があります。
+シーケンス機能が有る場合（デフォルト設定）は `RdbSequenceCounterService` を、
+無い場合（MySQL）は `CachableRdbTableCounterService` を利用します。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.counter.CounterService
+----
+
+==== 実装クラス名
+.シーケンス機能が有る
+----
+org.iplass.mtp.impl.counter.RdbSequenceCounterService
+----
+
+.シーケンス機能が無い
+----
+org.iplass.mtp.impl.counter.CachableRdbTableCounterService
+----
+
+==== RdbSequenceCounterService
+RdbSequenceCounterServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| sequenceNameMap | <<SequenceNameMap>>、複数指定可 | 採番を行う単位と採番テーブルのマッピング。
+|===
+
+[[SequenceNameMap]]
+.SequenceNameMap
+採番を行う単位と採番テーブルのマッピングを設定します。
+以下の項目が設定できます。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| name | String | 採番を行う単位の名前。
+| value | String | RDBのシーケンス名。
+|===
+
+==== CachableRdbTableCounterServiceの設定
+CachableRdbTableCounterServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| separateTransaction | boolean | 採番時にトランザクションを分けるか。デフォルト値はfalseです。
+| retryCount | int | 採番失敗時にリトライする回数。デフォルト値は3です。
+| counterTypeName | String |  採番タイプの名前。デフォルト値は `defaultCounter` です
+| cacheSize | int | キャッシュサイズ。デフォルト値は20です。
+|===
+
+===== 設定例
+[source, xml]
+----
+<!-- デフォルト設定 -->
+<service name="OidCounter">
+	<interface>org.iplass.mtp.impl.counter.CounterService</interface>
+	<class>org.iplass.mtp.impl.counter.RdbSequenceCounterService</class>
+	<property name="sequenceNameMap">
+		<property name="oid" value="SEQ_OBJ_ID" />
+		<property name="rbid" value="SEQ_RB_ID" />
+		<property name="lobid" value="SEQ_LOB_ID" />
+		<property name="logid" value="SEQ_LOG_ID" />
+	</property>
+</service>
+
+<!-- MySQL -->
+<service name="OidCounter">
+	<interface>org.iplass.mtp.impl.counter.CounterService</interface>
+	<class>org.iplass.mtp.impl.counter.CachableRdbTableCounterService</class>
+	<property name="counterTypeName" value="OidCounter" />
+	<property name="cacheSize" value="20" />
+	<property name="retryCount" value="3" />
+</service>
+
+----

@@ -1,0 +1,90 @@
+[[ValidationService]]
+=== ValidationService
+This is the service to perform input validation.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.validation.ValidationService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.validation.ValidationService
+----
+
+==== ValidationService
+The available settings for ValidationService are listed below.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| beanValidation | <<BeanValidationConfig>> | Set Bean Validation here.
+|===
+
+[[BeanValidationConfig]]
+.BeanValidationConfig
+The settings of Bean Validation will be explained.
+
+Please specify org.iplass.mtp.impl.validation.bean.BeanValidationConfig to the class.
+The following items can be specified. 
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| providerClass | String | javax.validation.spi.ValidationProvider's implementing Class's Name。
+| messageInterpolator | <<MessageInterpolator>> | set the MessageInterpolator here.
+| properties | Properties, Multiple | The property specific to provider.
+|===
+
+[[MessageInterpolator]]
+.MessageInterpolator
+Please specify the implementing class of javax.validation.MessageInterpolator to the class.
+
+In standard, org.iplass.mtp.impl.validation.bean.TenantContextMessageInterpolator is provided.
+The following items can be specified. 
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| messageInterpolatorFactory | <<MessageInterpolatorFactory>> | MessageInterpolatorFactory's implementing Class's Name。
+|===
+
+[[MessageInterpolatorFactory]]
+.MessageInterpolatorFactory
+Please specify org.iplass.mtp.impl.validation.bean.MessageInterpolatorFactory to the class.
+
+In standard, org.iplass.mtp.impl.validation.bean.hibernate.HibernateMessageInterpolatorFactory is provided.
+The following items can be specified. 
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| resourceBundleLocator | <<ResourceBundleLocator>> | ResourceBundleLocatorのImplementing Class Name。
+| cachingEnabled | boolean | Whether to enable Cache.
+|===
+
+[[ResourceBundleLocator]]
+.ResourceBundleLocator
+Please specify org.hibernate.validator.spi.resourceloading.ResourceBundleLocator to the class.
+
+In standard, org.iplass.mtp.impl.validation.bean.hibernate.MessageResourceBundleLocator.
+There is no configurable items for this configuration options.
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.validation.ValidationService</interface>
+	<class>org.iplass.mtp.impl.validation.ValidationService</class>
+	<property name="beanValidation">
+		<property name="providerClass" value="org.hibernate.validator.HibernateValidator" />
+		<property name="messageInterpolator" class="org.iplass.mtp.impl.validation.bean.TenantContextMessageInterpolator">
+			<property name="messageInterpolatorFactory" class="org.iplass.mtp.impl.validation.bean.hibernate.HibernateMessageInterpolatorFactory">
+				<property name="resourceBundleLocator" class="org.iplass.mtp.impl.validation.bean.hibernate.MessageResourceBundleLocator" />
+				<property name="cachingEnabled" null="true" />
+			</property>
+		</property>
+	</property>
+</service>
+----

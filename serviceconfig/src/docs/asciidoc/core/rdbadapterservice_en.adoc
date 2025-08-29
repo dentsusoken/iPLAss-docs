@@ -1,0 +1,233 @@
+[[RdbAdapterService]]
+=== RdbAdapterService
+This service manages RdbAdapter, which is an interface for various RDBs.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.rdb.adapter.RdbAdapterService
+----
+
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.rdb.adapter.RdbAdapterService
+----
+
+
+==== Settings of RdbAdapterService
+The settings for RdbAdapter are listed below.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| adapter | <<RdbAdapter>> | Set standard RdbAdapter
+| Any text string other than "adapter" | <<RdbAdapter>>, Multiple | Set other RdbAdapter
+|===
+
+[[RdbAdapter]]
+.RdbAdapter
+Please specify the implementing class of org.iplass.mtp.impl.rdb.adapter.RdbAdapter.
+
+As the standard implementation, these adapter are provided:
+
+* Oracle based org.iplass.mtp.impl.rdb.oracle.OracleRdbAdapter
+* MySQL based org.iplass.mtp.impl.rdb.mysql.MysqlRdbAdapter
+* PostgreSQL based org.iplass.mtp.impl.rdb.postgresql.PostgreSQLRdbAdapter
+* SQL Server based org.iplass.mtp.impl.rdb.sqlserver.SqlServerRdbAdapter
+
+For each settings of RdbAdapter, these items can be configured.
+
+[[OracleRdbAdapter]]
+.OracleRdbAdapter
+Oracle based RdbAdapter.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| lockTimeout | int | Timeout (in seconds) before the row level lock is released. If 0 is set, the system will not wait for lock release (FOR UPDATE NOWAIT). If a negative value is set, it will wait until the lock is released. The default value is 0.
+| timestampFunction | String | Function to get timestamp. The default value is `CURRENT_TIMESTAMP(3)`.
+| addMonthsFunction | String | Function to add the month. The default value is `ADD_MONTHS`.
+| monthsBetweenFunction | String | Function to get the difference between two dates. The default value is `MONTHS_BETWEEN`.
+| isUseSubQueryForIndexJoin | boolean | Whether to perform a join using an Index table using a correlated subquery. The default value is true.
+| optimizerHint | String | Optimizer hint. The default value is `FIRST_ROWS(100)`.
+| enableInPartitioning | boolean | Whether to perform conversion processing that relaxes the limit of 1000 IN operators. The default value is false.
+The relaxation processing is to divide IN (1,2, ...) in units of 1000 (IN (1,2, ...) OR IN (1001, 1002, ...)) and OR That is.
+| escapeFullwidthWildcard | boolean | Whether to escape the full-width characters `%` and `_`. The default value is false.
+If the version to be used is 11gR2patch2 or earlier, it is treated as a wildcard, so set it true please.
+| enableBindHint | boolean | Whether to enable the bind hint clause. The default value is true.
+| alwaysBind | boolean | Whether to always use bind variables when converting EQL to SQL. The default value is true.
+| thresholdCountOfUsePrepareStatement | int | Threshold for determining whether to use PrepareStatement when multiple updates (additions) are processed at once. The default value is 50.
+| batchSize | int | Recommended batch size when using batch update. The default value is 100.
+| maxFetchSize | int | Maximum size to fetch. The default value is 100.
+| defaultFetchSize | int | 
+Default size of fetch. The default value is 0.
+If 0 is specified, the actual fetch size depends on the JDBC driver.
+| defaultQueryTimeout | int | Query timeout (seconds). If 0 is specified, timeout does not occur. The default value is 0.
+| useFetchFirstClause | boolean | Whether to use FETCH FIRST clause available from Oracle 12c. The default value is true.
+| rdbTimeZone | String | If the RDB time zone is different from the JVM on which iPLAss runs, specify the RDB time zone.
+| maxViewNameLength | int | Maximum length of view name. The default value is 128.
+| listaggDefaultSeparator | String | Default separator when using the LISTAGG aggregate function. The default value is `,` .
+| bindDateAsString | boolean a| Sets whether to bind with String type via the TO_DATE function instead of directly binding with java.sql.Date type when binding Date type with PrepareStatement. Default is true.
+
+NOTE: This is a control item for the behavior that the time is unintentionally set on the date when daylight saving time is changed when binding as the Date type. When setting the Oracle JDBC driver system property `oracle.jdbc.DateZeroTime=true` , the bindDateAsString value can be false.
+|===
+
+[[MysqlRdbAdapter]]
+.MysqlRdbAdapter
+MySQL based RdbAdapter.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| useFractionalSecondsOnTimestamp | boolean | Whether to include milliseconds in the timestamp. The default value is true.
+| supportOptimizerHint | boolean | Define whether to support optimization hints. The default value is true.
+| optimizeCountQuery | boolean | Define whether to optimize the count query. The default value is true.
+| localTemporaryTableManageOutsideTransaction | boolean | Specifies whether to manage local temporary tables outside of transactions. The default value is false.
+| localTemporaryTableCreatedByDataSource | boolean | Specifies whether local temporary tables are created based on the data source. The default value is false.
+| timestampMethod | String | Get timestamp function. The default value is `NOW(3)`.
+| enableBindHint | boolean | Whether to enable the bind hint clause. The default value is false.
+| batchSize | int | Recommended batch size when using batch update. The default value is 100.
+| thresholdCountOfUsePrepareStatement | int | Threshold for determining whether to use PrepareStatement when multiple updates (additions) are processed at once. The default value is -1.
+| maxFetchSize | int | Maximum size to fetch. The default value is 100.
+| defaultFetchSize | int | 
+Default size of fetch. The default value is -1 (meaning not set explicitly).
+If 0 is specified, the actual fetch size depends on the JDBC driver.
+| defaultQueryTimeout | int | Query timeout (seconds). If 0 is specified, timeout does not occur. The default value is 0.
+| supportWindowFunction | boolean | Whether to support Window functions. The default value is true. If using MySQL version 5.7 or earlier, which does not support the Window function, set this to false.
+| rdbTimeZone | String | If the RDB time zone is different from the JVM on which iPLAss runs, specify the RDB time zone.
+| maxViewNameLength | int | Maximum length of view name. The default value is 64.
+| listaggDefaultSeparator | String | Default separator when using the LISTAGG aggregate function. The default value is `,` .
+| needMultiTableTrick | boolean a| When issuing UPDATE/DELETE statements, whether or not measures to improve performance are required when subqueries are used for conditions.
+The default is false.
+
+NOTE: It is recommended to enable it if using MySQL 8.0.20 or earlier.
+|===
+
+[[PostgreSQLRdbAdapter]]
+.PostgreSQLRdbAdapter
+PostgresSQL based RdbAdapter.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| supportOptimizerHint | boolean | Define whether to support optimization hints. The default value is false.
+| timestampFunction | String | Function to get timestamp. The default value is `CURRENT_TIMESTAMP(3)`.
+| escapeBackslash | boolean | Whether to escape backslashes. The default value is false.
+| enableBindHint | boolean | Whether to enable the bind hint clauses. The default value is false.
+| batchSize | int | Recommended batch size when using batch update. The default value is 100.
+| maxFetchSize | int | Maximum size to fetch. The default value is 100.
+| defaultFetchSize | int | 
+Default size of fetch. The default value is 10.
+If 0 is specified, the actual fetch size depends on the JDBC driver.
+| defaultQueryTimeout | int | Query timeout (seconds). If 0 is specified, timeout will not occur. The default value is 0.
+| lockTimeout | int | Lock timeout (seconds). If 0 is specified, timeout will not occur. The default value is 0.
+| rdbTimeZone | String | If the RDB time zone is different from the JVM on which iPLAss runs, specify the RDB time zone.
+| maxViewNameLength | int | Maximum length of view name. The default value is 63.
+| listaggDefaultSeparator | String | Default separator when using the LISTAGG aggregate function. The default value is `,` .
+| useStandardListaggFunction | boolean | Sets whether or not to use the SQL2016 standard-based LISTAGG aggregate function representation.
+If false, STRING_AGG will be used.
+The default value is false.
+|===
+
+[[SQLServerRdbAdapter]]
+.SQLServerRdbAdapter
+SQL Server based RdbAdapter.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| timestampFunction | String | Function to get timestamp. The default value is `GETDATE()`.
+| addMonthsFunction | String | Function to add the month. The default value is `DATEADD`.
+| monthsBetweenFunction | String | Function to get the difference between two dates. The default value is `DATEDIFF`.
+| isUseSubQueryForIndexJoin | boolean | Whether to perform a join using an Index table using a correlated subquery. The default value is true.
+| enableBindHint | boolean | Whether to enable the bind hint clause. The default value is false.
+| alwaysBind | boolean | Whether to always use bind variables when converting EQL to SQL. Default is false.
+In SQL Server, the maximum number of parameters that a procedure can have is 2,100, so when setting it to true, please do not exceed this maximum number.
+| batchSize | int | Recommended batch size when using batch update. The default value is 100.
+| thresholdCountOfUsePrepareStatement | int | Threshold for determining whether to use PrepareStatement when multiple updates (additions) are processed at once. The default value is 50.
+| maxFetchSize | int | Maximum size to fetch. The default value is 100.
+| defaultFetchSize | int | 
+Default size of fetch. The default value is 0.
+If 0 is specified, the actual fetch size depends on the JDBC driver.
+| defaultQueryTimeout | int | Query timeout (seconds). If 0 is specified, timeout will not occur. The default value is 0.
+| lockTimeout | int | Timeout (in seconds) before the row level lock is released. If 0 is set, it will not wait for the lock to be released (NOWAIT).
+If a negative value is set, the system will wait until the lock is released. The default value is 0.
+| optimizerHint | String | Optimizer hint. The default value is `FAST 100`.
+| rdbTimeZone | String | If the RDB time zone is different from the JVM on which iPLAss runs, specify the RDB time zone.
+| timeZoneMap | Map format | Defines the mapping between the Java Time Zone ID and the Time Zone ID on SQL Server.
+Define it by specifying the Java Time Zone ID for name and the SQL Server Time Zone ID for value.
+| maxViewNameLength | int | Maximum length of view name. The default value is 128.
+| listaggDefaultSeparator | String | Default separator when using the LISTAGG aggregate function. The default value is `,` .
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.rdb.adapter.RdbAdapterService</interface>
+
+	<!--
+		for oracle
+		::configable property::
+			lockTimeout :
+				(seconds), 0=for update no wait, -1=for update
+			enableInPartitioning :
+				enables IN clause's limitation avoidance (do partition IN clause by 1000 items unit).
+			escapeFullwidthWildcard :
+				when use oracle11gR2patch2(11.2.0.2.0) or before, set true this property
+			optimizerHint :
+				default hint clause of SQL generated by EQL.
+			useFetchFirstClause :
+				use FETCH FIRST clause rather than use ROWNUM (on oracle 12c).
+	-->
+	<property name="adapter" class="org.iplass.mtp.impl.rdb.oracle.OracleRdbAdapter" inherit="false">
+		<property name="lockTimeout" value="0" />
+		<property name="enableInPartitioning" value="false" />
+		<property name="escapeFullwidthWildcard" value="false" />
+		<property name="optimizerHint" value="FIRST_ROWS(100)" />
+		<property name="alwaysBind" value="true" />
+		<property name="thresholdCountOfUsePrepareStatement" value="50" />
+		<property name="batchSize" value="100" />
+		<property name="defaultQueryTimeout" value="0" />
+		<property name="useFetchFirstClause" value="false" />
+	</property>
+
+	<!--
+		for mysql
+		::configable property::
+			supportOptimizerHint :
+				Set to true when using Optimizer Hints (available since mysql5.7)
+	-->
+	<property name="adapter" class="org.iplass.mtp.impl.rdb.mysql.MysqlRdbAdaptor" inherit="false">
+		<property name="defaultQueryTimeout" value="0" />
+		<property name="supportOptimizerHint" value="false" />
+	</property>
+
+	<!-- for postgresql -->
+	<property name="postgresql"
+	    class="org.iplass.mtp.impl.rdb.postgresql.PostgreSQLRdbAdapter" inherit="false" />
+
+	<!--
+		for sqlserver
+		::configable property::
+			lockTimeout :
+				(seconds), 0=for update no wait, -1=for update
+			optimizerHint :
+				default hint clause of SQL generated by EQL.
+	-->
+	<property name="adapter" class="org.iplass.mtp.impl.rdb.sqlserver.SqlServerRdbAdapter" inherit="false">
+		<property name="alwaysBind" value="false" />
+		<property name="defaultQueryTimeout" value="0" />
+		<property name="lockTimeout" value="0" />
+		<property name="optimizerHint" value="FAST 100" />
+		<property name="rdbTimeZone" value="Asia/Tokyo" />
+		<property name="timeZoneMap">
+			<property name="Asia/Tokyo" value="Tokyo Standard Time" />
+			<property name="America/Los_Angeles" value="Pacific Standard Time" />
+			:
+			:
+		</property>
+	</property>
+</service>
+----

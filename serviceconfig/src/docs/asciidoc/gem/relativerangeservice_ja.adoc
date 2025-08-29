@@ -1,0 +1,85 @@
+[[RelativeRangeService]]
+=== [.eeonly]#RelativeRangeService#
+集計機能やEntityListingの日付の検索条件で、相対範囲を独自に追加するためのサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.view.relativerange.RelativeRangeService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.view.relativerange.RelativeRangeService
+----
+
+==== RelativeRangeServiceの設定
+RelativeRangeServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| relativeRanges | <<RelativeRange>>、複数指定可 | カスタム相対範囲の設定。
+|===
+
+[[RelativeRange]]
+.RelativeRange
+classはorg.iplass.mtp.view.relativerange.RelativeRangeを指定します。
+
+カスタム相対範囲です。以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| relativeRangeName | String | カスタム相対範囲名。
+| displayLabel | String | 表示ラベル。
+| localizedDisplayLabel | <<LocalizedDisplayLabel>>、複数指定可 | 言語毎の表示ラベルの設定。
+| converter | String | 変換ロジッククラス。 `org.iplass.mtp.view.relativerange.RelativeRangeConverter` インターフェースを実装したクラスの名前を指定してください。
+|===
+
+[[LocalizedDisplayLabel]]
+.LocalizedDisplayLabel
+classはorg.iplass.mtp.view.relativerange.LocalizedDisplayLabelを指定します。
+
+言語毎の表示ラベルです。以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| locale | String | ロケール。
+| displayLabel | String | 表示ラベル。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.view.relativerange.RelativeRangeService</interface>
+	<class>org.iplass.mtp.impl.view.relativerange.RelativeRangeService</class>
+	<!-- デフォルトのカスタム相対範囲 -->
+	<property name="relativeRanges" class="org.iplass.mtp.view.relativerange.RelativeRange">
+		<property name="relativeRangeName" value="firstHalfOfThisFiscalYear" />
+		<property name="displayLabel" value="今年度上期" />
+		<property name="localizedDisplayLabel" class="org.iplass.mtp.view.relativerange.LocalizedDisplayLabel">
+			<property name="locale" value="ja" />
+			<property name="displayLabel" value="今年度上期" />
+		</property>
+		<property name="localizedDisplayLabel" class="org.iplass.mtp.view.relativerange.LocalizedDisplayLabel">
+			<property name="locale" value="en" />
+			<property name="displayLabel" value="First half of this fiscal year" />
+		</property>
+		<property name="converter" class="sample.FirstHalfRelativeRangeConverter" />
+	</property>
+	<property name="relativeRanges" class="org.iplass.mtp.view.relativerange.RelativeRange">
+		<property name="relativeRangeName" value="secondHalfOfThisFiscalYear" />
+		<property name="displayLabel" value="今年度下期" />
+		<property name="localizedDisplayLabel" class="org.iplass.mtp.view.relativerange.LocalizedDisplayLabel">
+			<property name="locale" value="ja" />
+			<property name="displayLabel" value="今年度下期" />
+		</property>
+		<property name="localizedDisplayLabel" class="org.iplass.mtp.view.relativerange.LocalizedDisplayLabel">
+			<property name="locale" value="en" />
+			<property name="displayLabel" value="2nd half of this fiscal year" />
+		</property>
+		<property name="converter" class="sample.SecondHalfRelativeRangeConverter" />
+	</property>
+</service>
+----

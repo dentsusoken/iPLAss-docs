@@ -1,0 +1,33 @@
+[[EntityCsvImportService]]
+=== EntityCsvImportService
+EntityのCSVインポートに関するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.csv.EntityCsvImportService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.csv.EntityCsvImportService
+----
+
+==== EntityCsvImportServiceの設定
+EntityCsvImportServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| canCreateUserWithSpecificPassword | boolean | UserエンティティのInsert時にパスワード指定を許可するか。デフォルト値は `false` です。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.csv.EntityCsvImportService</interface>
+
+	<property name="canCreateUserWithSpecificPassword" value="true" />
+</service>
+----

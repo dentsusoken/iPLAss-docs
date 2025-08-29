@@ -1,0 +1,57 @@
+[[CaptchaService]]
+=== [.eeonly]#CaptchaService#
+This is a service to manage the feature that prevent robot access with reCAPTCHA.
+
+==== Interface Name
+----
+org.iplass.wam.impl.captcha.CaptchaService
+----
+
+
+==== Implementing Class
+----
+org.iplass.wam.impl.captcha.CaptchaService
+----
+
+
+==== The settings of CaptchaService
+CaptchaServicecan be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| captchaMethod | <<CaptchaMethod>>, Multiple | set the captchaMethod here.
+|===
+
+[[CaptchaMethod]]
+.CaptchaMethod
+Please specify the implementing class of org.iplass.wam.impl.captcha.CaptchaMethod to the class.
+
+As the standard implementation, the class org.iplass.wam.impl.captcha.ReCaptchaMethod is provided.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| siteKey | String | Site key for reCAPTCHA.
+| secretKey | String | Google's reCAPTCHA secret key. GCP API key if using reCAPTCHA Enterprise.
+| projectId | String | If using reCAPTCHA Enterprise, enter the GCP project ID.
+| allowableScoreThreshold | String | Threshold of allowable scores. A score above the set threshold is considered legitimate. Set if reCAPTCHA v3 or reCAPTCHA Enterprise is used.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.wam.impl.captcha.CaptchaService</interface>
+	<class>org.iplass.wam.impl.captcha.CaptchaService</class>
+
+	<property name="captchaMethod" class="org.iplass.wam.impl.captcha.ReCaptchaMethod">
+		<property name="siteKey" value="yourSiteKey" />
+		<property name="secretKey" value="yourSecretKey" />
+		<property name="projectId" value="yourProjectId" />
+		<property name="allowableScoreThreshold" value="0.5" />
+	</property>
+
+</service>
+----

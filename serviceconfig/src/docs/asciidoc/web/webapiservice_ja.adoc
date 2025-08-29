@@ -1,0 +1,106 @@
+[[WebApiService]]
+=== WebApiService
+WebApiの定義（メタデータ）を管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.webapi.WebApiService
+----
+
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.webapi.WebApiService
+----
+
+
+==== WebApiServiceの設定
+WebApiを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| enableDefinitionApi | boolean | DefinitionWebApiを公開するか。
+| enableBinaryApi | boolean | BinaryWebApiを公開するか。
+| writeEncodedFilenameInBinaryApi | boolean | BinaryWebApiのダウンロード操作時、 `Content-Disposition` レスポンスヘッダーに `filename*` 属性を出力するかを指定します。falseの場合は `filename` 属性を出力します。デフォルト値はfalseです。
+| unescapeFilenameCharacterInBinaryApi | String | BinaryWebApiのダウンロード操作時、`Content-Disposition` レスポンスヘッダーに `filename*` 属性を出力する際にエスケープしない文字を指定します(Alphabet、数値は無条件でエスケープ除外)。
+| acceptMimeTypesPatternInBinaryApi | String a| BinaryWebApi のアップロード操作時、アップロード可能なファイルのMIME Typeパターンを指定します。設定値は正規表現パターンを指定します。 +
+設定が無い場合はアップロード時のファイルの MIME Type の確認は実施しません。 +
+
+設定例
+
+* CSVファイルのアップロード許可 `^(text/csv)$`
+* PDFと画像のアップロード許可 `^(application/pdf\|image/.*)$`
+
+検証対象となる MIME Type の決定方法については、<<WebFrontendService, WebFrontendService uploadFileTypeDetector>>, <<FileTypeDetector, FileTypeDetector>> を参照してください。
+| statusMap | <<StatusMap>>、複数指定可 | Exception発生時に返すステータスコードの対応設定。
+| xRequestedWithMap | Map | WebApiでX-Requested-Withヘッダをチェックする設定の時に、チェックする項目と比較する値。
+| cors | <<CorsConfig>> a|
+WARNING: 本設定項目は非推奨となります。WebFrontendServiceのrequestRestrictionを利用ください。
+
+XHR2(CORS)する際の許可ドメイン設定。
+|===
+
+[[StatusMap]]
+.StatusMap
+
+以下の項目が設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| exception | String | Exceptionのクラス名。
+| status | int | Exception発生時のステータスコード。
+|===
+
+[[CorsConfig]]
+.CorsConfig
+
+以下の項目が設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| allowOrigin | String、複数指定可 | アクセスを許可するドメイン。
+| allowCredentials | boolean | 認証情報（Cookieなど）のやり取りを許可するか否か。デフォルト値はfalse。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.webapi.WebApiService</interface>
+	<property name="enableDefinitionApi" value="false" />
+	<property name="enableBinaryApi" value="false" />
+	<property name="writeEncodedFilenameInBinaryApi" value="false" />
+	<property name="unescapeFilenameCharacterInBinaryApi" value="-._~" />
+
+	<!-- バイナリファイルアップロード受け入れ可能な MIME Type パターン。正規表現を指定する。 -->
+	<!-- 設定例
+	<property name="acceptMimeTypesPatternInBinaryApi" value="^(image/.*|application/pdf|text/csv)$" />
+	-->
+
+	<property name="xRequestedWithMap">
+		<property name="X-Requested-With" value="XMLHttpRequest" />
+	</property>
+	<property name="statusMap">
+		<property name="exception" value="org.iplass.mtp.auth.NoPermissionException" />
+		<property name="status" value="403" />
+	</property>
+	<property name="statusMap">
+		<property name="exception" value="org.iplass.mtp.auth.NeedTrustedAuthenticationException" />
+		<property name="status" value="403" />
+	</property>
+	<property name="statusMap">
+		<property name="exception" value="org.iplass.mtp.tenant.available.UnavailableException" />
+		<property name="status" value="503" />
+	</property>
+	<property name="statusMap">
+		<property name="exception" value="org.iplass.mtp.ApplicationException" />
+		<property name="status" value="500" />
+	</property>
+	<property name="statusMap">
+		<property name="exception" value="org.iplass.mtp.SystemException" />
+		<property name="status" value="500" />
+	</property>
+</service>
+----

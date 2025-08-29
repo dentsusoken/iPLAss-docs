@@ -1,0 +1,88 @@
+[[WebhookService]]
+=== WebhookService
+WebhookTemplateの定義（メタデータ）の管理と、Webhookを実行する為のサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.webhook.WebhookService
+----
+
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.webhook.WebhookServiceImpl
+----
+
+
+==== WebhookServiceの設定
+Webhookを利用する場合、WebhookServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+|retry| boolean | 通信失敗時にリトライを行うか否かを指定します。
+|retryMaximumAttempts| int | 
+（リトライを行う場合）最大何回リトライを行うかを設定します。
+|retryInterval| int | （リトライを行う場合）リトライ間隔をミリ秒単位で指定します。
+|hmacHashAlgorithm| String | HMAC認証でキーを生成する際のハッシュアルゴリズムを指定します。未指定の場合のデフォルト値は "HmacSHA256"です。
+|hmacDefaultHeaderName| String | HMACの値をセットするヘッダ名を指定します。未指定の場合のデフォルト値は"X-IPLASS-HMAC"です。WebhookTemplate定義でも、HMACの値をセットするヘッダ名を指定した場合は、WebhookTemplate定義の設定が優先されます。
+
+|httpClientConfig|<<HttpClientConfig_wh, HttpClientConfig>> | Webhookを送る時のHTTPコネクションに関する設定です。
+|===
+
+
+[[HttpClientConfig_wh]]
+.HttpClientConfig
+classはorg.iplass.mtp.impl.http.HttpClientConfigを指定します。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| connectionTimeout | int | HTTPコネクションを確立する際のタイムアウト（ミリ秒）。デフォルト値は30000（30秒）です。
+| soTimeout | int | HTTP通信時のsocket timeout (SO_TIMEOUT)（ミリ秒）。デフォルト値は30000（30秒）です。
+| poolingMaxTotal | int | httpコネクションのプールの最大数。デフォルト値は20です。
+| poolingDefaultMaxPerRoute | int | ドメイン単位のhttpコネクションの最大数。デフォルト値は2です。
+| poolingTimeToLive | int | プールされているhttpコネクションの生存期間（ミリ秒）。デフォルトは無制限です。
+| proxyHost | String | プロキシサーバのホスト。
+| proxyPort | int | プロキシサーバのポート番号。
+| httpClientBuilderFactory | <<HttpClientBuilderFactory_wh, HttpClientBuilderFactory>> |
+カスタムのHttpClientBuilderを生成したい場合に指定します。
+|====================
+
+[[HttpClientBuilderFactory_wh]]
+.HttpClientBuilderFactory
+classはorg.iplass.mtp.impl.http.HttpClientBuilderFactoryを実装するクラスを指定します。
+
+標準で以下のHttpClientBuilderFactoryを提供します。
+
+* <<MicrometerHttpClientBuilderFactory, [.eeonly]#MicrometerHttpClientBuilderFactory#>>
+
+===== 設定例
+[source, xml]
+----
+	<!-- Webhook -->
+	<service>
+		<interface>org.iplass.mtp.impl.webhook.WebhookService</interface>
+		<class>org.iplass.mtp.impl.webhook.WebhookServiceImpl</class>
+		<property name="retry" value="true" />
+		<property name="retryMaximumAttempts" value="10" />
+		<property name="retryInterval" value="500" />
+		<property name="hmacHashAlgorithm" value="HmacSHA256" />
+		<property name="hmacDefaultHeaderName" value="X-IPLASS-HMAC" />
+<!-- 		<property name="httpClientConfig" class="org.iplass.mtp.impl.http.HttpClientConfig"> -->
+<!-- 			<property name="proxyHost" value="localhost" /> -->
+<!-- 			<property name="proxyPort" value="8080" /> -->
+<!-- 			<property name="poolingMaxTotal" value="20" /> -->
+<!-- 			<property name="poolingDefaultMaxPerRoute" value="20" /> -->
+<!-- 			<property name="poolingTimeToLive" value="50000" /> -->
+<!-- 		</property> -->
+	</service>
+	
+	<!-- WebhookEndpoint -->
+	<service>
+		<interface>org.iplass.mtp.impl.webhook.endpoint.WebhookEndpointService</interface>
+		<class>org.iplass.mtp.impl.webhook.endpoint.WebhookEndpointServiceImpl</class>
+	</service>
+		
+----

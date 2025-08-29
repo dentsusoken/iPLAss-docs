@@ -1,0 +1,17 @@
+= Web API
+:_hreflang-path: developerguide/webapi/index.html
+:_relative-root-path: ../../
+
+include::about.adoc[]
+
+include::command.adoc[]
+
+include::entity.adoc[]
+
+include::odata.adoc[]
+
+include::definition.adoc[]
+
+include::binary.adoc[]
+
+include::common.adoc[]

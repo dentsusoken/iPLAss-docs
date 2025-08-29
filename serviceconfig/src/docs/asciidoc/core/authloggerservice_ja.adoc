@@ -1,0 +1,84 @@
+[[AuthLoggerService]]
+=== AuthLoggerService
+認証関連のロガーを管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.auth.log.AuthLoggerService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.auth.log.AuthLoggerService
+----
+
+==== AuthLoggerServiceの設定
+AuthLoggerServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| loggers | <<AuthLogger>>、複数指定可 | ロガーの設定。
+ロガー名(loggerName)が `default` のロガーが標準のロガーとなります。
+未設定の場合は<<Slf4jAuthLogger>>が標準のロガーとして使用されます。
+|===
+
+[[AuthLogger]]
+.AuthLogger
+classはorg.iplass.mtp.impl.auth.log.AuthLoggerの実装クラスを指定します。
+
+標準で、以下のAuthLoggerを提供します。
+
+- <<Slf4jAuthLogger>>
+- <<MultiAuthLogger>>
+- <<EnterpriseSlf4jAuthLogger>>
+- <<AuthenticationEventMetrics>>
+
+[[Slf4jAuthLogger]]
+.Slf4jAuthLogger
+classはorg.iplass.mtp.impl.auth.log.Slf4jAuthLoggerを指定します。
+
+SLF4Jを利用して認証のログ出力を行うロガーです。以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| loggerName | String | ロガー名。
+| slf4LoggerName | String | SLF4Jのロガー名。デフォルト値は `mtp.auth` です。
+|===
+
+[[MultiAuthLogger]]
+.MultiAuthLogger
+classはorg.iplass.mtp.impl.auth.log.MultiAuthLoggerを指定します。
+
+複数のロガーを保持します。以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| loggerName | String | ロガー名。
+| logger | <<AuthLogger>>、複数指定可 | 標準のロガーの設定。
+|===
+
+[[EnterpriseSlf4jAuthLogger]]
+.[.eeonly]#EnterpriseSlf4jAuthLogger#
+classはorg.iplass.mtp.impl.auth.log.EnterpriseSlf4jAuthLoggerを指定します。
+
+SLF4Jを利用して認証のログ出力を行うロガーです。
+設定可能はSlf4jAuthLoggerを参照してください。
+
+[[AuthenticationEventMetrics]]
+.[.eeonly]#AuthenticationEventMetrics#
+classはorg.iplass.mtp.impl.micrometer.metrics.authentication.AuthenticationEventMetricsを指定します。
+
+認証試行の成功・失敗回数をメトリクスとして記録するロガーです。Micrometerモジュールを適用した場合、デフォルトで<<MultiAuthLogger>>のロガーとして、<<EnterpriseSlf4jAuthLogger>>と共に使用されます。設定可能な項目はありません。
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.auth.log.AuthLoggerService</interface>
+	<property name="logger" class="org.iplass.mtp.impl.auth.log.EnterpriseSlf4jAuthLogger">
+		<property name="loggerName" value="default" />
+	</property>
+</service>
+----

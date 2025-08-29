@@ -1,0 +1,231 @@
+[[ref_two_step]]
+=== [.eeonly]#2段階認証#
+2段階認証機能は、 後述する認証プロバイダー `TwoStepAuthenticationProvider` によって制御されます。
+
+以下のいずれかに該当した場合に、2段階認証プロセスが起動します。
+
+* 手動でのID、パスワードでのログイン後
+* RememberMe機能による自動ログインの状態で、ユーザー情報変更を実施するとき
+* RememberMe機能による自動ログインの状態で、`trusted authentication required` が設定されたActionを呼び出すとき
+
+2段階目の認証方式を選択することができます。
+
+==== 設定
+
+2段階認証の方式としては、以下のタイプを選択することが可能です。
+
+* Onetime
+* TimeBased
+* KnowledgeBased
+* X509
+
+===== Onetime
+認証時にiPLAss内で生成したコードを送信し、それを入力することで認証を確認する方式です。
+
+[cols="1,3a", options="header"]
+|===
+|項目名|内容
+|display name|認証画面の「○○で認証」の○○部分に表示される名前
+|onetime code generator|ワンタイムの認証コードの通知方法の指定
+
+outOfBandByMail:: メールによる通知
+outOfBandBySms:: SMSによる通知
+|out of band property name|ワンタイム通知先として利用するユーザーEntityのプロパティ。メールアドレスなど。
+|===
+
+===== TimeBased
+事前に2段階認証アプリ（Google Authenticator等）で設定し、認証時に2段階認証アプリに表示されたコードを入力することで認証を確認する方式です。
+
+[cols="1,3a", options="header"]
+|===
+|項目名|内容
+|display name|認証画面の「○○で認証」の○○部分に表示される名前
+|issuer|2段階認証の設定画面のQRコードで発行者名として利用される名前。設定されていない場合はテナント名が発行者名として扱われます。
+|===
+
+===== KnowledgeBased
+登録済みの秘密の質問に回答することで認証を確認する方式です。
+
+[cols="1,3a", options="header"]
+|===
+|項目名|内容
+|display name|認証画面の「○○で認証」の○○部分に表示される名前
+|name|ナレッジベース認証における任意で一意の名前
+|required answer count|回答させる質問数。
+|lockout failure count|秘密の質問をロックアウトするまでの失敗回数。0はロックアウトしない。
+|failure count property|失敗回数を記憶しておくユーザーEntityのプロパティ。 +
+予めInteger型のプロパティを `User` エンティティに追加してください。
+|select question setting|秘密の質問の設定
+|===
+
+* 秘密の質問 +
+秘密の質問は `User` エンティティのプロパティに回答を保持します。
++
+[cols="1,3a", options="header"]
+|===
+|項目名|内容
+|id|質問を識別するID。一意の値
+|contents|質問内容
+|answer property|質問に対する回答を保存する `User` エンティティのプロパティ。 +
+予めString型のプロパティを `User` エンティティに追加してください。
+|===
+
+===== X509
+クライアントに設定された証明書を利用して認証を確認する方式です。
+
+[cols="1,3a", options="header"]
+|===
+|項目名|内容
+|display name|認証画面の「○○で認証」の○○部分に表示される名前
+|id must match|証明書内のIDがログインIDと一致している必要があるか
+|===
+
+==== リスク評価
+`Risk Base Policy Setting` を利用すると、ログイン時にユーザーに対するリスク評価を行い、
+算出されたスコアの合計が一定の閾値を超えた場合に2段階認証を実行することができます。
+
+[cols="1,3a", options="header"]
+|===
+|項目名|内容
+|use risk based policy|2段階認証を行う際に2段階目の認証処理の実行有無をリスクベースで判断するか
+|threshold score|「リスクあり」と判断する閾値。リスク評価の合計スコアがこの閾値以上となる場合、2段階目の認証が行われます。
+|===
+
+リスク評価の方法は以下のタイプから選択することが可能です。
+
+* CookieToken
+* HttpHeader
+* IPAddressHistory
+* IPAddressRange
+* JavaClass
+* ReAuthentication
+* Scripting
+* X509
+
+それぞれの設定項目を記載します。
+
+===== CookieToken
+クッキー内に一定期間内に作られたトークンが存在するかで評価を行います。
+
+[cols="1,3a", options="header"]
+|===
+|項目名|内容
+|score|リスク評価内容に一致した際に加算されるスコア。マイナス値を指定した場合は減算される。
+|inverse result|リスク評価の結果を逆にする。
+|lifetime minutes|有効となる期間（分）。0は無期限となる。
+|absolute lifetime|有効期間の開始日時。ONの場合は現在から有効期間まで、OFFの場合は最終アクセス日時から有効期間まで。
+|===
+
+===== HttpHeader
+HTTPヘッダ名に対応する値がMatch Patternにマッチするかで評価を行います。
+
+[cols="1,3a", options="header"]
+|===
+|項目名|内容
+|score|リスク評価内容に一致した際に加算されるスコア。マイナス値を指定した場合は減算される。
+|inverse result|リスク評価の結果を逆にする。
+|header name|HTTPヘッダ名。
+|match pattern|HTTPヘッダの値のパターン。
+|===
+
+===== IPAddressHistory
+過去にアクセスされたIPアドレスか否かにより評価を行います。設定によりIPアドレス履歴の保持数、時間を設定可能です。
+
+[cols="1,3a", options="header"]
+|===
+|項目名|内容
+|score|リスク評価内容に一致した際に加算されるスコア。マイナス値を指定した場合は減算される。
+|inverse result|リスク評価の結果を逆にする。
+|history counts|履歴の回数
+|lifetime minutes|有効となる期間（分）。0は無期限となる。
+|absolute lifetime|有効期間の開始日時。ONの場合は現在から有効期間まで、OFFの場合は最終アクセス日時から有効期間まで。
+|===
+
+===== IPAddressRange
+指定されたIPアドレス（の範囲）と一致するかで評価を行います。
+
+[cols="1,3a", options="header"]
+|===
+|項目名|内容
+|score|リスク評価内容に一致した際に加算されるスコア。マイナス値を指定した場合は減算される。
+|inverse result|リスク評価の結果を逆にする。
+|IP address|対象となるIPアドレス（の範囲）。以下の形で指定が可能。
+
+,（カンマ）::  区切りによる複数IPアドレス（の範囲）の列挙
+-（ハイフン）:: 区切りによるIPアドレス範囲の指定
+/（スラッシュ）:: 区切りによるCIDR表記によるIPアドレス範囲の指定
+
+====
+192.168.0.0/16, 172.16.1.11-172.16.1.16, 172.16.0.1
+====
+|===
+
+===== JavaClass
+独自のJavaクラス内で評価を行います。指定するクラスは下記のインターフェースを実装する必要があります。
+
+====
+org.iplass.mtp.auth.login.twostep.RiskEvaluator
+====
+
+[cols="1,3a", options="header"]
+|===
+|項目名|内容
+|score|リスク評価内容に一致した際に加算されるスコア。マイナス値を指定した場合は減算される。
+|inverse result|リスク評価の結果を逆にする。
+|class name|RiskEvaluatorを実装したJavaクラス名
+|init script|初期化スクリプトをGroovyスクリプトで記述します。
+|===
+
+init scriptには、以下の変数がバインドされています。
+
+[cols="1,3a", options="header"]
+|===
+|バインド変数|バインド内容
+|policyName|認証ポリシー名
+|evaluator|Class Nameで指定したJavaクラスのインスタンス
+|===
+
+===== ReAuthentication
+再認証時にリスクありと判定します。
+再認証が要求されるタイミングは `trusted authentication required` が設定されたActionが呼び出される際に、2段階目の認証がされていない状態の場合です。
+
+[cols="1,3a", options="header"]
+|===
+|項目名|内容
+|score|リスク評価内容に一致した際に加算されるスコア。マイナス値を指定した場合は減算される。
+|inverse result|リスク評価の結果を逆にする。
+|===
+
+===== Scripting
+Groovyスクリプトで記述された内容で評価を行います。
+
+[cols="1,3a", options="header"]
+|===
+|項目名|内容
+|score|リスク評価内容に一致した際に加算されるスコア。マイナス値を指定した場合は減算される。
+|inverse result|リスク評価の結果を逆にする。
+|script|リスク判定のスクリプトをGroovyスクリプトで記述します。
+|===
+
+以下の変数がバインドされています。
+
+[cols="1,3a", options="header"]
+|===
+|バインド変数|バインド内容
+|credential|認証対象のCredential。
+|unmodifiableUniqueKeyOfUser|ユーザーを一意に特定する変更不可の一意なキー。
+標準の認証機構を利用している場合はoidと同じです。
+|requestContext|認証要求があった際のRequestContext。
+|authenticationProviderName|認証プロバイダ名
+|===
+
+===== X509
+クライアントに設定された証明書の有無、IDの比較によって評価を行います。
+
+[cols="1,3a", options="header"]
+|===
+|項目名|内容
+|score|リスク評価内容に一致した際に加算されるスコア。マイナス値を指定した場合は減算される。
+|inverse result|リスク評価の結果を逆にする。
+|id must match|証明書内のIDがログインIDと一致している必要があるか。
+|===

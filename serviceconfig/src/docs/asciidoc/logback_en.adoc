@@ -1,0 +1,162 @@
+[[logback]]
+== Log（Slf4j/Logback）
+iPLAss is utilizing Slf4j/Logback to satisfy the needs of log output.
+
+=== Logger Name
+iPLAss outputs the following logs as standard.
+If necessary, specify the log logger name to be output to the log file etc. in logback.xml.
+
+* Logs for Events
++
+[cols="1,2",options="header"]
+|===
+| Logger Name | Output Content
+| mtp.audit | Logs related to data operations.
+| mtp.audit.admin | Logs related to AdminConsole operations.
+Output for file download operations ( `mtp.audit.admin.download` ) and AuditLog data maintenance operations ( `mtp.audit.admin.auditlog` ).
+| mtp.audit.download | Logs related to file download operations.
+|mtp.audit.porting.entity | Logs related to entity operations.
+|mtp.audit.porting.metadata | Logs related to metadata operations.
+|mtp.audit.porting.pack | Logs related to package operations.
+|===
+
+* Logs for Authentication
++
+[cols="1,2",options="header"]
+|===
+| Logger Name | Output Content
+| mtp.auth | Logs related to authentication related events.
+|===
+
+* Execution Logs
++
+[cols="1,2",options="header"]
+|===
+| Logger Name | Output Content
+| mtp.action | Execution log for the call to Action. Outputs execution time, query execution count, error description, etc.
+| mtp.webapi | Execution log for the call to Web API. Outputs execution time, query execution count, error description, etc.
+| mtp.async | Execution log for asynchronous execution. Outputs execution time, error description, etc.
+|===
+
+////
+* Logs for Tools
++
+[cols="1,2",options="header"]
+|===
+| Logger Name | Output Content
+| mtp.tools.entity |
+| mtp.tools.metadata |
+| mtp.tools.packaging |
+|===
+////
+
+* Logs for Fatal Errors
++
+[cols="1,2",options="header"]
+|===
+| Logger Name | Output Content
+| mtp.fatal | Logs about fatal errors.
+| mtp.fatal.cube | Logs of errors that occurred in the Cube functions.
+| mtp.fatal.async | Logs of errors that occurred during asynchronous executions.
+| mtp.fatal.async.rdb | Write Logs when asynchronous execution get interrupted or exceeds the number of retries.
+| mtp.fatal.async.rdb.processworker | Logs of errors that occurred during asynchronous executions.
+| mtp.fatal.asynctask | Write Logs when the execution of asynchronous tasks get interrupted.
+| mtp.fatal.mail | Logs of errors that occurred during email transmissions.
+| mtp.fatal.cluster | Logs of errors that occurred during inter-cluster communications.
+| mtp.fatal.classloader | Log of errors that occurred in GroovyScript ClassLoader.
+|===
+
+* Logs for GroovyScript
++
+[cols="1,2",options="header"]
+|===
+| Logger Name | Output Content
+| mtp.script.out | Log is output by println() method of variable binding of "out".
+|===
+
+* Logs for SQL
++
+[cols="1,2",options="header"]
+|===
+| Logger Name | Output Content
+| org.iplass.mtp.impl.rdb.connection | Logs of SQL execution time and warning.
+|===
+
+=== diagnostic context
+In iPLAss, the following information is logged by the diagnostic context (MDC).
+
+[cols="1,1,2",options="header"]
+|===
+| Key Name | Log Format | Output Values
+| taskId | %X{taskId} | TaskID
+| user | %X{user} | User(Client ID)
+| tenant | %X{tenant} | Tenant ID
+| tenantName | %X{tenantName} | Tenant Name
+| action | %X{action} | Action Name
+| command | %X{command} | Command Name
+| webapi | %X{webapi} | WebApi Name
+| traceId | %X{traceId} | When applying [.eeonly]#iplass-ee-aws# module, output Root of X-Amzn-Trace-Id. +
+In addition, the output value can be set with WebFrontendService.
+| [.eeonly]#impersonatedUser# | %X{impersonatedUser} | Impersonated User
+|===
+
+=== filter
+In the context of iPLAss, `org.iplass.mtp.impl.logging.logback.LogConditionTurboFilter` is provided. By enabling this TurboFilter, it is possible to modify the log output conditions dynamically corresponding to each tenant.
+
+.The Settings of LogConditionTurboFilter
+[source, xml]
+----
+<configuration>
+    <turboFilter class="org.iplass.mtp.impl.logging.logback.LogConditionTurboFilter" />
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %X{tenant} %X{user} %X{command} %X{taskId} %logger{36} - %replace(%msg){'\r|\n', ' '}%n</pattern>
+		</encoder>
+	</appender>
+
+    :
+    :
+
+
+	<logger name="org.iplass" level="INFO">
+		<appender-ref ref="STDOUT" />
+	</logger>
+
+	<logger name="mtp" level="INFO">
+		<appender-ref ref="STDOUT" />
+	</logger>
+	<root level="OFF" />
+</configuration>
+
+----
+
+
+=== Structured Logging
+Logs can be output in JSON format using the Logstash Logback Encoder.
+Action/WebAPI execution time, number of queries issued, etc. are also output as attributes.
+
+.The Settings of Logstash Logback Encoder
+[source, xml]
+----
+<configuration>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+	</appender>
+
+    :
+    :
+
+
+	<logger name="org.iplass" level="INFO">
+		<appender-ref ref="STDOUT" />
+	</logger>
+
+	<logger name="mtp" level="INFO">
+		<appender-ref ref="STDOUT" />
+	</logger>
+	<root level="OFF" />
+</configuration>
+
+----

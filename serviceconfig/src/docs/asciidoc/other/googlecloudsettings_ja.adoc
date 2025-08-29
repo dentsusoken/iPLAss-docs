@@ -1,0 +1,74 @@
+[[GoogleCloudSettings]]
+=== GoogleCloudSettings
+GoogleCloudの設定を管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.googlecloud.GoogleCloudSettings
+----
+
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.googlecloud.GoogleCloudSettings
+----
+
+
+==== GoogleCloudSettingsの設定
+GoogleCloudSettingsを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| credentialsFactory | <<GoogleCredentialsFactory>>、必須 | GoogleCredentials を生成するクラスを設定する。
+|===
+
+[[GoogleCredentialsFactory]]
+.GoogleCredentialsFactory
+インターフェース org.iplass.mtp.impl.googlecloud.GoogleCredentialsFactory を実装したクラスです。
+
+標準機能として、以下の GoogleCredentialsFactory を提供します。
+
+- org.iplass.mtp.impl.googlecloud.ServiceAccountSecretKeyGoogleCredentialsFactory
+  * サービスアカウント用の秘密鍵ファイルを利用した認証情報を生成する機能です。
+
+[[ServiceAccountSecretKeyGoogleCredentialsFactory]]
+.ServiceAccountSecretKeyGoogleCredentialsFactoryの設定
+org.iplass.mtp.impl.googlecloud.ServiceAccountSecretKeyGoogleCredentialsFactory を指定します。
+
+Google以外の環境を利用する場合に、サービスアカウント秘密鍵ファイルを利用して認証を行うことを想定しています。 +
+Google環境を利用する場合は、サービスアカウント秘密鍵ファイル以外の方法を検討してください。参考： link:https://cloud.google.com/iam/docs/best-practices-for-managing-service-account-keys[サービスアカウントキーを管理するためのベストプラクティス^]
+
+ServiceAccountSecretKeyGoogleCredentialsFactory は以下の項目を設定可能です。
+
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| serviceAccountSecretKeyFilePath | String、必須 | Google Cloud 環境より取得したサービスアカウント秘密鍵ファイルへのパス（物理ファイルパスもしくは、リソースパス）を設定します。
+| scope | String、複数指定可 | GoogleCredentials に設定するスコープ。設定可能なスコープは link:https://developers.google.com/identity/protocols/oauth2/scopes[Google API の OAuth 2.0 スコープ] を確認してください。
+| proxyHost | String | proxyを利用する場合のHost名。
+| proxyPort | int | proxyを利用する場合のPort番号。
+|====================
+
+
+===== 設定例
+[source, xml]
+----
+<!-- GoogleCloudSettings -->
+<service>
+    <interface>org.iplass.mtp.impl.googlecloud.GoogleCloudSettings</interface>
+    <class>org.iplass.mtp.impl.googlecloud.GoogleCloudSettings</class>
+
+    <property name="credentialsFactory" class="org.iplass.mtp.impl.googlecloud.ServiceAccountSecretKeyGoogleCredentialsFactory">
+        <!-- サービスアカウント用の秘密鍵ファイル（json）を設定する -->
+        <property name="serviceAccountSecretKeyFilePath" value="/path/to/service-account.json" />
+		<property name="scope" value="https://www.googleapis.com/auth/datastore" />
+		<property name="scope" value="https://www.googleapis.com/auth/cloud-platform" />
+        <property name="scope" value="https://www.googleapis.com/auth/firebase.messaging" />
+        <!-- proxy利用する場合設定 -->
+        <property name="proxyHost" value="xxxxxx.dentsusoken.com" />
+        <property name="proxyPort" value="8080" />
+    </property>
+</service>
+----

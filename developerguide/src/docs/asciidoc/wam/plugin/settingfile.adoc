@@ -1,0 +1,598 @@
+[[wamsettingfile]]
+=== WAMプラグインモジュールの設定
+
+WAMプラグインモジュールの設定項目の説明です。WAMプラグインモジュールの設定可能項目/設定方法は各実装によって異なります。
+
+NOTE: Apache版の場合、各設定項目名はパスカル記法となっており、prefixに `Iplass` が必要です。
+
+[cols="1,6a,1a,^1,^1,^1,^1,^1", options="header"]
+|===
+|項目|説明|デフォルト値|要変更|Apache|IIS|JavaEE|Serverless
+|wamBaseUrl +
+(IplassWamBaseUrl)
+|WAMモジュールが稼働するiPLAssサーバー側のURLを指定します。WAMプラグインモジュールとWAMモジュール間でHTTP通信する際に使用されます。 +
+
+形式は以下の通りです。 +
+`http[s]://<iPLAssのドメイン>/<サーブレットコンテキストパス>/<テナント名>/`
+|-
+|○
+|○
+|○
+|○
+|○
+
+|wamRedirectUrl +
+(IplassWamRedirectUrl)
+|ブラウザからWAMモジュールにリダイレクトする際のベースURLを指定します。
+
+形式は以下の通りです。 +
+`http[s]://<iPLAssのドメイン>/<サーブレットコンテキストパス>/<テナント名>/`
+|`wamBaseUrl` の定義値
+|-
+|○
+|○
+|○
+|○
+
+|wamCookieName +
+(IplassWamCookieName)
+|iPLAssサーバー上でセッションIDとして使用されるCookie名を指定します。 +
+WAMプラグインモジュールからWAMモジュールへ通信する際、このCookie名に管理対象サイトがCookieに保持するアクセストークンを値としてセットして通信します。
+|JSESSIONID
+|-
+|○
+|○
+|○
+|○
+
+|wamCookieDomain +
+(IplassWamCookieDomain)
+|iPLAssサーバー上でセッションIDとして使用されるCookieのドメインを指定します。 +
+WAMモジュール( = iPLAssサーバー)が稼働するドメインを指定してください。 +
+WAMプラグインモジュールとWAMモジュールが同一ドメインで稼動する場合には、定義不要です。
+|-
+|○
+|○
+|-
+|○
+|-
+
+|wamCookiePath +
+(IplassWamCookiePath)
+|iPLAssサーバー上でセッションIDとして使用されるCookieが有効なパスを指定します。
+|/
+|-
+|○
+|○
+|○
+|-
+
+|wamAuthCallbackPath +
+(IplassWamAuthCallbackPath)
+|WAM機能の認証フローにおいて、ログイン完了後にWAMモジュールから管理対象サイトへリダイレクトする際に使用されるURLです。 当該URLは、サイトコンテンツのURLに該当しない任意のURLを設定してください。
+
+形式は以下の通りです。 +
+`/<任意のパス>`
+|-
+|○
+|○
+|○
+|○
+|○
+
+|siteId +
+(IplassSiteId)
+|管理対象サイトを識別するための一意なIDを指定します。 +
+<<wam_wampreference, Preference>>の当該管理対象サイトの `manageSite > siteId` と一致させてください。
+|-
+|○
+|○
+|○
+|○
+|○
+
+|siteSecret +
+(IplassSiteSecret)
+|管理対象サイトのシークレットキーを指定します。 +
+<<wam_wampreference, Preference>>の当該管理対象サイトの `manageSite > siteSecret` と一致させてください。
+|-
+|○
+|○
+|○
+|○
+|○
+
+|siteCookieName +
+(IplassSiteCookieName)
+|アクセストークン( = iPLAss上のセッションID)を管理対象サイト側のドメインにCookieとして発行する際のCookie名を指定します。
+|ipw
+|-
+|○
+|○
+|○
+|○
+
+|siteCookieDomain +
+(IplassSiteCookieDomain)
+|アクセストークン( = iPLAss上のセッションID)を管理対象サイト側のドメインにCookieとして発行する際のCookieのDomain属性を指定します。
+|-
+|○
+|○
+|○
+|○
+|○
+
+|siteCookiePath +
+(IplassSiteCookiePath)
+|アクセストークン( = iPLAss上のセッションID)を管理対象サイト側のドメインにCookieとして発行する際のCookieの有効パスを指定します。
+
+指定する場合は以下の項目で指定したURLのパターンを包含するようにしてください。 +
+
+* protectedPathPattern
+* addScriptTagPathPattern +
+* wamAuthCallbackPath
+|-
+|-
+|○
+|○
+|○
+|○
+
+|siteCookieSameSite
+|アクセストークン( = iPLAss上のセッションID)を管理対象サイト側のドメインにCookieとして発行する際のCookieのSameSite属性を指定します。
+|-
+|-
+|-
+|-
+|-
+|○
+
+|siteScheme +
+(IplassSiteScheme)
+|管理対象サイトのURLスキームを指定します。 +
+有効な値は `http` または `https` です。
+|https
+|-
+|○
+|○
+|○
+|○
+
+|charset +
+(IplassCharset)
+|WAMモジュール側でのコンテンツ閲覧権限チェック時のパラメータのエンコードやJSONレスポンスのエンコードに使用されます。 +
+管理対象サイトの文字コードと同じものを指定します。
+|utf-8
+|-
+|○
+|○
+|○
+|○
+
+|csrfTokenCookieName +
+(IplassCsrfTokenCookieName)
+|一連の認証処理時のCSRF対策用トークンを管理対象サイト側のドメインにCookieとして発行する際のCookie名を指定します。
+|_csrft
+|-
+|○
+|○
+|○
+|○
+
+|protectedPathPattern +
+(IplassProtectedPathPattern)
+|管理対象サイトのコンテンツについて、閲覧制限をかけるURLのパスパターンを正規表現で指定します。
+
+CAUTION: windows環境において、ファイルパスはcase-insensitiveとなるのでURLパターンの記述の際にはそのことに留意が必要です。また、HTTPサーバの機能やモジュール等でパスの変換処理を行う際も留意が必要です。
+|-
+|○
+|○
+|○
+|○
+|-
+
+|protectedPattern
+|管理対象サイトのコンテンツについて、閲覧制限をかけるパターンを `ドメイン × パスパターンの正規表現` で指定します。複数指定可能です。 +
+当該設定項目のいずれのドメインにも一致しないドメインでのアクセスの場合、認証・認可処理はスキップされます。
+
+.Serverless版での設定例
+-----
+protectedPattern: [
+  { domain: "mysite.example.com", pathPattern: /^\/contents\/.*$/ },
+],
+-----
+
+|-
+|○
+|-
+|-
+|-
+|○
+
+|httpComponentProvider +
+(IplassHttpComponentProvider)
+|HTTP通信実装クラスを指定します。 +
+HTTP通信時のカスタマイズが必要なければ、特に指定する必要はありません。
+|各実装の標準HttpComponentProvider
+|-
+|○
+|○
+|○
+|-
+
+|wamVerboseLog +
+(IplassWamVerbose)
+|ログの冗長化を設定する際に利用します。 +
+true(On) : 冗長化する +
+false(Off) : 冗長化しない +
+|false(Off)
+|-
+|○
+|○
+|-
+|-
+
+|mapUserAttribute +
+(IplassMapUserAttribute)
+|許可APIでコンテンツ閲覧が許可された場合、その後のコンテンツへのリクエスト時のHTTPリクエストヘッダーにユーザー情報をセットする機能を有効化するかを指定します。 +
+true(On) : 有効化する +
+false(Off) : 有効化しない +
+|false(Off)
+|-
+|○
+|○
+|○
+|○
+
+|attributeMap +
+(IplassAttributeMap)
+|許可APIでコンテンツ閲覧が許可された場合、その後のコンテンツへのリクエスト時のHTTPリクエストヘッダーにユーザー情報をセットする場合に利用します。 リクエストヘッダー名と値として設定する `User` エンティティのプロパティ名を指定します。 +
+コンテンツを動的に生成する場合、コンテンツサーバーは当該リクエストヘッダーを参照することでユーザー情報を取得できます。
+
+.Apache版での設定例
+-----
+IplassAttributeMap x-wam-user-id accountId
+-----
+|-
+|-
+|○
+|○
+|○
+|○
+
+|allowedIp +
+(IplassAllowedIp)
+|WAMの認証・認可処理をスキップできる接続元のIPアドレスを指定します。 +
+|-
+|-
+|○
+|○
+|○
+|○
+
+|allowedIpHeaderName +
+(IplassAllowedIpHeaderName)
+|許可対象のIPアドレスが含まれるかどうかチェックするリクエストヘッダー名を指定します。 +
+デフォルトは `X-Forwarded-For` です。
+|X-Forwarded-For
+|-
+|○
+|○
+|○
+|○
+
+|allowedIpHeaderFieldIndex +
+(IplassAllowedIpHeaderFieldIndex)
+|`allowedIpHeaderName` で指定したリクエストヘッダーフィールドを `,` で区切った場合の何番目の要素をチェックするか指定します。最終要素を0として、先頭に戻る方向に数えます。 +
+例えば、X-Forwarded-Forの値の内、後ろから2番目のIPアドレスをチェックしたい場合、1と指定します。 デフォルトは最終要素です。
+|0 （0で最終要素を指します）
+|-
+|○
+|○
+|○
+|○
+
+|loadBalancerCookieName +
+(IplassLoadBalancerCookieName)
+|WAMモジュールが稼働するiPLAssサーバーが冗長化されており、ロードバランサーのスティッキーセッション機能が有効化されている場合に、スティッキーセッション機能で用いられるCookie名を指定します。
+|-
+|-
+|○
+|○
+|○
+|○
+
+|siteLoadBalancerCookieName +
+(IplassSiteLoadBalancerCookieName)
+|WAMモジュールが稼働するiPLAssサーバーが冗長化されており、ロードバランサーのスティッキーセッション機能が有効化されている場合に、スティッキーセッション機能で用いられるCookieを管理対象サイト側のドメインのCookieとして格納する際のCookie名を指定します。
+
+例えば、当該項目を `MYCOOKIE` 、loadBalancerCookieName項目を `AWSALB` と設定すると、AWSのALBから与えられたスティッキーセッション値xxxは、管理対象サイト側のドメインのCookieとして `MYCOOKIE=xxx` で保存され、ALBには `AWSALB=xxx` として変換されて渡されます。
+|-
+|-
+|○
+|○
+|○
+|○
+
+|siteLoadBalancerCookieDomain
+|ロードバランサーのスティッキーセッション機能が有効化されている場合に、スティッキーセッション機能で用いられるCookieを管理対象サイト側のドメインのCookieとして格納する際のDomain属性を指定します。
+|-
+|-
+|-
+|-
+|-
+|○
+
+|siteLoadBalancerCookiePath
+|ロードバランサーのスティッキーセッション機能が有効化されている場合に、スティッキーセッション機能で用いられるCookieを管理対象サイト側のドメインのCookieとして格納する際の有効パスを指定します。
+|/
+|-
+|-
+|-
+|-
+|○
+
+|siteLoadBalancerCookieDomain
+|ロードバランサーのスティッキーセッション機能が有効化されている場合に、スティッキーセッション機能で用いられるCookieを管理対象サイト側のドメインのCookieとして格納する際のSameSite属性を指定します。
+|-
+|-
+|-
+|-
+|-
+|○
+
+|addScriptTagPathPattern +
+(IplassAddScriptTagPathPattern)
+|WAMの機能により、HTTPレスポンスボディの末尾にscriptタグを追加することができます。 +
+scriptタグを追加したいURLのパターンを正規表現で記述します。
+|-
+|○
+|○
+|○
+|○
+|-
+
+|javaScriptPath +
+(IplassJavaScriptPath)
+|`addScriptTagPathPattern` 項目で追加するscriptタグのsrc属性に設定するパスを指定します。 +
+複数ファイルを読み込ませたい場合は、カンマ(,)で区切ります。 +
+列挙した順番でsrc属性付のscriptタグが出力されます。
+|-
+|○
+|○
+|○
+|○
+|-
+
+|javaScriptSrc +
+(IplassJavaScriptSrc)
+|`addScriptTagPathPattern` 項目で追加するscriptタグで、scriptタグ内部のjavascriptのソースを記述します。
+|-
+|○
+|○
+|○
+|○
+|-
+
+|connectionTimeout +
+(IplassConnectionTimeout)
+|WAMプラグインモジュールからWAMモジュールへの通信時（HTTP/HTTPS）のコネクションタイムアウト時間を設定します。 +
+単位はミリ秒です。
+|-
+|-
+|○
+|○
+|○
+|-
+
+|soTimeout +
+(IplassSoTimeout)
+|WAMプラグインモジュールからWAMモジュールへの通信時（HTTP/HTTPS）のソケットタイムアウト時間を設定します。 +
+単位はミリ秒です。
+|-
+|-
+|○
+|○
+|○
+|○
+
+|proxyHost +
+(IplassProxyHost)
+|WAMプラグインモジュールからWAMモジュールへの通信時（HTTP/HTTPS）に利用するプロキシサーバのホスト名を指定します。
+|-
+|-
+|○
+|○
+|○
+|-
+
+|proxyPort +
+(IplassProxyPort)
+|WAMプラグインモジュールからWAMモジュールへの通信時（HTTP/HTTPS）に利用するプロキシサーバのポート番号を指定します。
+|-
+|-
+|○
+|○
+|○
+|-
+
+|noProxyHost +
+(IplassNoProxyHost)
+|プロキシサーバを指定した場合に、プロキシを利用しないホストを指定します。
+|localhost
+|-
+|○
+|○
+|○
+|-
+
+|includeClientIpToPermissionRequest
+|接続元IPアドレスをWAMモジュールの許可API呼び出し時にパラメータ(requestInfo)として送信するかをtrue/falseで指定します。 +
+送信する場合、requestInfoのキーは `clientIp` です。
+|false
+|-
+|-
+|-
+|-
+|○
+
+|clientHeaderToPermissionRequestMapping
+|ユーザーのコンテンツ要求時のHTTPリクエストヘッダーを、許可API呼び出し時のパラメータ(requestInfo)としてマッピングする場合の設定です。
+
+.Serverless版での設定例
+-----
+clientHeaderToPermissionRequestMapping: [
+  { clientHeaderName: "Accept", requestInfoKey: "accept" },
+]
+-----
+
+|-
+|-
+|-
+|-
+|-
+|○
+
+|systemErrorPageUrl
+|500エラー発生時に返却するエラー画面のURLです。絶対パスもしくは相対パスで指定可能です。 +
+この項目が設定されなかった場合、500エラーをJSON形式でレスポンスします。
+|-
+|-
+|-
+|-
+|-
+|○
+
+|unavailableErrorPageUrl
+|503エラー発生時に返却するエラー画面のURLです。絶対パスもしくは相対パスで指定可能です。 +
+この項目が設定されなかった場合、503エラーをJSON形式でレスポンスします。
+|-
+|-
+|-
+|-
+|-
+|○
+
+|forbiddenErrorPageUrl
+|403エラー発生時に返却するエラー画面のURLです。絶対パスもしくは相対パスで指定可能です。 +
+この項目が設定されなかった場合、403エラーをJSON形式でレスポンスします。
+|-
+|-
+|-
+|-
+|-
+|○
+
+|defaultErrorRedirectUrl
+|エラー発生時のデフォルトのリダイレクト先URLです。絶対パスもしくは相対パスで指定可能です。 +
+エラー発生時、エラー画面の取得に失敗した場合などには、当該項目で指定されたURLにリダイレクトします。 +
+この項目が設定されなかった場合、503エラーをJSON形式でレスポンスします。
+|-
+|-
+|-
+|-
+|-
+|○
+
+|IplassIntegrateBasicAuth
+|基本認証のID/PWでWAMの認証を行います。認証に成功した場合、そのまま管理対象サイトのコンテンツが表示されます。 +
+On/Offで指定します。
+|Off
+|-
+|○
+|-
+|-
+|-
+
+|IplassUrlEncodeCharset
+|WAMプラグインモジュールからWAMモジュールへのHTTP通信の際、クエリパラメータにURLを含むことがあります。 +
+URLエンコードに利用する文字セットを指定します。
+|utf-8
+|-
+|○
+|-
+|-
+|-
+
+|IplassSslVerifyPeer
+|WAMモジュールへのHTTP/HTTPS通信時、サーバー証明書の検証するか否かを設定します。 +
+On : 検証する +
+Off : 検証をスキップ +
+※ iPLAssのサーバー証明書がWAMの実行環境にバンドルされた証明書ではない場合、Offに設定します。 +
+|On
+|-
+|○
+|-
+|-
+|-
+
+|IplassSslVerifyHost
+|WAMからiPLAssへのHTTP/HTTPS通信時、通信先のドメイン名の検証(証明書のcommonNameの定義と一致しているか)するか否かを設定します。 +
+On : 検証する +
+Off : 検証をスキップ +
+※ テスト環境では `IplassSslVerifyPeer` 項目の設定値と同じ値を設定してください。
+|On
+|-
+|○
+|-
+|-
+|-
+
+|IplassSslVersion
+|SSLプロトコルバージョンを指定します。以下から設定可能です。 +
+0 : SSLv3かTLSv1から通信先で有効なプロトコルが使用されます +
+1 : TLSv1.xから通信先で有効なプロトコルが使用されます +
+2 : SSLv2が使用されます +
+3 : SSLv3が使用されます +
+4 : TLSv1.0が使用されます +
+5 : TLSv1.1が使用されます +
+6 : TLSv1.2が使用されます
+|1(TLSv1.x)
+|-
+|○
+|-
+|-
+|-
+
+|IplassHttpVerbose
+|WAMモジュールのHTTP通信のログを冗長化します。 +
+On : 冗長化する +
+Off : 冗長化しない +
+|Off
+|-
+|○
+|-
+|-
+|-
+|===
+
+TIP: *ロードバランサのスティッキーセッションを利用する* +
+WAMモジュールが稼働するiPLAssサーバーを冗長化してロードバランサーのスティッキセッション機能を利用する環境では、 `loadBalancerCookieName` と `siteLoadBalancerCookieName` を正しく設定することで、WAMプラグインモジュールが当該Cookieをロードバランサーに送付するようになります。 +
+Apache版を例にした場合、以下のような設定では、以下図のようにCookieが交換されます。 +
+----
+# ロードバランサのスティッキーセッションのCookie名を指定します.
+IplassLoadBalancerCookieName myLB
+# 上記Cookieを管理対象サイト側のドメインのCookieに格納する場合のCookie名を指定します.
+IplassSiteLoadBalancerCookieName wamMyLB
+----
+
+.WAMプラグインモジュール、ロードバランサー、WAMモジュールのCookie連携
+image::images/wam_cookie.png[]
+
+
+TIP: *javaScriptSrc(IplassJavaScriptSrc)/ javaScriptPath(IplassJavaScriptPath)項目について* +
+WAMの機能により、WAMプラグインモジュールからのHTTPレスポンスボディの末尾にscriptタグが追加されます。 +
+当該タグの目的は、JavaScriptでユーザー情報を取得し、ユーザー情報毎にコンテンツに変更を加える事に利用できます。 +
+サンプルモジュールが、Apache版の「doc/example/js/iplasswam」にありますので、ご参照ください。
+
+
+.IplassJavaScriptSrc/ IplassJavaScriptPathサンプル
+[cols="2,6,2", options="header"]
+|===
+|ファイル|説明|変更要
+|iplass-wam.js |WAMオブジェクトを定義したファイルです。 +
+カスタマイズ不要です。|
+|site.js |サイトのサンプルソースです。|○
+|site.css |サイトで利用するcssです。|○
+|jQuery-1.11.0.min.js |site.jsで利用するlibのファイルです。|
+|===

@@ -1,0 +1,866 @@
+[[servicedefine]]
+== About service-config files
+service-config files are stored in xml format.
+In addition, it is possible to divide and merge multiple config files.
+
+.Typical service-config File Example
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE serviceDefinition>
+<serviceDefinition>
+    <inherits>/mtp-core-service-config-mysql.xml</inherits>
+    <inherits>/mtp-web-service-config.xml</inherits>
+
+	<service>
+		<interface>org.iplass.mtp.impl.web.WebFrontendService</interface>
+
+		<property name="staticContentPath" value="/iplass-skeleton" />
+	</service>
+
+	<service>
+		<interface>org.iplass.mtp.impl.lob.LobStoreService</interface>
+
+		<property name="binaryStore" class="org.iplass.mtp.impl.lob.lobstore.file.FileLobStore">
+			<property name="rootDir" value="/lobs" />
+			<property name="overwriteFile" value="false" />
+		</property>
+
+		<property name="longTextStore" class="org.iplass.mtp.impl.lob.lobstore.rdb.RdbLobStore" />
+    </service>
+
+	:
+	:
+
+</serviceDefinition>
+----
+
+
+service-config is taking the input in unit of "Service".
+
+=== What is Service?
+Service is the components specified by iPLAss.
+In perspective of implementation, it is a java class: `org.iplass.mtp.spi.Service`.
+It is possible to set all kind of properties via the Service objects in service-config.
+
+=== How to Specify service-config File
+The service-config file used when starting iPLAss is read in one of the following forms.
+
+==== Automatic Loading From Class Path and File Path
+If you do not specify the service-config file explicitly at startup, the system will get mtp-service-config.xml directly under the class path or from the root path of the file system.
+When deploying as a Web application, mtp-service-config.xml can be placed directly under `/WEB-INF/classes/`.
+
+==== Explicitly specified
+There are three ways to specify a config file explicitly.
+
+- VM Parameter +
+When using VM Parameter, please specify the file path to the key "mtp.config".
++
+----
+-Dmtp.config=/app-service-config.xml
+----
+
+- web.xml +
+Specify "mtp.config" in the param-name element, and specify the service-config file to be read in the param-value element.
++
+[source,xml]
+----
+<context-param>
+	<param-name>mtp.config</param-name>
+	<param-value>/app-service-config.xml</param-value>
+</context-param>
+----
+
+- Code-wise +
+Please use the config(String) method from the EntryPointBuilder class to specify the service-config file.
++
+[source,java]
+----
+import org.iplass.mtp.runtime.EntryPoint;
+
+:
+:
+
+//initialize EntryPoint on application startup
+EntryPoint entryPoint = EntryPoint.builder()
+        .config("/app-service-config.xml").build();
+
+----
+
+Based on the specified file name (path), the file is searched as a resource path on the class path or a file path on the file system.
+
+[[splitting_the_service_config_file]]
+=== Splitting the service-config File
+The service-config file can be managed by dividing a part of the definition into separate files.
+For example, it is possible to extract and manage environment-dependent part settings as separate files.
+In addition, a service-config file with default values defined by iPLAss is provided to start with. Please overwrite the parts that are need to be changed from the default.
+The service-config files with default value sets are stored in the jar of each module of iPLAss.
+
+Below is a list of service-config files with default values.
+
+[cols="1,2", options="header"]
+|===
+| File Path| Explanation
+| /mtp-core-service-config.xml | The default config files for iPLAss core service.
+| /mtp-core-service-config-mysql.xml | The default config files for iPLAss core Service when using mysql8. It inherits from /mtp-core-service-config.xml.
+| /mtp-core-service-config-mysql-5.7.xml | The default config files for iPLAss core Service when using mysql5.7. It inherits from /mtp-core-service-config.xml.
+| /mtp-core-service-config-mysql_pseudo_128.xml | The default config files for iPLAss core Service when using mysql8 with pseudo partition features(128 partitions). It inherits from /mtp-core-service-config-mysql.xml.
+| /mtp-core-service-config-aurora_mysql.xml | The default config files for iPLAss core Service when using Amazon Aurora(mysql8) with pseudo partition features(128 partitions). It inherits from /mtp-core-service-config-mysql-5.7.xml.
+| /mtp-core-service-config-oracle.xml | The default config files for iPLAss core Service when using Oracle. It inherits from /mtp-core-service-config.xml.
+| /mtp-core-service-config-oracle_pseudo.xml | The default config files for iPLAss core Service when using Oracle with pseudo partition features(32 partitions). It inherits from /mtp-core-service-config-oracle.xml.
+| /mtp-core-service-config-oracle_pseudo_128.xml | The default config files for iPLAss core Service when using Oracle with pseudo partition features(128 partitions). It inherits from /mtp-core-service-config-oracle.xml.
+| /mtp-core-service-config-postgre.xml | The default config files for iPLAss core Service when using PostgreSQL. It inherits from /mtp-core-service-config.xml.
+| /mtp-core-service-config-postgre_pseudo.xml | The default config files for iPLAss core Service when using PostgreSQL with pseudo partition features(32 partitions). It inherits from /mtp-core-service-config-postgre.xml.
+| /mtp-core-service-config-postgre_pseudo_128.xml | The default config files for iPLAss core Service when using PostgreSQL with pseudo partition features(128 partitions). It inherits from /mtp-core-service-config-postgre.xml.
+| /mtp-core-service-config-sqlserver.xml | The default config files for iPLAss core Service when using SQLServer. It inherits from /mtp-core-service-config.xml.
+| /mtp-core-service-config-sqlserver_pseudo.xml | The default config files for iPLAss core Service when using SQLServer with pseudo partition features(32 partitions). It inherits from /mtp-core-service-config-sqlserver.xml.
+| /mtp-core-service-config-sqlserver_pseudo_128.xml | The default config files for iPLAss core Service when using SQLServer with pseudo partition features(128 partitions). It inherits from /mtp-core-service-config-sqlserver.xml.
+| /mtp-web-service-config.xml | The default config files for iPLAss web module.
+| /mtp-tools-service-config.xml | The default config files for Tool batches in AdminConsole.
+| /gem-service-config.xml | The default config files for gem module.
+| [.eeonly]#/mdc-service-config.xml# | The default config files for mdc module. Can be used by Enterprise Edition.
+| /adminconsole-service-config.xml | The default config files for AdminConsole.
+| /infinispan-service-config.xml | The default config files for infinispan.
+| /redis-service-config.xml | The default config files for redis.
+| [.eeonly]#/appconsole-service-config.xml# | The default config files for appConsole. Can be used by Enterprise Edition.
+| [.eeonly]#/aws-service-config.xml# | The default config files for aws related contents. Can be used by Enterprise Edition.
+| [.eeonly]#/wam-service-config.xml# | The default config files for wam module. Can be used by Enterprise Edition.
+| [.eeonly]#/micrometer-service-config.xml# | The default config files for micrometer module. Can be used by Enterprise Edition.
+|===
+
+
+The divided files will be merged in to one big service-config file when the application is running.
+In the configuration file, you can specify how to merge when the same Service definition exists in multiple files.
+
+.Example config when using gem and AdminConsole with mysql
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE serviceDefinition>
+<serviceDefinition>
+    <inherits>/mtp-core-service-config-mysql.xml</inherits>
+	<inherits>/mtp-web-service-config.xml</inherits>
+	<inherits>/mtp-tools-service-config.xml</inherits>
+	<inherits>/gem-service-config.xml</inherits>
+	<inherits>/adminconsole-service-config.xml</inherits>
+
+    <!-- below is the settings that overloads the default values. -->
+	<service>
+		<interface>org.iplass.mtp.impl.lob.LobStoreService</interface>
+
+		<property name="binaryStore" class="org.iplass.mtp.impl.lob.lobstore.file.FileLobStore">
+			<property name="rootDir" value="/lobs" />
+			<property name="overwriteFile" value="false" />
+		</property>
+
+		<property name="longTextStore" class="org.iplass.mtp.impl.lob.lobstore.rdb.RdbLobStore" />
+    </service>
+
+	:
+	:
+
+</serviceDefinition>
+----
+
+For more details, please refer to the composition of service-config.
+
+=== the Composition of service-config.
+.serviceDefinition Elements
+It is the root element for service-config.
+
+- Attribute
++
+[cols="1,1,3", options="header"]
+|===
+| Attribute Name | Type | Description
+| preprocess | boolean |
+Set it true if want to execute the <<preprocess,preprocess>> of this service-config file.
+|===
+
+- Child Elements
++
+[cols="1,1,3", options="header"]
+|===
+| Element Name | Type | Description
+| inherits | String, multiple |
+Specify the configuration file from which this configuration file is inherited from.
+After the service definition of the inheritance source is read, the definition described in the service-config file of the main unit is applied.
+| includes | String, multiple | Specify other files to import into this file.
+The included configuration file overwrites the settings of the main config file.
+| service | <<ServiceConfig, service>>, multiple| Setting the definition of the service.
+|===
+
+[[ServiceConfig]]
+.service Elements
+The emlements to define each service.
+
+- Attribute
++
+[cols="1,1,3", options="header"]
+|===
+| Attribute Name | Type | Description
+| name | String | Specify the service name, if not defined, the child element interface (interface name) will be used.
+| ifnone | boolean | Define this only if this service does not exist at the included/inherited destination. The default value is false.
+| inherit | boolean |If this service exists at the inheritance source or include destination, the original service definition is inherited. The default value is true. +
+Service name, interface, depend, property will be inherited.
+| final | boolean | Define whether to prevent further overwrites. Default is false.
+|===
+
+- Child Elements
++
+[cols="1,1,3", options="header"]
+|===
+| Element Name | Type | Description
+| interface | String, Required| Specify the interface name . The interface name should be fully qualified domain name.
+| class | String | Define the name of the class. Please specify the fully qualified domain name, the interface name is used instead if this elements was left unset.
+| depend | String, Multiple| Specify the services of dependance. please specify by the name.
+| property | <<Property, property>>, Multiple | Setting on the service property.
+| bean | <<Bean, bean>>, Multiple | Setting on the Bean interface  that will be utilized in the service. The specified Bean interface can be reference by the property elements. When you need to specify the same bean interface for multiple properties, please use this bean elements.
+|===
+
+[[Property]]
+.Property Elements
+It is the elements that defines the service property. +
+If the property element is in javaBeans format, it is possible to set the property element recursively.
+It is also possible to refer to bean elements that are separately defined with the ref attribute.
+
+
+- Attribute
++
+[cols="1,1,3", options="header"]
+|===
+| Attribute Name | Type | Description
+| name | String | Setting the name of the property.
+| value | String | Setting the value of the property.
+| class | String | When the property is a javaBeans, setting the name of the relative class, and please make sure the class name is in fully qualified domain name.
+| builder | String | If you want to customize the generation process of the property values, please specify the ObjectBuilder class with a fully qualified class name.
+For details, please refer to <<ObjectBuilder, Customization of the Setting Value Generation>>.
+| ref | String | When the property is a javaBeans, specify the name defined by <<Bean, bean element>> .The content of ref has higher priority than the content specified by value and class.
+| ifnone | boolean | Define this property only if this property does not exist in the inheritance source or include destination. The default value is false.
+inherit | boolean | If this property exists in the inheritance source or include destination, inherit the original property definition. The default value is true.
+| final | boolean | Define whether this property definition can be overwritten. The default value is false.
+| encrypted | boolean | Sets whether this is an encrypted value. The default value is false.
+| additional | boolean | If a property with the same name as this property exists in the inheritance source or include destination, set whether to add without inheritance or overwriting. The default value is false.
+|===
++
+
+- Child Elements
++
+[cols="1,1,3", options="header"]
+|===
+| Element Name | Type | Description
+| value | String | Sets the property value. Possible values are string type. If both attribute values are set, the attribute value takes precedence.
+| property | << Property, property >> can be specified multiple times | Set the definition of the nested property.
+| arg | << Property, property >> can be specified multiple times | It is possible to specify the value to be injected into the Bean constructor.
+The attributes and elements that can be specified are the same as the property type.
+For constructor injection, the name is in format of arg[argument order] like `arg0`, `arg1`.
+| buildScript | String | If you want to customize the generation process of the property values, use the GroovyScript format. For details, please refer to <<ObjectBuilder, Customization of the Setting Value Generation>>.
+
+|===
+
+[[Bean]]
+.Bean Elements
+This element defines the Bean instance used in the service. +
+The defined Bean instance can be referenced from the property element. If you want to refer to the same Bean instance from multiple property elements, please use the bean element.
+
+- Attribute
++
+[cols="1,1,3", options="header"]
+|===
+| Attribute Name | Type | Description
+| name | String | Set the name of the bean.
+| class | String | Set the bean class name. Set a fully qualified class name.
+| builder | String | If you want to customize the generation process of the Bean, please specify the ObjectBuilder class with a fully qualified class name.
+For details, please refer to <<ObjectBuilder, Customization of the Setting Value Generation>>.
+| ifnone | boolean | Define only if this bean definition does not exist in the inheritance source or import destination. The default value is false.
+| inherit | boolean | If this bean definition exists at the inheritance source or import destination, the original bean definition is inherited. The default value is true.
+| final | boolean | Overriding this bean definition is prohibited. The default value is false.
+| additional | boolean | If a bean with the same name as this bean definition exists in the inheritance source or import destination, set whether to add without inheriting or overwriting. The default value is false.
+|===
++
+
+- Child Elements
++
+[cols="1,1,3", options="header"]
+|===
+| Element Name | Type | Description
+| property | <<Property, property>>, Multiple | The configuration of the Bean property.
+| arg | <<Property, property>>, Multiple | It is possible to specify the value to be injected into the Bean constructor.
+The attributes and elements that can be specified are the same as the property type.
+For constructor injection, name is in the format of arg[argument order] like `arg0`, `arg1`.
+| buildScript | String | If you want to customize the generation process of the Bean, please write it in GroovyScript format. For details, please refer to <<ObjectBuilder, Customization of the Setting Value Generation>>.
+
+|===
+
+==== The Supports for Collection
+
+The formats of array, list, and map are supported.
+
+When setting array and list values, it is expressed by defining multiple <property> elements with the same name value.
+
+.Example of Setting Array to intList Property
+[source,xml]
+----
+<service>
+    :
+    :
+    <property name="intList" value="1" />
+    <property name="intList" value="3" />
+    <property name="intList" value="5" />
+
+
+</service>
+----
+
+To define the value of a Map, specify nested <property> element with name as the key and value as the value of the Map.
+
+.Example of stringMap settings
+[source,xml]
+----
+<service>
+    :
+    :
+    <property name="stringMap" >
+        <property name="key1" value="value1" />
+        <property name="key2" value="value2" />
+        <property name="key3" value="value3" />
+    </property>
+
+
+</service>
+----
+
+==== Examples
+- Examples of settings on javaBeans property
++
+For the javaBeans like these in below,
++
+[source,java]
+----
+public class SampleBean {
+    private int num;
+    private String condition;
+    private List<ChildBean> children;
+    private ChildBean2 child2;
+
+    //getters, seters...
+    public int getNum() {
+        return this.num;
+    }
+
+    :
+    :
+
+}
+
+public class ChildBean {
+    private int age;
+    private String name;
+
+    //getters, seters...
+    public int getAge() {
+        return this.age;
+    }
+
+    :
+    :
+}
+
+public class ChildBean2 {
+    private int age;
+    private String name;
+
+    private Map<String, Point> pointMap;
+
+    //constructor with args
+    public ChildBean2(int age, String name) {
+        this.age = age;
+        this.name = name;
+    }
+
+    :
+    :
+}
+
+public class Point {
+    private int x;
+    private int y;
+
+    //getters, seters...
+    public int getX() {
+        return this.x;
+    }
+
+    :
+    :
+}
+
+----
++
+The value can be specified in the following way.
++
+[source,xml]
+----
+<service>
+    :
+    :
+
+    <property name="sample" class="SampleBean">
+        <property name="num" value="123" />
+        <property name="condition" value="conditionStr" />
+        <property name="children" class="ChildBean">
+            <property name="age" value="5" />
+            <property name="name" value="abc" />
+        </property>
+        <property name="children" class="ChildBean">
+            <property name="age" value="3" />
+            <property name="name" value="def" />
+        </property>
+
+        <property name="child2" class="ChildBean2">
+            <arg name="arg0" value="10" />
+            <arg name="arg1" value="ghi" />
+
+            <property name="pointMap">
+                <property name="p1" class="Point">
+                    <property name="x" value="3" />
+                    <property name="y" value="15" />
+                </property>
+                <property name="p2" class="Point">
+                    <property name="x" value="7" />
+                    <property name="y" value="30" />
+                </property>
+            </property>
+        </property>
+    </property>
+
+</service>
+----
+
+- Example of Bean Elements
++
+For the javaBeans like these below,
++
+[source,java]
+----
+public class SampleBean1 {
+    private SharedBean sharedBean;
+
+    //getters, seters...
+    public SharedBean getSharedBean() {
+        return this.sharedBean;
+    }
+
+    :
+    :
+
+}
+
+public class SampleBean2 {
+    private SharedBean sharedBean;
+
+    //getters, seters...
+    public SharedBean getSharedBean() {
+        return this.sharedBean;
+    }
+
+    :
+    :
+
+}
+
+public class SharedBean {
+    private int age;
+    private String name;
+
+    //getters, seters...
+    public int getAge() {
+        return this.age;
+    }
+
+    :
+    :
+}
+
+----
++
+The values can be specified in the following way. It is possible to specify the same interface to the sharedBean for both SampleBean1 and SampleBean2.
++
+[source,xml]
+----
+<service>
+    :
+    :
+
+    <property name="sample1" class="SampleBean1">
+        <property name="sharedBean" ref="sb" />
+    </property>
+
+    <property name="sample2" class="SampleBean2">
+        <property name="sharedBean" ref="sb" />
+    </property>
+
+    <bean name="sb" class="SharedBean">
+        <property name="age" ref="15" />
+        <property name="name" ref="abc" />
+    </bean>
+
+</service>
+----
+
+NOTE: The availability of referencing the same Bean instance by definition is only in the scope of a single Service.
+If you want to use the same instance across Services, use it explicitly via Service interface (accessor method etc.).
+
+
+[[ObjectBuilder]]
+=== Customizing the Generation of the Setting Value
+With ObjectBuilder, the process to generate property value and bean instance can be customized.
+
+- Generate by specifying ObjectBuilder class
++
+Create the implementing class of org.iplass.mtp.spi.ObjectBuilder, and specify the property, bean as the builder attributes.
++
+.Sample ObjectBuilder Implementation
+[source,java]
+----
+import org.iplass.mtp.spi.ObjectBuilder;
+
+public class SampleObjectBuilder implements ObjectBuilder<SampleBean> {
+
+	private String propAFromNestProperty;
+
+	@Override
+	public void setProperties(Map<String, Object> properties) { <1>
+		propAFromNestProperty = (String) properties.get("propA");
+	}
+
+	@Override
+	public SampleBean build() { <2>
+		SampleBean bean = new SampleBean(System.currentTimeMillis());
+		bean.setPropA(propAFromNestProperty);
+		return bean;
+	}
+}
+
+
+public class SampleBean {
+
+	private String propA;
+	:
+
+	public SampleBean(long someDynamicParam) {
+		:
+		:
+	}
+
+	public String getPropA() {
+		return propA;
+	}
+
+	public void setPropA(String propA) {
+		this.propA = propA;
+	}
+}
+----
+<1> setProperties() By implementing this method, it is also possible to retrieve the value defined in the nested property element.
+<2> build() method can be used to create instance.
++
+.Example of Config File
+[source,xml]
+----
+<service>
+    :
+    :
+
+    <property name="sample1" builder="SampleObjectBuilder">
+        <property name="propA" value="abc" />
+    </property>
+
+
+</service>
+----
++
+With the above settings, the value of sample1 is set to the SampleBean instance generated by SampleObjectBuilder (propA value is set in the configuration file).
+
+
+- Generate by build script
++
+It is possible to define the ObjectBuilder's generation process in GroovyScript.
+GroovyScript will be declared as the elements of buildScript.
++
+GroovyScript will binde the following variables.
++
+[cols="1,3", options="header"]
+|===
+|Variables Name |Description
+|name |The value for the name property of the property elements/ bean elements.
+|value |The value attribute (or value elements) specified by the property element.
+|className |The value for the class attributes of the property elements/ bean elements.
+|properties |The property elements that are nested in other property elements/ bean elements. It is a Map format where name is set in key and property is set in value.
+|args | args element specified by nesting in property element/ bean element. It is in Map format where name is set in key and args value is stored in value.
+|===
++
+.Example of Config File
+[source,xml]
+----
+<service>
+    :
+    :
+
+    <property name="sample1">
+        <buildScript>
+			SampleBean sb = new SampleBean(System.currentTimeMillis());
+			sb.propA = properties.propA;
+			return sb;
+		</buildScript>
+        <property name="propA" value="abc" />
+    </property>
+
+
+</service>
+----
++
+With the above settings, the SampleBean instance obtained from the configuration file is set by the value of propA.
+
+[[obfuscation]]
+=== Obfuscation of Setting Values
+The values listed in the service-config file can be obfuscated.
+The obfuscation procedure is as follows:
+
+.Setting Obfuscation Method
+Create an encryption property file (crypt.properties) that describes the obfuscation method settings.
+
+The following items can be set.
+
+[cols="1,4a", options="header"]
+|===
+|Items|Value
+|propertyValueCoder|Please specify the implementing class of org.iplass.mtp.impl.core.config.PropertyValueCoder. 
+Implement the process of encoding/decoding the string in PropertyValueCoder.
+The following implementations are provided by default.
+
+<<DefaultPropertyValueCoder>>::
+Encode/decode values obfuscated by passphrases.
+
+<<SecretsManagerPropertyValueCoder>>::
+Get the setting value registered in the secret of AWS Secrets Manager.
+
+DefaultPropertyValueCoder is applied when not specified.
+|===
+
+[[DefaultPropertyValueCoder]]
+.DefaultPropertyValueCoder
+Please specify org.iplass.mtp.impl.core.config.DefaultPropertyValueCoder to the class.
+
+[cols="1,4a", options="header"]
+|===
+|Items|Value
+| keyFactoryAlgorithm | Key generation algorithm for encryption.
+Default value will be used if not specified. (PBKDF2WithHmacSHA256)
+| keySalt | Salt value for key generation.
+Default value will be used if not specified.
+| keyStretch | The number of stretches during key generation.
+Default value will be used if not specified.
+| keyLength | The bit length of the key.
+Default value will be used if not specified.(128)
+| cipherAlgorithm | Encryption algorithm.
+Default value will be used if not specified.(AES)
+| passphraseSupplier |Specify the class name that implements org.iplass.mtp.impl.core.config.PassphraseSupplier.
+PassphraseSupplier implements the process to get the passphrase at the time of key generation.
+The following implementations are provided by default.
+
+org.iplass.mtp.impl.core.config.PropertyFilePassphraseSupplier::
+Retrieve passphrase from property file
+
+org.iplass.mtp.impl.core.config.ConsolePassphraseSupplier::
+Enter passphrase from standard input
+
+org.iplass.mtp.impl.core.config.SystemEnvironmentVariablePassphraseSupplier::
+Specify the passphrase in the system environment variable (MTP_CONFIG_PASSPHRASE).
+(Not a java system variable)
+
+[.eeonly]#org.iplass.mtp.impl.aws.secretsmanager.SecretsManagerPassphraseSupplier#::
+Get from the passphrase registered in the secret of AWS Secrets Manager.
+
+PropertyFilePassphraseSupplier is applied when not specified.
+| passphrase | Specify a passphrase when using PropertyFilePassphraseSupplier.
+aws.secretName|Specify the secret name when using SecretsManagerPassphraseSupplier. Use the default credential provider chain for AWS credentials.
+|===
+
+For example, to use the default obfuscation settings, set as follows:
+
+.Example of crypt.properties
+----
+passphrase=hogehoge
+----
+
+[[SecretsManagerPropertyValueCoder]]
+.[.eeonly]#SecretsManagerPropertyValueCoder#
+Please specify org.iplass.mtp.impl.aws.secretsmanager.SecretsManagerPropertyValueCoder to the class.
+
+[cols="1,4a", options="header"]
+|===
+|Items|Value
+|aws.secretName|Specify the secret name. Use the default credential provider chain for AWS credentials.
+|===
+
+For example, to get the setting value registered in the secret of AWS Secrets Manager, set as follows:
+
+.Example of crypt.properties
+----
+propertyValueCoder=org.iplass.mtp.impl.aws.secretsmanager.SecretsManagerPropertyValueCoder
+aws.secretName=test
+----
+
+.Specify Property File
+Specify the path to the properties file (ClassLoader Resource path or file path) in the VM parameter or web-xml context-param.
+Alternatively, specify the path using the crypt (String) method of the EntryPointBuilder class.
+
+[horizontal]
+ParameterName:: mtp.config.crypt
+
+.Example Configuration With VM Parameter
+----
+-Dmtp.config.crypt=/crypt.properties
+----
+
+.Example Configuration with web.xml
+----
+<context-param>
+  <param-name>mtp.config.crypt</param-name>
+  <!-- ■ crypt config file ■ -->
+  <param-value>/crypt.properties</param-value>
+</context-param>
+----
+
+.Example Configuration with Code
+[source,java]
+----
+import org.iplass.mtp.runtime.EntryPoint;
+
+:
+:
+
+//initialize EntryPoint on application startup
+EntryPoint entryPoint = EntryPoint.builder()
+        .config("/app-service-config.xml")
+        .crypt("/crypt.properties").build();
+----
+
+.Obfuscation of the obfuscated text
+We will use the <<../developerguide/support/index.adoc#_encoder, Encoder>> for Obfuscation.
+The crypt.properties will be utilized when obfuscating. Passphrase will be directly inputted from the console.
+
+
+.Configuration for service-config
+We want to set the obfuscated text to service-config file.
+And also set encrypted="true" for the property attributes.
+
+----
+<property name="password" value="39y04KVcitPsSAQtXgvc=" encrypted="true" />
+----
+
+.[.eeonly]#Get Setting Values with AWS Secrets Manager#
+Get the setting value registered in the secret of AWS Secrets Manager when using SecretsManagerPropertyValueCoder. Register the setting values in key-value format in the secret of AWS Secrets Manager in advance.
+
+.Configuration for service-config
+Set the key of the setting value registered in the secret of AWS Secrets Manager in the service-config file.
+And also set encrypted="true" for the property attributes.
+
+----
+<property name="password" value="passwordKey" encrypted="true" />
+----
+
+[[preprocess]]
+=== Preprocessor
+It is possible to execute pre-processor of service-config file.
+When preprocessing is enabled (true is specified for the preprocess attribute of the serviceDefinition element), the service-config file is executed as GroovyTemplate before reading.
+
+For example, environment-dependent settings can be obtained from system properties and environment variables.
+
+CAUTION: `$` and `\` are reserved words in GroovyTemplate. +
+When enabling preprocessing, `$` in the configuration file needs to be escaped like `\$` and `\` needs to be escaped like `\\` .
+
+
+.Example of Preprocessing (Obtained From System Properties)
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE serviceDefinition>
+<serviceDefinition preprocess="true"> <1>
+
+	:
+	:
+
+	<service>
+		<interface>org.iplass.mtp.impl.lob.LobStoreService</interface>
+
+		<property name="binaryStore" class="org.iplass.mtp.impl.lob.lobstore.file.FileLobStore">
+			<property name="rootDir" value="${System.getProperty('lobStoreDir')}" /> <2>
+		</property>
+	</service>
+
+
+</serviceDefinition>
+----
+<1> in serviceDefinition, set preprocess="true"
+<2> reading the system property lobStoreDir
+
+
+.Example of Preprocessing (Obtained From Environment Variable)
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE serviceDefinition>
+<serviceDefinition preprocess="true"> <1>
+
+	:
+	:
+
+	<service>
+		<interface>org.iplass.mtp.impl.lob.LobStoreService</interface>
+
+		<property name="binaryStore" class="org.iplass.mtp.impl.lob.lobstore.file.FileLobStore">
+			<property name="rootDir" value="${System.getenv('LOB_STORE_DIR')}" /> <2>
+		</property>
+	</service>
+
+
+</serviceDefinition>
+----
+<1> in serviceDefinition, set preprocess="true"
+<2> reading the Environment variable LOB_STORE_DIR
+
+.Example of Preprocessing (Complicated)
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE serviceDefinition>
+<serviceDefinition preprocess="true"> <1>
+	<!-- <%
+	// retrieve the Control class from the property file
+	def props = new Properties()
+	getClass().getResource('/dev.properties').withInputStream {
+		props.load(it)
+	}
+
+	def rdb = props.getProperty('rdb', 'mysql')
+	def includeAdmin = props.getProperty('includeAdmin', 'true')
+
+	%> --> <2>
+
+	<inherits>/mtp-core-service-config-${rdb}.xml</inherits>
+	<inherits>/mtp-web-service-config.xml</inherits>
+ 	<inherits>/mtp-tools-service-config.xml</inherits>
+	<inherits>/gem-service-config.xml</inherits>
+	<!-- <% if (includeAdmin == 'true') {%> -->
+	<inherits>/adminconsole-service-config.xml</inherits>
+	<!-- <%}%> -->
+
+	:
+	:
+
+</serviceDefinition>
+----
+<1> in serviceDefinition, set preprocess="true"
+<2> <% %> is used to insert Script

@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024.33" height="938" viewBox="0 0 1024.33 938">
+  <title>iPLAss Conceptual Diagram</title>
+  <g id="iPLAss_Conceptual_Diagram" data-name="iPLAss Conceptual Diagram">
+  <rect x="255" y="293.46" width="768" height="398" style="fill:#f6f6f6" />
+  <rect x="1" y="293.5" width="254" height="397.96" style="fill:#fff" />
+  <path d="M981.1,618.47v48h-298v-48h298m1-1h-300v50h300v-50Z" style="fill:#18747a" />
+  <line x1="511.5" y1="295.5" x2="511.5" y2="589.65" style="fill:none;stroke:#ccc;stroke-miterlimit:10;stroke-dasharray:2" />
+  <line x1="768.53" y1="295.5" x2="768.53" y2="589.65" style="fill:none;stroke:#ccc;stroke-miterlimit:10;stroke-dasharray:2" />
+  <rect y="293.5" width="1" height="398" style="fill:#ddd" />
+  <rect x="254.5" y="293.46" width="1" height="398" style="fill:#ddd" />
+  <rect x="1023" y="293.51" width="1" height="398" style="fill:#ddd" />
+  <rect y="691.5" width="1024" height="1" style="fill:#ddd" />
+  <line x1="63" y1="322.5" x2="63" y2="322.5" style="fill:none;stroke:#18747a;stroke-miterlimit:10" />
+  <line x1="2.01" y1="344" x2="1021.01" y2="344" style="fill:none;stroke:#ccc;stroke-miterlimit:10;stroke-dasharray:2" />
+  <line x1="2.01" y1="393.01" x2="1021.01" y2="393.01" style="fill:none;stroke:#ccc;stroke-miterlimit:10;stroke-dasharray:2" />
+  <line x1="2.01" y1="444.01" x2="1020.01" y2="444.01" style="fill:none;stroke:#ccc;stroke-miterlimit:10;stroke-dasharray:2" />
+  <line x1="2.01" y1="493.02" x2="1021.01" y2="493.02" style="fill:none;stroke:#ccc;stroke-miterlimit:10;stroke-dasharray:2" />
+  <line x1="256.03" y1="544.02" x2="1021.01" y2="544.02" style="fill:none;stroke:#ccc;stroke-miterlimit:10;stroke-dasharray:2" />
+  <line x1="256.03" y1="593.03" x2="1021.01" y2="593.03" style="fill:none;stroke:#ccc;stroke-miterlimit:10;stroke-dasharray:2" />
+  <line x1="26.5" y1="703.49" x2="26.5" y2="889.49" style="fill:none;stroke:#ababab;stroke-miterlimit:10;stroke-dasharray:2" />
+  <line x1="384.5" y1="595.51" x2="384.5" y2="892.52" style="fill:none;stroke:#18747a;stroke-miterlimit:10;stroke-dasharray:2" />
+  <line x1="639.51" y1="595.53" x2="639.51" y2="892.54" style="fill:none;stroke:#18747a;stroke-miterlimit:10;stroke-dasharray:2" />
+  <line x1="832.5" y1="676.54" x2="832.5" y2="775.53" style="fill:none;stroke:#18747a;stroke-miterlimit:10;stroke-dasharray:2" />
+  <line x1="510.5" y1="752.55" x2="510.5" y2="775.53" style="fill:none;stroke:#18747a;stroke-miterlimit:10;stroke-dasharray:2" />
+  <line x1="128.46" y1="760.55" x2="128.46" y2="774.53" style="fill:none;stroke:#ababab;stroke-miterlimit:10;stroke-dasharray:2" />
+  <line x1="998.52" y1="705.54" x2="998.52" y2="892.54" style="fill:none;stroke:#18747a;stroke-miterlimit:10;stroke-dasharray:2" />
+  <circle cx="128.46" cy="692.5" r="60" style="fill:#ababab" />
+  <circle cx="510.5" cy="692.5" r="60" style="fill:#18747a" />
+  <path d="M26.1,693.27l-4.36,7.57a.46.46,0,0,0,.4.7h8.74a.47.47,0,0,0,.41-.7l-4.37-7.57a.48.48,0,0,0-.82,0Zm0,0" style="fill:#ababab" />
+  <path d="M26.91,899.83l4.36-7.57a.46.46,0,0,0-.4-.7H22.13a.46.46,0,0,0-.4.7l4.36,7.57a.48.48,0,0,0,.82,0Zm0,0" style="fill:#ababab" />
+  <path d="M384.91,900.79l4.36-7.57a.46.46,0,0,0-.4-.7h-8.74a.46.46,0,0,0-.4.7l4.36,7.57a.48.48,0,0,0,.82,0Zm0,0" style="fill:#18747a" />
+  <path d="M510.91,782.8l4.37-7.57a.47.47,0,0,0-.4-.7h-8.74a.47.47,0,0,0-.41.7l4.37,7.57a.47.47,0,0,0,.81,0Zm0,0" style="fill:#18747a" />
+  <path d="M639.91,900.81l4.37-7.57a.47.47,0,0,0-.4-.7h-8.75a.47.47,0,0,0-.4.7l4.37,7.57a.47.47,0,0,0,.81,0Zm0,0" style="fill:#18747a" />
+  <path d="M832.09,668.27l-4.36,7.57a.46.46,0,0,0,.4.7h8.74a.46.46,0,0,0,.4-.7l-4.36-7.57a.48.48,0,0,0-.82,0Zm0,0" style="fill:#18747a" />
+  <path d="M998.92,900.81l4.37-7.57a.47.47,0,0,0-.4-.7h-8.74a.47.47,0,0,0-.41.7l4.37,7.57a.47.47,0,0,0,.81,0Zm0,0" style="fill:#18747a" />
+  <path d="M998.11,694.3l-4.37,7.56a.47.47,0,0,0,.41.7h8.74a.47.47,0,0,0,.4-.7l-4.37-7.56a.46.46,0,0,0-.81,0Zm0,0" style="fill:#18747a" />
+  <path d="M128.16,753.24l-4.37,7.56a.47.47,0,0,0,.41.7h8.74a.47.47,0,0,0,.4-.7L129,753.24a.47.47,0,0,0-.81,0Zm0,0" style="fill:#ababab" />
+  <path d="M129,781.8l4.37-7.57a.47.47,0,0,0-.4-.7H124.2a.47.47,0,0,0-.41.7l4.37,7.57a.47.47,0,0,0,.81,0Zm0,0" style="fill:#ababab" />
+  <rect x="255" y="213.46" width="769" height="80" style="fill:#18747a" />
+  <rect y="213.46" width="255" height="80" style="fill:#ababab" />
+  <rect y="157.46" width="1024" height="56" style="fill:#313131" />
+  <text transform="translate(460 85)" style="font-size:16px;fill:#18747a;;letter-spacing:0.04998779296875em">コンシューマ</text>
+  <line x1="511.5" y1="108" x2="511.5" y2="150.5" style="fill:none;stroke:#18747a;stroke-miterlimit:10;stroke-dasharray:1.4173228740692139" />
+  <path d="M511.91,157.23l4.36-7.57a.46.46,0,0,0-.4-.7h-8.74a.46.46,0,0,0-.4.7l4.36,7.57a.48.48,0,0,0,.82,0Zm0,0" style="fill:#18747a" />
+  <path d="M532.79,13.82a6.22,6.22,0,0,0,1.15-3.59v-4A6.22,6.22,0,0,0,527.72,0h-.85a6.22,6.22,0,0,0-6.22,6.21v4a6.23,6.23,0,0,0,1.14,3.58h-4.12a6.15,6.15,0,0,0,1.14-3.58v-4A6.22,6.22,0,0,0,512.6,0h-.86a6.22,6.22,0,0,0-6.21,6.21v4a6.15,6.15,0,0,0,1.14,3.58h-4.13a6.15,6.15,0,0,0,1.14-3.58v-4A6.22,6.22,0,0,0,497.47,0h-.85a6.22,6.22,0,0,0-6.22,6.21v4a6.22,6.22,0,0,0,1.15,3.59,8.67,8.67,0,0,0-8.32,8.64V35.28a4.85,4.85,0,0,0,4.86,4.83h.08V58.62A4.39,4.39,0,0,0,492.55,63H494A4.35,4.35,0,0,0,497,61.74,4.37,4.37,0,0,0,500.11,63h1.43a4.34,4.34,0,0,0,3.06-1.26A4.38,4.38,0,0,0,507.67,63h1.43a4.37,4.37,0,0,0,3.07-1.26A4.35,4.35,0,0,0,515.24,63h1.42a4.35,4.35,0,0,0,3.07-1.26A4.37,4.37,0,0,0,522.8,63h1.42a4.35,4.35,0,0,0,3.07-1.26A4.37,4.37,0,0,0,530.36,63h1.43a4.39,4.39,0,0,0,4.38-4.38V40.11h.08a4.84,4.84,0,0,0,4.85-4.83V22.46A8.66,8.66,0,0,0,532.79,13.82Zm-9.51-7.61a3.59,3.59,0,0,1,3.59-3.58h.85a3.58,3.58,0,0,1,3.58,3.58v4a3.58,3.58,0,0,1-3.58,3.58h-.85a3.59,3.59,0,0,1-3.59-3.58Zm-15.12,0a3.58,3.58,0,0,1,3.58-3.58h.86a3.59,3.59,0,0,1,3.58,3.58v4a3.59,3.59,0,0,1-3.58,3.58h-.86a3.58,3.58,0,0,1-3.58-3.58ZM493,6.21a3.59,3.59,0,0,1,3.59-3.58h.85a3.58,3.58,0,0,1,3.58,3.58v4a3.58,3.58,0,0,1-3.58,3.58h-.85A3.59,3.59,0,0,1,493,10.23Zm-3.55,19.37a1.31,1.31,0,0,0-1.31,1.32h0V37.49h-.08a2.21,2.21,0,0,1-2.23-2.2V22.46a6,6,0,0,1,6.06-6h8.89a8.63,8.63,0,0,0-2.45,6V35.28a4.51,4.51,0,0,0,.16,1.23l-1.47.75-6.25-3.18V26.9h0A1.32,1.32,0,0,0,489.48,25.58Zm12.06,34.79h-1.43a1.75,1.75,0,0,1-1.75-1.75V44.16a1.32,1.32,0,1,0-2.63,0V58.62A1.76,1.76,0,0,1,494,60.37h-1.42a1.75,1.75,0,0,1-1.75-1.75V37l5.65,2.88a1.33,1.33,0,0,0,1.19,0l2.23-1.13a4.82,4.82,0,0,0,3.34,1.33h.08V58.62A1.76,1.76,0,0,1,501.54,60.37Zm16.88-1.75a1.76,1.76,0,0,1-1.76,1.75h-1.42a1.76,1.76,0,0,1-1.76-1.75V44.16a1.32,1.32,0,1,0-2.63,0V58.62a1.75,1.75,0,0,1-1.75,1.75h-1.43a1.76,1.76,0,0,1-1.75-1.75V37.05l5.65,2.86a1.39,1.39,0,0,0,.6.14,1.35,1.35,0,0,0,.59-.14L518.42,37Zm0-31.72h0v7.18l-6.25,3.18-6.25-3.16V26.9h0a1.32,1.32,0,1,0-2.63,0h0V37.49h-.08a2.21,2.21,0,0,1-2.22-2.2V22.46a6,6,0,0,1,5.1-5.94h12.15a6,6,0,0,1,5.11,5.94V35.28a2.21,2.21,0,0,1-2.22,2.2h-.08V26.9h0a1.32,1.32,0,1,0-2.63,0Zm15.12,31.72a1.76,1.76,0,0,1-1.75,1.75h-1.43a1.76,1.76,0,0,1-1.75-1.75V44.16a1.32,1.32,0,1,0-2.63,0V58.62a1.76,1.76,0,0,1-1.76,1.75H522.8a1.75,1.75,0,0,1-1.75-1.75V40.11h.08a4.82,4.82,0,0,0,3.34-1.33l2.23,1.13a1.35,1.35,0,0,0,.59.14,1.39,1.39,0,0,0,.6-.14L533.54,37Zm4.93-23.34a2.2,2.2,0,0,1-2.22,2.2h-.08V26.9h0a1.32,1.32,0,1,0-2.63,0h0v7.18l-6.25,3.18-1.47-.75a4.93,4.93,0,0,0,.16-1.23V22.46a8.6,8.6,0,0,0-2.46-6h8.9a6,6,0,0,1,6.05,6V35.28Z" style="fill:#18747a" />
+  <text transform="translate(308.17 191.33)" style="font-size:16px;fill:#fff;">コンシューマ向けサイト（カスタム画面／業務ロジック）</text>
+  <text transform="translate(0 923.25)" style="font-size:14px;fill:#313131;">CMS／静的サイト<tspan x="115" y="0" style="font-size:12px">など</tspan></text>
+  <text transform="translate(56.83 868)" style="font-size:13px;fill:#313131;">・OpenID Connect 対応サイト</text>
+  <text transform="translate(56.83 847)" style="font-size:13px;fill:#313131;">・X（Twitter）</text>
+  <text transform="translate(56.83 826.67)" style="font-size:13px;fill:#313131;">・Facebook</text>
+  <text transform="translate(93.42 804.67)" style="font-size:14px;fill:#313131;">SNSサイト</text>
+  <text transform="translate(128.46 692.5)" style="font-size:16px;fill:#fff;" text-anchor="middle">
+  <tspan>ソーシャル</tspan>
+  <tspan x="0" y="20">ログイン</tspan>
+  </text>
+  <text transform="translate(128.46 473.06)" style="font-size:13px;fill:#313131;" text-anchor="middle">静的コンテンツへのアクセス制御</text>
+  <text transform="translate(128.46 423.75)" style="font-size:13px;fill:#313131;" text-anchor="middle">パスワードリマインダ</text>
+  <text transform="translate(128.46 374.13)" style="font-size:13px;fill:#313131;" text-anchor="middle">セルフ登録・更新</text>
+  <text transform="translate(128.46 324.04)" style="font-size:13px;fill:#313131;" text-anchor="middle">会員ログイン</text>
+  <text transform="translate(128.46 247)" style="font-size:16px;fill:#fff;" text-anchor="middle">Web Account Manager<tspan x="0" y="24">and plugin module</tspan></text>
+  <text transform="translate(881.33 922.67)" style="font-size:13px;fill:#111;">外部サービス／システム</text>
+  <text transform="translate(744.83 862.5)" style="font-size:16px;fill:#18747a;">バックエンドオペレータ</text>
+  <path d="M841.17,837.6a1.12,1.12,0,0,1,0,.45,1.09,1.09,0,0,1-.15.35,1.28,1.28,0,0,1-.64.5l-.12,0a1.26,1.26,0,0,1-.27,0l0,0H832.6a1.22,1.22,0,0,1,0-2.44h5.81l-3.22-13.28c-.5-2-3.11-3.79-5.88-4a6.21,6.21,0,0,1-9.94,0c-2.77.22-5.39,2-5.88,4l-3.22,13.28h5.8a1.22,1.22,0,0,1,0,2.44h-7.32a1.81,1.81,0,0,1-.31,0,.67.67,0,0,1-.12-.06,1.17,1.17,0,0,1-.62-.49h0c-.14-.11-.13-.23-.17-.35a1.37,1.37,0,0,1,0-.45.63.63,0,0,1,0-.19l3.58-14.74c.8-3.3,4.68-5.9,8.82-5.9h.17a1.23,1.23,0,0,1,1.16.84,3.63,3.63,0,0,0,6.14,0,1.24,1.24,0,0,1,1.15-.84h.17c4.15,0,8,2.6,8.83,5.9l3.58,14.75a.57.57,0,0,1,0,.18ZM823.23,803a1.21,1.21,0,0,0-1.22-1.22h-1.35a1.22,1.22,0,1,0,0,2.44H822a1.22,1.22,0,0,0,1.22-1.22Zm3.43,1.22H828a1.22,1.22,0,1,0,0-2.44h-1.36a1.22,1.22,0,1,0,0,2.44Zm-11.92,1.57a1.16,1.16,0,0,0,1-.27,1.2,1.2,0,0,0,.41-.93V802.2a8.17,8.17,0,0,1,8.17-8.14c.22,0,.45,0,.66,0a8.16,8.16,0,0,1-4.62,3.54A1.22,1.22,0,0,0,821,800a10.78,10.78,0,0,0,6.44-5.29,8.13,8.13,0,0,1-.4,15.18,2.19,2.19,0,0,0-1.42-.54H823a2.24,2.24,0,0,0,0,4.47h2.61a2.21,2.21,0,0,0,2.1-1.56,10.52,10.52,0,0,0,6.58-6.56c1.41-.35,2.29-1.23,2.29-2.31v-2.71c0-1.12-.94-2-2.45-2.34a10.58,10.58,0,0,0-19.69,0c-1.46.33-2.4,1.22-2.4,2.32v2.71c0,1.17,1.06,2.11,2.7,2.38Zm29.54-7.94a1.22,1.22,0,1,0,0-2.44h-.1a1.22,1.22,0,1,0,0,2.44Zm4.24,0a1.22,1.22,0,1,0,0-2.44h-.1a1.22,1.22,0,1,0,0,2.44Zm2.81-12.34h-14.2a5.25,5.25,0,0,0-5.23,5.25,1.22,1.22,0,0,0,1.22,1.23,1.23,1.23,0,0,0,1.22-1.23,2.81,2.81,0,0,1,2.79-2.81h14.2a2.78,2.78,0,0,1,2.73,2.84v11.77a2.7,2.7,0,0,1-2.73,2.74H839.44a1.26,1.26,0,0,0-1,.51l-4,5.37a1.22,1.22,0,0,0,.24,1.71,1.19,1.19,0,0,0,.73.25,1.25,1.25,0,0,0,1-.51l3.64-4.89h11.28a5.14,5.14,0,0,0,5.17-5.18V790.74a5.22,5.22,0,0,0-5.17-5.28ZM840,797.8a1.22,1.22,0,1,0,0-2.44h-.1a1.22,1.22,0,0,0,0,2.44Zm0,0" style="fill:#18747a" />
+  <text transform="translate(701.5 649.33)" style="font-size:16px;fill:#18747a;" text-anchor="middle">
+  <tspan x="131">バックグラウンドサイト（自動構成）</tspan></text>
+  <text transform="translate(598.42 923)" style="font-size:14px;fill:#313131;">LDAP／AD<tspan x="70" y="0" style="font-size:12px">など</tspan></text>
+  <text transform="translate(435.31 867.67)" style="font-size:13px;fill:#313131;">・SAML2.0 対応サイト</text>
+  <text transform="translate(435.31 846.67)" style="font-size:13px;fill:#313131;">・Office 365</text>
+  <text transform="translate(435.31 827)" style="font-size:13px;fill:#313131;">・Salesforce</text>
+  <text transform="translate(476.54 805)" style="font-size:14px;fill:#313131;">外部サイト</text>
+  <text transform="translate(510.5 692.5)" style="font-size:16px;fill:#fefefe;" text-anchor="middle">
+  <tspan x="0" y="-10">シングル</tspan>
+  <tspan x="0" y="10">サインオン</tspan>
+  <tspan style="font-size:12px">
+  <tspan x="0" y="30">（SAML2.0）</tspan></tspan></text>
+  <text transform="translate(316.57 923.33)" style="font-size:14px;fill:#313131;">外部RDB／CSV<tspan x="100" y="0" style="font-size:12px">など</tspan></text>
+  <text transform="translate(895.5 573.08)" style="font-size:13px;fill:#18747a;" text-anchor="middle">開発・運用ツール</text>
+  <text transform="translate(895.5 523.72)" style="font-size:13px;fill:#18747a;" text-anchor="middle">EUC</text>
+  <text transform="translate(895.5 473.06)" style="font-size:13px;fill:#18747a;" text-anchor="middle">ジョブスケジューラ</text>
+  <text transform="translate(895.5 423.75)" style="font-size:13px;fill:#18747a;" text-anchor="middle">ワークフロー</text>
+  <text transform="translate(895.5 374.13)" style="font-size:13px;fill:#18747a;" text-anchor="middle">メール／SMS／プッシュ通知</text>
+  <text transform="translate(895.5 324.04)" style="font-size:13px;fill:#18747a;" text-anchor="middle">マルチテナント</text>
+  <text transform="translate(639.5 573.08)" style="font-size:13px;fill:#18747a;" text-anchor="middle">認証／認可</text>
+  <text transform="translate(639.5 523.72)" style="font-size:13px;fill:#18747a;" text-anchor="middle">2段階認証／代理ログイン</text>
+  <text transform="translate(639.5 473.06)" style="font-size:13px;fill:#18747a;" text-anchor="middle">多言語対応</text>
+  <text transform="translate(639.5 423.75)" style="font-size:13px;fill:#18747a;" text-anchor="middle">帳票出力</text>
+  <text transform="translate(639.5 374.13)" style="font-size:13px;fill:#18747a;" text-anchor="middle">Web API</text>
+  <text transform="translate(639.5 324.04)" style="font-size:13px;fill:#18747a;" text-anchor="middle">ロジックカスタマイズ</text>
+  <text transform="translate(383.5 573.08)" style="font-size:13px;fill:#18747a;" text-anchor="middle">定型集計／簡易BI</text>
+  <text transform="translate(383.5 523.72)" style="font-size:13px;fill:#18747a;" text-anchor="middle">汎用検索</text>
+  <text transform="translate(383.5 473.06)" style="font-size:13px;fill:#18747a;" text-anchor="middle">データ監査ログ／暗号化</text>
+  <text transform="translate(383.5 423.75)" style="font-size:13px;fill:#18747a;" text-anchor="middle">データ操作画面の自動構成</text>
+  <text transform="translate(383.5 374.13)" style="font-size:13px;fill:#18747a;" text-anchor="middle">データ管理</text>
+  <text transform="translate(383.5 324.04)" style="font-size:13px;fill:#18747a;" text-anchor="middle">メタデータ管理</text>
+  <text transform="translate(554.02 261)" style="font-size:20px;fill:#fff;">iPLAss framework</text>
+  </g>
+</svg>

@@ -1,0 +1,33 @@
+[[ODataService]]
+=== [.eeonly]#ODataService#
+The service to control the behavior of OData Service.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.webapi.odata.ODataService
+----
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.webapi.odata.ODataServiceImpl
+----
+
+==== The settings of ODataService
+The following item can be configured.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| queryPaging | int | Set the default paging when querying for OData.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+    <interface>org.iplass.mtp.impl.webapi.odata.ODataService</interface>
+    <class>org.iplass.mtp.impl.webapi.odata.ODataServiceImpl</class>
+    <property name="queryPaging" value="20" />
+</service>
+----

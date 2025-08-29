@@ -1,0 +1,51 @@
+[[TenantAvailableService]]
+=== [.eeonly]#TenantAvailableService#
+This service manages the operating status of tenants.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.tenant.available.TenantAvailableService
+----
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.tenant.available.TenantAvailableService
+----
+
+==== The settings of TenantAvailableService
+TenantAvailableService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| allwaysAvailableAction | String, Multiple | Actions available during maintenance
+
+CAUTION: Use the `alwaysAvailableAction` one. We will remove it in the next minor version
+
+| alwaysAvailableAction | String, Multiple | Actions available during maintenance
+
+| alwaysAvailableWebApi | String, Multiple | WebApi available during maintenance
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.tenant.available.TenantAvailableService</interface>
+	<class>org.iplass.mtp.impl.tenant.available.TenantAvailableService</class>
+	<property name="alwaysAvailableAction" value="gem/auth/login" />
+	<property name="alwaysAvailableAction" value="gem/auth/dologin" />
+	<property name="alwaysAvailableAction" value="gem/auth/logout" />
+	<property name="alwaysAvailableAction" value="gem/auth/expiredpassword/update" />
+	<property name="alwaysAvailableAction" value="gem/auth/verify2nd" />
+	<property name="alwaysAvailableAction" value="mdc/auth/login" />
+	<property name="alwaysAvailableAction" value="mdc/auth/dologin" />
+	<property name="alwaysAvailableAction" value="mdc/auth/logout" />
+	<property name="alwaysAvailableAction" value="mdc/auth/expiredpassword/update" />
+	<property name="alwaysAvailableAction" value="mdc/auth/verify2nd" />
+
+	<property name="alwaysAvailableWebApi" value="gem/auth/verifycodegen" />
+	<property name="alwaysAvailableWebApi" value="mdc/auth/verifycodegen" />
+</service>
+----

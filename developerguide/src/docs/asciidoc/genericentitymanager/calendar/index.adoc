@@ -1,0 +1,13 @@
+= Generic Entity Manager (Calendar)
+:_hreflang-path: developerguide/genericentitymanager/calendar/index.html
+:_relative-root-path: ../../../
+
+[[calendar]]
+== Calendar
+日時系のプロパティを利用して、エンティティのデータを予定として表示するカレンダーを簡単に作成できます。
+カレンダー上からは予定の登録や参照が行えます。
+
+include::operationguide.adoc[]
+
+include::setting.adoc[]
+

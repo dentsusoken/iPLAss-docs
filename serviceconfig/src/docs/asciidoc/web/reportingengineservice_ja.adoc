@@ -1,0 +1,93 @@
+[[ReportingEngineService]]
+=== ReportingEngineService
+帳票出力を管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.report.ReportingEngineService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.report.ReportingEngineServiceImpl
+----
+
+==== ReportingEngineServiceの設定
+ReportingEngineServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| reportingEngine | <<ReportingEngine>>、複数指定可 | 帳票出力エンジンの設定。
+|===
+
+[[ReportingEngine]]
+.ReportingEngine
+classにorg.iplass.mtp.impl.report.ReportingEngineの実装クラスを指定します。
+
+標準で以下のReportingEngineを提供します。
+
+* <<JasperReportingEngine>>
+* <<PoiReportingEngine>>
+* <<JxlsReportingEngine>>
+
+[[JasperReportingEngine]]
+.JasperReportingEngine
+Jasper Reportを利用して帳票を作成するためのエンジンです。
+
+classはorg.iplass.mtp.impl.report.JasperReportingEngineを指定します。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| supportFiles | String、複数指定可 |サポート対象のファイル形式。
+|===
+
+[[PoiReportingEngine]]
+.PoiReportingEngine
+Apache POIを利用して帳票を作成するためのエンジンです。
+
+classはorg.iplass.mtp.impl.report.PoiReportingEngineを指定します。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| supportFiles | String、複数指定可 |サポート対象のファイル形式。
+|===
+
+[[JxlsReportingEngine]]
+.JxlsReportingEngine
+JXLSを利用して帳票を作成するためのエンジンです。
+
+classはorg.iplass.mtp.impl.report.JxlsReportingEngineを指定します。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| supportFiles | String、複数指定可 |サポート対象のファイル形式。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.report.ReportingEngineService</interface>
+	<class>org.iplass.mtp.impl.report.ReportingEngineServiceImpl</class>
+	<property name="repotingEngine" class="org.iplass.mtp.impl.report.JasperReportingEngine">
+		<property name="supportFiles" value="PDF"/>
+		<property name="supportFiles" value="XLS"/>
+		<property name="supportFiles" value="XLSX"/>
+	</property>
+	<property name="repotingEngine" class="org.iplass.mtp.impl.report.PoiReportingEngine">
+		<property name="supportFiles" value="XLS_POI"/>
+		<property name="supportFiles" value="XLSX_POI"/>
+		<property name="supportFiles" value="XLSX_SXSSF_POI"/>
+	</property>
+		<property name="repotingEngine" class="org.iplass.mtp.impl.report.JxlsReportingEngine">
+		<property name="supportFiles" value="XLS_JXLS"/>
+		<property name="supportFiles" value="XLSX_JXLS"/>
+		<property name="supportFiles" value="XLSX_SXSSF_JXLS"/>
+	</property>
+</service>
+----

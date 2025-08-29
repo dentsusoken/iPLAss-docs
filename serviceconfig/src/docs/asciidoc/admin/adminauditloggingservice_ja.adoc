@@ -1,0 +1,43 @@
+[[AdminAuditLoggingService]]
+=== AdminAuditLoggingService
+AdminConsoleの操作ログに関するサービスです。
+
+==== インタフェース名
+----
+org.iplass.adminconsole.server.base.service.auditlog.AdminAuditLoggingService
+----
+
+==== 実装クラス名
+----
+org.iplass.adminconsole.server.base.service.auditlog.AdminAuditLoggingService
+----
+
+==== AdminAuditLoggingServiceの設定
+AdminAuditLoggingServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| logCompact | boolean | LongTextなど長すぎる文字列を指定文字数でカットするか。デフォルト値はfalseです。 
+| logQuery | boolean | クエリをロガーに出力するか。デフォルト値はfalseです。
+| logSelectValueWithLabel | boolean | SelectValueをログに出力する時に、ラベルで出力するか。デフォルト値はfalseです。
+| logReferenceWithLabel | boolean | Referenceをログに出力する時に、nameで出力するか。falseの場合、oidを出力します。デフォルト値はfalseです。
+| textMaxLength | int | LongTextなど長すぎる文字列をカットする文字数。デフォルト値は256です。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.adminconsole.server.base.service.auditlog.AdminAuditLoggingService</interface>
+
+	<!-- logファイルへの出力時、LongTextなど長すぎる文字列を全部出力しない場合はtrue -->
+	<property name="logCompact" value="false" />
+	<!-- logCompactがtrueの場合、最大文字数（デフォルト256文字まで） -->
+	<!-- property name="textMaxLength" value="256" / -->
+
+	<!-- if log query, set to true -->
+	<property name="logQuery" value="false" />
+</service>
+----

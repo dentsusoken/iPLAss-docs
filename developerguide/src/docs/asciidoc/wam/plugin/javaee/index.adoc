@@ -1,0 +1,5 @@
+=== JavaEE版
+
+include::jee.adoc[]
+
+include::settingfile_example_jee.adoc[]

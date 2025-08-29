@@ -1,0 +1,14 @@
+= 通知
+:_hreflang-path: developerguide/notification/index.html
+:_relative-root-path: ../../
+:toclevels: 2
+
+通知機能を利用することにより、eメール、SMS、push通知、Webhookなどの手段でユーザーにメッセージを送信することが可能です。
+
+include::mail.adoc[]
+
+include::sms.adoc[]
+
+include::pushnotification.adoc[]
+
+include::webhook.adoc[]

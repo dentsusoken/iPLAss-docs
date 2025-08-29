@@ -1,0 +1,170 @@
+[[MdcDetailViewService]]
+=== [.eeonly]#MdcDetailViewService#
+モバイル版の詳細画面の設定を行うサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.mdc.view.entityview.detail.MdcDetailViewService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.mdc.view.entityview.detail.MdcDetailViewService
+----
+
+==== MdcDetailViewServiceの設定
+MdcDetailViewServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| detailViewGenerator | <<MdcDetailViewHandlerGenerator>> | 詳細画面の画面定義の自動生成設定。
+| loadEntityController | <<LoadEntityController>> | Entityのロード処理。
+| saveEntityController | <<SaveEntityController>> | Entityの保存処理。
+| copyEntityController | <<CopyEntityController>> | Entityのコピー処理。
+|===
+
+[[MdcDetailViewHandlerGenerator]]
+.MdcDetailViewHandlerGenerator
+classはorg.iplass.mtp.mdc.view.entityview.detail.definition.MdcDetailViewHandlerGeneratorの実装クラスを指定します。
+
+標準でorg.iplass.mtp.impl.mdc.view.entityview.detail.MdcDetailViewHandlerGeneratorImplを提供しています。
+以下の項目を指定可能です。
+
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| showSystemSection | boolean | 自動生成時にシステムSectionを出力する。
+| systemSectionProperties | <<SectionProperty>>、複数指定可 | システムSectionプロパティ。
+基本項目であるnameとdescriptionとバージョン管理項目(startDate、endDate)は対象外。
+| systemSectionDisplayPosition | SectionDisplayPosition a| システムSectionの表示位置。
+SectionDisplayPositionのenum値を指定。
+次のいずれかを指定します。
+
+TOP:: 詳細画面の先頭に表示します。
+
+BOTTOM:: 詳細画面の末尾に表示します。
+
+デフォルト値は `TOP` です。
+| excludeOidWhenCustomOid | boolean | OIDをカスタマイズしている場合にOIDを非表示。
+| useUserPropertyEditor | boolean | createBy、updateBy、lockedByにUserPropertyEditorを利用。
+UserPropertyEditorを利用する場合、OIDではなくUserのnameが表示されます。
+|====================
+
+[[SectionProperty]]
+.SectionProperty
+システムプロパティ毎の表示可否に関する設定です。
+以下の項目を設定可能です。
+
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| propertyName | String | プロパティ名
+| displayView | boolean | 詳細画面で表示するか
+| displayCreate | boolean | 新規、コピー画面で表示するか
+| displayUpdate | boolean | 編集画面で表示するか
+|====================
+
+[[LoadEntityController]]
+.LoadEntityController
+classはorg.iplass.mtp.mdc.view.entityview.detail.load.LoadEntityControllerの実装クラスを指定します。
+
+標準でorg.iplass.mtp.impl.mdc.view.entityview.detail.LoadEntityControllerImplを提供しています。
+設定可能な項目はありません。
+
+[[SaveEntityController]]
+.SaveEntityController
+classはorg.iplass.mtp.mdc.view.entityview.detail.save.SaveEntityControllerの実装クラスを指定します。
+
+標準でorg.iplass.mtp.impl.mdc.view.entityview.detail.SaveEntityControllerImplを提供しています。
+設定可能な項目はありません。
+
+[[CopyEntityController]]
+.CopyEntityController
+classはorg.iplass.mtp.mdc.view.entityview.detail.copy.CopyEntityControllerの実装クラスを指定します。
+
+標準でorg.iplass.mtp.impl.mdc.view.entityview.detail.CopyEntityControllerImplを提供しています。
+以下の項目を指定可能です。
+
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| shallowCopyLobData | boolean | Lobデータをシャローコピーするか。
+`true` の場合、実体のコピーは行わず、コピー元と同じデータを参照します。
+`false` の場合、実体のコピーを行い、コピー後のデータを参照します。
+|====================
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.mdc.view.entityview.detail.MdcDetailViewService</interface>
+	<!-- Auto Generator -->
+	<property name="detailViewGenerator" class="org.iplass.mtp.impl.mdc.view.entityview.detail.MdcDetailViewHandlerGeneratorImpl">
+		<!-- システムSectionを出力 -->
+		<property name="showSystemSection" value="false" />
+		<!-- システムSectionに出力するプロパティ -->
+		<property name="systemSectionProperties" class="org.iplass.mtp.mdc.view.entityview.detail.definition.SectionProperty">
+			<property name="propertyName" value="oid" />
+			<property name="displayView" value="false" />
+			<property name="displayCreate" value="false" />
+			<property name="displayUpdate" value="false" />
+		</property>
+		<property name="systemSectionProperties" class="org.iplass.mtp.mdc.view.entityview.detail.definition.SectionProperty">
+			<property name="propertyName" value="state" />
+			<property name="displayView" value="false" />
+			<property name="displayCreate" value="false" />
+			<property name="displayUpdate" value="false" />
+		</property>
+		<property name="systemSectionProperties" class="org.iplass.mtp.mdc.view.entityview.detail.definition.SectionProperty">
+			<property name="propertyName" value="createDate" />
+			<property name="displayView" value="false" />
+			<property name="displayCreate" value="false" />
+			<property name="displayUpdate" value="false" />
+		</property>
+		<property name="systemSectionProperties" class="org.iplass.mtp.mdc.view.entityview.detail.definition.SectionProperty">
+			<property name="propertyName" value="createBy" />
+			<property name="displayView" value="false" />
+			<property name="displayCreate" value="false" />
+			<property name="displayUpdate" value="false" />
+		</property>
+		<property name="systemSectionProperties" class="org.iplass.mtp.mdc.view.entityview.detail.definition.SectionProperty">
+			<property name="propertyName" value="updateDate" />
+			<property name="displayView" value="false" />
+			<property name="displayCreate" value="false" />
+			<property name="displayUpdate" value="false" />
+		</property>
+		<property name="systemSectionProperties" class="org.iplass.mtp.mdc.view.entityview.detail.definition.SectionProperty">
+			<property name="propertyName" value="updateBy" />
+			<property name="displayView" value="false" />
+			<property name="displayCreate" value="false" />
+			<property name="displayUpdate" value="false" />
+		</property>
+		<property name="systemSectionProperties" class="org.iplass.mtp.mdc.view.entityview.detail.definition.SectionProperty">
+			<property name="propertyName" value="lockedBy" />
+			<property name="displayView" value="false" />
+			<property name="displayCreate" value="false" />
+			<property name="displayUpdate" value="false" />
+		</property>
+		<!-- システムSectionの表示位置 TOP or BOTTOM -->
+		<property name="systemSectionDisplayPosition" value="BOTTOM" />
+		<!-- OIDをカスタマイズしている場合にOIDを非表示 -->
+		<property name="excludeOidWhenCustomOid" value="true" />
+		<!-- createBy、updateBy、lockedByにUserPropertyEditorを利用 -->
+		<property name="useUserPropertyEditor" value="true" />
+	</property>
+
+	<!-- Load Entity Controller -->
+	<property name="loadEntityController" class="org.iplass.mtp.impl.mdc.view.entityview.detail.LoadEntityControllerImpl" />
+
+	<!-- Save Entity Controller -->
+	<property name="saveEntityController" class="org.iplass.mtp.impl.mdc.view.entityview.detail.SaveEntityControllerImpl" />
+
+	<!-- Copy Entity Controller -->
+	<property name="copyEntityController" class="org.iplass.mtp.impl.mdc.view.entityview.detail.CopyEntityControllerImpl">
+		<!-- Lobデータをシャローコピーするか -->
+		<property name="shallowCopyLobData" value="false" />
+	</property>
+</service>
+----

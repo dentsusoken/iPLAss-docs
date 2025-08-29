@@ -1,0 +1,17 @@
+=== Serverless(JavaScript)版
+
+Fetch APIに対応したJavaScriptランタイムが提供されるサーバーレスなエッジ環境で動作するWAMプラグインモジュール実装です。 +
+Node.js 22以上、Deno、Workerなど様々なJavaScriptランタイムで動作します。
+
+WAMプラグインモジュールの実装は、JavaScriptライブラリとして提供します。 +
+また、WAMプラグインとしてサーバーレス環境で実行可能なコードを実装/ビルドするための `unjs/h3` (HTTP フレームワーク)をベースとしたTypeScriptのスケルトンプロジェクトを提供します。 +
+
+標準で、以下のサーバーレス環境用のスケルトンプロジェクトを提供します。
+
+- AWS Lambda@Edge版
+- Cloudflare Workers版
+- Netlify Edge Functions版
+
+include::serverless.adoc[]
+
+include::settingfile_example_serverless.adoc[]

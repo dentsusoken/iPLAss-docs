@@ -1,0 +1,111 @@
+[[Java_Jsp_Webapi]]
+=== WebApiとの連携
+
+Ajaxを利用することで、WebApiと連携することが出来ます。一般消費者向け画面で全文検索処理を例として説明していきます。
+
+* <<../../developerguide/webapi/index#,開発者ガイド WebApiの作成方法>>を参照してください。 + 
+以下はここで利用しているWebApiです。
++
+[cols="1,2"]
+|===
+h|WebApi名|samples/ec01/search/fulltextSearch
+|===
+
+* WebApiを利用しているJSPテンプレート
++
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/webapp/jsp/samples/ec01/search/search.jsp
+|===
++
+[source,jsp]
+----
+----------------------------------------JSP部分略----------------------------------------
+<script type="text/javascript">
+function fullTextSearch() {
+	var productName = $("#productName").val();
+	var categoryOid = $("#categoryList").attr("category-item-selected");
+	if(productName == "") {
+		$("#helpId").html("${m:rs('iplass-wtp-messages', 'samples.ec01.search.nokeyword')}");
+		return false;
+	}
+    var param = "{\"productName\":\"" + productName + "\",\"categoryOid\":\"" + categoryOid +"\"}";
+    $.ajax({
+        type: "POST",
+        contentType: "application/json",
+        url:"${m:tcPath()}/api/samples/ec01/search/fulltextSearch", <1>
+       	dataType: "json",
+		data: param,
+		success: function(commandResult){
+    		if (commandResult.exceptionType != null) { <2>
+				alert("${m:rs('iplass-wtp-messages', 'samples.ec01.search.jsError')}"+ commandResult.exceptionType +"\\n"+commandResult.exceptionMessage);
+				return;
+			}
+    		if(commandResult.status == "SUCCESS"){ 
+    			if(commandResult.defaultResult != null && commandResult.defaultResult.length > 0){
+    				var resultHtml = ListSearchResult(commandResult.defaultResult, productName); <3>
+    				$("#searchResultDiv").html(resultHtml);
+    			}
+    			else{
+    				$("#helpId").html("${m:rs('iplass-wtp-messages', 'samples.ec01.search.keyword')}： " + productName + ", " + "${m:rs('iplass-wtp-messages', 'samples.ec01.search.noResult')}");
+    			}
+    		}
+		}
+	});
+}
+function dropdownSelect(item){
+	var t = $(item);
+	var v = t.attr("category-item-value");
+	$("#categoryList").text(t.html()).attr("category-item-selected", v);
+}
+function ListSearchResult(entities, productName){ <4>
+	var yen = "${m:rs('iplass-wtp-messages', 'samples.ec01.all.yen')}";
+	var html =  "<div class=\"col-12 mb-2\">";
+		html += "	<h4>${m:rs('iplass-wtp-messages', 'samples.ec01.search.result')}" + productName + "</h4>";
+		html += "</div>";
+	for(var i =0; i < entities.length; i++){
+		var name = entities[i].name;
+		var price = isNaN(entities[i].price)? "" : entities[i].price;
+		var imageUrl = "${m:tcPath()}/samples/ec01/resource/bin?id=" + entities[i].productImg.lobId + "&type=${Consts.BIN_TYPE_PRODUCT_IMG}";
+		var detailUrl = "${m:tcPath()}/samples/ec01/product/detail?productId=" + entities[i].oid;
+		html += "<div class=\"col-12 col-md-4\">";
+		html += "	<div class=\"card border-light border-0\">";
+		html += "	    <a href=\"" + detailUrl + "\" class=\"h-100\">";
+		html += "	       <img class=\"card-img-top img-thumbnail img-fluid all-product-img\" src=" + imageUrl + " alt=\"" + name + "\">";
+		html += "	    </a>";
+		html += "	    <div class=\"card-body pt-md-1 text-center\">";
+		html += "	       <div>";
+		html += "	           <a href=\""+ detailUrl +"\" class=\"card-link text-dark\">" + name + "</a>";
+		html += "	        </div>";
+		html += "	        <div class=\"all-price\">";
+		html += "              <span>" + price + "</span>" + yen;
+		html += "	        </div>";
+		html += "	    </div>";
+		html += "	</div>";
+		html += "</div>";
+	}
+	return html;
+}
+</script>
+----
+<1> WebApiによる検索処理を呼び出します。
+<2> 検索処理でエラーが発生した場合、クライアント側での処理。
+<3> 返された検索処理の結果を取得し、クライアント側の描画処理を呼び出します。
+<4> 検索結果の描画処理。
+
+[[Java_JSP_WebAPI_Operation_Check]]
+* 動作確認　
+** キーワードを入力し、検索ボタンをクリックします。
++
+image:images/sample-ec_java-jsp-webapi-fulltext-search.png[align=left]
+
+** 返却値の例
++
+[source,JSON]
+----
+{"status":"SUCCESS","defaultResult":[{"definitionName":"samples.ec01.products.Product","price":2709,"name":"Javaルールブック　~読みやすく効率的なコードの原則","productImg":{"lobId":195,"name":"wolf.png","type":"image/png","definitionName":"samples.ec01.products.Product","propertyName":"productImg","oid":"EC011","size":13872},"oid":"EC011"},{"definitionName":"samples.ec01.products.Product","price":2300,"name":"超図解 Javaルールブック (超図解シリーズ) [単行本]","productImg":{"lobId":208,"name":"bear.png","type":"image/png","definitionName":"samples.ec01.products.Product","propertyName":"productImg","oid":"EC019","size":12051},"oid":"EC019"}]}
+----
+
+** 検索結果を画面から確認できます。
++
+image:images/sample-ec_java-jsp-webapi-fulltext-search-result.png[align=left]

@@ -1,0 +1,71 @@
+= Docker Environment
+:_relative-root-path: ../../
+
+[[DockerEnvironmentConstruction]]
+== Docker Environment
+It can start iPLAss with Docker. We provide two patterns of Docker images.
+
+- `iplass/iplass` (Enterprise Edition version is `iplass/iplass-ee` .) +
+iPLAss's docker image for the Web server bundled with Tomcat.
+To have it run in practise, the supported Database and corresponding JDBC driver is required. + 
+
+- `iplass/iplass-standalone` (Enterprise Edition version is `iplass/iplass-ee-standalone` .) +
+iPLAss docker image which has the Web server bundled with Tomcat and database bundled with MySQL, along with all necessary libraries packaged. + 
+
+[NOTE]
+====
+The iPLAss installer (war) is deployed in the Docker image Tomcat.
+====
+
+== Get Docker image
+Get the Docker image by one of the following methods. +
+If you have a DB server, use `iplass/iplass` (Enterprise Edition version is `iplass/iplass-ee` .), if you don't have a DB server, use `iplass/iplass-standalone` (Enterprise Edition version is `iplass/iplass-ee-standalone` .).
+
+.. Get the Docker image from Docker Hub.
++
+[source]
+----
+$ docker pull iplass/iplass
+$ docker pull iplass/iplass-standalone
+----
+
+.. (in the case of Enterprise Edition) Get the Docker image in tarball format from our Enterprise Edition’s DownloadSite and load the Docker image.
++
+[source]
+----
+$ docker load --input iplass-ee-x.x.x.tar.gz
+$ docker load --input iplass-ee-standalone-x.x.x.tar.gz
+----
+
+== Start Docker container
+Start Docker as follows.
+
+- `iplass/iplass`  (Enterprise Edition version is `iplass/iplass-ee` .) 
++
+[source]
+----
+$ docker run -p 8080:8080 -v [IPLASS_HOME's mount directory]:/var/lib/iplass iplass/iplass
+----
+See below for details of startup methods and configurable environment variables. +
+https://hub.docker.com/r/iplass/iplass
+
+- `iplass/iplass-standalone` (Enterprise Edition version is `iplass/iplass-ee-standalone` .) 
++
+[source]
+----
+$ docker run -p 8080:8080 iplass/iplass-standalone
+----
+See below for details of startup methods and configurable environment variables. +
+https://hub.docker.com/r/iplass/iplass-standalone
+
+== Setup
+After starting the Docker container, refer to the following procedure.
+
+- `iplass/iplass`  (Enterprise Edition version is `iplass/iplass-ee` .)  +
+Please refer to 「3. Show the setup interface screen.」of <<./../gettingstarted/index#_installing_iplass, Install and Run>> and so on.
+
+- `iplass/iplass-standalone` (Enterprise Edition version is `iplass/iplass-ee-standalone` .)  +
+Please refer to 「6. Access the tenant」of <<./../gettingstarted/index#_installing_iplass, Install and Run>> and so on.
+
+== Next Step
+For iPLAss beginners, it would be the best to start with the <<../index.adoc#_Tutorial_,Tutorial>> to learn iPLAss's amazing features.

@@ -1,0 +1,23 @@
+= ワークフロー
+:_hreflang-path: developerguide/workflow/index.html
+:_relative-root-path: ../../
+:_menu-title-ee-only: true
+ifndef::imagesdir[:imagesdir: images]
+ifndef::toc[:toc: left]
+ifndef::toclevels[:toclevels: 4]
+//:sectlinks:
+//:sectanchors:
+
+== ワークフロー
+
+ワークフローとは業務上で必要な一連の処理手続きを指します。
+この一連の処理手続きをWorkflowメタデータとして定義し、各プログラムから起動します。
+主な機能として、起動されたワークフローに対するステータス管理、ユーザーによる承認処理などのタスクの管理と実行、起動可能なワークフローを制限するセキュリティ制御などがあります。
+
+フロー定義は、下のようなフロー定義画面を利用して作成します。
+
+image::about_overview.png[align="left"]
+
+include::operation.adoc[]
+
+include::setting.adoc[]

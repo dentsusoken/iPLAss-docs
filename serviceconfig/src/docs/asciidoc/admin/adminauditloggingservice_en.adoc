@@ -1,0 +1,43 @@
+[[AdminAuditLoggingService]]
+=== AdminAuditLoggingService
+A service related to AdminConsole operation logs.
+
+==== Interface Name
+----
+org.iplass.adminconsole.server.base.service.auditlog.AdminAuditLoggingService
+----
+
+==== Implementing Class Name
+----
+org.iplass.adminconsole.server.base.service.auditlog.AdminAuditLoggingService
+----
+
+==== The Settings of AdminAuditLoggingService
+AdminAuditLoggingService can be configured with the following items
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| logCompact | boolean | Set whether to limit how many characters to show when the text such as LongText went too long. The default value is false. 
+| logQuery | boolean | Whether to log the query. The default value is false.
+| logSelectValueWithLabel | boolean | Set whether to output the labels when logging the SelectValue. The default value is false.
+| logReferenceWithLabel | boolean | Specify how the Reference will be represented by names in the logs.If true, it is represented by its name. If false, it is represented by its oid. The default value is false.
+| textMaxLength | int | The limit of the characters to show of a string that is too long, such as LongText. The default value is 256.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.adminconsole.server.base.service.auditlog.AdminAuditLoggingService</interface>
+
+	<!-- True if you do not want to outputting all long strings such as LongText when outputting to log file -->
+	<property name="logCompact" value="false" />
+	<!-- When logCompact is true, Set the maximum string length.( the default is 256) -->
+	<!-- property name="textMaxLength" value="256" / -->
+
+	<!-- if log query, set to true -->
+	<property name="logQuery" value="false" />
+</service>
+----

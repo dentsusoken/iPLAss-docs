@@ -1,0 +1,24 @@
+[[Java_JSP_Features]]
+== 機能
+
+include::features_layout.adoc[]
+
+include::features_beanvalidation.adoc[]
+
+include::features_entity.adoc[]
+
+include::features_errorurlselector.adoc[]
+
+include::features_reportoutput.adoc[]
+
+include::features_buildinmethod.adoc[]
+
+include::features_webapi.adoc[]
+
+include::features_security.adoc[]
+
+include::features_multilingual.adoc[]
+
+
+
+

@@ -1,0 +1,46 @@
+[[ref_impersonation_policy]]
+=== [.eeonly]#代理ログイン#
+この機能を有効にすると、ユーザーが別のユーザーとしてログインすることが可能になります（代理ログイン）。
+
+ユーザーが代理でログインできる代理先ユーザーを指定する方法は２種類あります。
+
+ユーザー指定:: 代理を許可するユーザー（代理される側）が、直接代理を許可するユーザーを指定する。
+主に一般アプリユーザーでの利用を想定しています。
+条件指定:: `User` エンティティに対して代理可能範囲の条件を指定して、代理先のユーザーの直接的な許可を必要とせずに代理ログインを行う。
+主にシステム管理者やテスト時等での利用を想定しています。
+
+==== 設定
+
+[cols="1,3a", options="header"]
+|===
+|項目名|内容
+|enable impersonation|代理ログインを許可するかを指定する。
+
+ONの場合:: メニューに「代理ログインする」が表示
+OFFの場合:: 代理ログイン不可、直接代理を許可されていても利用出来ない
+|enable impersonation with no permission|条件指定での代理ログインを許可するかを指定する。
+
+ONの場合:: 下記項目で指定する条件の範囲で代理ログインが可能になる
+|<<usercondition, user condition for impersonation with no permission>>| `User` エンティティに対して代理可能な範囲をWhere条件として指定します。
+|===
+
+[[usercondition]]
+.user condition for impersonation with no permission
+`User` エンティティに対して代理可能な範囲をWhere条件として指定します。
+以下の変数がバインドされています。
+
+[cols="1,3a", options="header"]
+|===
+|バインド変数|バインド内容
+|permitUserOid|代理ログインする `User` エンティティの `oid`
+|targetUserOid|代理先の `User` エンティティの `oid`
+|===
+
+.（例）代理先ユーザーがgroup1またはgroup2に所属する場合は許可
+[source, GroovyTemplate]
+----
+groups.code in ('group1', 'group2')
+----
+
+PreparedQuery（GroovyTemplate）形式で実行されるため、複雑な条件を指定する場合はUtilityClassなどを利用してください。
+

@@ -1,0 +1,54 @@
+[[ListingService]]
+=== [.eeonly]#ListingService#
+This is the service to manage the operations of the saved lists.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.listing.ListingService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.listing.ListingService
+----
+
+==== The Settings of ListingService
+ListingService is configurable with the following items.
+
+===== Configurable Items
+[cols="1,1,3a", options="header"]
+|===
+| Itme | Value | Description
+| automaticConversionToRootFolderMode | boolean | 
+For the migration from the versions before 3.0.15, set it to true if you want the system to automatically migrate to the mode using root folders.
+The default value is `false`.
+
+When set to `true`, the root folder will be generated at the time the saved list features are accessed, and the updates will occur during that time.
+
+NOTE: Until 3.0.14, the folder for Root was not explicitly created (treated as null),
+For the purpose of high speed searches when processing the saved lists. We decide to utilize Root folder starting from version 3.0.15. 
+If the folder or saved list has already been registered in 3.0.14 or earlier, the system will operate in a mode that does not use the Root folder.
+if you want it to work as in 3.0.15 and later. +
+Once the Root folder has been generated (check if the Root folder has been created in the SavedListFolder entity),
+then it's fine to set it back to `false`.
+| serializedClassResolver | <<SerializedClassResolver>> | 
+Resolver for the class used to deserialize the saved list. This can be used when you want to customize the deserialization process.
+|===
+
+[[SerializedClassResolver]]
+.SerializedClassResolver
+Please specify the implementing class of org.iplass.mtp.impl.listing.SerializedClassResolver.
+
+In a class that implements SerializedClassResolver, implement the `Class<?> resolveClass(String serializedClassName)` method to return the Class instance resolved from the class name.
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.listing.ListingService</interface>
+	
+	<!-- For the migration from the versions before 3.0.15, set it to true if you want the system to automatically migrate to the mode using root folders.-->
+	<property name="automaticConversionToRootFolderMode" value="false"/>
+	
+</service>
+----

@@ -1,0 +1,58 @@
+[[AdminConsole_Entity_Mutlilang]]
+=== Entity多言語対応
+画面の表示メッセージは多言語利用が可能です。それ以外に、Entityレベルの多言語利用も可能です。 + 
+Entityの定義にて、以下の二つの方法で多言語対応が可能です。詳しくは開発者ガイド<<../../developerguide/i18n/index#data_localize, データの多言語対応>>の章を参照してください。
+
+==== プロパティ単位の多言語化
+
+===== 設定方法
+
+同一Entity内に多言語用ラベルのプロパティを持つ
+
+Entity定義のプロパティとして、
+propA
+propA_en  
+propA_ja
+のように、多言語用のラベルを別途保持する形式。
+ 
+property名_言語
+
+image::images/sample-ec_adminconsole-entity-multilang-property.png[align=left]
+
+. 多言語用ラベルのプロパティを作成します。
+. "Data Localize Type"を"Each Property"に指定します。
+. "Support Language"の言語項目にチェックを入れます。
+
+===== 画面表示
+
+日本語用Top画面と英語用Top画面
+
+image::images/sample-ec_adminconsole-entity-multilang-property-result.png[align=left]
+
+==== レコード単位の多言語化 
+
+===== 設定方法
+
+多言語別にEntityを複数レコード登録する 
+
+Entity定義のプロパティとして、言語判別用プロパティを定義。
+例えば、"lang"といったプロパティ名で。
+
+このパターンの場合、
+Entityに「多言語判別用プロパティ」および「対応済言語」を設定することにより、
+Entityデータ検索時に自動的に当該プロパティにユーザーの言語をセットして検索する。
+
+image:images/sample-ec_adminconsole-entity-multilang-instance.png[align=left]
+
+. 言語判別用プロパティを作成します。 
+. "Data Localize Type"を"Each Instance"に指定します。
+. "Language"に作成した言語判別用プロパティを指定します。
+. "Support Language"の言語項目にチェックを入れます。
+
+===== 画面表示
+
+日本語用Top画面と英語用Top画面
+
+image:images/sample-ec_adminconsole-entity-multilang-instance-result.png[align=left]
+
+言語別に同じ画面で異なるEntityデータを表示することができます。

@@ -1,0 +1,36 @@
+[[ScheduleService]]
+=== [.eeonly]#ScheduleService#
+This service manages the definition (Metadata) of scheduled tasks.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.scheduling.ScheduleService
+----
+
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.scheduling.ScheduleService
+----
+
+
+==== Settings of ScheduleService
+ScheduleService is configurable.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| systemUserId | String | Specify the user ID of the system, which will execute the scheduled task.
+The default value is `scheduler`.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.scheduling.ScheduleService</interface>
+	<class>org.iplass.mtp.impl.scheduling.ScheduleService</class>
+	<property name="systemUserId" value="id000001" />
+</service>
+----

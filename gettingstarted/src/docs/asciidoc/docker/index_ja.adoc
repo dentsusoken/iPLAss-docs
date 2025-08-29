@@ -1,0 +1,71 @@
+= Dockerで環境構築
+:_relative-root-path: ../../
+
+[[DockerEnvironmentConstruction]]
+== Dockerで環境構築
+DockerでiPLAssを起動することができます。以下2パターンのDockerイメージを提供しています。
+
+- `iplass/iplass` （Enterprise Edition版は `iplass/iplass-ee` ） +
+WebサーバにTomcatをバンドルしたiPLAssのDockerイメージです。
+動作には別途iPLAssに対応したデータベースとJDBCドライバが必要です。 + 
+
+- `iplass/iplass-standalone` （Enterprise Edition版は `iplass/iplass-ee-standalone` ） +
+WebサーバにTomcat、DBサーバにMySQLをバンドルし、iPLAssの動作に必要なアプリケーション及びライブラリをパッケージングしたiPLAssのDockerイメージです。 + 
+
+[NOTE]
+====
+DockerイメージのTomcatにはiPLAssのインストーラ（war）がデプロイされています。
+====
+
+== Dockerイメージの取得
+Dockerイメージを次のいずれかの方法で取得してください。 +
+DBサーバを用意している場合は `iplass/iplass` （Enterprise Edition版は `iplass/iplass-ee` ）、DBサーバを用意していない場合は `iplass/iplass-standalone` （Enterprise Edition版は `iplass/iplass-ee-standalone` ）を利用してください。
+
+.. Docker HubよりDockerイメージを取得します。
++
+[source]
+----
+$ docker pull iplass/iplass
+$ docker pull iplass/iplass-standalone
+----
+
+.. （Enterprise Editionの場合）Enterprise Edition版のダウンロードサイトからtarball形式のDockerイメージを取得し、Dockerイメージをロードします。
++
+[source]
+----
+$ docker load --input iplass-ee-x.x.x.tar.gz
+$ docker load --input iplass-ee-standalone-x.x.x.tar.gz
+----
+
+== Dockerコンテナの起動
+以下に従ってDockerを起動してください。
+
+- `iplass/iplass` （Enterprise Edition版は `iplass/iplass-ee` ）
++
+[source]
+----
+$ docker run -p 8080:8080 -v [IPLASS_HOMEのマウントディレクトリ]:/var/lib/iplass iplass/iplass
+----
+起動方法や設定可能な環境変数の詳細は以下を参照してください。 +
+https://hub.docker.com/r/iplass/iplass
+
+- `iplass/iplass-standalone` （Enterprise Edition版は `iplass/iplass-ee-standalone` ）
++
+[source]
+----
+$ docker run -p 8080:8080 iplass/iplass-standalone
+----
+起動方法や設定可能な環境変数の詳細は以下を参照してください。 +
+https://hub.docker.com/r/iplass/iplass-standalone
+
+== セットアップ
+Dockerコンテナ起動後は以下の手順を参照してください。
+
+- `iplass/iplass` （Enterprise Edition版は `iplass/iplass-ee` ） +
+<<./../gettingstarted/index#_iplassのインストール, Install and Run>>の「3. セットアップ画面の表示」以降を参照してください。
+
+- `iplass/iplass-standalone` （Enterprise Edition版は `iplass/iplass-ee-standalone` ） +
+<<./../gettingstarted/index#_iplassのインストール, Install and Run>>の「6. テナントへのアクセス」以降を参照してください。
+
+== 次のステップ
+iPLAssに初めてふれている場合、次に <<../index.adoc#_チュートリアル,チュートリアル>> を実施してみてください。

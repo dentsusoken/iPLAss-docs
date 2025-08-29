@@ -1,0 +1,1747 @@
+[[batch]]
+== バッチツール
+
+[[batch_common]]
+=== 共通設定
+.事前準備
+Gradleの `copyRuntimeLibs` タスクを実行してツールの実行に必要なライブラリを「lib」ディレクトリにコピーします。
+----
+gradlew copyRuntimeLibs
+----
+
+.環境変数定義
+ツールの実行に必要となる共通環境変数を設定します。
+環境変数は `tools_env.bat` （Linuxの場合は「tools_env.sh」）に対して設定します。
+
+設定する環境変数は以下のものです。
+
+[cols="1,1,1", options="header"]
+|===
+|変数|設定値|例
+|SERVICE_CONFIG_NAME
+|各アプリのservice-configファイル名を指定します。ファイルはクラスパス上に格納されている必要があります。
+|mtp-service-config.xml
+|MTP_RESOURCE_PATH
+|リソースファイル（mtp-service-config.xmlなど）が格納されているパスを指定します。
+|.\..\conf
+|MTP_LIB_PATH
+|ライブラリ（jarなど）が格納されているパスを指定します。
+|.\..\lib
+|LANG
+|言語を指定します。system を指定した場合、JVMのLocaleの値を利用します。
+ただし、「ja」「en」以外の場合は、「en」を言語として利用します。
+|system +
+ja +
+en
+|===
+
+`tools_env.bat` には予め変数が定義されているので、値を設定してください。
+
+.MySQLを利用する際の注意点
+
+MySQL環境に対してテナントを作成する場合、テナントごとにPartitionを作成するDDLが実行されます。
+そのため「SERVICE_CONFIG_NAME」で指定した「xxx-service-config.xml」内のDB接続ユーザーに対して、「ALTER TABLE」権限が必要となります。
+権限を持ったユーザーが、アプリケーションからの接続に利用するユーザーと異なる場合は、ツールを実行する前に mtp-service-config.xml 内の接続ユーザーを変更してください。
+
+.PostgreSQLを利用する際の注意点
+
+パーティション対応のPostgreSQL環境に対してテナントを作成する場合、テナントごとにPartitionを作成するDDLが実行されます。
+そのため「SERVICE_CONFIG_NAME」で指定した「xxx-service-config.xml」内のDB接続ユーザーに対して、「ALTER TABLE」権限が必要となります。
+権限を持ったユーザーが、アプリケーションからの接続に利用するユーザーと異なる場合は、ツールを実行する前に mtp-service-config.xml 内の接続ユーザーを変更してください。
+
+[[batch_package]]
+=== Packaging
+Packageはテナントに登録されているメタデータやEntityデータをzip形式でまとめたものです。
+Package機能を利用して、テナントのメタデータやEntityデータを更新したり、別のテナントに移行することができます。
+
+AdminConsole上にも同様の機能があります。
+このバッチは、AdminConsole上の<<tools_packaging, Packaging>>と連携しています。
+
+NOTE: バッチ形式では、EntityExplorerに該当する機能は提供していません。
+Entityデータをエクスポート、インポートする場合はPackage機能を利用します。
+
+==== Export
+Packageを作成する機能です。
+実行形式としてウィザード形式とサイレント形式をサポートします。
+
+.バッチファイル
+----
+pack_export.bat（sh）
+----
+
+batファイル内に以下の変数が定義されています。必要に応じて修正してください。
+
+[cols="1,3",options="header"]
+|===
+|変数|設定値
+|EXEC_MODE a|
+[horizontal]
+WIZARD:: ウィザード形式で実行します。
+SILENT:: サイレント形式で実行します。
+|TENANT_ID|テナントIDを指定します。-1の場合、ウィザードまたは設定ファイルで指定します。
+|PACK_CONFIG|サイレント形式の場合に、設定ファイルのパスを指定します。
+|===
+
+===== ウィザード形式
+ウィザード形式の場合、実行に必要な情報を質問形式で設定していきます。
+
+[cols="1,3a",options="header"]
+|===
+|質問|設定値
+|テナント名を入力してください。|
+エクスポートするテナントの名前を入力してください。
+
+`-show` と入力すると、登録されているテナントの一覧を出力します。
+
+|出力先ディレクトリを入力してください。|
+Packageファイルの出力ディレクトリを指定します。
+存在しない場合は作成を試みます。
+
+|Package名を入力してください。|
+作成するPackageの名前を入力します。
+
+|Packageを保存しますか？|
+エクスポートしたPackageをテナントに登録します。
+AdminConsoleのPackage機能で参照することができます。（Typeが `Offline` として表示されます）
+
+|===
+
+.メタデータ設定 +
+メタデータをExportする場合に表示されます。
+
+[cols="1,3a",options="header"]
+|===
+|質問|設定値
+|メタデータをExportしますか？|
+メタデータをエクスポートする場合は `yes` としてください。
+後続の質問が続きます。
+
+|Localのメタデータのみを対象にしますか？|
+エクスポートするメタデータをLocalのみに限定するかを指定します。
+
+|全てのメタデータパスをExportしますか？|
+全てのメタデータを含める場合は `yes` としてください。
+Localでかつ全てを選択した場合は、Localのメタデータを全てエクスポートします。
+
+|TenantメタデータをExportに含めますか？|
+全てをExportするで `yes` を選択した場合にのみ表示されます。
+現状、インポート時に別名、別IDのテナントデータはエラーとしてはじかれます。
+
+|Export対象のメタデータパスを指定してください。|
+全てをExportするで `no` を選択した場合にのみ表示されます。
+個別にパスを指定します。
+\*の利用、複数指定(カンマ区切り)が可能です。 +
+action/mtp/*,/entity/Sample01,/entity/samples/*
+
+|対象メタデータはｎ件です。リストを表示しますか？|
+リストを表示するとした場合は、対象となるメタデータの一覧が表示されます。
+続けて「処理を続けてよろしいですか？」と聞かれるので、問題なければ処理を続行します。
+
+|===
+
+.Entity設定 +
+EntityデータをExportする場合に表示されます。
+
+[cols="1,3a",options="header"]
+|===
+|質問|設定値
+
+|EntityデータをExportしますか？|
+Entityデータをエクスポートする場合は `yes` としてください。
+後続の質問が続きます。
+
+|全てのEntityデータをExportしますか？|
+全てのEntityデータを含める場合は `yes` としてください。
+
+|User EntityデータをExportに含めますか？|
+全てをExportするで `yes` を選択した場合にのみ表示されます。
+なお、User Entityをインポートしても認証情報はインポートすることができません。
+インポートしたUserでログインを行いたい場合は別途T_ACCOUNTテーブルをインポートしてください。
+
+|Export対象のEntity名を指定してください。|
+全てをExportするで `no` を選択した場合にのみ表示されます。
+個別にEntity名を指定します。
+\*の利用、複数指定(カンマ区切り)が可能です。 +
+mtp.*,samples.Sample01,sample2.sub.*
+
+|対象Entityデータはｎ件です。リストを表示しますか？|
+リストを表示するとした場合は、対象となるEntityの一覧が表示されます。
+続けて「処理を続けてよろしいですか？」と聞かれるので、問題なければ処理を続行します。
+
+|被参照プロパティをExportに含めますか？|
+被参照プロパティをエクスポートする場合に `yes` を指定します。
+インポート時は被参照プロパティは利用しないため（登録対象外）、除外したほうがエクスポートが高速になります。
+|===
+
+全て設定が終わると、実行前に確認メッセージが表示されます。
+`yes` でエクスポートを開始します。
+
+正常に作成されると `SUCCESS` が出力されます。
+何かキーを入力して終了します。
+
+===== サイレント形式
+サイレント形式の場合、実行に必要な情報は設定ファイルで指定します。
+
+設定ファイルは、 `conf/pack-exp-config.properties` として配布しています。
+必要に応じて編集してください。
+
+もし設定ファイルのパスやファイル名を変更した場合は、パッチの `PACK_CONFIG` を変更してください。
+
+NOTE: テナントの指定については、バッチ引数でも設定ファイルでも指定することができます。
+バッチ引数での指定を優先します。
+
+==== Import
+Packageをインポートする機能です。
+実行形式としてウィザード形式とサイレント形式をサポートします。
+
+.バッチファイル
+----
+pack_import.bat（sh）
+----
+
+batファイル内に以下の変数が定義されています。必要に応じて修正してください。
+
+[cols="1,3a",options="header"]
+|===
+|変数|設定値
+|EXEC_MODE|
+[horizontal]
+WIZARD:: ウィザード形式で実行します。
+SILENT:: サイレント形式で実行します。
+|TENANT_ID|テナントIDを指定します。-1の場合、ウィザードまたは設定ファイルで指定します。
+|FILE|インポートファイルを指定します。 `empty` の場合、ウィザードまたは設定ファイルで指定します。
+|PACK_CONFIG|サイレント形式の場合に、設定ファイルのパスを指定します。
+|===
+
+===== ウィザード形式
+ウィザード形式の場合、実行に必要な情報を質問形式で設定していきます。
+
+[cols="1,3a",options="header"]
+|===
+|質問|設定値
+|テナント名を入力してください。|
+インポートするテナントの名前を入力してください。
+
+|Importファイルパスを入力してください。|
+インポート対象のファイルパスを指定します。
+
+|Packageを保存しますか？|
+インポートするPackageファイルをテナントに登録します。
+AdminConsoleのPackage機能で参照することができます。（Typeが `Offline` として表示されます）
+
+|===
+
+.メタデータ設定 +
+インポートファイルにメタデータが存在する場合に表示されます。
+
+[cols="1,3",options="header"]
+|===
+|質問|設定値
+|対象メタデータはｎ件です。リストを表示しますか？|
+リストを表示するとした場合は、含まれるメタデータの一覧が表示されます。
+続けて「処理を続けてよろしいですか？」と聞かれるので、問題なければ処理を続行します。
+|===
+
+.Entity設定 +
+インポートファイルにEntityデータが存在する場合に表示されます。
+
+[cols="1,3",options="header"]
+|===
+|質問|設定値
+|対象Entityデータはn件です。リストを表示しますか？|
+リストを表示するとした場合は、含まれるEntityの一覧が表示されます。
+続けて「処理を続けてよろしいですか？」と聞かれるので、問題なければ処理を続行します。
+
+|既存データを全て削除しますか？|
+すでに登録されているEntityデータを削除するかを指定します。
+
+|bulkUpdateを利用しますか？|
+インポート時にbulkUpdateを利用するかを指定します。bulkUpdateによるバッチ更新により高速化が見込めますが、
+forceUpdate、エラースキップ、Listener、 Validationの指定が無効になります。
+
+|変更がない場合も強制的に更新しますか？|
+変更がない場合も強制的に更新するかを指定します。
+
+|エラーデータはスキップしてImportを続けますか？|
+インポートデータにエラーが含まれている場合、そのデータをスキップして次のデータの取り込み処理を継続するかを指定します。
+
+|存在しないプロパティは無視してImportを続けますか？|
+インポートデータにEntity上存在しないプロパティが含まれている場合、そのプロパティを無視して取込み処理を行うかを指定します。
+
+|Listener処理を実行しますか？|
+データ登録時にListenerを実行するかを指定します。
+
+|更新不可項目を更新しますか？|
+Entity更新不可プロパティについて、update時にCSVデータに設定されている値で更新するかを指定します。
+これを有効にした場合、Validationは実行できません。
+
+|追加時に監査プロパティを指定した値で登録しますか？|
+InsertされるEntityの監査プロパティをCSVで指定された値で登録します。作成日、作成者、更新日、更新者が対象です。指定しない場合、実行日時と実行ユーザーで登録されます。 +
+指定する場合は、管理者権限を持ったユーザーで実行する必要があるため、実行ユーザーID、パスワードを入力する必要があります。
+
+|Validation処理を実行しますか？|
+データ登録時にValidationを実行するかを指定します。
+
+|コミット単位を入力してください。|
+データをコミットする単位を指定します。
+大量データを登録する際は、必ず分割してコミットしてください。
+
+|OID Prefixを入力してください。|
+必要に応じてOIDの先頭に付加する文字（英数字のみ）を入力します。
+別サーバや別テナントのデータをインポートする場合は、必ず指定してください（自動採番時の重複エラーが発生します）
+|===
+
+全て設定が終わると、実行前に確認メッセージが表示されます。
+`yes` でインポートを開始します。
+
+正常に作成されると `SUCCESS` が出力されます。
+何かキーを入力して終了します。
+
+===== サイレント形式
+サイレント形式の場合、実行に必要な情報は設定ファイルで指定します。
+
+設定ファイルは、 `conf/pack-imp-config.properties` として配布しています。
+必要に応じて編集してください。
+
+もし設定ファイルのパスやファイル名を変更した場合は、パッチの `PACK_CONFIG` を変更してください。
+
+NOTE: テナントとインポートファイルの指定については、バッチ引数でも設定ファイルでも指定することができます。
+バッチ引数での指定を優先します。
+
+=== Cleaner
+
+==== Temporary Lob Cleaner
+利用されていないLOBデータを削除します。
+ユーザーがファイルアップロード後にEntity自体の登録をやめたものや、LobデータをもつEntityデータが削除されたものなどが対象になります。
+
+.バッチファイル
+----
+clean_temp_lob.bat（sh）
+----
+
+batファイル内に以下の変数が定義されています。
+必要に応じて修正してください。
+[cols="1,3",options="header"]
+|===
+|変数|設定値
+|TENANT_ID |テナントIDを指定します。-1の場合、全テナントが対象になります。
+|===
+
+LOBデータの保存期間の設定については<<../../serviceconfig/index.adoc#LobStoreService,LobStoreService>>を参照してください。
+
+[[temporary_user_cleaner]]
+==== Temporary User Cleaner
+有効期限切れのテンポラリーユーザー情報を削除します。
+UserEntityの有効終了日が現在日付より小さい場合且つ、テンポラリーフラグがtrueのユーザーが対象になります。
+
+.バッチファイル
+----
+clean_temp_user.bat（sh）
+----
+
+batファイル内に以下の変数が定義されています。
+必要に応じて修正してください。
+[cols="1,3",options="header"]
+|===
+|変数|設定値
+|TENANT_ID|テナントIDを指定します。-1の場合、全テナントが対象になります。
+|===
+
+==== Invalid MetaData Cleaner
+無効な（削除された）メタデータをDB上から物理削除します。
+Entityの場合、Entityデータ自体も全て物理削除されます。
+
+.バッチファイル
+----
+clean_invalid_meta.bat（sh）
+----
+
+batファイル内に以下の変数が定義されています。
+必要に応じて修正してください。
+[cols="1,3",options="header"]
+|===
+|変数|設定値
+|TENANT_ID|テナントIDを指定します。-1の場合、全テナントが対象になります。
+|===
+
+==== Async Task Cleaner
+Status.RETURNEDのままのタスクを履歴へ移動し、古い履歴は削除します。
+
+.バッチファイル
+----
+clean_async_task.bat（sh）
+----
+
+batファイル内に以下の変数が定義されています。
+必要に応じて修正してください。
+[cols="1,3",options="header"]
+|===
+|変数|設定値
+|TENANT_ID|テナントIDを指定します。-1の場合、全テナントが対象になります。
+|===
+
+.日付の指定について
+移動、削除対象の日付の指定はservice-configに設定します。
+下記設定を追加し、①及び②の箇所を指定したい日付に変更して下さい。
+
+[source,xml]
+----
+<!-- AsyncTask queue and counter setting -->
+<service>
+  <interface>org.iplass.mtp.impl.async.rdb.RdbQueueService</interface>
+  <!-- if use async rdb service set to true -->
+  <property name="useQueue" value="true" />
+  <property name="historyHoldDay" value="3" /> <1>
+  <property name="queue" class="org.iplass.mtp.impl.async.rdb.QueueConfig">
+    <property name="id" value="0" />
+    <property name="name" value="default" />
+    <property name="resultRemainingTime" value="172800000" /> <2>
+    <property name="worker" class="org.iplass.mtp.impl.async.rdb.WorkerConfig">
+      <property name="pollingInterval" value="60000" />
+    </property>
+  </property>
+</service>
+----
+<1> 履歴削除対象となる日付を指定します。書式は日数です。
+左記設定の場合、更新日付が3日より古い履歴が削除対象となります。
+<2> 履歴移動対象となる日付を指定します。書式はlong値です。
+左記設定の場合、更新日付が2日以前のタスクが移動対象となります。
+
+==== Auth Provider Cleaner
+認証プロバイダが一時的に生成したデータのクリーンナップ処理を行います。
+具体的には、RememberMe機能を有効化している場合に、期限切れのトークンを削除する処理が実行されます。
+
+.バッチファイル
+----
+clean_auth_provider.bat（sh）
+----
+
+batファイル内に以下の変数が定義されています。
+必要に応じて修正してください。
+[cols="1,3",options="header"]
+|===
+|変数|設定値
+|TENANT_ID|テナントIDを指定します。-1の場合、全テナントが対象になります。
+|===
+
+==== Rb Cleaner
+ごみ箱内のデータを削除します。
+
+service-configの<<../../serviceconfig/index.adoc#EntityHandlerService, EntityHandlerService>>で「purgeTargetDate」に日数を指定してください。
+実行時から指定した日数より前にごみ箱へ削除されたデータを物理削除します。
+
+.バッチファイル
+----
+clean_rb.bat（sh）
+----
+
+batファイル内に以下の変数が定義されています。
+必要に応じて修正してください。
+[cols="1,3",options="header"]
+|===
+|変数|設定値
+|TENANT_ID|テナントIDを指定します。-1の場合、全テナントが対象になります。
+|===
+
+==== Rdb Cache Cleaner
+<<../../serviceconfig/index.adoc#CacheService, CacheService>>の各キャッシュに「RdbCacheStoreFactory」を指定した場合に、有効期間が過ぎたキャッシュをクリアします。
+
+.バッチファイル
+----
+clean_rdb_cache.bat（sh）
+----
+
+全てのテナントのキャッシュが削除対象となります。
+また、指定可能なパラメータはありません。
+
+[[storage_space_cleaner]]
+==== Storage Space Cleaner
+StorageSpaceから指定されたEntityのEntityデータを削除します。
+
+.バッチファイル
+----
+clean_storage_space.bat（sh）
+----
+
+実行すると、削除に必要な情報をウィザード形式で入力します。
+
+以下の質問に回答してください。
+
+[cols="1,3a",options="header"]
+|===
+|質問|設定値
+|テナントIDを入力してください。|
+削除するEntityデータのテナントIDを指定します。
+|Entity名を入力してください。|
+削除するEntityデータのEntity名を指定します。
+|StorageSpace名を入力してください。|
+Entityデータを削除するStorageSpace名を指定します。
+|===
+
+全て設定が終わると、削除処理を行います。
+
+正常に削除されると `SUCCESS` が出力されます。
+何かキーを入力して終了します。
+
+=== Entity
+[[entity_crawl]]
+==== Entity Crawl
+全文検索用のインデックスを作成します。
+新しく追加されたデータをインデックスに含める場合は、インデックスの再作成が必要になります。
+
+.バッチファイル
+----
+crawl_entity.bat（sh）
+----
+
+batファイル内に以下の変数が定義されています。
+必要に応じて修正してください。
+[cols="1,3a",options="header"]
+|===
+|変数|設定値
+|CRAWL_MODE|
+[horizontal]
+CRAWL:: インデックスを作成します。
+RECRAWL:: 全てのインデックスを削除し、再作成します。
+|TENANT_ID|テナントIDを指定します。-1の場合、全テナントが対象になります。
+|ENTITY_NAME|特定のEntityのインデックスを作成したい場合Entity名を指定します。未指定の場合はテナント内のすべてのEntityが対象になります。
+|===
+
+[[custom_storage_space]]
+==== Custom Storage Space
+iPLAssではAdminConsoleなどを利用して動的にEntityの定義を変更できます。
+Entity定義を元に作成されるEntityのデータは、service-configに定義されたStorageSpaceに格納されます。
+
+このバッチは、service-configに定義されたStorageSpaceの情報を元に、データベース上にテーブルをCreateするためのDDLを生成するものです。
+
+Storage Spaceの詳細については<<../datamanagement/index.adoc#ref_storagespace, StorageSpace>>を参照してください。
+
+.Storage Spaceの設定
+バッチを起動する前に、service-configに「Storage Space」の定義を追加します。
+「mtp-tools-service-config.xml」の以下の箇所を参考に、作成する「Storage Space」の定義を追加してください。
+
+[source,xml]
+----
+<!-- Entity Store Settings -->
+<service>
+  <interface>org.iplass.mtp.impl.datastore.StoreService</interface>
+
+  <!--
+    カスタムのStorageSpaceを利用する場合、下記のコメントアウトをはずしてプロパティを変更してください。
+
+    If you want to use a custom StorageSpace,
+    please change the property and remove the comment out the following.
+  -->
+
+  <!--
+    <property name="dataStore" class="org.iplass.mtp.impl.datastore.grdb.GRdbDataStore">
+      <property name="storageSpace" additional="true">
+        <property name="storageSpaceName" value="XXXXX" />
+        <property name="tableNamePostfix" value="XXXXX" />
+        <property name="tableCount" value="0" />
+        <property name="varcharColumns" value="128" />
+        <property name="decimalColumns" value="32" />
+        <property name="timestampColumns" value="32" />
+        <property name="doubleColumns" value="32" />
+        <property name="indexedVarcharColumns" value="8" />
+        <property name="indexedDecimalColumns" value="4" />
+        <property name="indexedTimestampColumns" value="4" />
+        <property name="indexedDoubleColumns" value="4" />
+        <property name="uniqueIndexedVarcharColumns" value="2" />
+        <property name="uniqueIndexedDecimalColumns" value="2" />
+        <property name="uniqueIndexedTimestampColumns" value="2" />
+        <property name="uniqueIndexedDoubleColumns" value="2" />
+        <property name="varcharColumnLength" value="-1" />
+        <property name="customPartition" value="false" />
+        <property name="tableAllocator" class="org.iplass.mtp.impl.datastore.grdb.tableallocators.HashingTableAllocator" />
+      </property>
+    </property>
+  -->
+</service>
+----
+
+[cols="1,3a",options="header"]
+|===
+|設定項目
+|設定値
+
+|storageSpaceName
+|Entity定義で選択する際に表示されるStorage Space名を指定します。
+標準で「default」、「mtp」、「user」が定義されているので、それ以外の名前を指定してください。
+
+|tableNamePostfix
+|StorageSpace用のデータベーステーブルに付加する接尾語を指定します。
+英数字のみ利用してください。
+標準で「MTP」、「USER」が定義されているので、それ以外の名前を指定してください。
+
+|tableCount
+|StorageSpaceの疑似パーティションテーブル数を設定します。疑似パーティションを設定しない場合は 0 を設定してください。
+数値のみ設定可能です。
+
+|varcharColumns
+|文字列型のプロパティを格納するための列数を指定します。
+標準では、「Oracle, PostgreSQL, SQLServer：128、MySQL：64」が設定されています。
+Entityのプロパティ型と列の型の対応については<<about_type, こちら>>を参照してください。
+
+|decimalColumns
+|Decimal型のプロパティを格納するための列数を指定します。
+標準では、「Oracle, PostgreSQL, SQLServer：32、MySQL：32」が設定されています。
+Entityのプロパティ型と列の型の対応については<<about_type, こちら>>を参照してください。
+
+|timestampColumns
+|Timestamp型のプロパティを格納するための列数を指定します。
+標準では、「Oracle, PostgreSQL, SQLServer：32、MySQL：32」が設定されています。
+Entityのプロパティ型と列の型の対応については<<about_type, こちら>>を参照してください。
+
+|doubleColumns
+|浮動小数点型のプロパティを格納するための列数を指定します。
+標準では、「Oracle, PostgreSQL, SQLServer：32、MySQL：16」が設定されています。
+Entityのプロパティ型と列の型の対応については<<about_type, こちら>>を参照してください。
+
+|indexedVarcharColumns
+|Index指定された文字列型のプロパティを格納するための列数を指定します。
+標準では、「Oracle, PostgreSQL, SQLServer：8、MySQL：5」が設定されています。
+Entityのプロパティ型と列の型の対応については<<about_type, こちら>>を参照してください。
+
+|indexedDecimalColumns
+|Index指定されたDecimal型のプロパティを格納するための列数を指定します。
+標準では、「Oracle, PostgreSQL, SQLServer：4、MySQL：4」が設定されています。
+Entityのプロパティ型と列の型の対応については<<about_type, こちら>>を参照してください。
+
+|indexedTimestampColumns
+|Index指定されたTimestamp型のプロパティを格納するための列数を指定します。
+標準では、「Oracle, PostgreSQL, SQLServer：4、MySQL：4」が設定されています。
+Entityのプロパティ型と列の型の対応については<<about_type, こちら>>を参照してください。
+
+|indexedDoubleColumns
+|Index指定された浮動小数点型のプロパティを格納するための列数を指定します。
+標準では、「Oracle, PostgreSQL, SQLServer：4、MySQL：4」が設定されています。
+Entityのプロパティ型と列の型の対応については<<about_type, こちら>>を参照してください。
+
+|uniqueIndexedVarcharColumns
+|Unique Index指定された文字列型のプロパティを格納するための列数を指定します。
+標準では、「Oracle, PostgreSQL, SQLServer：2、MySQL：2」が設定されています。
+Entityのプロパティ型と列の型の対応については<<about_type, こちら>>を参照してください。
+
+|uniqueIndexedDecimalColumns
+|Unique Index指定されたDecimal型のプロパティを格納するための列数を指定します。
+標準では、「Oracle, PostgreSQL, SQLServer：2、MySQL：2」が設定されています。
+Entityのプロパティ型と列の型の対応については<<about_type, こちら>>を参照してください。
+
+|uniqueIndexedTimestampColumns
+|Unique Index指定されたTimestamp型のプロパティを格納するための列数を指定します。
+標準では、「Oracle, PostgreSQL, SQLServer：2、MySQL：2」が設定されています。
+Entityのプロパティ型と列の型の対応については<<about_type, こちら>>を参照してください。
+
+|uniqueIndexedDoubleColumns
+|Unique Index指定された浮動小数点型のプロパティを格納するための列数を指定します。
+標準では、「Oracle, PostgreSQL, SQLServer：2、MySQL：2」が設定されています。
+Entityのプロパティ型と列の型の対応については<<about_type, こちら>>を参照してください。
+
+|varcharColumnLength
+|文字列格納カラムの文字列長を設定します。詳細な説明は link:../../serviceconfig/index.html#StorageSpaceMap[こちら] を参照してください。
+
+|customPartition
+|Partitionを利用する場合に標準のPartitionと異なるPartitionを利用するかを指定します。
+標準のPartitionとは、以下の命名規則に則って作成されたテナント単位のPartitionです。
+====
+obj_store${tableNamePostfix}_テナントID
+====
+
+MySQL及びPostgreSQLの場合、自動でPartitionが生成できないので、テナント作成用ToolであるTenantManagerでテナントを作成・削除する際にPartitionの作成・削除を行います。
+その際、この設定がtrueのStorageSpaceについてはPartitionに対する処理を行いません。
+
+また本ツールで作成されるDDLでも、この設定がtrueのStorageSpaceについてはPartitionに関する指定を出力しません。
+
+|tableAllocator
+|TableAllocatorの設定。詳細な説明は link:../../serviceconfig/index.html#StorageSpaceMap[こちら] を参照してください。
+|===
+
+storageSpaceは複数定義することが可能です。
+複数定義したい場合は、以下のように定義してください。
+
+[source,xml]
+----
+<property name="dataStore" class="org.iplass.mtp.impl.datastore.grdb.GRdbDataStore">
+  <property name="storageSpace" additional="true">
+    <property name="storageSpaceName" value="sp1" />
+    <property name="tableNamePostfix" value="SP1" />
+    ・・・・・
+  </property>
+  <property name="storageSpace" additional="true">
+    <property name="storageSpaceName" value="sp2" />
+    <property name="tableNamePostfix" value="SP2" />
+    ・・・・・
+  </property>
+  <property name="storageSpace" additional="true">
+    <property name="storageSpaceName" value="sp3" />
+    <property name="tableNamePostfix" value="SP3" />
+    ・・・・・
+  </property>
+</property>
+----
+
+[[about_type]]
+.Entityのプロパティ型と列の型の対応について
+StrageSpaceで設定する列の型は、以下のようにEntityの型に対応しています。
+[cols="1,5",options="header"]
+|===
+|列の型|対象となるEntityプロパティの型
+|Varchar|AutoNumber、Boolean、Select、String、LongText、Binary
+|Timestamp|Date、Datetime、Time
+|Decimal|Decimal、Integer
+|Double|Float
+|===
+
+.バッチ実行
+「mtp-tools-service-config.xml」を保存したらバッチを起動します。
+
+----
+storage_space_ddl.bat（sh）
+----
+
+ここからDDL生成に必要な情報をウィザード形式で入力します。
+
+以下の質問に回答してください。
+
+[cols="1,3a",options="header"]
+|===
+|質問|設定値
+|Templateが格納されているディレクトリを入力してください。|
+DDL生成用のTemplateファイル(gtl)が格納されているディレクトリを指定します。
+Templateはバッチファイルと同様に、「server-setup-kit」に含まれます。
+初期値は、バッチファイルからの相対パスに対して、service-configで指定されたRDBの種類で出力されます。
+Templateを別ディレクトリに格納している場合は、ここでディレクトリを指定してください。
+
+|出力先ディレクトリを入力してください。|
+DDLファイルを出力するためのディレクトリを指定します。
+存在しない場合は作成を試みます。
+
+|対象のStorageSpace名を入力してください。|
+対象とするStorageSpace名を指定します。
+未指定の場合、標準で提供される `mtp` 、 `user` を含む全てを対象にします。
+複数指定する場合はカンマで区切ってください。
+
+(例)sp1、sp2、sp3を対象にする場合
+----
+sp1,sp2,sp3
+----
+
+|パーティションを作成しますか？|
+標準のパーティション定義を利用してパーティションを作成する場合は `yes` とします。
+ここで `no` とした場合、パーティションに関するDDLを出力しません。
+また `yes` とした場合でも、StorageSpace定義でcustomPartitionがtrueの場合はパーティションに関するDDLを出力しません。
+OracleのStandard Editionを利用するなど、パーティションが利用できない場合は `no` としてください。
+
+NOTE: パーティション作成する場合、MySQL、Postgresqlの場合は明示的なパーティション追加操作が必要です。本ツールで出力したDDLを実行後、 <<tenantmanager>> のパーティション管理機能（GUI版もしくはCUI版）を利用してパーティションの作成を行ってください。
+
+|ページ圧縮を利用する場合は圧縮形式を入力してください。[zlib/lz4/none]|
+MySQLのページ圧縮を利用する場合は圧縮形式[zlib/lz4/none]を指定します。
+ここで未指定または定義外の圧縮形式を指定した場合はページ圧縮に関するDDLを出力しません。
+MySQL以外を利用するなど、ページ圧縮が利用できない場合は未指定としてください。
+|===
+
+全て設定が終わると、生成を開始します。
+
+正常に作成されると `SUCCESS` が出力されます。
+何かキーを入力して終了します。
+
+出力先で指定したディレクトリにsqlファイルが出力されます。
+
+生成されたStorageSpace用DDL定義に対して、カラムマッピング機能用の列を追加したり、データベースのIndexを変更するなどを行う場合は、
+出力された「obj_store.sql」、「obj_store_rb.sql」に対して変更を行ってください。
+他のsqlファイルは、ほとんどの場合変更する必要はありません
+
+[[storage_space_migration]]
+==== Storage Space Migration
+EntityのStorageSpaceを変更しEntityデータを変更したStorageSpaceへ移動します。
+
+.バッチファイル
+----
+storage_space_migrate.bat（sh）
+----
+
+実行すると、移行に必要な情報をウィザード形式で入力します。
+
+以下の質問に回答してください。
+
+[cols="1,3a",options="header"]
+|===
+|質問
+|設定値
+
+|テナントIDを入力してください。
+|移行するEntityのテナントIDを指定します。
+
+|Entity名を入力してください。
+|移行するEntity名を指定します。
+
+|移行先のStorageSpace名を入力してください。
+|移行先のStorageSpace名を指定します。
+
+|移行先の疑似パーティション位置を入力してください（指定可能範囲：0 ～ n）。自動で決定する場合は auto を入力してください。 
+|移行先の StorageSpace に疑似パーティションが設定されている場合に質問が表示されます。 +
+移行先のStorageSpaceの疑似パーティション位置を数値で指定します。質問の指定可能範囲の `n` には、疑似パーティション位置として指定可能な最大値が表示されます。
+移行先のパーティション位置を自動で決定する場合は `auto` を入力してください。
+
+|移行元のStorageSpaceをクリーンアップしますか？
+|移行元StorageSpaceのEntityデータを削除する場合は `yes` とします。
+ここで `no` とした場合、移行元のEntityデータは削除されず残ることになります。
+移行元のEntityデータを残したまま、移行元のStorageSpaceへ再度移行した場合はEntityデータが重複して登録されることになります。
+特別な理由がない限り `yes` を指定し移行元のEntityデータを削除してください。
+もし移行後、移行元のEntityデータを残した状態で再度移行元のStorageSpaceへ移行する場合は、
+<<storage_space_cleaner, Storage Space Cleaner>>により移行元のEntityデータを削除してください。
+|===
+
+全て設定が終わると、移行処理を行います。
+
+正常に移行されると `SUCCESS` が出力されます。
+何かキーを入力して終了します。
+
+[[eql_executor]]
+==== EQL Executor
+指定のEQL文を実行します。
+
+.バッチファイル
+----
+eql_executor.bat（sh）
+----
+
+.使用方法
+----
+eql_executor.bat（sh） [EQL文]
+----
+※EQL文は必ずダブルクォート(")で囲んでください。 +
+※対話形式の場合はEQL文は不要です。
+
+batファイル内に以下の変数が定義されています。必要に応じて修正してください。
+
+[cols="1,3a",options="header"]
+|===
+|変数|設定値
+|TENANT_ID|テナントIDを指定します。
+|SEARCH_ALL_VERSION|Version管理しているEntityに対して全てのバージョンを検索するかを指定します。デフォルトは「false（全てのバージョンを検索しない）」です。
+|EXEC_MODE|実行モードを指定します。
+[horizontal]
+BATCH:: バッチ形式。指定されたEQL文を実行し終了します。
+INTERACT:: 対話形式。対話形式でEQL文を入力し実行します。対話形式を終了するまで連続してEQL文の入力と実行が出来ます。
+
+デフォルトは「BATCH（バッチ形式）」です。
+|EQL_EXEC_MODE|EQL実行モードを指定します。
+[horizontal]
+ONLY_EXEC:: 実行のみ。EQLの実行のみを行い件数や検索結果の表示は行いません。
+ONLY_COUNT:: カウントのみ。件数の表示のみを行います。
+SHOW_SEARCH_RESULT:: 検索結果表示。件数及び検索結果の表示を行います。
+CSV_EXPORT:: CSV出力。検索結果をCSV形式でファイル出力します。
+
+デフォルトは「ONLY_EXEC（実行のみ）」です。
+|USER_ID|ユーザーIDを指定します。指定がない場合は特権モードで動作します。
+|PASSWORD|パスワードを指定します。指定がない場合は「パスワードなし」で動作します。
+|EXPORT_FILE|EQL実行モードがCSV_EXPORTの場合、出力先のパスとファイル名を指定します。
+|CHARSET（Linuxのみ）|ターミナルの文字コードを指定します。デフォルトは「UTF-8」です。
+|===
+
+.対話形式
+対話形式で実行するとプロンプト「EQL>」が表示されます。プロンプトに続いてEQL文を入力しエンターキーを押下することで入力されたEQL文が実行されます。
+実行にはEQL文の最後にセミコロン（;）が必要です。セミコロンがない場合はマルチライン入力となりプロンプト「\->」に続いて最後にセミコロンを入力しエンターキーを押下することでEQL文が実行されます。
+
+例：シングルライン入力による実行
+----
+EQL> select oid, name from sample.MyEntity;⏎
+oid,name
+1,MyName1
+2,MyName2
+3,MyName3
+
+3 rows selected.
+----
+
+例：マルチライン入力による実行
+----
+EQL> select oid, name⏎
+  -> from sample.MyEntity;⏎
+oid,name
+1,MyName1
+2,MyName2
+3,MyName3
+
+3 rows selected.
+----
+
+EQL実行モードを動的に変更することが可能です。「EQL_EXEC_MODE=」に続いてEQL実行モードを入力しエンターキーを押下します。
+「EQL_EXEC_MODE=」のみを入力してエンターキーを押下した場合は現在のモードが表示されます。動的に変更したモードは実行中でのみ有効です。
+
+例：EQL実行モードの確認と変更
+----
+EQL> EQL_EXEC_MODE=⏎
+ONLY_EXEC
+EQL> EQL_EXEC_MODE=SHOW_SEARCH_RESULT⏎
+EQL> EQL_EXEC_MODE=⏎
+SHOW_SEARCH_RESULT
+----
+
+※イコールの前後は空けずに入力してください。
+
+「exit」または「quit」を入力しエンターキーを押下することで対話形式の実行を終了します。
+
+[[entity_view]]
+==== Entity View
+データベース上にEntityに対するビューをCreateするためのDDLを作成するものです。
+
+.バッチファイル
+----
+entity_view_ddl.bat（sh）
+----
+
+実行すると、作成に必要な情報をウィザード形式で入力します。
+
+以下の質問に回答してください。
+
+[cols="1,3a",options="header"]
+|===
+|質問|設定値
+|テナントIDを入力してください。|
+DDLを作成するEntityのテナントIDを指定します。
+|Entityの名前または階層パスを入力してください。|
+DDLを作成するEntity名または階層パス名を指定します。`/`（半角スラッシュ）が指定された場合はトップ階層の指定となります。
+|出力ファイル名を入力してください。|
+作成されるDDLファイルのファイル名とパスを指定します。
+|出力ファイルが既に存在する場合は強制的に上書きしますか？|
+作成されるDDLファイルが既に存在する場合、強制的に上書きするかを指定します。
+|指定の階層パス下にある全てのエンティティを対象にしますか？(階層パス指定時)|
+階層パス名が指定された場合、指定された階層パスの全てのEntity及び階層パス下のEntityを対象とするかを指定します。
+`no` を選択の場合、指定された階層パス化のEntityのみが対象となります。
+|===
+
+全て設定が終わると、EntityビューDDL作成処理を行います。
+
+正常に作成されると `SUCCESS` が出力されます。
+何かキーを入力して終了します。
+
+* Entityのプロパティ型に対するビューにおける出力ついて
+
+Boolean:: ビューでは真は「1」、偽は「0」で出力されます。値の型は文字列となります。
+Select:: ビューでは値（value）が出力されます。表示値（displayName）は出力されません。
+Expression:: ビューでは `NULL` が固定値として出力されます。
+Binary:: ビューではロブIDが出力されます。ロブIDのカラム名はプロパティ名の末尾に `_LOBID` を付与した名前となります。 +
+LongText:: ビューではテキストとロブIDがそれぞれ別々のカラムとして出力されます。
+ロブIDのカラム名はプロパティ名の末尾に `_LOBID` を付与した名前となります。
+テキストはデータが内部に保持されている場合のみ出力され、Lobなど外部に保持されている場合は `NULL` が出力されます。
+また、データが内部に保持されている場合のロブIDの値は「-1」となります。 +
+データの保持先の設定については、link:../../serviceconfig/index.html#PropertyService[PropertyService]を参照してください。
+Reference:: ビューではReference型のプロパティはカラムとして出力されません。代わりに、参照元と参照先のビューを関係づけるための中間ビューが作成されます。
+中間ビューは、参照元の `oid` と `version` 、参照先の `oid` と `version` のカラムで構成されます。
+参照元ビューと参照先ビューを中間ビューで結合することでReference型プロパティの参照が可能になります。 +
+中間ビューのビュー名は `<参照元ビュー名>$<プロパティ名>` となります。
+
+* 多重度について +
+プロパティに設定された多重度数分のカラムが出力されます。（Reference型を除く） +
+例えば、多重度が「3」のString型のプロパティ「tel」の場合、「tel_1」「tel_2」「tel_3」の多重度数分のカラムが出力されます。
+
+* ビュー名の自動縮小について +
+ビュー名の長さについては使用するRDBごとに制限があり、この制限の長さを超える場合は自動的に制限の長さに収まるように縮小されます。 
+縮小の結果、ビュー名に重複が生じた場合はビュー名の末尾に連番が付与されます。
++
+[cols="1,2a",options="header"]
+|===
+|RDB|ビュー名最大長
+|Oracle 12cR2以降|128
+|MySQL|64
+|PostgreSQL|63
+|SQLServer|128
+|===
++
+.Oracleを利用する際の注意点
+デフォルトではビュー名の最大長は `128` で処理されますが、12cR1以前を利用の場合はビュー名の最大長を `30` に設定してください。 +
+設定については、link:../../serviceconfig/index.html#OracleRdbAdapter[OracleRdbAdapter]を参照してください。
+
+==== Export
+EntityのCSVファイル及びバイナリデータをエクスポートする機能です。
+実行形式としてウィザード形式とサイレント形式をサポートします。
+
+.バッチファイル
+----
+entity_export.bat（sh）
+----
+.使用方法
+----
+entity_export.bat（sh） [Entity名] [出力先ディレクトリパス] [バイナリデータをExportするか]
+----
+※対話形式の場合はEntity名、出力先ディレクトリパス、バイナリデータをExportするかは指定不要です。 +
+※Entity名、出力先ディレクトリパス、バイナリデータをExportするかは設定ファイルでも指定することができます。
+
+batファイル内に以下の変数が定義されています。必要に応じて修正してください。
+
+[cols="1,3",options="header"]
+|===
+|変数|設定値
+|EXEC_MODE a|
+[horizontal]
+WIZARD:: ウィザード形式で実行します。
+SILENT:: サイレント形式で実行します。
+|TENANT_ID|テナントIDを指定します。-1の場合、ウィザードまたは設定ファイルで指定します。
+|ENTITY_CONFIG|設定ファイル(entity-exp-config.properties)を利用する場合にパスを指定します。
+|===
+
+===== ウィザード形式
+ウィザード形式の場合、実行に必要な情報を質問形式で設定していきます。
+
+[cols="1,3",options="header"]
+|===
+|質問|設定値
+|テナント名を入力してください。|
+エクスポートするテナントの名前を入力してください。
+
+|Entity名を入力してください。|
+対象のEntity名を入力してください。
+
+|出力先ディレクトリ名を入力してください。|
+出力先ディレクトリ名を指定します。
+
+|バイナリデータをExportしますか？|
+バイナリデータをExportする場合は `yes` とします。
+`{出力先ディレクトリ}/lobs` 配下にバイナリデータをExportします。
+
+|===
+
+.Entity設定 +
+
+[cols="1,3",options="header"]
+|===
+|質問|設定値
+|Where条件を入力してください。|
+Where条件を指定します。
+
+|OrderBy条件を入力してください。|
+OrderBy条件を指定します。
+
+|全てのバージョンを検索しますか？|
+全てのバージョンを検索するかを指定します。
+|===
+全て設定が終わると、実行前に確認メッセージが表示されます。
+`yes` でエクスポートを開始します。
+
+正常に作成されると `SUCCESS` が出力されます。
+何かキーを入力して終了します。
+
+===== サイレント形式
+サイレント形式の場合、実行に必要な情報は設定ファイルで指定します。
+
+設定ファイルは、 `conf/entity-exp-config.properties` として配布しています。
+必要に応じて編集してください。
+
+もし設定ファイルのパスやファイル名を変更した場合は、パッチの `ENTITY_CONFIG` を変更してください。
+
+NOTE: テナントやEntity名、出力先ディレクトリ名、バイナリデータをExportするかの指定については、バッチ引数でも設定ファイルでも指定することができます。
+バッチ引数での指定を優先します。
+
+==== Import
+EntityのCSVファイル及びバイナリデータをインポートする機能です。
+実行形式としてウィザード形式とサイレント形式をサポートします。
+
+.バッチファイル
+----
+entity_import.bat（sh）
+----
+.使用方法
+----
+entity_import.bat（sh） [Entity名] [CSVファイルパス] [バイナリデータをImportするか]
+----
+※対話形式の場合はEntity名、CSVファイルパス、
+バイナリデータをImportするかは指定不要です。 +
+※Entity名、CSVファイルパス、バイナリデータをImportするかは設定ファイルでも指定することができます。
+
+batファイル内に以下の変数が定義されています。必要に応じて修正してください。
+
+[cols="1,3",options="header"]
+|===
+|変数|設定値
+|EXEC_MODE a|
+[horizontal]
+WIZARD:: ウィザード形式で実行します。
+SILENT:: サイレント形式で実行します。
+|TENANT_ID|テナントIDを指定します。-1の場合、ウィザードまたは設定ファイルで指定します。
+|ENTITY_CONFIG|設定ファイル(entity-imp-config.properties)を利用する場合にパスを指定します。
+|===
+
+===== ウィザード形式
+ウィザード形式の場合、実行に必要な情報を質問形式で設定していきます。
+
+[cols="1,3",options="header"]
+|===
+|質問|設定値
+|テナント名を入力してください。|
+インポートするテナントの名前を入力してください。
+
+|Entity名を入力してください。|
+対象のEntity名を入力してください。
+
+|Importファイルパスを入力してください。|
+インポート対象のファイルパスを指定します。
+
+|バイナリデータをImportしますか？|
+バイナリデータをImportする場合は `yes` とします。 `{Importファイルがあるディレクトリ}/lobs` 配下のバイナリデータをImportします。
+
+|===
+
+.Entity設定 +
+
+[cols="1,3",options="header"]
+|===
+|質問|設定値
+|既存データを全て削除しますか？|
+すでに登録されているEntityデータを削除するかを指定します。
+
+|bulkUpdateを利用しますか？|
+インポート時にbulkUpdateを利用するかを指定します。bulkUpdateによるバッチ更新により高速化が見込めますが、
+forceUpdate、エラースキップ、Listener、 Validationの指定が無効になります。
+
+|変更がない場合も強制的に更新しますか？|
+変更がない場合も強制的に更新するかを指定します。
+
+|エラーデータはスキップしてImportを続けますか？|
+インポートデータにエラーが含まれている場合、そのデータをスキップして次のデータの取り込み処理を継続するかを指定します。
+
+|存在しないプロパティは無視してImportを続けますか？|
+インポートデータにEntity上存在しないプロパティが含まれている場合、そのプロパティを無視して取込み処理を行うかを指定します。
+
+|Listener処理を実行しますか？|
+データ登録時にListenerを実行するかを指定します。
+
+|更新不可項目を更新しますか？|
+Entity更新不可プロパティについて、update時にCSVデータに設定されている値で更新するかを指定します。
+これを有効にした場合、Validationは実行できません。
+
+|追加時に監査プロパティを指定した値で登録しますか？|
+InsertされるEntityの監査プロパティをCSVで指定された値で登録します。作成日、作成者、更新日、更新者が対象です。指定しない場合、実行日時と実行ユーザーで登録されます。 +
+指定する場合は、管理者権限を持ったユーザーで実行する必要があるため、実行ユーザーID、パスワードを入力する必要があります。
+
+|Validation処理を実行しますか？|
+データ登録時にValidationを実行するかを指定します。
+
+|コミット単位を入力してください。|
+データをコミットする単位を指定します。
+大量データを登録する際は、必ず分割してコミットしてください。
+
+|OID Prefixを入力してください。|
+必要に応じてOIDの先頭に付加する文字（英数字のみ）を入力します。
+別サーバや別テナントのデータをインポートする場合は、必ず指定してください（自動採番時の重複エラーが発生します）
+|===
+
+全て設定が終わると、実行前に確認メッセージが表示されます。
+`yes` でインポートを開始します。
+
+正常に作成されると `SUCCESS` が出力されます。
+何かキーを入力して終了します。
+
+===== サイレント形式
+サイレント形式の場合、実行に必要な情報は設定ファイルで指定します。
+
+設定ファイルは、 `conf/entity-imp-config.properties` として配布しています。
+必要に応じて編集してください。
+
+もし設定ファイルのパスやファイル名を変更した場合は、パッチの `ENTITY_CONFIG` を変更してください。
+
+NOTE: テナントやEntity名、インポートファイルの指定については、バッチ引数でも設定ファイルでも指定することができます。
+バッチ引数での指定を優先します。
+
+==== Update All
+Entityに対して一括更新(UpdateAll)する機能です。
+実行形式としてウィザード形式とサイレント形式をサポートします。
+
+.バッチファイル
+----
+entity_update_all.bat（sh）
+----
+.使用方法
+----
+entity_update_all.bat（sh） [Entity名] [更新する項目名と値] [Where条件]
+----
+※対話形式の場合、Entity名、更新する項目名と値、Where条件は不要です。
+
+batファイル内に以下の変数が定義されています。必要に応じて修正してください。
+
+[cols="1,3",options="header"]
+|===
+|変数|設定値
+|EXEC_MODE a|
+[horizontal]
+WIZARD:: ウィザード形式で実行します。
+SILENT:: サイレント形式で実行します。
+|TENANT_ID|テナントIDを指定します。-1の場合、ウィザードまたは設定ファイルで指定します。
+|===
+
+===== ウィザード形式
+ウィザード形式の場合、実行に必要な情報を質問形式で設定していきます。
+
+[cols="1,3",options="header"]
+|===
+|質問|設定値
+|テナント名を入力してください。|
+対象のテナントの名前を入力してください。
+
+|Entity名を入力してください。|
+対象のEntity名を入力してください。
+
+|更新する項目名と値を入力してください。|
+更新する項目名と値を指定します。 複数指定する場合はカンマ区切りで指定してください。 +
+設定例: `propA='hoge', propB='fuga,fuga', propC=(select count() from EntityA where xxx in (1,2,3))`
+
+|Where条件を入力してください。|
+Where条件を指定します。
+
+|===
+全て設定が終わると、実行前に確認メッセージが表示されます。
+`yes` で一括更新を開始します。
+
+正常に作成されると `SUCCESS` が出力されます。
+何かキーを入力して終了します。
+
+===== サイレント形式
+サイレント形式の場合、実行に必要な情報はバッチの引数で指定します。 +
+実行前の確認メッセージを表示せずに即座にパッチが実行されます。
+
+==== Delete All
+Entityに対して一括削除（DeleteAll）する機能です。
+実行形式としてウィザード形式とサイレント形式をサポートします。
+
+.バッチファイル
+----
+entity_delete_all.bat（sh）
+----
+.使用方法
+----
+entity_delete_all.bat（sh） [Entity名] [Where条件] [Listner処理を実行するか] [コミット単位]  
+----
+※対話形式の場合、Entity名、Where条件、Listner処理を実行するか、コミット単位は不要です。
+
+batファイル内に以下の変数が定義されています。必要に応じて修正してください。
+
+[cols="1,3",options="header"]
+|===
+|変数|設定値
+|EXEC_MODE a|
+[horizontal]
+WIZARD:: ウィザード形式で実行します。
+SILENT:: サイレント形式で実行します。
+|TENANT_ID|テナントIDを指定します。-1の場合、ウィザードまたは設定ファイルで指定します。
+|===
+
+===== ウィザード形式
+ウィザード形式の場合、実行に必要な情報を質問形式で設定していきます。
+
+[cols="1,3",options="header"]
+|===
+|質問|設定値
+|テナント名を入力してください。|
+対象のテナントの名前を入力してください。
+
+|Entity名を入力してください。|
+対象のEntity名を入力してください。
+
+|Where条件を入力してください。|
+Where条件を指定します。
+
+|Listener処理を実行しますか？|
+データ削除時にListenerを実行するかを指定します。
+
+|コミット単位を入力してください。|
+データをコミットする単位を指定します。
+大量データを削除する際は、必ず分割してコミットしてください。
+|===
+全て設定が終わると、実行前に確認メッセージが表示されます。
+`yes` で一括削除を開始します。
+
+正常に作成されると `SUCCESS` が出力されます。
+何かキーを入力して終了します。
+
+===== サイレント形式
+サイレント形式の場合、実行に必要な情報はバッチの引数で指定します。 +
+実行前の確認メッセージを表示せずに即座にパッチが実行されます。
+
+[[batch_meta]]
+=== MetaData
+
+[[batch_meta_export]]
+==== Export
+メタデータ定義をXMLファイルとしてエクスポートする機能です。
+実行形式としてウィザード形式とサイレント形式をサポートします。
+
+.バッチファイル
+----
+meta_export.bat（sh）
+----
+
+batファイル内に以下の変数が定義されています。必要に応じて修正してください。
+
+[cols="1,3a",options="header"]
+|===
+|変数|設定値
+|EXEC_MODE|
+[horizontal]
+WIZARD:: ウィザード形式で実行します。
+SILENT:: サイレント形式で実行します。
+|TENANT_ID|テナントIDを指定します。-1の場合、ウィザードまたは設定ファイルで指定します。
+|META_CONFIG|サイレント形式の場合に、設定ファイルのパスを指定します。
+|===
+
+===== ウィザード形式
+ウィザード形式の場合、実行に必要な情報を質問形式で設定していきます。
+
+[cols="1,3a",options="header"]
+|===
+|質問|設定値
+|テナント名を入力してください。|
+エクスポートするテナントの名前を入力してください。
+
+`-show` と入力すると、登録されているテナントの一覧を出力します。
+
+|出力先ディレクトリを入力してください。|
+ファイルの出力ディレクトリを指定します。
+存在しない場合は作成を試みます。
+
+|ファイル名を入力してください。|
+作成するファイル名を入力します。
+
+|Localのメタデータのみを対象にしますか？|
+エクスポートするメタデータをLocalのみに限定するかを指定します。
+
+|全てのメタデータパスをExportしますか？|
+全てのメタデータを含める場合は `yes` としてください。
+Localでかつ全てを選択した場合は、Localのメタデータを全てエクスポートします。
+
+|TenantメタデータをExportに含めますか？|
+全てをExportするで `yes` を選択した場合にのみ表示されます。
+現状、インポート時に別名、別IDのテナントデータはエラーとしてはじかれます。
+
+|Export対象のメタデータパスを指定してください。|
+全てをExportするで `no` を選択した場合にのみ表示されます。
+個別にパスを指定します。
+\*の利用、複数指定(カンマ区切り)が可能です。 +
+action/mtp/*,/entity/Sample01,/entity/samples/*
+
+|対象メタデータはｎ件です。リストを表示しますか？|
+リストを表示するとした場合は、対象となるメタデータの一覧が表示されます。
+続けて「処理を続けてよろしいですか？」と聞かれるので、問題なければ処理を続行します。
+
+|===
+
+全て設定が終わると、実行前に確認メッセージが表示されます。
+`yes` でエクスポートを開始します。
+
+正常に作成されると `SUCCESS` が出力されます。
+何かキーを入力して終了します。
+
+===== サイレント形式
+サイレント形式の場合、実行に必要な情報は設定ファイルで指定します。
+
+設定ファイルは、 `conf/meta-exp-config.properties` として配布しています。
+必要に応じて編集してください。
+
+もし設定ファイルのパスやファイル名を変更した場合は、パッチの `META_CONFIG` を変更してください。
+
+NOTE: テナントの指定については、バッチ引数でも設定ファイルでも指定することができます。
+バッチ引数での指定を優先します。
+
+==== Import
+メタデータのXMLファイルをインポートする機能です。
+実行形式としてウィザード形式とサイレント形式をサポートします。
+
+.バッチファイル
+----
+meta_import.bat（sh）
+----
+
+batファイル内に以下の変数が定義されています。必要に応じて修正してください。
+
+[cols="1,3a",options="header"]
+|===
+|変数|設定値
+|EXEC_MODE|
+[horizontal]
+WIZARD:: ウィザード形式で実行します。
+SILENT:: サイレント形式で実行します。
+|TENANT_ID|テナントIDを指定します。-1の場合、ウィザードまたは設定ファイルで指定します。
+|FILE|インポートファイルを指定します。`empty` の場合、ウィザードまたは設定ファイルで指定します。
+|META_CONFIG|サイレント形式の場合に、設定ファイルのパスを指定します。
+|===
+
+===== ウィザード形式
+ウィザード形式の場合、実行に必要な情報を質問形式で設定していきます。
+
+[cols="1,3a",options="header"]
+|===
+|質問|設定値
+|テナント名を入力してください。|
+インポートするテナントの名前を入力してください。
+
+|Importファイルパスを入力してください。|
+インポート対象のファイルパスを指定します。
+
+|対象メタデータはｎ件です。リストを表示しますか？|
+リストを表示するとした場合は、含まれるメタデータの一覧が表示されます。
+続けて「処理を続けてよろしいですか？」と聞かれるので、問題なければ処理を続行します。
+|===
+
+全て設定が終わると、実行前に確認メッセージが表示されます。
+`yes` でインポートを開始します。
+
+正常に作成されると `SUCCESS` が出力されます。
+何かキーを入力して終了します。
+
+===== サイレント形式
+サイレント形式の場合、実行に必要な情報は設定ファイルで指定します。
+
+設定ファイルは、 `conf/meta-imp-config.properties` として配布しています。
+必要に応じて編集してください。
+
+もし設定ファイルのパスやファイル名を変更した場合は、パッチの `META_CONFIG` を変更してください。
+
+NOTE: テナントとインポートファイルの指定については、バッチ引数でも設定ファイルでも指定することができます。
+バッチ引数での指定を優先します。
+
+==== メタデータパッチ
+ファイルベースのEntity定義を更新した際にEntityデータのパッチを行う機能です。
+実行形式としてウィザード形式とサイレント形式をサポートします。
+
+.バッチファイル
+----
+meta_data_patch.bat（sh）
+----
+
+batファイル内に以下の変数が定義されています。必要に応じて修正してください。
+
+[cols="1,3a",options="header"]
+|===
+|変数|設定値
+|EXEC_MODE|
+[horizontal]
+WIZARD:: ウィザード形式で実行します。
+SILENT:: サイレント形式で実行します。
+|TENANT_ID|テナントIDを指定します。-1の場合、ウィザードで指定します。
+|OLD_META_DATA_FILE|以前のメタデータファイルを指定します。`\_empty_` の場合、ウィザードで指定します。
+|NEW_META_DATA_FILE|新しいメタデータファイルを指定します。`\_empty_` の場合、ウィザードで指定します。
+|USER_ID|パッチを実行するユーザーIDを指定します。`\_empty_` の場合、特権モードで実行します。
+|PASSWORD|パッチを実行するユーザーのパスワードを指定します。
+|===
+
+===== ウィザード形式
+ウィザード形式の場合、実行に必要な情報を質問形式で設定していきます。
+
+[cols="1,3a",options="header"]
+|===
+|質問|設定値
+|テナントIDを入力してください。|
+データのパッチを行うテナントのIDを入力してください。
+|以前のメタデータのファイルパスを入力してください。|
+以前のメタデータのファイルパスを入力してください。
+|新しいメタデータのファイルパスを入力してください。|
+新しいメタデータのファイルパスを入力してください。
+|ユーザーIDを入力してください。(任意)|
+パッチを実行するユーザーのIDを入力してください。未入力の場合は特権モードで実行します。
+|パスワードを入力してください。|
+パッチを実行するユーザーのパスワードを入力してください。
+|===
+
+全て設定が終わると、実行前に確認メッセージが表示されます。
+`yes` でパッチの実行を開始します。
+
+正常にパッチが実行されると `SUCCESS` が出力されます。
+何かキーを入力して終了します。
+
+===== サイレント形式
+サイレント形式の場合、実行に必要な情報はバッチファイルの変数で指定します。
+
+実行前の確認メッセージを表示せずに即座にパッチが実行されます。
+
+==== 名前一覧Export
+AdminConsoleやPackageバッチなどでエクスポートしたメタデータ定義XMLファイルに含まれるメタデータ名をCSV形式で出力します。
+
+.バッチファイル
+----
+meta_namelist.bat（sh）
+----
+
+実行すると、Exportに必要な情報をウィザード形式で入力します。
+
+以下の質問に回答してください。
+
+[cols="1,3a",options="header"]
+|===
+|質問|設定値
+|メタデータのファイルパスを入力してください。|
+対象のメタデータXMLファイルのパスを指定します。
+メタデータXMLファイルまたはPackageで出力したzipファイルを指定してください。
+
+|出力先ディレクトリを入力してください。|
+出力先のディレクトリを指定します。
+存在しない場合は作成を試みます。
+
+|出力ファイル名を入力してください。|
+出力する一覧のファイル名を指定します。
+|===
+
+全て設定が終わると、出力処理を行います。
+
+正常に作成されると `SUCCESS` が出力されます。
+何かキーを入力して終了します。
+
+[[batch_meta_export_rdb_to_file]]
+==== Export Rdb to File
+RDB 管理しているメタデータを Metadata ファイルとしてエクスポートする機能です。実行形式としてウィザード形式とサイレント形式をサポートします。 +
+類似する <<batch_meta_export,MetaData Export>> では、対象となる全メタデータを単一ファイルに出力します。 +
+本機能では、RDB 管理しているメタデータに限定して、出力対象となるメタデータを個別ファイルに出力します。 
+
+.バッチファイル
+----
+meta_export_rdb_to_file.bat（sh）
+----
+
+batファイル内に以下の変数が定義されています。必要に応じて修正してください。
+
+[cols="1,3a",options="header"]
+|===
+|変数
+|設定値
+
+|EXEC_MODE
+|[horizontal]
+WIZARD:: ウィザード形式で実行します。
+SILENT:: サイレント形式で実行します。
+
+|META_CONFIG
+|サイレント形式の場合に、設定ファイルのパスを指定します。
+|===
+
+.service-config の設定
+本機能の利用にあたり、service-config の service `org.iplass.mtp.impl.metadata.MetaDataRepository` を以下のように設定する必要があります。 +
+以下の設定例では、RDB 管理されているメタデータは `/entity/`, `/staticresource/` 配下のパスとなります。
+
+.設定例
+[source,xml]
+----
+<!-- MetaDataRepository Settings -->
+<service>
+  <interface>org.iplass.mtp.impl.metadata.MetaDataRepository</interface>
+
+  <property name="tenantLocalStore" class="org.iplass.mtp.impl.metadata.composite.CompositeMetaDataStore" > <1>
+    <property name="pathMapping" class="org.iplass.mtp.impl.metadata.composite.MetaDataStorePathMapping">
+        <property name="pathPrefix" value="/entity/"/>
+        <property name="store" value="org.iplass.mtp.impl.metadata.rdb.RdbMetaDataStore"/>
+    </property>
+    <property name="pathMapping" class="org.iplass.mtp.impl.metadata.composite.MetaDataStorePathMapping">
+        <property name="pathPrefix" value="/staticresource/"/>
+        <property name="store" value="org.iplass.mtp.impl.metadata.rdb.RdbMetaDataStore"/>
+    </property>
+
+    <property name="store" class="org.iplass.mtp.impl.metadata.rdb.RdbMetaDataStore" />
+    <property name="store" class="org.iplass.mtp.impl.metadata.xmlfile.XmlFileMetaDataStore" > <2>
+      <property name="fileStorePath" value="src/main/tenantLocalStore/" /> <3>
+      <property name="groovySourceStorePath" value="src/main/groovy/" />
+      <property name="localTenantId" value="CHANGE_YOUR_TENANT_ID"/> <4>
+    </property>
+    <property name="defaultStoreClass" value="org.iplass.mtp.impl.metadata.xmlfile.XmlFileMetaDataStore"/>
+  </property>
+</service>
+
+----
+<1> tenantLocalStore プロパティは、 `org.iplass.mtp.impl.metadata.composite.CompositeMetaDataStore` を設定する。
+<2> `org.iplass.mtp.impl.metadata.composite.CompositeMetaDataStore` のプロパティ store に以下のいずれかを設定する。 +
+{nbsp}{nbsp} `org.iplass.mtp.impl.metadata.xmlfile.XmlFileMetaDataStore` +
+{nbsp}{nbsp} `org.iplass.mtp.impl.metadata.xmlfile.VersioningXmlFileMetaDataStore`
+<3> XMLファイルは fileStorePath プロパティのパスに出力される。
+<4> バッチ実行時に指定することができるテナントIDは、localTenantId に設定されているテナントIDと同一であること。 +
+※当該行の value 属性は利用対象のテナントIDを設定する。
+
+===== ウィザード形式
+ウィザード形式の場合、実行に必要な情報を質問形式で設定していきます。
+
+[cols="1,3a",options="header"]
+|===
+|質問
+|設定値
+
+|テナントURLを入力してください。
+|エクスポートするテナントのURLを入力してください。
+
+`-show` と入力すると、登録されているテナントの一覧を出力します。
+
+|メタデータをファイルで管理するための初期移行ですか？
+|RDB管理しているメタデータをファイル管理へ変更するための初期移行である場合は、 `yes` を入力してください。 +
+初期移行の場合は、RDB管理しているテナントローカルのメタデータを全て対象とします。
+
+|全てのメタデータをExportしますか？
+|メタデータをファイルで管理するための初期移行ですか？で、 `no` を選択した場合に表示されます。 +
+ServiceConfig の定義に従いRDB管理している全てのメタデータを含める場合は `yes` としてください。
+
+|Export対象のメタデータパスを指定してください。
+|全てのメタデータをExportしますか？で `no` を選択した場合に表示されます。
+個別にパスを指定します。
+{asterisk}の利用、複数指定(カンマ区切り)が可能です。 +
+/action/mtp/{asterisk},/entity/Sample01,/entity/samples/{asterisk}
+
+|===
+
+全て設定が終わると、実行前に確認メッセージが表示されます。
+`yes` でエクスポートを開始します。
+
+正常に作成されると `SUCCESS` が出力されます。
+何かキーを入力して終了します。
+
+===== サイレント形式
+サイレント形式の場合、実行に必要な情報は設定ファイルで指定します。
+
+設定ファイルは、 `conf/meta-exp-rdb-to-file-config.properties` として配布しています。
+必要に応じて編集してください。
+
+もし設定ファイルのパスやファイル名を変更した場合は、パッチの `META_CONFIG` を変更してください。
+
+=== 設定ファイル暗号化
+==== Encoder
+service-configに設定する文字列の暗号化を行います。
+
+.バッチファイル
+----
+crypt_encode.bat（sh）
+----
+
+batファイル内に以下の変数が定義されています。
+必要に応じて修正してください。
+[cols="1,3a",options="header"]
+|===
+|変数|設定値
+|CRYPT_CONFIG_FILE|/crypt.properties（デフォルト）
+
+暗号化プロパティファイル（crypt.properties）をクラスパスのルートに配置してください。
+ファイル名や配置場所が異なる場合は、この設定を修正してください。
+
+暗号化は暗号化プロパティファイルの設定に基づいて行われます。
+プロパティファイルについては<<../../serviceconfig/index.adoc#obfuscation,難読化>>を参照してください。
+なお、パスフレーズのみファイルからではなく、コンソールで入力した文字列を利用します。
+|FILE_MODE
+|-file
+
+暗号化を行う文字列をテキストファイルにて指定する場合はこの変数の設定のコメントアウトを外し有効にしてください。
+デフォルトでは無効となってます。
+|===
+
+.FILE_MODE OFF
+変数「FILE_MODE」の設定が無効の状態で実行すると、コンソールから入力された文字列を暗号化します。
+暗号化はウィザード形式にて行われます。
+
+以下の質問に回答してください。
+
+[cols="1,3a",options="header"]
+|===
+|質問|設定値
+|enter passphrase|
+暗号化の鍵生成用のパスフレーズを入力します。
+
+|enter same passphrase again|
+先に入力したパスフレーズと同じものを入力します。
+異なる場合は暗号化を終了します。
+
+|enter plain text|
+暗号化を行う文字列を入力します。
+|===
+
+暗号化する文字列を入力後、「encrypted text」の表示とともに暗号化された文字列が表示されます。
+暗号化された文字列の表示後、再度「enter plain text」と表示され暗号化する文字列の入力待ちとなり続けて暗号化を行うことができます。
+暗号化を終了する場合は暗号化する文字列に何も入力せずにエンターキーを押下してください。
+
+.FILE_MODE ON
+変数「FILE_MODE」の設定を有効にして実行すると、テキストファイルにて暗号化する文字列を指定して暗号化を行います。
+暗号化はウィザード形式にて行われます。
+
+以下の質問に回答してください。
+
+[cols="1,3a",options="header"]
+|===
+|質問|設定値
+|enter passphrase|
+暗号化の鍵生成用のパスフレーズを入力します。
+
+|enter same passphrase again|
+先に入力したパスフレーズと同じものを入力します。
+異なる場合は暗号化を終了します。
+
+|enter file path of plain text|
+暗号化を行うテキストファイルのパスを指定します。
+無効なパスが指定された場合は暗号化を終了します。
+|===
+
+暗号化する文字列を入力後、「encrypted text」の表示とともに暗号化された文字列が表示されます。
+暗号化された文字列の表示後、再度「enter file path of plain text」と表示され暗号化するテキストファイルの入力待ちとなり続けて暗号化を行うことができます。
+暗号化を終了する場合はCTRL+Cを押下してバッチを終了してください。
+
+=== LobStore Migration
+==== File to RDB
+LobStoreのデータをファイルシステムからRDBへ移行します。
+
+.バッチファイル
+----
+lobstore_file2rdb.bat（sh）
+----
+
+batファイル内に以下の変数が定義されています。
+必要に応じて修正してください。
+[cols="1,3a",options="header"]
+|===
+|変数|設定値
+|TENANT_ID
+|テナントIDを指定します。-1の場合、全テナントが対象になります。
+|ROOT_DIR|LobStoreのファイルパスを指定します。デフォルトは「D:\tmp\fileLobStore」です。
+|MIGRATE_TARGET|移行対象のデータを指定します。
+
+[horizontal]
+ALL:: Binary型及びLongText型のLobデータ
+BINARY:: Binary型のLobデータ
+LONGTEXT:: LongText型のLobデータ
+|===
+
+==== RDB to File
+LobStoreのデータをRDBからファイルシステムへ移行します。
+
+.バッチファイル
+----
+lobstore_rdb2file.bat（sh）
+----
+
+batファイル内に以下の変数が定義されています。
+必要に応じて修正してください。
+[cols="1,3a",options="header"]
+|===
+|変数|設定値
+|TENANT_ID
+|テナントIDを指定します。-1の場合、全テナントが対象になります。
+|ROOT_DIR|LobStoreのファイルパスを指定します。デフォルトは「D:\tmp\fileLobStore」です。
+|MIGRATE_TARGET|移行対象のデータを指定します。
+
+[horizontal]
+ALL:: Binary型及びLongText型のLobデータ
+BINARY:: Binary型のLobデータ
+LONGTEXT:: LongText型のLobデータ
+|===
+
+=== Viewer
+==== service-config viewer
+マージされたservice-configを出力します。
+
+.バッチファイル
+----
+service_config_view.bat（sh）
+----
+
+batファイル内に以下の変数が定義されています。
+必要に応じて修正してください。
+[cols="1,3a",options="header"]
+|===
+|変数|設定値
+|MODE|マージのモードを指定します。デフォルトは「PARSE_ONLY」です。
+[horizontal]
+PARSE_ONLY:: パースのみ。service-configのパース処理（マージ処理）のみを行います。
+PARSE_LOAD:: パース及びサービスのロード。service-configのパース処理（マージ処理）とサービスのロード処理を行います。 +
+存在しないサービスが設定されているなどサービスの設定に誤りがある場合はエラーとなります。
+|OUT_FILE
+|出力ファイル名を指定します。指定がない場合はコンソール出力となります。
+|===

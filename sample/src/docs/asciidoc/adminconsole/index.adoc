@@ -1,0 +1,23 @@
+[[AdminConsole_Sample_EC]]
+= Admin Console部分の共通設定
+:_hreflang-path: sample/adminconsole/index.html
+:_relative-root-path: ../../
+:example-caption!:
+:figure-caption!:
+:table-caption!:
+
+== 概要
+
+サンプルの各実装でAdmin Console部分の共通設定です。
+
+include::calendar.adoc[]
+
+include::treeview.adoc[]
+
+include::entitymultilingual.adoc[]
+
+include::bulkupdate.adoc[]
+
+include::report.adoc[]
+
+include::searchview_bulkupdate.adoc[]

@@ -1,0 +1,12 @@
+[[ref_property]]
+== Entity Property
+データ型、Validatorについての詳細を記載します。 +
+インデックス指定、データの暗号化については、 <<ref_property_settings>>で説明します。
+
+include::property_datatype.adoc[]
+
+include::property_validator.adoc[]
+
+include::property_normalizer.adoc[]
+
+include::property_setting.adoc[]

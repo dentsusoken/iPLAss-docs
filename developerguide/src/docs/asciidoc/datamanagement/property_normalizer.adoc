@@ -1,0 +1,180 @@
+[[ref_property_normalizer]]
+=== Normalizer
+プロパティの値を正規化するための定義です。
+正規化は検証の直前に実行されます。
+
+CAUTION: 正規化は、同一のプロパティの値に対して複数回呼び出される可能性があります。
+htmlサニタイジング処理のような、複数回呼び出された場合に問題がある処理はPropertyNormalizerで実装しないでください。
+
+
+[[ref_property_normalizer_list]]
+==== 提供Normalizer
+標準で提供しているPropertyのNormalizerです。
+
+[cols="3,6,3",options="header"]
+|===
+| Type | 説明 | Java型
+| <<ref_property_normalizer_trim_white_space>> | 文字列の前後の空白を除去します。| String
+| <<ref_property_normalizer_newline_normalizer>> | 改行コードを統一します。| String
+| <<ref_property_normalizer_ICU_transliterator>> | ICU4JのTransliteratorを利用して変換を行います。| String
+| <<ref_property_normalizer_regex_replace>> | 正規表現を利用して値を置換します。| String
+| <<ref_property_normalizer_unicode_normalizer>> | Unicode正規化を実施します。| String
+| <<ref_property_normalizer_scripting>> | GroovyScript書式で正規化ロジックを実装します。| *
+| <<ref_property_normalizer_java_class>> | Java Classで正規化ロジックを実装します。| *
+|===
+
+[[ref_property_normalizer_trim_white_space]]
+==== Trim White Space
+文字列の前後の空白を除去します。
+AdminConsole上の編集画面では、`Trim White Space` の設定と連動して追加、削除されます。
+
+.対応するJava型
+String型で利用可能です。
+
+.設定
+Trim White Spaceに特化した設定項目はありません。
+
+[[ref_property_normalizer_newline_normalizer]]
+==== Newline Normalizer
+改行コードを統一します。
+AdminConsole上の編集画面では、`Unify Line Breaks Code` の設定と連動して追加、削除されます。
+
+.対応するJava型
+String型で利用可能です。
+
+.設定
+
+[cols="1,4", options="header"]
+|===
+| 設定項目 | 設定内容
+| Line Breaks Code | 改行コードを指定します
+|===
+
+[[ref_property_normalizer_ICU_transliterator]]
+==== ICU Transliterator
+ICU4JのTransliteratorを利用して変換を行います。
+
+.対応するJava型
+String型で利用可能です。
+
+.設定
+
+[cols="1,4", options="header"]
+|===
+| 設定項目 | 設定内容
+| Transliterator Id | ICU4JのTransliteratorのIDを指定します。
+|===
+
+[[ref_property_normalizer_regex_replace]]
+==== Regex Replace
+正規表現を利用して値を置換します。
+
+.対応するJava型
+String型で利用可能です。
+
+.設定
+
+[cols="1,4", options="header"]
+|===
+| 設定項目 | 設定内容
+| Regex | 置換対象の正規表現式を指定します。
+| Replacement | 置換後文字列を指定します。
+|===
+
+[[ref_property_normalizer_unicode_normalizer]]
+==== Unicode Normalizer
+Unicode正規化を実施します。
+
+.対応するJava型
+String型で利用可能です。
+
+.設定
+
+[cols="1,4", options="header"]
+|===
+| 設定項目 | 設定内容
+| Form | Unicode正規化形式を指定します。
+|===
+
+[[ref_property_normalizer_scripting]]
+==== Scripting
+GroovyScript書式で正規化ロジックを実装します。
+
+.対応するJava型
+すべての型で利用可能です。
+
+.設定
+
+[cols="1,4", options="header"]
+|===
+| 設定項目 | 設定内容
+| script | GroovyScriptを指定します。
+戻り値として正規化後の値を返すように実装する必要があります。
+| bind variable as array type | 多重度が1ではない場合に、value変数に配列をバインドするか、
+配列分ループしてvalueにバインドするかを指定します。 +
+`true` の場合、配列をバインドします。
+|===
+
+.利用可能な変数
+利用可能なバインド変数は以下のものです。
+
+[cols="1,3",options="header"]
+|===
+| バインド変数 | 設定される値
+| entity | 対象のEntityデータ。
+| propertyName | プロパティ名
+| value | プロパティ値。各Propertyに対応するJava型が格納されています。
+| context | ValidationContext。
+|===
+
+.（例）接頭辞を付与する
+[source,Groovy]
+----
+if (value == null) {
+    return null;
+}
+if (!value.startsWith('p_') {
+    return 'p_' + value;
+} else {
+    return value;
+}
+----
+
+[[ref_property_normalizer_java_class]]
+==== Java Class
+以下のインターフェースを実装したJavaクラスにより正規化します。
+
+====
+org.iplass.mtp.entity.PropertyNormalizer
+====
+
+.対応するJava型
+すべての型で利用可能です。
+
+.設定
+
+[cols="1,4", options="header"]
+|===
+| 設定項目 | 設定内容
+| Java Class Name | PropertyNormalizerを実装したクラス名を指定します。
+| bind variable as array type | 多重度が1ではない場合に、value変数に配列をバインドするか、
+配列分ループしてvalueにバインドするかを指定します。 +
+`true` の場合、配列をバインドします。
+|===
+
+.PropertyNormalizerの例
+[source,Java]
+----
+import org.iplass.mtp.entity.PropertyNormalizer;
+import org.iplass.mtp.entity.ValidationContext;
+
+public class CustomPropertyNormalizer<String> implements PropertyNormalizer {
+    public String normalize(Object value, ValidationContext context) {
+        if (value == null) {
+            return null;
+        }
+
+        return value.toString().replace(".", "_");
+    }
+}
+----

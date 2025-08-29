@@ -1,0 +1,74 @@
+[[wamsettingfile_ex_iis]]
+==== 設定方法/設定例
+
+IIS版のWAMプラグインモジュールでは、`IplassWamPlugin.xml` を使ってWAMプラグインモジュールの設定を行います。
+
+* propertyタグのname属性に設定項目名、value属性に値を定義します。
+* WAMプラグインモジュールの基本的な設定は、type属性が `WamPluginConfig` のcomponentタグで設定します。
+* SSL/TLS設定やプロキシ、タイムアウト時間などHTTP通信に関わる設定は、type属性が `HttpComponentConfig` のcomponentタグで設定します。
+* 設定項目の詳細は<<wamsettingfile, WAMプラグインモジュールの設定>>を参照してください。
+
+.サンプル
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<componentDefinition>
+  <component type="Iplass.Wam.Config.WamPluginConfig">
+    <property name="siteId" value="local"/>
+    <property name="siteSecret" value="123"/>
+    <property name="siteCookiePath" value="/"/>
+    <property name="siteCookieName" value="ipw"/>
+
+    <!-- 管理対象サイトのドメイン/プロトコル -->
+    <property name="siteCookieDomain" value="my.site.domain"/>
+    <property name="siteScheme" value="https"/>
+
+    <!-- WAMモジュールが稼働するiPLAssサーバーのURL -->
+    <property name="wamBaseUrl" value="https://iplass.domain/mtp/mytenant/"/>
+
+    <!-- 認証対象のURLパスパターン. -->
+    <property name="protectedPathPattern" value="/mycontents/.*"/>
+    <!-- 特定IPを許可します. -->
+    <property name="allowedIp" value="x.x.x.x/x" />
+    <property name="allowedIp" value="y.y.y.y/y" />
+    <property name="allowedIpHeaderName" value="X-Forwarded-For" />
+
+    <!-- 認証処理のコールバックのパス. -->
+    <property name="wamAuthCallbackPath" value="/wamauthcallback"/>
+
+    <property name="loadBalancerCookieName" value="myLB"/>
+    <property name="siteLoadBalancerCookieName" value="wamMyLB"/>
+    <property name="wamCookieName" value="JSESSIONID"/>
+    <property name="wamCookiePath" value="/"/>
+    <property name="csrfTokenCookieName" value="CSRFTOKEN"/>
+    <property name="charset" value="UTF-8" />
+
+    <!-- Userエンティティをリクエストヘッダーに連携します. -->
+    <property name="mapUserAttribute" value="True" />
+    <property name="attributeMap" className="Iplass.Wam.Config.AttributeMap">
+      <property name="mappedAttributeName" value="x-wam-user-id"/>
+      <property name="userAttributeName" value="accountId"/>
+    </property>
+    <property name="attributeMap" className="Iplass.Wam.Config.AttributeMap">
+      <property name="mappedAttributeName" value="x-wam-user-name"/>
+      <property name="userAttributeName" value="name"/>
+    </property>
+
+    <property name="logConfigPath" value="bin\log4net.xml"/>
+    <property name="wamVerboseLog" value="True"/>
+  </component>
+
+  <component type="Iplass.Wam.Config.HttpComponentConfig">
+    <property name="timeout" value="300000"/>
+
+    <!-- HTTP Proxy -->
+    <property name="proxyHost" value="my.proxy.host"/>
+    <property name="proxyPort" value="8080"/>
+    <property name="noProxyHost" value="localhost"/>
+    <property name="noProxyHost" value="x.x.x.x"/>
+
+    <!-- SSL/TLS -->
+    <property name="sslCertificateValidation" value="True"/>
+  </component>
+</componentDefinition>
+----

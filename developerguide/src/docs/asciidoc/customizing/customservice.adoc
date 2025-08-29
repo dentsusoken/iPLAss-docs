@@ -1,0 +1,356 @@
+[[CustomService]]
+== カスタムService
+設定ファイル（service-config）にはiPLAssが提供する各種Serviceクラスの定義が記述されています。
+ここに独自のカスタムServiceを作成し、定義することが可能です。
+
+設定ファイル（service-config）の書式の詳細は、 <<../../serviceconfig/index.adoc#servicedefine, service-configファイルについて>> を参照ください。
+
+
+=== カスタムServiceの作成
+`org.iplass.mtp.spi.Service` を実装したJavaクラスを作成します。
+
+.カスタムServiceの実装例
+[source,java]
+----
+package sample;
+
+import org.iplass.mtp.spi.Config;
+import org.iplass.mtp.spi.Service;
+
+public class SampleService implements Service {
+    private String strValue;
+    private int intValue;
+    private SampleBean sample;
+    private List<SampleBean> arrays;
+
+    @Override
+    public void init(Config config) {
+        //Serviceの初期化処理を記述
+        strValue = config.getValue("strValue");
+        intValue = config.getValue("intValue", Integer.TYPE, 10); <1>
+        sample = config.getValue("sample", SampleBean.class); <2>
+        arrays = config.getValues("arrays", SampleBean.class); <3>
+    }
+
+    @Override
+    public void destroy() {
+        //Serviceの破棄処理を記述
+    }
+
+    //...以下serviceに必要なメソッド、処理を記述
+}
+----
+<1> 設定ファイルに設定されていなかった場合のデフォルト値を指定可能です
+<2> javaBean形式のクラスを指定可能です
+<3> 同一名称の複数の設定項目の定義も可能です。
+
+.カスタムServiceで利用するBean定義例
+[source,java]
+----
+public class SampleBean {
+    private String name;
+    private NestedBean nest;
+    
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public NestedBean getNest() {
+        return nest;
+    }
+    public void setNest(NestedBean nest) {
+        this.nest = nest;
+    }
+}
+
+:
+
+public class NestedBean {
+    private int age;
+    private String name;
+    
+    public NestedBean(int age) {
+        this.age = age;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+}
+
+:
+
+public class ExSampleBean extends SampleBean {
+    private String extraVal;
+
+    public String getExtraVal() {
+        return extraVal;
+    }
+    public void setExtraVal(String extraVal) {
+        this.extraVal = extraVal;
+    }
+}
+----
+
+上記のカスタムServiceに対応するservice-configの定義は例えば、以下のように行うことが可能です。
+
+.service-configでの設定例
+[source,xml]
+----
+:
+
+<service>
+	<interface>sample.SampleService</interface>
+
+	<property name="strValue" value="iPLAss" />
+	<property name="intValue" value="10000" />
+
+	<property name="sample"> <1>
+		<property name="name" value="abc" />
+		<property name="nest">
+        	<arg name="arg0" value="30" /> <2>
+            <property name="name" value="fuga" />
+		</property>
+	</property>
+
+	<property name="arrays"> <3>
+		<property name="name" value="yy" />
+	</property>
+	<property name="arrays" class="sample.ExSampleBean"> <4>
+		<property name="name" value="zz" />
+		<property name="extraVal" value="ex" />
+	</property>
+</service>
+----
+<1> Beanのプロパティは<property>をネストして定義することで設定します
+<2> <arg>指定でコンストラクタインジェクションが可能です
+<3> 同一名の<property>を定義することで、List/配列のプロパティの設定が可能です
+<4> class属性で明示的に生成するクラスを指定可能です
+
+
+Serviceのinitの実装では、Serviceの初期化処理を記述します。
+service-configで設定された内容を保持した `org.iplass.mtp.spi.Config` のインスタンスが引数として渡されます。
+
+==== インタフェースと実装の分離
+Serviceのインタフェースと実装クラスを別に実装し、定義することが可能です。
+
+.インタフェースと実装を分離したカスタムService
+[source,java]
+----
+package sample;
+
+import org.iplass.mtp.spi.Config;
+import org.iplass.mtp.spi.Service;
+
+public interface SampleService extends Service {
+
+    public boolean someMethod();
+
+}
+
+public class SampleServiceA implements SampleService {
+
+    @Override
+    public boolean someMethod() {
+        //SampleServiceAでのsomeMethodの実装
+        :
+    }
+
+    @Override
+    public void init(Config config) {
+        //Serviceの初期化処理を記述
+        :
+    }
+
+    @Override
+    public void destroy() {
+        //Serviceの破棄処理を記述
+    }
+
+}
+
+public class SampleServiceB implements SampleService {
+
+    @Override
+    public boolean someMethod() {
+        //SampleServiceBでのsomeMethodの実装
+        :
+    }
+
+    @Override
+    public void init(Config config) {
+        //Serviceの初期化処理を記述
+        :
+    }
+
+    @Override
+    public void destroy() {
+        //Serviceの破棄処理を記述
+    }
+
+}
+----
+
+上記の実装がある場合、service-configにて実装の切り替えが可能です。
+
+.service-configでの設定例
+[source,xml]
+----
+:
+
+<service>
+	<interface>sample.SampleService</interface>
+	<class>sample.SampleServiceB</class> <1>
+
+	<property name="strValue" value="iPLAss" />
+	:
+
+</service>
+----
+<1> <class>にて実装クラスを指定することが可能です。
+
+
+==== 依存Serviceの定義
+Serviceが依存する別Serviceをservice-configに定義しておくことで、当該Serviceの初期化時に依存するServiceが事前に初期化されていることを保障することが可能です。
+
+.依存Serviceの定義例
+[source,xml]
+----
+:
+
+<service>
+	<interface>sample.SampleService</interface>
+	<depend>org.iplass.mtp.impl.cache.CacheService</depend> <1>
+
+	<property name="strValue" value="iPLAss" />
+
+    :
+    
+</service>
+----
+<1> <depend>で依存するサービスのサービス名（もしくはインタフェース名）を指定します
+
+.Serviceのinitにおける依存Serviceの取得例
+[source,java]
+----
+package sample;
+
+import org.iplass.mtp.spi.Config;
+import org.iplass.mtp.spi.Service;
+
+public class SampleService implements Service {
+    private String strValue;
+    
+    private CacheService cacheService;
+
+    @Override
+    public void init(Config config) {
+        cacheService = config.getDependentService(CacheService.class);
+        
+        :
+        :
+        
+    }
+
+}
+----
+
+==== ServiceInitListener
+カスタムServiceに定義されるBeanにおいて、Serviceのライフサイクルに応じて初期化処理、破棄処理を行いたい場合、 `org.iplass.mtp.spi.ServiceInitListener` を実装します。
+
+.ServiceInitListenerを実装するBean
+[source,java]
+----
+import org.iplass.mtp.spi.ServiceInitListener;
+:
+
+public class SampleBean implements ServiceInitListener<SampleService.class> {
+    private String name;
+    private NestedBean nest;
+    
+    @Override
+	public void inited(SampleService service, Config config) {
+	    //SampleServiceの初期化時に呼び出される
+	    :
+	    
+	}
+	
+    @Override
+	public void destroyed() {
+	    //SampleServiceの破棄時に呼び出される
+	    :
+	
+	}
+    
+    :
+    
+}
+
+----
+
+
+=== Serviceの利用
+Serviceのインスタンスは以下のように取得し、利用します。
+
+[source,java]
+----
+import org.iplass.mtp.spi.ServiceRegistry;
+
+SampleService service = ServiceRegistry.getRegistry().getService(SampleService.class);
+
+service.someServiceMethod();
+:
+
+----
+
+Serviceのインスタンスは、service-configに記述されている数だけが生成され、共有されます。
+service名を個別に定義することにより、同一のServiceクラスを複数インスタンス定義することも可能です。
+
+.service名を利用した設定
+[source,xml]
+----
+:
+
+<service name="service1">
+	<interface>sample.SampleService</interface>
+
+	<property name="strValue" value="iPLAss" />
+	<property name="intValue" value="10000" />
+
+    :
+    
+</service>
+
+<service name="service2">
+	<interface>sample.SampleService</interface>
+
+	<property name="strValue" value="mtp" />
+	<property name="intValue" value="500" />
+
+    :
+    
+</service>
+----
+
+.service名を指定したServiceの取得
+[source,java]
+----
+import org.iplass.mtp.spi.ServiceRegistry;
+
+//下記、service1とservice2は別インスタンス
+
+SampleService service1 = (SampleService) ServiceRegistry.getRegistry().getService("service1");
+
+SampleService service2 = (SampleService) ServiceRegistry.getRegistry().getService("service2");
+
+:
+
+----
+
+

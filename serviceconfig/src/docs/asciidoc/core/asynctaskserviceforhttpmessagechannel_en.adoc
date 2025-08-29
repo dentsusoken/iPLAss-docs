@@ -1,0 +1,57 @@
+[[AsyncTaskServiceForHttpMessageChannel]]
+=== AsyncTaskServiceForHttpMessageChannel
+This service performs asynchronous operations using HttpMessageChannel for cluster communication.
+This is the definition of AsyncTaskService for sending messages asynchronously between Nodes with ClusterService.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.async.AsyncTaskService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.async.thread.ThreadingAsyncTaskService
+----
+
+==== Settings of ThreadingAsyncTaskService
+The configurable items for ThreadingAsyncTaskService are listed below.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| corePoolSize | int | The size of the thread pool for asynchronous processing.
+The number of threads remains fixed in the pool even when idling. The default value is 4.
+| threadPoolType | String a| The thread pool type.
+If not specified, threadPoolType is set to `cached`, and a RejectedExecutionException will occur if the requests get larger than maximumPoolSize.
+
+fixed:: Uses a thread pool which reuses the fixed amount of the threads in the pool specified by corePoolSize.
+single:: Use a single thread.
+cached:: Use a thread pool with dynamic size. It will reuse the threads. The total threads count will not exceed the pool size specified by maximumPoolSize.
+|maximumPoolSize | int | The maximum number of threads available in the thread pool.
+When -1 is set, the maximum value of INT is set. The default value is -1.
+|keepAliveTime | long | If threadPoolType is `cached` and there are more threads than corePoolSize, this specify the maximum time (in milliseconds) for idle threads to wait for a new task before termination.
+The default value is 60000 (1 minute).
+| useResourceHolder | boolean | Whether to use ResourceHolder. The default value is true.
+|===
+
+===== Example
+[source, xml]
+----
+<service name="AsyncTaskServiceForHttpMessageChannel">
+
+	<interface>org.iplass.mtp.impl.async.AsyncTaskService</interface>
+	<class>org.iplass.mtp.impl.async.thread.ThreadingAsyncTaskService</class>
+
+	<!--
+		Thread pool settings for asynchronous transaction when using HttpMessageChannel for cluster communication
+		Set corePoolSize to the actual number of servers x 2
+	 -->
+	<property name="corePoolSize" value="4" />
+	<!--
+		The thread pool type. If not specified, threadPoolType is set to "cached"
+		If there are requests larger than maximumPoolSize, a RejectedExecutionException will occur.
+	 -->
+	<property name="threadPoolType" value="fixed" />
+</service>
+----

@@ -1,0 +1,36 @@
+[[ScheduleService]]
+=== [.eeonly]#ScheduleService#
+スケジュールタスクの定義（メタデータ）を管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.scheduling.ScheduleService
+----
+
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.scheduling.ScheduleService
+----
+
+
+==== ScheduleServiceの設定
+ScheduleServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| systemUserId | String | スケジュールタスクを実行するシステムユーザーのID。
+デフォルト値は `scheduler` です。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.scheduling.ScheduleService</interface>
+	<class>org.iplass.mtp.impl.scheduling.ScheduleService</class>
+	<property name="systemUserId" value="id000001" />
+</service>
+----

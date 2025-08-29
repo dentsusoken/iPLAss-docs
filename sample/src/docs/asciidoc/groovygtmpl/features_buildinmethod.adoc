@@ -1,0 +1,3 @@
+[[Groovy_Gtmpl_BuildinMethod]]
+=== Buildin GroovyTemplate関数
+* ここではBuildin GroovyTemplate関数を利用しています。<<../../developerguide/customizing/index#_groovytemplateの関数,開発者ガイド GroovyTemplateの関数>>を参照してください。

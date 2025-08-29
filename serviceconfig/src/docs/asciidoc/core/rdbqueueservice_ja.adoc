@@ -1,0 +1,137 @@
+[[RdbQueueService]]
+=== RdbQueueService
+RDBを利用したキューのサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.async.rdb.RdbQueueService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.async.rdb.RdbQueueService
+----
+
+==== RdbQueueServiceの設定
+RdbQueueServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| useQueue | boolean | キューを使用するか。デフォルトはfalseです。
+| queue | <<QueueConfig>> | 非同期処理を実行するためのキュー。
+標準で以下のキューが定義されています。
+
+[horizontal]
+default:: 非同期タスク側でキューを指定しない場合に利用されるキュー
+csvupload:: 汎用画面のCSVアップロードで利用するキュー
+
+| cleanupHistoryOnInit | boolean | サービス初期化時に履歴を削除するか。デフォルトはfalseです。
+| historyHoldDay | int | 履歴を削除する際に何日分の履歴を残すか。デフォルトは1です。
+| workerFactory | <<WorkerFactory>> | カスタムでWorkerを生成するFactoryクラスを設定します。未指定の場合は、org.iplass.mtp.impl.async.rdb.DefaultWorkerFactoryが設定されます。
+|===
+
+[[QueueConfig]]
+.QueueConfig
+classはorg.iplass.mtp.impl.async.rdb.QueueConfigを指定します。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| id | int | 一意なID。
+0、1は既に定義されているのでそれ以外を設定してください。
+| name | String | キューの名前。
+非同期タスクがキューを選択する際に表示されます。
+| resultRemainingTime | long | タスクを履歴に移動する時間（ミリ秒）。現在から設定した時間より以前のタスクが移動の対象になります。デフォルト値は86400000（1日）です。
+| strictSequence | boolean | タスクにGroupingKeyが設定され、strictSequenceがtrueの場合、タスクIDはグループ毎にシーケンシャルに設定されます。
+| selectWorkerOnSubmit | boolean | GroupingKeyが未設定のタスクにワーカーを割り振るか。デフォルト値はfalseです。
+| worker | <<WorkerConfig>> | キューを処理するワーカー。
+|===
+
+[[WorkerConfig]]
+.WorkerConfig
+classはorg.iplass.mtp.impl.async.rdb.WorkerConfigを指定します。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| pollingInterval | long | キューをポーリングする間隔（ミリ秒）。デフォルト値は30000です。
+| actualWorkerSize | int | キューを並列で処理する実ワーカーの数。デフォルト値は1です。
+| virtualWorkerSize | int | キューに割り当てる仮想ワーカーの数。デフォルト値は16です。virtualWorkerSizeはシステム内において同一のキュー定義には同じ値を設定します。それぞれの仮想ワーカーは実ワーカーに割り当てられます。
+| executionTimeout | long | 処理のタイムアウト時間（ミリ秒）。デフォルト値は180000です。
+| restartDelay | long | タスクのリトライ間隔（ミリ秒）。デフォルト値は30000です。
+| maxRetryCount | int | タスクのリトライ回数。デフォルトは100です。
+| wakeupOnSubmit | boolean | タスクがサブミットされた後、即座に次のタスクを起動するか。デフォルト値はtrueです。
+現状 `local` をtrueにした場合のみ有効です。
+| trace | boolean | ログを出力するか。デフォルト値はtrueです。
+| local | boolean a| キューに格納されたタスクをローカルで処理するか、リモートで分散処理するか。デフォルト値はtrueです。
+
+.分散処理する場合（local=false）
+次の形式のシステムプロパティにて、このノードが実行するワーカーIDを明示的に指定します。ワーカIDは0からactualWorkerSizeに指定される値未満の番号までの連番です。
+
+mtp.async.rdb.workers=[queueName]:[id]:[id],...
+
+例： +
+`mtp.async.rdb.workers=default:0:2,csvupload:0:2:4`
+
+このノードではdefaultキューのワーカーID0と2、csvuploadキューのワーカーID0、2、4に割り当てられたタスクを実行します。
+| newProcessPerTask | boolean |  ワーカーを新しい別プロセスで実行するか否か。デフォルト値はfalseです。
+| javaCommand | String | ワーカーを別プロセスで起動する場合の、Javaを起動するためのコマンド。
+| vmArgs | String、複数指定可 | `javaCommand` に渡すVM引数。
+| redirectFile | String | プロセスの標準出力先、標準エラー出力先となるファイル。
+|===
+
+[[WorkerFactory]]
+.WorkerFactory
+classはorg.iplass.mtp.impl.async.rdb.WorkerFactoryの実装クラスを指定します。
+
+標準で、以下のWorkerFactoryを提供します。
+
+- <<DefaultWorkerFactory>>
+- <<MetricsWorkerFactory>>
+
+[[DefaultWorkerFactory]]
+.DefaultWorkerFactory
+classはorg.iplass.mtp.impl.async.rdb.DefaultWorkerFactoryを指定します。 +
+デフォルトのWorkerFactoryです。設定変更可能な項目はありません。
+
+[[MetricsWorkerFactory]]
+.[.eeonly]#MetricsWorkerFactory#
+classはorg.iplass.mtp.impl.micrometer.metrics.async.MetricsWorkerFactoryを指定します。 +
+メトリクス収集用のWorkerFactoryです。非同期処理の成功/失敗、タイムアウト数、処理時間をメトリクスとして収集するWorkerを生成します。
+また、同一プロセス内で実行されたWorkerのメトリクスを収集します。 +
+Micrometerモジュールを依存関係に追加した場合に設定可能です。設定変更可能な項目はありません。
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.async.rdb.RdbQueueService</interface>
+	<!-- if use async rdb service set to true -->
+	<property name="useQueue" value="true" />
+
+    <property name="queue" class="org.iplass.mtp.impl.async.rdb.QueueConfig" additional="true">
+        <property name="id" value="2" />
+        <property name="name" value="customQueue" />
+        <property name="worker" class="org.iplass.mtp.impl.async.rdb.WorkerConfig">
+            <property name="pollingInterval" value="60000" />
+            <property name="actualWorkerSize" value="1" />
+        </property>
+    </property>
+
+    <property name="queue" class="org.iplass.mtp.impl.async.rdb.QueueConfig" additional="true">
+        <property name="id" value="3" />
+        <property name="name" value="customProcessWorkerQueue" />
+        <property name="worker" class="org.iplass.mtp.impl.async.rdb.WorkerConfig">
+            <property name="pollingInterval" value="60000" />
+            <property name="actualWorkerSize" value="1" />
+            <property name="newProcessPerTask" value="true" />
+            <property name="javaCommand" value="java" />
+            <property name="vmArgs" value="-cp" />
+            <property name="vmArgs" value="/build/classes/:/build/lib/*" />
+            <property name="vmArgs" value="-Dmtp.config=/worker-service-config.xml" />
+        </property>
+    </property>
+</service>
+----

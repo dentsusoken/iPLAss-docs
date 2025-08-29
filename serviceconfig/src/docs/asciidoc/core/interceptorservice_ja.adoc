@@ -1,0 +1,183 @@
+[[InterceptorService]]
+=== InterceptorService
+コマンド実行時に呼び出されるインターセプターを管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.command.InterceptorService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.command.InterceptorService
+----
+
+==== InterceptorServiceの設定
+コマンドを実行する機能単位で呼び出すインターセプターを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| invoker | <<CommandInterceptor>>、複数指定可 | CommandInvoker経由の明示的な呼び出し時のインターセプター。
+| web | <<CommandInterceptor>>、複数指定可 | Actionのインターセプター。
+| webApi | <<CommandInterceptor>>、複数指定可 | WebApiのインターセプター。
+| soap | <<CommandInterceptor>>、複数指定可 | SOAP通信のインターセプター。
+|===
+
+[[CommandInterceptor]]
+.CommandInterceptor
+classはorg.iplass.mtp.command.interceptor.CommandInterceptorの実装クラスを指定します。
+
+標準で、以下のCommandInterceptorを提供します。
+
+- <<InitialInterceptor>>
+- <<AuthInterceptor_w, AuthInterceptor>>
+- <<AuthInterceptor_s, AuthInterceptor(SOAP)>>
+- <<OAuthScopeInterceptor, OAuthScopeInterceptor>>
+- <<LoggingInterceptor_c, LoggingInterceptor>>
+- <<LoggingInterceptor_w, LoggingInterceptor(WebApi)>>
+- <<TokenInterceptor_w, TokenInterceptor>>
+- <<TokenInterceptor_aw, TokenInterceptor(WebApi)>>
+- <<UnavailableInterceptor>>
+- <<TransactionInterceptor>>
+- <<WebApiMetricsInterceptor>>
+
+[[InitialInterceptor]]
+.InitialInterceptor
+classはorg.iplass.mtp.impl.webapi.interceptors.InitialInterceptorを指定します。
+
+webApi、soapで利用可能です。
+
+WebApiリクエストの初期処理として言語とプレビュー時刻を設定するインターセプターです。設定変更可能な項目はありません。
+
+[[AuthInterceptor_w]]
+.AuthInterceptor(WebApi)
+classはorg.iplass.mtp.impl.webapi.interceptors.AuthInterceptorを指定します。
+
+webApiで利用可能です。
+
+カスタムヘッダーによる認証処理を行うインターセプターです。設定変更可能な項目はありません。
+
+[[AuthInterceptor_s]]
+.AuthInterceptor(SOAP)
+classはorg.iplass.mtp.impl.webapi.soap.interceptors.AuthInterceptorを指定します。
+
+soapで利用可能です。
+
+カスタムヘッダーによる認証処理を行うインターセプターです。設定変更可能な項目はありません。
+
+[[OAuthScopeInterceptor]]
+.OAuthScopeInterceptor
+classはorg.iplass.mtp.impl.webapi.interceptors.OAuthScopeInterceptorを指定します。
+
+webApiで利用可能です。
+
+OAuth2.0のscopeのチェックを行います。
+設定変更可能な項目はありません。
+
+[[LoggingInterceptor_c]]
+.LoggingInterceptor
+classはorg.iplass.mtp.impl.command.interceptors.LoggingInterceptorを指定します。
+
+invoker、web、soapで利用可能です。
+
+コマンドの実行結果をログ出力するインターセプターです。設定変更可能な項目は有りません。
+
+[[LoggingInterceptor_w]]
+.LoggingInterceptor(WebApi)
+classはorg.iplass.mtp.impl.webapi.interceptors.LoggingInterceptorを指定します。
+
+webApiで利用可能です。
+
+WebApiの実行結果をログ出力するインターセプターです。以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| webapiTrace | boolean | WepApiのログを出力するか。デフォルト値はtrueです。
+| logParamName | String、複数指定可 | ログ出力するパラメータ名。
+| logAttributeName | String、複数指定可 | ログ出力するRequestContextのattribute名。
+| noStackTrace | String、複数指定可 | スタックトレースを出力しない例外クラス。
+複数指定する場合はプロパティを複数設定するか例外クラスを半角コロン(:)で区切って設定します。
+| warnLogThresholdOfSqlExecutionCount | int | 警告ログを出力するSQL実行回数の閾値。 +
+単一リクエスト中に閾値を越える回数のSQLが発行された場合、WARNレベルでログ出力されます。 +
+デフォルト値は-1（すべてINFOレベルで出力）です。
+| warnLogThresholdOfExecutionTimeMillis | long | 警告ログを出力する実行時間の閾値（ミリ秒）。 +
+リクエスト処理時間が閾値を越えた場合、WARNレベルでログ出力されます。 +
+デフォルト値は-1（すべてINFOレベルで出力）です。
+|===
+
+[[TokenInterceptor_w]]
+.TokenInterceptor
+classはorg.iplass.mtp.impl.web.interceptors.TokenInterceptorを指定します。
+
+webで利用可能です。
+
+Actionのリクエスト時にトークンのチェックを行うインターセプターです。設定変更可能な項目はありません。
+
+[[TokenInterceptor_aw]]
+.TokenInterceptor(WebApi)
+classはorg.iplass.mtp.impl.web.interceptors.TokenInterceptorを指定します。
+
+webApiで利用可能です。
+
+WebApiのリクエスト時にトークンのチェックを行うインターセプターです。設定変更可能な項目はありません。
+
+[[UnavailableInterceptor]]
+.[.eeonly]#UnavailableInterceptor#
+classはorg.iplass.mtp.impl.webapi.interceptors.UnavailableInterceptorを指定します。
+
+webApi、soapで利用可能です。
+
+テナント単位でメンテナンスモードの切り替えを行うインターセプターです。設定変更可能な項目はありません。
+
+[[TransactionInterceptor]]
+.TransactionInterceptor
+classはorg.iplass.mtp.impl.command.interceptors.TransactionInterceptorを指定します。
+
+invoker、web、webApi、soapで利用可能です。
+
+トランザクションの処理を行うインターセプターです。
+
+[[WebApiMetricsInterceptor]]
+.[.eeonly]#WebApiMetricsInterceptor#
+classはorg.iplass.mtp.impl.micrometer.metrics.web.webapi.WebApiMetricsInterceptorを指定します。
+
+WebAPIのレイテンシ・SQLの発行回数をメトリクスとして記録するインターセプターです。Micrometerモジュールを適用した場合にデフォルトで追加されます。以下の項目を設定可能です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| provider | WebApiMetricsTagsProvider | org.iplass.mtp.impl.micrometer.metrics.web.webapi.WebApiMetricsTagsProviderを実装するクラス。メトリクスに付与するタグをカスタマイズしたい場合に指定可能です。デフォルトでは、org.iplass.mtp.impl.micrometer.metrics.web.webapi.DefaultWebApiMetricsTagsProviderが使用されます。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.command.InterceptorService</interface>
+	<class>org.iplass.mtp.impl.command.InterceptorService</class>
+
+	<property name="invoker" class="org.iplass.mtp.impl.command.interceptors.LoggingInterceptor" />
+	<property name="invoker" class="org.iplass.mtp.impl.command.interceptors.TransactionInterceptor" />
+
+	<property name="web" class="org.iplass.mtp.impl.command.interceptors.LoggingInterceptor" />
+	<property name="web" class="org.iplass.mtp.impl.command.interceptors.TransactionInterceptor" />
+	<property name="web" class="org.iplass.mtp.impl.web.interceptors.TokenInterceptor" />
+
+	<property name="webApi" class="org.iplass.mtp.impl.webapi.interceptors.InitialInterceptor" />
+	<property name="webApi" class="org.iplass.mtp.impl.webapi.interceptors.AuthInterceptor" />
+	<property name="webApi" class="org.iplass.mtp.impl.webapi.interceptors.UnavailableInterceptor" />
+	<property name="webApi" class="org.iplass.mtp.impl.webapi.interceptors.OAuthScopeInterceptor" />
+	<property name="webApi" class="org.iplass.mtp.impl.webapi.interceptors.LoggingInterceptor" />
+	<property name="webApi" class="org.iplass.mtp.impl.command.interceptors.TransactionInterceptor" />
+	<property name="webApi" class="org.iplass.mtp.impl.webapi.interceptors.TokenInterceptor" />
+
+	<property name="soap" class="org.iplass.mtp.impl.webapi.interceptors.InitialInterceptor" />
+	<property name="soap" class="org.iplass.mtp.impl.webapi.soap.interceptors.AuthInterceptor" />
+	<property name="soap" class="org.iplass.mtp.impl.webapi.interceptors.UnavailableInterceptor" />
+	<property name="soap" class="org.iplass.mtp.impl.command.interceptors.LoggingInterceptor" />
+	<property name="soap" class="org.iplass.mtp.impl.command.interceptors.TransactionInterceptor" />
+
+</service>
+----

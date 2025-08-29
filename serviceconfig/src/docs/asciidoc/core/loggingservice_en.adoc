@@ -1,0 +1,40 @@
+[[LoggingService]]
+=== LoggingService
+This service will modify the overall performance of all log services.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.logging.LoggingService
+----
+
+==== Implementing Class Name
+.This LoggingService will enable logback for logs.
+----
+org.iplass.mtp.impl.logging.logback.LogbackLoggingService
+----
+
+==== The Settings of LoggingService
+The configurable items of log outputs can be configured as depicted below.
+With the presence of this service, the log output conditions can be modified dynamically whenever the tenant was changed.
+To enable this feature, it is necessary to enable `org.iplass.mtp.impl.logging.logback.LogConditionTurboFilter` in the setting file of Logback(logback.xml).
+Once the feature is enabled, it will be able to switch the log output conditions dynamically via AdminConsole and so on.
+
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| maxAgeSecondsOfLogCondition | long | 
+Define the maximum effective period of the settings of log output conditions(in seconds).
+The default is -1 (unlimited).
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.logging.LoggingService</interface>
+	<class>org.iplass.mtp.impl.logging.logback.LogbackLoggingService</class>
+	<property name="maxAgeSecondsOfLogCondition" value="86400" />
+</service>
+----

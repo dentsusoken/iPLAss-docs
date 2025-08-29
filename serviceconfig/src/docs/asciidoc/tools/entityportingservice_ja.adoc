@@ -1,0 +1,36 @@
+[[EntityPortingService]]
+=== EntityPortingService
+Entityデータのツールに関するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.tools.entityport.EntityPortingService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.tools.entityport.EntityPortingService
+----
+
+==== EntityPortingServiceの設定
+EntityPortingServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| uploadableCsvDownloadLoadSize | int | Entityのプロパティに多重度複数の参照を含む場合の一括ロード件数。デフォルト値は `1` です。
+| canCreateUserWithSpecificPassword | boolean a| UserエンティティのInsert時にパスワード指定を許可するか。デフォルト値は `false` です。
+
+CAUTION: 将来のバージョンでは本設定項目は削除されます。<<EntityCsvImportService>> の `canCreateUserWithSpecificPassword` を使用してください。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.tools.entityport.EntityPortingService</interface>
+
+	<property name="uploadableCsvDownloadLoadSize" value="100" />
+</service>
+----

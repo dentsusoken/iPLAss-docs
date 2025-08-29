@@ -1,0 +1,105 @@
+= Generic Entity Manager (権限制御)
+:_hreflang-path: developerguide/genericentitymanager/gemauth/index.html
+:_relative-root-path: ../../../
+
+[[gem_auth]]
+== GEM権限制御
+GEM機能に対する権限制御のため、ロールやUtilityクラスを標準機能として提供しています。
+
+=== ロール
+テナント作成時に `AppAdmin` `GemUser` ロールが作成されます。次の用途を想定しています。
+
+[cols="1,3" options="header"]
+|===
+|ロール（ロールコード）|役割
+|AppAdmin|アプリケーション管理者。 +
+AdminConsoleなどを利用できる管理者(開発者)とは異なり、アプリケーションの設定などを制御できる権限。
+|GemUser|アプリケーション利用者。 +
+GEM機能(汎用画面やTopViewなど)を利用することができる権限。
+|===
+
+ユーザーがそれぞれロールコードと同名のグループに所属することを条件としています。
+
+=== 権限設定
+ロールの役割に対応するため、以下の権限が予め設定されています。
+
+
+[cols="1,1,2,2" options="header"]
+|===
+2+|権限|AppAdmin|GemUser
+.6+|Entity権限|mtp.auth.*|参照更新可能|参照のみ
+|mtp.listing.*|参照更新可能 a|SavedList:: ownerかshared=trueの参照可能、ownerかcanOthersEdit=trueの更新可能
+SavedListFolder:: 参照のみ(TopViewで更新系が可能の場合は、特権実行にて実行)
+|mtp.maintenance.*|権限なし(開発者用)|権限なし
+|mtp.scheduling.*|参照のみ(機能上更新が必要な場合は、コード上からの特権実行)|権限なし
+|mtp.workflow.*|参照のみ(機能上更新が必要な場合は、コード上からの特権実行)|権限なし
+|mtp.Information|参照更新可能|参照のみ
+|Action権限|gem/* 2+a| `org.iplass.gem.auth.GemAuth.isPermitAction(action, parameter)` で制御
+|WebApi権限|gem/* 2+a| `org.iplass.gem.auth.GemAuth.isPermitWebApi(webApi, parameter)` で制御
+|===
+
+Action権限、WebApi権限については、 `GemAuth` Utilityクラスを利用して制御しています。
+
+=== GemAuth
+GEMに対するAction権限、WebApi権限を制御するためにUtilityクラスを提供しています。
+
+----
+org.iplass.gem.auth.GemAuth
+----
+
+==== Action権限制御
+----
+org.iplass.gem.auth.GemAuth#isPermitAction(String actionName, ActionParameterBinding param)
+----
+
+* 指定された `actionName` の先頭が `gem/generic/` の場合は、<<gem_auth_entityview, EntityViewの権限チェック>> を行います。
+* 指定された `actionName` の先頭が `gem/` の場合は、<<gem_auth_gem, Gemの権限チェック>> を行います。
+* 指定された `actionName` が上記以外の場合、 `true` を返します。
+
+==== WebApi権限制御
+----
+org.iplass.gem.auth.GemAuth#isPermitWebApi(String webApiName, WebApiParameterBinding param)
+----
+
+* 指定された `webApiName` の先頭が `gem/generic/` の場合は、<<gem_auth_entityview, EntityViewの権限チェック>> を行います。
+* 指定された `webApiName` の先頭が `gem/` の場合は、<<gem_auth_gem, Gemの権限チェック>> を行います。
+* 指定された `webApiName` が上記以外の場合、 `true` を返します。
+
+[[gem_auth_entityview]]
+==== EntityViewの権限チェック
+指定されたパラメータから対象のEntity定義名とView名を取得し、権限をチェックします。
+
+対象のEnity定義に対する <<../entityview/index.adoc#viewcontrol, EntityView管理設定>>を取得します。
+
+EntityView定義がない場合（defaultも含め１つもない）、
+
+* `AppAdmin` ロールを保持していれば `true` を、それ以外の場合は `false` を返します。（自動生成）
+
+対象Viewの管理設定がある場合、
+
+* 管理設定に許可ロールが設定されていない場合、 `true` を返します。(全て許可)
+* 管理設定に許可ロールが設定されている場合、設定されたロールを保持していれば `true` を、
+それ以外の場合は `false` を返します。
+
+対象Viewの管理設定がない場合、
+
+* 対象ViewのSearchLayout定義がある場合、 `true` を返します。(許可ロールが未指定と同等)
+* 対象ViewのSearchLayout定義がないが、対象Viewがdefalutの場合、 `AppAdmin` ロールを保持していれば `true` を、
+それ以外の場合は `false` を返します。（自動生成）
+* 対象ViewのSearchLayout定義がないが、対象Viewがdefalut以外の場合、 ApplicationException を返します。（View指定が不正）
+
+NOTE: 対象Viewのレイアウトが定義されているかの判定は、SearchLayoutの存在でチェックします。 +
+Viewが自動生成される場合の許可ロールは、 <<../../../serviceconfig/index.adoc#GemConfigService,GemConfigService>> で設定することが可能です。
+
+[[gem_auth_gem]]
+==== GEMの権限チェック
+`gem/` のAction、WebApiの場合は、`GemUser` または `AppAdmin` ロールを保持していれば `true` を、
+それ以外の場合は `false` を返します。
+
+NOTE: 許可するロールは、 <<../../../serviceconfig/index.adoc#GemConfigService,GemConfigService>> で設定することが可能です。
+
+==== 独自ロールでの利用
+標準設定を利用したGemAuthでのActionやWebApiの権限制御では、対象のユーザーに対して `AppAdmin` や `GemUser` ロールを付与する必要があります。
+付与するためには、対象のユーザーに対して `AppAdmin` や `GemUser` グループを設定します。
+
+もし付与することが難しい場合は、 <<../../../serviceconfig/index.adoc#GemConfigService,GemConfigService>> の `permitRolesToGem` `permitRolesToNoView` の設定に許可するロールを追加してください。

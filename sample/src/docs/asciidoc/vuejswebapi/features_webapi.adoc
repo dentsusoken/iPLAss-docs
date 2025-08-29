@@ -1,0 +1,95 @@
+[[VueJS_WebAPI_WebAPI]]
+=== WebApiとの連携
+Ajaxを利用することで、WebApiと連携することが出来ます。一般消費者向け画面で全文検索処理を例として説明していきます。
+
+* 開発者ガイド<<../../developerguide/webapi/index#, WebApi>>の章を参照してください。 + 
+以下はここで利用しているWebApiです。
++
+[cols="1,2"]
+|===
+h|WebApi名|samples/ec01/search/fulltextSearch
+|===
+
+* WebApiを利用しているVueコンポーネント
++
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/vue/components/search/FullTextSearch.vue
+|===
++
+[source,Javascript]
+----
+----------------------------------------以上略----------------------------------------
+        fullTextSearch: function() {
+            if (this.productName == "") {
+                this.helpMessage = this.$t('samples.ec01.search.nokeyword');
+                return false;
+            }
+            var url = this.apiFulltextSearch();
+            var data = {productName: this.productName, categoryOid: this.categoryOid};
+            this.$http.post(url, data) <1>
+                .then((response) => {
+                    var commandResult = response.data;              
+                    if(commandResult.status == 'SUCCESS') {
+                        if(commandResult.defaultResult != null && commandResult.defaultResult.length > 0){
+                            this.fullSearchResult = this.ListSearchResult(commandResult.defaultResult, this.productName); <2>
+                            $('#searchResultDiv').html(this.fullSearchResult);
+                        }
+                        else{
+                            this.helpMessage = this.$t('samples.ec01.search.keyword') + this.productName + ", " + this.$t('samples.ec01.search.noResult');
+                        }
+                    } else {
+                        console.log(response);
+                    }
+                })
+                .catch((error) => { <3>
+                    var errorResult = error.response.data;
+                    if (errorResult.exceptionType != null) {
+                        alert(this.$t('samples.ec01.search.jsError') + errorResult.exceptionType + "\n" + errorResult.exceptionMessage);
+                        return;
+                    }
+                });
+        },
+        dropdownSelect: function(event) {
+            var t = $(event.target);
+            var v = t.attr("category-item-value");
+            $("#categoryList").text(t.html()).attr("category-item-selected", v);
+        },
+        ListSearchResult: function(entities, productName){ <4>
+            var yen = this.$t('samples.ec01.all.yen');
+            var html =  "<div class=\"col-12 mb-2\">";
+                html += "	<h4>" + this.$t('samples.ec01.search.result') + productName + "</h4>";
+                html += "</div>";
+            for(var i =0; i < entities.length; i++){
+                var name = entities[i].name;
+                var price = isNaN(entities[i].price)? "" : entities[i].price;
+                var imageUrl = this.imgUrl(entities[i].productImg);
+                var detailUrl = "#/product/detail?productId=" + entities[i].oid;
+                html += "<div class=\"col-12 col-md-4\">";
+                html += "	<div class=\"card border-light border-0\">";
+                html += "	    <a href=\"" + detailUrl + "\" class=\"h-100\">";
+                html += "	       <img class=\"card-img-top img-thumbnail img-fluid all-product-img\" src=" + imageUrl + " alt=\"" + name + "\">";
+                html += "	    </a>";
+                html += "	    <div class=\"card-body pt-md-1 text-center\">";
+                html += "	       <div>";
+                html += "	           <a href=\""+ detailUrl +"\" class=\"card-link text-dark\">" + name + "</a>";
+                html += "	        </div>";
+                html += "	        <div class=\"all-price\">";
+                html += "              <span>" + price + "</span>" + yen;
+                html += "	        </div>";
+                html += "	    </div>";
+                html += "	</div>";
+                html += "</div>";
+            }
+            return html;
+        }
+----------------------------------------以下略----------------------------------------
+----
+<1> WebApiによる検索処理を呼び出します。
+<2> 返された検索処理の結果を取得し、クライアント側の描画処理を呼び出します。
+<3> 検索処理でエラーが発生した場合、クライアント側での処理。
+<4> 検索結果の描画処理。
+
+* 動作確認
++
+動作結果はJava／JSP版と同じなので、そちらの<<../javajsp/index#Java_JSP_WebAPI_Operation_Check,動作確認>>画面を参照してください。

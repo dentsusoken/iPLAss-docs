@@ -1,0 +1,131 @@
+[[ActionMappingService]]
+=== ActionMappingService
+This is the service that manage action definitions (metadata) and interceptors that are called when an action is requested.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.web.actionmapping.ActionMappingService
+----
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.web.actionmapping.ActionMappingService
+----
+
+==== The settings of ActionMappingService
+The interceptor called when requested from the browser can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| interceptor | <<RequestInterceptor>>, Multiple | Set the interceptor for the requests.
+|===
+
+[[RequestInterceptor]]
+.RequestInterceptor
+Please specify the implementing class of org.iplass.mtp.web.interceptor.RequestInterceptor to the class.
+
+As the standard implementation, the followingRequestInterceptor are provided.
+
+- <<InitialInterceptor_ri, InitialInterceptor>>
+- <<ActionCacheInterceptor>>
+- <<AuthInterceptor>>
+- <<ExceptionInterceptor>>
+- <<LoggingInterceptor>>
+- <<UnavailableInterceptor_ri, [.eeonly]#UnavailableInterceptor#>>
+- <<ActionMetricsInterceptor>>
+
+[[InitialInterceptor_ri]]
+.InitialInterceptor
+Please specify org.iplass.mtp.impl.web.interceptors.InitialInterceptor to the class.
+
+Interceptor that sets the language and preview time as the initial processing of the request. There is no configurable settings.
+
+[[ActionCacheInterceptor]]
+.ActionCacheInterceptor
+Please specify org.iplass.mtp.impl.web.interceptors.ActionCacheInterceptor to the class.
+
+This is the interceptor that performs caching. There is no configurable settings.
+
+[[AuthInterceptor]]
+.AuthInterceptor
+Please specify org.iplass.mtp.impl.web.interceptors.AuthInterceptor to the class.
+
+This is the interceptor that performs authentication. There is no configurable settings.
+
+[[ExceptionInterceptor]]
+.ExceptionInterceptor
+Please specify org.iplass.mtp.impl.web.interceptors.ExceptionInterceptor to the class.
+
+The interceptor that handles exceptions. The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| noHande | String, Multiple | Exception class when the handle link does not work.
+When specifying multiple properties, either set multiple properties or separate exception classes with a single-byte colon (:).
+| eliminate | String, Multiple | Exception class to exclude from handling.
+When specifying multiple properties, set multiple properties or separate exception classes with a single-byte colon (:).
+|===
+
+[[LoggingInterceptor]]
+.LoggingInterceptor
+Please specify org.iplass.mtp.impl.web.interceptors.LoggingInterceptor to the class.
+
+This is the interceptor that outputs logs. The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| actionTrace | boolean | Whether to output action log. The default value is true.
+| partsTrace | boolean | Whether to output a log of actions executed as one part of the screen. The default value is true.
+| paramName | String, Multiple | Parameter name to be logged.
+| noStackTrace | String, Multiple | Exception class that does not output stack trace.
+When specifying multiple properties, set multiple properties or separate exception classes with a single-byte colon (:).
+| warnLogThresholdOfSqlExecutionCount | int | The threshold of the executed SQL lines to output logs at WARN level. +
+If the SQL lines executed exceeds the threshold in one single request, the log will be output at WARN level. +
+The default value is -1(All logs will be logged at INFO level).
+| warnLogThresholdOfExecutionTimeMillis | long | The threshold of the execution time (milliseconds) to output logs at WARN level. +
+If the execution time exceeds the threshold in one single request, the log will be output at WARN level. +
+The default value is -1(All logs will be logged at INFO level).
+|===
+
+[[UnavailableInterceptor_ri]]
+.[.eeonly]#UnavailableInterceptor#
+Please specify org.iplass.mtp.impl.web.interceptors.UnavailableInterceptor to the class.
+
+This is the interceptor that performs maintenance checks. here is no configurable settings.
+
+[[ActionMetricsInterceptor]]
+.[.eeonly]#ActionMetricsInterceptor#
+Please specify org.iplass.mtp.impl.micrometer.metrics.web.action.ActionMetricsInterceptor to the class.
+
+This is the interceptor that records Action latency and SQL execute count as metrics, and is added by default when Micrometer module is applied.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| provider | ActionMetricsTagsProvider | A class that implements org.iplass.mtp.impl.micrometer.metrics.web.action.ActionMetricsTagsProvider. This can be specified if you want to customize the tags that are given to metrics. By default, org.iplass.mtp.impl.micrometer.metrics.web.action.DefaultActionMetricsTagsProvider is used.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.web.actionmapping.ActionMappingService</interface>
+	<property name="interceptor" class="org.iplass.mtp.impl.web.interceptors.InitialInterceptor" />
+	<property name="interceptor" class="org.iplass.mtp.impl.web.interceptors.AuthInterceptor" />
+	<property name="interceptor" class="org.iplass.mtp.impl.web.interceptors.ExceptionInterceptor">
+		<property name="noHande" value="org.iplass.mtp.auth.NeedTrustedAuthenticationException" />
+		<property name="eliminate" value="org.apache.catalina.connector.ClientAbortException" />
+		<property name="eliminate" value="org.iplass.mtp.impl.web.WebProcessRuntimeException:org.apache.catalina.connector.ClientAbortException" />
+	</property>
+	<property name="interceptor" class="org.iplass.mtp.impl.web.interceptors.UnavailableInterceptor" />
+	<property name="interceptor" class="org.iplass.mtp.impl.web.interceptors.LoggingInterceptor">
+		<property name="partsTrace" value="true" />
+		<property name="paramName" value="defName" />
+		<property name="noStackTrace" value="org.apache.catalina.connector.ClientAbortException" />
+		<property name="noStackTrace" value="org.iplass.mtp.impl.web.WebProcessRuntimeException:org.apache.catalina.connector.ClientAbortException" />
+	</property>
+	<property name="interceptor" class="org.iplass.mtp.impl.web.interceptors.ActionCacheInterceptor" />
+</service>
+----

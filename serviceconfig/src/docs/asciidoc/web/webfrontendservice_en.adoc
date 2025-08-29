@@ -1,0 +1,633 @@
+[[WebFrontendService]]
+=== WebFrontendService
+A service that manages the overall performance of the Web applications.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.web.WebFrontendService
+----
+
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.web.WebFrontendService
+----
+
+
+==== The settings of WebFrontendService
+The common performance of the web application can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| defaultContentType | String | Specify the ContentType to use when the Template's Content Disposition Type is set to Default.
+If not defined, the default value will be  `text/html; charset=utf-8`.
+| defaultClientCacheType | String a| Action's Default client cache.
+Set `CACHE` to allow caching or `NO_CACHE` to disallow it. Defaults to `CACHE` if not specified.
+
+`CACHE_PUBLIC` cannot be set in the default client cache. If you want to specify `CACHE_PUBLIC`, you must specify it in the individual Action definition.
+
+| defaultCacheControlType | String a| WebAPI's Default cache control setting.
+Set `CACHE` to allow caching or `NO_CACHE` to disallow it. If not specified, the `Cache-Control` header is not set.
+
+`CACHE_PUBLIC` cannot be set in the default cache control configuration. If you want to specify `CACHE_PUBLIC`, you must do so in a separate WebApi definition.
+
+| staticContentPath | String | The root path that stores the static content.
+If not specified, the application context path (servletContextPath) will be used.
+Normally, you can leave it unspecified.
+| excludePath | String, Multiple | Paths to resources that are not managed by iPLAss.
+Specify with regular expression.
+The servletContextPath shell not be included in the specified path pattern.
+In the case of a path that matches, iPLAss (DispatcherFilter) will not perform any operation (tenant confirmation, permission check, execution of Action / WebApi definition, etc.), and it will call doFilter() in the subsequent FilterChain process.
+Only the static content path, the path of the servlet of your own implementation, etc. shell be specified.
+| acceptPath | String, Multiple | Resource path accepted by iPLAss.
+Specify with regular expression.
+The tenantContextPath shell not be included in the specified path pattern.
+If this acceptPath is not specified, all resource paths that do not match excludePath will be processed by iPLAss.
+If this acceptPath is specified, the request path does not match acceptPath, will have a HTTP status 404 returned.
+Normally, it can be left unspecified, but it can be very useful when you want to limit the Action/WebApi executed for each server.
+It can also be used in combination with the rejectPath described below.
+| rejectPath | String, Multiple a| The path of the resource that  should be denied by iPLAss.
+Specify with regular expression.
+The tenantContextPath shell not be included in the specified path pattern.
+If rejectPath is not specified, all resource paths that do not match excludePath will be processed by iPLAss.
+Normally, it can be left unspecified, but it can be useful when you want to limit the Action / WebApi executed for each server.
+
+It can be specified in combination with acceptPath.
+
+If acceptPath is not specified:
+If the path matches rejectPath, HTTP status 404 is returned.
+
+If acceptPath is specified:
+If the path does not match acceptPath or matches rejectPath, HTTP status 404 is returned.
+
+| throughPath | String, Multiple | Specify the resource path that will not be mapped to Actions / WebApi definitions.
+Specify with regular expression.
+The tenantContextPath shell not be included in the specified path pattern.
+If the path matches throughPath path, iPLAss (DispatcherFilter) will perform the tenant confirmation process, but will not call Action / WebApi defined in iPLAss and will call doFilter() in the subsequent FilterChain.
+| restPath | String | Setting the path of the WebApi.
+In iPLAss, the resource paths starting with the string specified in restPath are processed as WebApi. The string segment after restPath will be perceived as WebApi name.
+| requestRestriction | <<RequestRestriction>>, Multiple | The user can define the restriction on the HTTP Requests.(i.e. the maximum request body size, the allowed HTTP Methods etc.)
+| errorUrlSelector | <<ErrorUrlSelector>> | ErrorUrlSelector that displays error page.
+| loginUrlSelector | <<LoginUrlSelector>> | LonginUrlSelector that displays the login page.
+| logoutUrl | String | URL to kick when logging out.
+| contentDispositionPolicy | <<ContentDispositionPolicy>>, Multiple | ContentDisposition output settings.
+| tempFileDir | String | Temporary file storage path.
+When not specified, "javax.servlet.context.tempdir" is used.
+| maxUploadFileSize | long a|
+WARNING: This config item is not recommended. Please use the requestRestriction instead.
+
+Declare the size limit when uploading the files.
+If -1 is specified, there is no upper limit. When not specified, it will be set to -1.
+| uploadFileScanner | <<FileScanner>> | The setting to execute virus scan.
+| uploadFileTypeDetector | <<FileTypeDetector>> | Ability to detect the MIME Type (media type) of uploaded files.
+| isExecMagicByteCheck | boolean | Set whether to perform a magic byte check on the uploaded file.
+| magicByteChecker | <<MagicByteChecker>> | The magic byte check setting of file upload.
+| directAccessPort | String | Direct access port.
+For this port, the tenant urlForRequest specification is invalid.
+| transactionTokenMaxSize | int | Transaction token retention limit.
+| welcomeAction | String, Multiple | If the action part of the requested URL is "/", the action to be executed instead.
+| redirectAfterLogin | boolean | Whether to redirect after login for actions accessed without login.
+When performing a redirect, the action must allow the GET method.
+| tenantAsDomain | boolean | Resolves the tenant from the FQDN specified in `Host` of HTTP Header.
+| fixedTenant | String | Treats the set value as a single fixed tenant.
+| mdc | String or <<MdcValueResolver>>, in format of Map a| Configure the value to be set in the MDC of slf4j. Specify the key name of MDC for key, the following String for value, or the class that implements MdcValueResolver.
+
+generateUuid:: Generate a UUID for each request and set it in the MDC.
+generateInsecureUuid:: Generate a unique ID for each request and set it in the MDC. ID can be generated faster than generateUuid, but it is based on pseudo-random numbers.
+remoteHost:: Set the value of remoteHost from ServletRequest.
+remoteAddr:: Set the value of remoteAddr from ServletRequest.
+header.[headerName]:: Set the HTTP header value specified in [headerName].
+sessionId:: Set the session ID at the start of the request.
+
+| maxMultipartParameterCount | long | Sets the maximum number of parameters to be limited for multipart requests such as file uploads. Requests exceeding the parameter limit will be rejected.
+If you do not want to limit the number of parameters, set -1. The default value is 10,000.
+|===
+
+[[RequestRestriction]]
+.RequestRestriction
+Please specify org.iplass.mtp.impl.web.RequestRestriction for class.
+
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| pathPattern | String | Specifies the regular expression for the path to which the constraint is applied.
+The tenantContextPath is not included in the specified path pattern.
+Only one RequestRestriction that does not specify pathPattern can be defined. It is possible to define a default constraint to be applied when it does not match the pathPattern of other RequestRestriction definitions.
+| allowMethods | String, Multiple a| Specify the allowed HTTP Method.
+If set to `*`, all methods are allowed.
+| allowContentTypes | String, Multiple a| Specify the allowed ContentType of the requests.
+If set to `\*/*`, all types are allowed.
+| maxBodySize | long | Specify the maximum size of the body contents. If set to -1, it means there is no size limit.
+If not specified, the default value is -1.
+| maxFileSize | long | Specify the max size of the upload files.If set to -1, it means there is no size limit.
+If not specified, the default value is -1.
+| cors | <<CorsConfig_wf, CorsConfig>> | Specify the trusted domain for XHR2(CORS).
+| force | boolean | Declare which one to use in prioritize, When there is specific configurations from Action definition and WebApi definition.
+If true, this config (the settings of RequestRestriction) will be prioritized.
+If false, the specific configurations from Action definition and WebApi definition will be prioritized.
+If not specified, the default value is false.
+|====================
+
+[[CorsConfig_wf]]
+.CorsConfig
+
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| allowOrigin | String, Multiple | Specify the allowed domain of accesses. Wildcards can be specified, such as `*.dentsusoken.com`.
+| allowCredentials | boolean | Specify whether to permit the system to credential the authentication information (such as Cookie). The default is false.
+|===
+
+[[ErrorUrlSelector]]
+.ErrorUrlSelector
+Please specify the implementing class of org.iplass.mtp.impl.web.ErrorUrlSelector to the class.
+
+The following ErrorUrlSelector is provided as standard.
+
+- org.iplass.gem.GemErrorUrlSelector
+- [.eeonly]#org.iplass.gem.EnterpriseGemErrorUrlSelector#
+- [.eeonly]#org.iplass.mtp.mdc.MdcErrorUrlSelector#
+- <<CompositeErrorUrlSelector, org.iplass.mtp.impl.web.CompositeErrorUrlSelector>>
+
+GemErrorUrlSelector and EnterpriseGemErrorUrlSelector and MdcErrorUrlSelector do not have configurable items.
+
+[[CompositeErrorUrlSelector]]
+.CompositeErrorUrlSelector
+
+Please specify org.iplass.mtp.impl.web.CompositeErrorUrlSelector to the class. +
+ErrorUrlSelector that can switch ErrorUrlSelector by path. The following items can be set.
+
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| selectorMap | <<ErrorUrlSelector, ErrorUrlSelector>>, in format of Map a| Specify the request path to be processed in Key and the `ErrorUrlSelector` implementation class in Value. +
+If the request path (Action name) at the time of the error starts with the value specified in Key (judged by String#startsWith), the ErrorUrlSelector specified in Value determines the template name for the error page. If none of the Keys match, the ErrorUrlSelector whose Key is `default` is used to determine the template name of the error page. At least, make sure to specify the ErrorUrlSelector whose Key is `default`.
+|====================
+
+[[LoginUrlSelector]]
+.LoginUrlSelector
+Please specify the implementing class of org.iplass.mtp.impl.web.LoginUrlSelector to the class.
+
+The following ErrorUrlSelector is provided as standard.
+
+- org.iplass.gem.GemLoginUrlSelector
+- [.eeonly]#org.iplass.mtp.mdc.MdcLoginUrlSelector#
+
+GemLoginUrlSelector and MdcLoginUrlSelector do not have configurable items.
+
+[[ContentDispositionPolicy]]
+.ContentDispositionPolicy
+Please specify the implementing class of org.iplass.mtp.impl.web.ContentDispositionPolicy to the class.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| userAgentKey | String | UserAgent identifier(* by default)。
+| contentDispositionTypeName | String | ContentDispositionType name(* means all)。
+| unescapeCharacter | String | Non-escaped characters (Alphabet, numbers are escaped unconditionally).
+| defaultContentDispositionTypeName | String | Set the default ContentDispositionType name when nothing specified.
+| useBothFilenameAttributes | boolean | Sets whether to output both `filename` and `filename*`. The default value is false.
+|====================
+
+[[FileScanner]]
+.FileScanner
+Please specify the implementing class of org.iplass.mtp.impl.web.fileupload.FileScanner to the class.
+
+As the standard implementation, the class org.iplass.mtp.impl.web.fileupload.DefaultVirusScanner that will scan for virus is provided.
+For DefaultVirusScanner, the following items can be configured.
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| commandPath | String, Required | Specify the path of the virus scan command.
+The file path of the scan objects are stored in the container specified by `${file}`.
+| timeout | long, Required | Set the timeout (seconds) timer for virus scan.
+| errorOnTimeout | boolean | Whether to interrupt the process as an error when a timeout occurs. The default value is false.
+| successExitValue | int, Multiple | Exit code (status) indicating that the scan completed successfully. If specified, if the relevant exit code (status) is not returned, the process will be interrupted as an error.
+|====================
+
+[[FileTypeDetector]]
+.FileTypeDetector
+Please specify the class that implements org.iplass.mtp.impl.web.fileupload.FileTypeDetector.
+
+The following FileTypeDetector is provided as a standard feature.
+
+- org.iplass.mtp.impl.web.fileupload.DefaultFileTypeDetector
+  * This is the standard FileTypeDetector; the MIME Type (media type) is the value sent by the browser.
+  * There is no DefaultFileTypeDetector setting item.
+- org.iplass.mtp.impl.web.fileupload.TikaFileTypeDetector
+  * This is a FileTypeDetector using Apache Tika. The MIME Type (media type) is determined by verifying the uploaded file with the Tika function.
+
+[[TikaFileTypeDetector]]
+.TikaFileTypeDetector
+For TikaFileTypeDetector, the following items can be configured.
+
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| fileUploadTikaAdapter | <<FileUploadTikaAdapter>> | An adapter that resolves the Tika dependency used by the file upload function.
+|====================
+
+[[FileUploadTikaAdapter]]
+.FileUploadTikaAdapter
+Please specify the implementing class of org.iplass.mtp.impl.web.fileupload.FileUploadTikaAdapter to the class.
+
+org.iplass.mtp.impl.web.fileupload.FileUploadTikaAdapterImpl as the standard adapter implementation. +
+It is recommended to share Tika instances to avoid inconsistencies due to differences in Tika settings for MediaType(MimeType) that can be extracted by TikaFileTypeDetector and file types that can be inspected by TikaMagicByteChecker. +
+To share an instance, bean-define an implementation class for the FileUploadTikaAdapter interface and reference it in the TikaFileTypeDetector and TikaMagicByteChecker properties.
+
+For FileUploadTikaAdapterImpl, the following items can be configured.
+
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| tikaConfigXml | String | Specify the Apache Tika configuration file (tika-config.xml) to be used by the file upload function. Specify the Mime type definition file (tika-mimetypes.xml) within the Apache Tika configuration file to use customized definitions.
+
+Please check link:https://tika.apache.org/[official site,window=_blank] for how to define the configuration files tika-config.xml and tika-mimetypes.xml.
+|====================
+
+[[MagicByteChecker]]
+.MagicByteChecker
+Please specify the implementing class of org.iplass.mtp.impl.web.fileupload.MagicByteChecker to the class.
+
+The following MagicByteChecker is provided as a standard feature.
+
+- org.iplass.mtp.impl.web.fileupload.DefaultMagicByteChecker
+  * It is provided as a standard implementation of MagicByteChecker. If the rule that match the condition (mine type and extension) is specified, it checks if magic byte that is defined in that rule match.
+- org.iplass.mtp.impl.web.fileupload.TikaMagicByteChecker
+  * MagicByteChecker is an Apache Tika-based MagicByteChecker that extracts definition information from Apache Tika's Mime type configuration (tika-mimetypes.xml) and performs extension and magic byte checking.
+  * When using TikaMagicByteChecker, it is recommended that FileTypeDetector be set to TikaFileTypeDetector.
+
+
+[[DefaultMagicByteChecker]]
+.DefaultMagicByteChecker
+For DefaultMagicByteChecker, the following items can be configured.
+
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| magicByteRule | <<MagicByteRule>>, Multiple | The rule to check magic bytes.
+|====================
+
+[[MagicByteRule]]
+.MagicByteRule
+Please specify the implementing class of org.iplass.mtp.impl.web.fileupload.MagicByteRule to the class.
+The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| mimeType | <<MagicByteRuleCondition>> | Mime type condition
+| extension | <<MagicByteRuleCondition>> | Extension condition
+| magicByte | String, Multiple | Specify the beginning of magic byte to compare.
+|====================
+
+[[MagicByteRuleCondition]]
+.MagicByteRuleCondition
+Please specify the implementing class of org.iplass.mtp.impl.web.fileupload.MagicByteRuleCondition to the class.
+The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| useRegex | boolean | Set whether to use regular expressions for conditional comparison. If true, it checks the value of pattern as a regular expression pattern. If false, it compares the value of pattern as a string. The default value is false.
+| pattern | String, Required | The pattern value of the condition
+|====================
+
+[[TikaMagicByteChecker]]
+.TikaMagicByteChecker
+For TikaMagicByteChecker, the following items can be configured.
+
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| fileUploadTikaAdapter | <<FileUploadTikaAdapter>>, Required | An adapter that resolves the Tika dependency used by the file upload function.
+| checkExtension | boolean | Check setting if the extension of the uploaded file is included in the extensions defined for the Tika Mime type. The default setting is to check (true).
+| readMagicLength | int | Byte length to be read during magic byte check. Default setting is 65,536.
+| throwExceptionIfMimeTypeIsNull | boolean | If the Tika Mime type cannot be found, a check error is made. The default setting is not to check for errors (false).
+| throwExceptionIfFileCannotRead | boolean | If the target file cannot be read during the magic byte check, a check error is generated. The default setting is not to check for errors (false).
+| substitutionMediaType | in format of Map a| If a specific Mime type is used for the magic byte check, it is replaced with another Mime type. name attribute is the Mime type to be substituted, and value attribute is the Mime type after the substitute.
+
+As a specific example, "application/vnd.apple.keynote.13" cannot detect the Mime type and cannot perform the magic byte check. To perform the magic byte check, it must be changed to "application/vnd.apple.keynote".
+|====================
+
+[[MdcValueResolver]]
+.MdcValueResolver
+Please specify the implementing class of org.iplass.mtp.impl.web.mdc.MdcValueResolver.
+
+The following MdcValueResolver is provided as standard.
+
+- <<UuidMdcValueResolver>>
+- <<RemoteHostMdcValueResolver>>
+- <<RemoteAddrMdcValueResolver>>
+- <<HttpHeaderMdcValueResolver>>
+- <<SessionIdMdcValueResolver>>
+- <<AmznTraceIdMdcValueResolver>>
+
+
+[[UuidMdcValueResolver]]
+.UuidMdcValueResolver
+Please specify org.iplass.mtp.impl.web.mdc.UuidMdcValueResolver for class.
+
+An MdcValueResolver that generates a UUID.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| secure | boolean | Whether to use SecureRandom to generate UUID.
+The default value is true.
+If false, ID can be generated at high speed, but it will be based on pseudo-random numbers.
+|===
+
+In the setting of WebFrontendService to mdc, in String,
+Specifying `generateUuid` sets the UuidMdcValueResolver with secure=true.
+Specifying `generateInsecureUuid` sets the UuidMdcValueResolver with secure=false.
+
+[[RemoteHostMdcValueResolver]]
+.RemoteHostMdcValueResolver
+Please specify org.iplass.mtp.impl.web.mdc.RemoteHostMdcValueResolver for class.
+
+Get the value of remoteHost from ServletRequest. +
+In the setting of WebFrontendService to mdc, in String,
+RemoteHostMdcValueResolver is set by specifying `remoteHost`.
+
+[[RemoteAddrMdcValueResolver]]
+.RemoteAddrMdcValueResolver
+Please specify org.iplass.mtp.impl.web.mdc.RemoteAddrMdcValueResolver for class.
+
+Get the value of remoteAddr from ServletRequest. +
+In the setting of WebFrontendService to mdc, in String,
+RemoteAddrMdcValueResolver is set by specifying `remoteAddr`.
+
+[[HttpHeaderMdcValueResolver]]
+.HttpHeaderMdcValueResolver
+Please specify org.iplass.mtp.impl.web.mdc.HttpHeaderMdcValueResolver for class.
+
+Get the value of the HTTP header from ServletRequest.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| headerName | String | HTTP header name to get.
+|===
+
+In the setting of WebFrontendService to mdc, in String,
+HttpHeaderMdcValueResolver with headerName=[headerName] is set by specifying in the format `header.[headerName]`.
+
+[[SessionIdMdcValueResolver]]
+.SessionIdMdcValueResolver
+Please specify org.iplass.mtp.impl.web.mdc.SessionIdMdcValueResolver for class.
+
+Set the ID of the session already created at the start of the request. +
+In the setting of WebFrontendService to mdc, in String,
+SessionIdMdcValueResolver is set by specifying `sessionId`.
+
+[[AmznTraceIdMdcValueResolver]]
+.[.eeonly]#AmznTraceIdMdcValueResolver#
+Please specify org.iplass.mtp.impl.aws.web.mdc.AmznTraceIdMdcValueResolver for class.
+
+Gets the specific field value of the X-Amzn-Trace-Id value set in the HTTP header. The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| field | String | The field name to get. Specify Root or Self.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.web.WebFrontendService</interface>
+	<class>org.iplass.mtp.impl.web.WebFrontendService</class>
+	<!-- welcome file(action) -->
+	<property name="welcomeAction" value="index" />
+	<property name="transactionTokenMaxSize" value="50" />
+	<property name="defaultClientCacheType" value="CACHE" />
+	<!-- Definition of paths that are not processed by DispatcherFilter -->
+	<!-- static contents -->
+	<property name="excludePath" value="(/errorhtml/.*)|(/images/.*)|(/scripts/.*)|(/styles/.*)|(/favicon.ico)|(/webjars/.*)" />
+	<!-- servlet implementation -->
+	<property name="excludePath" value="(/checkStatus)|(/cmcs)" />
+
+	<!-- permit only the gem module -->
+	<property name="acceptPath" value="/gem/.*" />
+	<property name="acceptPath" value="/api/gem/.*" />
+
+	<!-- WebApi (REST) path's definition -->
+	<property name="restPath" value="/api/" />
+
+
+	<!-- The default RequestRestriction Definition -->
+	<property name="requestRestriction">
+		<property name="allowMethods" value="*" />
+		<property name="allowContentTypes" value="*/*" />
+		<property name="force" value="false" />
+	</property>
+
+	<!-- The RequestRestriction definition under api/sample(WebApi)-->
+	<property name="requestRestriction">
+		<property name="pathPattern" value="^/api/sample/.*" />
+		<property name="allowMethods" value="GET" />
+		<property name="allowMethods" value="POST" />
+		<property name="allowContentTypes" value="*/*" />
+		<property name="cors">
+			<!-- Allow CORS from https://sample.iplass.org、https://sample2.iplass.org -->
+			<property name="allowOrigin" value="https://sample.iplass.org" />
+			<property name="allowOrigin" value="https://sample2.iplass.org" />
+			<property name="allowCredentials" value="true" />
+		</property>
+		<property name="force" value="false" />
+	</property>
+
+	<!-- URL to kick at logout -->
+	<property name="logoutUrl" value="logout" />
+	<!-- The settings of the error pages -->
+	<property name="errorUrlSelector" class="org.iplass.gem.GemErrorUrlSelector" />
+	<!-- The settings of the login pages -->
+	<property name="loginUrlSelector" class="org.iplass.gem.GemLoginUrlSelector" />
+	<!-- Set the temporary file storage path. If not specified, "javax.servlet.context.tempdir" will be used. -->
+	<!--
+	<property name="tempFileDir" value="/tmp" />
+	-->
+	<!-- Direct access port Tenant urlForRequest specification is invalid for this port -->
+	<!--
+	<property name="directAccessPort" value="8080" />
+	-->
+	<!-- When the Web client DEBUG mode is specified, the error details are displayed when the error occurs in a WebApi access. -->
+	<!--
+	<property name="clientMode" value="DEBUG" />
+	-->
+
+	<!-- Configurations about ContentDisposition output -->
+	<!-- default -->
+	<property name="contentDispositionPolicy" class="org.iplass.mtp.impl.web.ContentDispositionPolicy">
+		<property name="userAgentKey" value="*" />
+		<property name="contentDispositionTypeName" value="*" />
+		<property name="unescapeCharacter" value="-._~" />
+		<property name="defaultContentDispositionTypeName" value="ATTACHMENT" />
+		<property name="useBothFilenameAttributes" value="false" />
+	</property>
+	<!-- IE11 -->
+	<!-- For IE11, INLINE, it will not escape blanks-->
+	<property name="contentDispositionPolicy" class="org.iplass.mtp.impl.web.ContentDispositionPolicy">
+		<property name="userAgentKey" value="Trident" />
+		<property name="contentDispositionTypeName" value="INLINE" />
+		<property name="unescapeCharacter" value="-._~ " />
+		<property name="useBothFilenameAttributes" value="false" />
+		<!--
+		<property name="defaultContentDispositionTypeName" value="" />
+		 -->
+	</property>
+	<!--
+		When adding, specify the character that is not escaped for each userAgentKey and contentDispositionTypeName.
+		contentDispositionTypeName: * | ATTACHMENT | INLINE
+		unescapeCharacter: The characters to exclude besides letters and numbers
+	-->
+	<!--
+	<property name="contentDispositionPolicy" class="org.iplass.mtp.impl.web.ContentDispositionPolicy">
+		<property name="userAgentKey" value="XXXX" />
+		<property name="contentDispositionTypeName" value="INLINE" />
+		<property name="unescapeCharacter" value="-._~" />
+	</property>
+	-->
+
+	<!-- Virus scan execution -->
+	<property name="uploadFileScanner" class="org.iplass.mtp.impl.web.fileupload.DefaultVirusScanner" >
+		<property name="commandPath" value="path/to/virusScanner ${file}" />
+		<property name="timeout" value="15" />
+	</property>
+
+	<!--
+	Tika adapter for FileUpload function.
+	
+	Assumes that the instance is shared by TikaFileTypeDetector and TikaMagicByteChecker.
+	If tikaConfigXml is not specified, the default configuration of apache tika will work.
+	-->
+	<!--
+	<bean name="tikaAdapter" class="org.iplass.mtp.impl.web.fileupload.FileUploadTikaAdapterImpl">
+		<property name="tikaConfigXml" value="/tika-config.xml" />
+	</bean>
+	-->
+
+	<!-- File type (MIME Type/Media Type) detection function -->
+	<!-- Default. The following instances are also set if unspecified. -->
+	<!-- 
+	<property name="uploadFileTypeDetector" class="org.iplass.mtp.impl.web.fileupload.DefaultFileTypeDetector" />
+	-->
+	<!-- File type (MIME Type/Media Type) detection using Apache Tika. Enabling bean tikaAdapter. -->
+	<!--
+	<property name="uploadFileTypeDetector" class="org.iplass.mtp.impl.web.fileupload.TikaFileTypeDetector">
+		<property name="fileUploadTikaAdapter" ref="tikaAdapter" />
+	</property>
+	-->
+
+	<!-- Whether to execute MagicByteCheck -->
+	<property name="isExecMagicByteCheck" value="true" />
+	<!-- MagicByteCheck execution -->
+	<property name="magicByteChecker" class="org.iplass.mtp.impl.web.fileupload.DefaultMagicByteChecker" >
+		<property name="magicByteRule" >
+			<property name="mimeType" >
+				<property name="pattern" value="image/gif" />
+			</property>
+			<property name="magicByte" value="474946383761" />
+			<property name="magicByte" value="474946383961" />
+		</property>
+		<property name="magicByteRule" >
+			<property name="mimeType" >
+				<property name="pattern" value="image/bmp" />
+			</property>
+			<property name="magicByte" value="424d" />
+		</property>
+		<property name="magicByteRule" >
+			<property name="mimeType" >
+				<property name="pattern" value="image/jpeg" />
+			</property>
+			<property name="magicByte" value="ffd8" />
+		</property>
+		<property name="magicByteRule" >
+			<property name="mimeType" >
+				<property name="pattern" value="image/png" />
+			</property>
+			<property name="magicByte" value="89504e470d0a1a0a" />
+		</property>
+		<property name="magicByteRule" >
+			<property name="mimeType" >
+				<property name="pattern" value="application/x-shockwave-flash" />
+			</property>
+			<property name="magicByte" value="465753" />
+			<property name="magicByte" value="435753" />
+		</property>
+		<property name="magicByteRule" >
+			<property name="mimeType" >
+				<property name="pattern" value="application/pdf" />
+			</property>
+			<property name="magicByte" value="25504446" />
+		</property>
+		<property name="magicByteRule" >
+			<property name="mimeType" >
+				<property name="useRegex" value="true" />
+				<property name="pattern" value="^application/vnd[.]ms-.*|^application/msword.*" />
+			</property>
+			<property name="extension" class="org.iplass.mtp.impl.web.fileupload.MagicByteRuleCondition" >
+				<property name="pattern" value="csv" />
+			</property>
+		</property>
+		<property name="magicByteRule" >
+			<property name="mimeType" >
+				<property name="useRegex" value="true" />
+				<property name="pattern" value="^application/vnd[.]ms-.*|^application/msword.*" />
+			</property>
+			<property name="magicByte" value="504b030414000600" />
+			<property name="magicByte" value="d0cf11e0a1b11ae1" />
+			<property name="magicByte" value="7b5c72746631" />
+		</property>
+		<property name="magicByteRule" >
+			<property name="extension" >
+				<property name="pattern" value="xls" />
+			</property>
+			<property name="magicByte" value="d0cf11e0a1b11ae1" />
+		</property>
+		<property name="magicByteRule" >
+			<property name="mimeType" >
+				<property name="useRegex" value="true" />
+				<property name="pattern" value="^application/vnd[.]openxmlformats-officedocument.*" />
+			</property>
+			<property name="magicByte" value="504b030414000600" />
+			<property name="magicByte" value="d0cf11e0a1b11ae1" />
+			<property name="magicByte" value="504b030414000808" />
+			<property name="magicByte" value="504B03040A000000" />
+			<property name="magicByte" value="504B030414000000" />
+		</property>
+	</property>
+
+	<!--
+	MagicByteCheck processing using Apache Tika. bean tikaAdapter is enabled.
+	When using this check function, it is recommended to use Tika for MimeType detection and MagicByteCheck processing.
+	To use tika for MimeType detection, change property uploadFileTypeDetector to TikaFileTypeDetector.
+	-->
+	<!--
+	<property name="magicByteChecker" class="org.iplass.mtp.impl.web.fileupload.TikaMagicByteChecker" >
+		<property name="fileUploadTikaAdapter" ref="tikaAdapter" />
+		<property name="checkExtension" value="true" />
+		<property name="readMagicLength" value="65536" />
+		<property name="throwExceptionIfMimeTypeIsNull" value="false" />
+		<property name="throwExceptionIfFileCannotRead" value="false" />
+		<property name="substitutionMediaType">
+			<property name="application/vnd.apple.keynote.13" value="application/vnd.apple.keynote" />
+		</property>
+	</property>
+	-->
+
+	<!-- Configurations about MDC -->
+	<property name="mdc">
+		<property name="traceId" class="org.iplass.mtp.impl.aws.web.mdc.AmznTraceIdMdcValueResolver">
+			<property name="field" value="Root" />
+		</property>
+		<property name="ipaddress" value="remoteAddr" />
+		<property name="ua" value="header.User-Agent" />
+	</property>
+</service>
+----

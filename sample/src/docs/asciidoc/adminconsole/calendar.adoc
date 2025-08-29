@@ -1,0 +1,6 @@
+[[AdminConsole_Calendar]]
+=== Calendar
+このサンプルではCalendar機能を利用しています。マネージャーまたはオペレーターに属するユーザーが管理用Top画面のカレンダーで請求エンティティに登録された納品予定日を確認する事が出来ます。 + 
+カレンダーの作成する方法は開発者ガイドの<<../../developerguide/genericentitymanager/calendar/index#, Calendar>>の章を参照してください。
+
+image:images/sample-ec_adminconsole-calendar-settlement.png[align=left]

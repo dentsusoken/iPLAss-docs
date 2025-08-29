@@ -1,0 +1,454 @@
+[[ref_property_validator]]
+=== Validator
+
+[[ref_property_validator_list]]
+==== 提供Validator
+標準で提供しているPropertyのValidatorです。
+
+[cols="3,6,3",options="header"]
+|===
+| Type | 説明 | Java型
+| <<ref_property_validator_not_null>> | 入力の有無を検証します。Propertyで設定する `Required` と連動します。| *
+| <<ref_property_validator_length>> | 文字列の長さを検証します。| String
+| <<ref_property_validator_range>> | 数値の範囲を検証します。| Number
+| <<ref_property_validator_regex>> | 正規表現を利用して値を検証します。| String、Number
+| <<ref_property_validator_binary_size>> | バイナリのサイズを検証します。| BinaryReference
+| <<ref_property_validator_binary_type>> | バイナリのタイプを検証します。| BinaryReference
+| <<ref_property_validator_exists_type>> | Referenceの参照データの存在を検証します。| Entity
+| <<ref_property_validator_scripting>> | GroovyScript書式で検証ロジックを実装します。| *
+| <<ref_property_validator_javaclass>> | Java Classで検証ロジックを実装します。| *
+|===
+
+NOTE: 対応するJava型以外のProperty型に対してValidatorを指定した場合、
+検証時に `EntityRuntimeException` が発生します。 +
+ +
+`Not Null` `Scripting` `Java Class` 以外は、値が `null` の場合はチェックされません(true)。
+
+==== Validatorスキップについて
+GroovyScript書式でバリデーションをスキップするロジックを実装します。
+
+以下の場合にバリデーションがスキップされます。
+
+* scriptの戻り値が `true`
+
+.対応するJava型
+すべての型で利用可能です。
+
+.利用可能な変数
+利用可能なバインド変数は以下のものです。
+
+[cols="1,3",options="header"]
+|===
+| バインド変数 | 設定される値
+| entity | 対象のEntityデータ。
+| propertyName | 対象のプロパティ名。
+| value | 対象のプロパティ値。各Propertyに対応するJava型が格納されています。
+| context | ValidationContext。
+ValidationContextにsetAttributeされた値は、`${key}` 形式でエラーメッセージに埋め込みが可能となります。
+|===
+
+.（例）EntityのsaveStatusプロパティに応じて、保存時のバリデーションをスキップする
+[source,groovy]
+----
+// saveStatus：
+// 「1」：バリデーションをスキップする
+// 「2」：バリデーションを実行する
+if (entity.saveStatus == 1 ) {
+    // validatorをスキップします。
+    return true;
+}
+// validatorを実行します。
+return false;
+----
+
+[[ref_property_validator_not_null]]
+==== NotNull
+入力の有無を検証します。
+AdminConsole上の編集画面では、`Required` の設定と連動して追加、削除されます。
+
+以下の場合にエラーとなります。
+
+* 値が `null`
+* String型の場合、値が空
+* 配列の場合、サイズが0
+
+.対応するJava型
+すべての型で利用可能です。
+
+.設定
+NotNullに特化した設定項目はありません。
+
+[[ref_property_validator_length]]
+==== Length
+文字列の長さを検証します。
+
+以下の場合にエラーとなります。
+
+* `checkBytes` が `false` の場合、値の長さが `min` 未満
+* `checkBytes` が `false` の場合、値の長さが `max` より上
+* `checkBytes` が `true` の場合、値のバイト数が `min` 未満
+* `checkBytes` が `true` の場合、値のバイト数が `max` より上
+
+.対応するJava型
+String型で利用可能です。
+
+.設定
+
+[cols="1,4", options="header"]
+|===
+| 設定項目 | 設定内容
+| min | 最小値を指定します。
+| max | 最大値を指定します。
+| checkBytes | バイト数でチェックする場合、trueにします。
+|===
+
+[[ref_property_validator_range]]
+==== Range
+数値の範囲を検証します。
+
+以下の場合にエラーとなります。
+
+* `grater than min value` が `true` の場合、値が `min` 以下
+* `grater than min value` が `false` の場合、値が `min` 未満
+* `less than max value` が `true` の場合、値が `max` 以上
+* `less than max value` が `false` の場合、値が `max` より上
+
+.対応するJava型
+Number型で利用可能です。
+Number型に対応するPropertyタイプは `Integer` `Float` `Decimal` です。
+
+.設定
+
+[cols="1,4", options="header"]
+|===
+| 設定項目 | 設定内容
+| min | 最小値を指定します。
+| grater than min value | 最小値を含まない場合、trueにします。
+| max | 最大値を指定します。
+| less than max value | 最大値を含まない場合、trueにします。
+|===
+
+[[ref_property_validator_regex]]
+==== Regex
+正規表現を利用して値を検証します。
+
+以下の場合にエラーとなります。
+
+* 値が正規表現にマッチしない場合
+
+.（例）半角英数字
+[source,Java]
+----
+[0-9a-zA-Z]+
+----
+
+.（例）ひらがな
+[source,Java]
+----
+[\\u3040-\\u309F]+
+----
+
+.対応するJava型
+String型、Number型で利用可能です。
+Number型の場合、 `toString()` した値に対して検証します。
+Number型に対応するPropertyタイプは `Integer` `Float` `Decimal` です。
+
+.設定
+
+[cols="1,4", options="header"]
+|===
+| 設定項目 | 設定内容
+| pattern | 正規表現式を指定します。
+|===
+
+[[ref_property_validator_binary_size]]
+==== BinarySize
+バイナリのサイズを検証します。
+
+以下の場合にエラーとなります。
+
+* バイナリのサイズが `min` 未満
+* バイナリのサイズが `max` より上
+
+.対応するJava型
+BinaryReference型で利用可能です。
+
+.設定
+
+[cols="1,4", options="header"]
+|===
+| 設定項目 | 設定内容
+| min | 最小値(byte)を指定します。
+| max | 最大値(byte)を指定します。
+|===
+
+[[ref_property_validator_binary_type]]
+==== BinaryType
+バイナリのタイプを検証します。
+
+以下の場合にエラーとなります。
+
+* バイナリのタイプが正規表現にマッチしない場合
+
+.対応するJava型
+BinaryReference型で利用可能です。
+
+.設定
+
+[cols="1,4", options="header"]
+|===
+| 設定項目 | 設定内容
+| acceptMimeTypesPattern | mimeタイプを指定します(正規表現)。
+|===
+
+[[ref_property_validator_exists_type]]
+==== Exists
+Referenceの参照データの存在を検証します。被参照は対象外です。
+
+以下の場合にエラーとなります。
+
+* 指定された `oid` `version` に一致するEntityデータが存在しない
+
+
+.対応するJava型
+Entity型で利用可能です。
+Entity型に対応するPropertyタイプは `Reference` のみです。
+
+.設定
+Existsに特化した設定項目はありません。
+
+NOTE: Packageや独自で作成した複数Entityの一括登録処理の場合は、Entityの登録順番に注意が必要です。
+PackageはEntityの順番指定ができないので、分割するかValidationを実行しないことも検討してください。
+
+[[ref_property_validator_scripting]]
+==== Scripting
+GroovyScript書式で検証ロジックを実装します。
+
+以下の場合にエラーとなります。
+
+* scriptの戻り値が `false`
+
+.対応するJava型
+すべての型で利用可能です。
+
+.設定
+
+[cols="1,4", options="header"]
+|===
+| 設定項目 | 設定内容
+| script | GroovyScriptを指定します。
+戻り値としてBoolean（true：OK、false：NG）を返すように実装する必要があります。
+| bind variable as array type | 多重度が1ではない場合に、value変数に配列をバインドするか、
+配列分ループしてvalueにバインドするかを指定します。 +
+`true` の場合、配列をバインドします。
+|===
+
+.利用可能な変数
+利用可能なバインド変数は以下のものです。
+
+[cols="1,3",options="header"]
+|===
+| バインド変数 | 設定される値
+| entity | 対象のEntityデータ。
+| propertyName | プロパティ名
+| value | プロパティ値。各Propertyに対応するJava型が格納されています。
+| context | ValidationContext。
+ValidationContextにsetAttributeされた値は、`${key}` 形式でエラーメッセージに埋め込みが可能となります。
+|===
+
+.（例）ReferencePropertyに対する存在チェック
+[source,Groovy]
+----
+import org.iplass.mtp.entity.EntityManager;
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.entity.Entity;
+
+//値が未設定の場合はOK
+if (value == null) {
+	return true;
+}
+
+EntityManager em = ManagerLocator.manager(EntityManager.class);
+
+//対象のReferenceProperty
+Entity refValue = (Entity)value;    //valueにProperty値が入っている（バインド）
+
+//存在チェック
+Entity refData = em.load(refValue.getOid(), refValue.getVersion(), refValue.getDefinitionName());
+
+if (refData == null) {
+	return false;   //存在しないのでNG
+} else {
+	return true;    //存在するのでOK
+}
+----
+
+[[ref_property_validator_javaclass]]
+==== Java Class
+以下のインターフェースを実装したJavaクラスにより検証します。
+
+====
+org.iplass.mtp.entity.PropertyValidator
+====
+
+以下の場合にエラーとなります。
+
+* validateの戻り値が `false`
+
+.対応するJava型
+すべての型で利用可能です。
+
+.設定
+
+[cols="1,4", options="header"]
+|===
+| 設定項目 | 設定内容
+| Java Class Name | PropertyValidatorを実装したクラス名を指定します。
+| bind variable as array type | 多重度が1ではない場合に、value変数に配列をバインドするか、
+配列分ループしてvalueにバインドするかを指定します。 +
+`true` の場合、配列をバインドします。
+|===
+
+.PropertyValidatorの例
+[source,Java]
+----
+import org.iplass.mtp.entity.PropertyValidator;
+import org.iplass.mtp.entity.ValidationContext;
+
+public class CustomPropertyValidator implements PropertyValidator {
+
+	@Override
+	public boolean validate(Object value, ValidationContext context) {
+		if (value == null) {
+			return true;
+		}
+
+		// Stringは不可
+		if (value instanceof String) {
+			// contextにセットした値はエラーメッセージに埋め込み可能です。
+			// 例えばメッセージとして「${type}型は許可されません。」と定義すると、
+			// 「String型は許可されません。」に変換されます。
+			context.setAttribute("type", "String");
+			return false;
+		}
+		return true;
+	}
+
+}
+----
+
+
+==== メッセージの設定
+Validateエラー時のメッセージを指定します。
+
+メッセージの指定は、直接文字列を指定する方法とメタデータのMessageを利用する方法の２種類あります。
+
+.設定
+
+[cols="1,4", options="header"]
+|===
+| 設定項目 | 設定内容
+| Message(Direct) | メッセージを直接指定します。
+| Message Category +
+Message Id | メタデータのMessageを選択します。メタデータのMessageを利用することで、メッセージを共有・管理することができます。 +
+メッセージの詳細は<<../i18n/index.adoc#message_multilingual, メッセージの多言語設定>>を参照してください。
+| Code | メッセージコードを指定します。この項目は任意です。
+バッチ処理やWebサービスなどの独自処理内でコードをレスポンスとして返したい場合などに利用します。
+|===
+
+NOTE: `Message(Direct)` と `Message Id` が両方指定されている場合は、 `Message(Direct)` が優先されます。
+
+NOTE: `mtp/validation` カテゴリに定義されてる標準的なメッセージを利用することも可能です。
+
+.利用可能な変数
+メッセージ文言として、プロパティ名や値をバインド書式(`${xxx}`)で参照することができます
+(DirectでもメタデータのMessageでも参照できます)。
+
+利用可能なバインド変数は以下のものです。
+
+[cols="1,3",options="header"]
+|===
+| バインド変数 | 設定される値
+| name | プロパティ名
+| entityName | エンティティ名
+| min | Length、Range、BinarySizeの `min` に設定した値
+| max | Length、Range、BinarySizeの `max` に設定した値
+| reference | Existsの存在しないデータ値。複数ある場合はカンマ区切り
+|===
+
+NOTE: min、max、referenceについては、他のタイプの場合はバインドされていないため `${min}` 、 `${max}` 、 `${reference}` とそのまま出力されます。
+
+上記の他、ValidationContextに `setAttribute` された値は、`${key}` 形式でエラーメッセージに埋め込みが可能となります。
+具体的な例は、 <<ref_property_validator_javaclass>> を参照してください。
+
+==== Validationの操作方法
+汎用画面を利用してEntityの更新処理を行う場合は、汎用画面側でValidatorエラーのハンドリングは自動的に行われます。
+ここではバッチやWebサービスを利用した独自のEntity更新処理を実装する場合のValidatorエラーハンドリングの方法を説明します。
+
+===== Entity更新時の操作方法
+EntityManagerを利用した `insert` 、 `update` 時には
+自動的にValidatorチェックが実行されます。
+エラーが発生した場合は `EntityValidationException` がthrowされます。
+この `EntityValidationException` 内に、エラーとなった
+`ValidateError` が格納されています。
+
+[source,Groovy]
+----
+import org.iplass.mtp.entity.EntityValidationException;
+import org.iplass.mtp.entity.ValidateError;
+
+EntityManager em = ManagerLocator.manager(EntityManager.class);
+
+try {
+	//登録の場合
+	em.insert(entity);
+
+	//更新の場合
+	UpdateOption option = new UpdateOption(・・・・・);
+	option.setUpdateProperties(・・・・・);
+	em.update(entity, option);
+} catch (EntityValidationException e) { //EntityValidationExceptionがthrow
+    //ValidateErrorの取得
+	ValidateError[] errors = e.getValidateResult();
+
+    Arrays.stream(errors).forEach(error -> {
+	    //対象Property名
+		System.out.println("propertyName =" + error.getPropertyName());
+
+        //Listなのは同一Propertyに対する複数Validator用
+        //エラーコードとエラーメッセージは同じサイズ
+        //エラーコードが未指定の場合は""
+		List<String> errorCodes = error.getErrorCodes();
+		List<String> errorMessages = error.getErrorMessages();
+
+		for (int i = 0; i < errorMessages.size(); i++) {
+			System.out.println(
+			    error.getPropertyName()
+			    + " error = [" + errorCodes.get(i) + "]"
+			    + errorMessages.get(i));
+		}
+	});
+}
+----
+
+Entityのデータ移行時など、データ更新時にValidatorチェックを行いたくない場合は、 `InsertOption` 、 `UpdateOption` を利用します。
+
+===== 手動でのValidatorチェック
+`EntityManager#validate` を利用することで手動でValidatorチェックを実行できます。
+この場合、チェック結果は「ValidateResult」として返ってきます。
+
+[source,Groovy]
+----
+import org.iplass.mtp.entity.ValidateResult;
+
+EntityManager em = ManagerLocator.manager(EntityManager.class);
+
+ValidateResult result = em.validate(entity);    //Validatorチェックの実行
+
+if (result.hasError()) {
+    //ValidateErrorの取得
+    ValidateError[] errors = result.getError();
+	・・・・・・
+}
+----
+

@@ -1,0 +1,10 @@
+[[VueJS_WebAPI_Multilingual]]
+=== 多言語対応
+
+多言語を利用するために、サンプルアプリで以下の対応を行っています。
+
+* <<VueJS_WebAPI_Resources_Message,多言語メッセージファイル>>の作成（※ `vue-i18n` の多言語機能を利用しています。公式サイトを参照してください。）
+
+* 言語別に<<VueJS_WebAPI_Resources_BeanValidation,Bean Validation>>エラーメッセージプロパティファイルの作成
+
+* <<../adminconsole/index#AdminConsole_Entity_Mutlilang,Entity多言語対応>>

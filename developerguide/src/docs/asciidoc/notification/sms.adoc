@@ -1,0 +1,88 @@
+== SMS送信
+SMS(ショートメッセージサービス)を利用して、携帯電話・スマートフォン宛にテキストメッセージを送信します。
+送信する文面はSMSTemplateとして登録・管理することが可能です。
+
+iPLAssではSMS送信を link:https://www.twilio.com/[Twilio^] を利用した実装を [.eeonly]#提供# しています。
+
+=== SMSTemplateの作成
+SMSTemplateアイコンを右クリックして「SMSテンプレートを作成する」を選択してください。
+
+=== 設定
+==== テンプレートの編集
+テキストメッセージを設定します。
+
+[cols="1,2a", options="header"]
+|===
+|項目|設定内容
+|表示名|表示名を設定します。
+|説明|説明を設定します。
+|言語設定情報バインド名|この項目の設定値をバインド変数のキー、値に言語名かユーザーEntity（内部で言語プロパティを参照）をセットすることで、メッセージ作成時にユーザーに合わせた言語でメッセージを作成することができます。
+
+例として、英語のSMSテンプレートを送信する場合、言語設定情報バインド名に「sampleLangKey」と設定。
+メッセージ生成処理にて下記をバインド変数として渡します。
+
+[source, java]
+----
+Map<String, Object> bindings = new HashMap<String, Object>();
+bindings.put("sampleLangKey", "en");
+----
+|テキストメッセージ|テキスト形式のメッセージを設定します。
+GroovyTemplate形式で記述します。
+|===
+
+.多言語の利用
+複数の言語に対応したSMSテンプレートを作成し、利用することができます。
+Multilingual SmsTemplateの「Add」ボタンをクリックする事で多言語用SMSテンプレート作成ダイアログが表示されます。
+
+設定項目は以下のとおりです。
+[cols="1,4a", options="header"]
+|===
+|項目|設定内容
+|Language|言語を設定します。
+|テキストメッセージ|テキスト形式のメッセージを設定します。
+GroovyTemplate形式で記述します。
+|===
+
+==== SmsService
+SMS送信時の基本設定はservice-configの<<../../serviceconfig/index.adoc#SmsService,SmsService>>を参照してください。
+
+=== 利用方法
+==== メッセージ送信処理
+EntityのEventListenerを利用して、宛先を設定すればメッセージが出せます。SmsMailManagerを利用するコード実装も可能です。
+SmsMailManagerを利用したメッセージ送信は以下のように実装します。
+
+[source, java]
+----
+import org.iplass.mtp.sms.SmsMail;
+import org.iplass.mtp.sms.SmsMailManager;
+
+//メッセージの送信はSmsMailManagerを利用
+private SmsMailManager manager = ManagerLocator.manager(SmsMailManager.class);
+
+private void sendMessage() {
+
+    try {
+        //SmsMailTemplateに渡すバインド変数設定（例ではtenantとuserを設定）
+        Map<String, Object> bindings = new HashMap<String, Object>();
+        bindings.put("tenant", tenant);
+        bindings.put("user", user);
+
+        //SmsMailManager#createMail(SMSテンプレート名, バインド変数) を呼び出し、SmsMailを生成
+        SmsMail message = manager.createMail("sampleSmsMailTemplateName", bindings);<1>
+
+        //送信元の設定
+        mail.setFrom("+12345678901");
+
+        //送信先の設定
+        mail.setTo("+819012345678");<2>
+
+        //SmsMailManager#sendMail(SmsMail)を呼び出し、メッセージを送信
+        manager.sendMail(message);<3>
+
+    } catch (RuntimeException e) {
+    }
+}
+----
+<1> SmsMailTemplateを利用して送信用メッセージを作成。 バインド変数とGroovyTemplate書式を利用して動的にメッセージを生成。
+<2> 送信先の電話番号を設定。国番号を付与した電話番号を指定します。
+<3> メッセージを送信。認証情報等はserver-config.xmlで設定。

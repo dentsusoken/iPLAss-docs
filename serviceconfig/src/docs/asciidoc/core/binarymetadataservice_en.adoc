@@ -1,0 +1,49 @@
+[[BinaryMetaDataService]]
+=== BinaryMetaDataService
+This is a service to providing a mechanism so that we does not have to store metadata in binary format as a byte array in memory.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.metadata.binary.BinaryMetaDataService
+----
+
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.metadata.binary.BinaryMetaDataService
+----
+
+
+==== Settings of BinaryMetaDataService
+Set operations related to maintaining the metadata in binary format.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| keepInMemoryThreshold | int | Set the size of the memory threshold (in bytes).
+If the data size exceeds the threshold, it is retained as a temporary file. The default value is 65536 (64KiB).
+| cacheMemoryThreshold | int | Size threshold in bytes to cache in memory.
+If the size is below the threshold, it will be cached in memory. The default value is 1048576 (1024KiB).
+| xmlBinaryChunkSize | int | Chunk size when marshalling or unmarshalling to metadata XML (bytes).
+The default value is 262144 (256KiB).
+| deleteTempFileOnDestroy | boolean | Whether to delete temporary files when the service is destroyed or the virtual machine (VM) is shut down. The default value is true.
+| tempFileDir | String | Path to the directory where temporary files are stored.
+If not set, the directory path of "java.io.tmpdir" will be used.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.metadata.binary.BinaryMetaDataService</interface>
+	<property name="keepInMemoryThreshold" value="65536" />
+	<property name="cacheMemoryThreshold" value="1048576" />
+	<property name="xmlBinaryChunkSize" value="262144" />
+	<property name="deleteTempFileOnDestroy" value="true" />
+	<!-- if temp dir not specified, use "java.io.tmpdir"'s dir -->
+	<!--
+	<property name="tempFileDir" value="/tmp" />
+	-->
+</service>
+----

@@ -1,0 +1,55 @@
+[[ListingService]]
+=== [.eeonly]#ListingService#
+保存リストの実行を管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.listing.ListingService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.listing.ListingService
+----
+
+==== ListingServiceの設定
+ListingServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| automaticConversionToRootFolderMode | boolean | 
+3.0.15未満からの移行用。Rootフォルダを利用するモードに自動的に変換する場合にtrueを設定。 
+デフォルト値は `false` です。
+
+`true` にした場合、保存リスト機能の初回アクセス時にRootフォルダの生成、保存リストの更新を実行します。
+
+NOTE: 3.0.14まではRootに対するフォルダは明示的に作成していませんでした(nullとして対応)が、
+保存リストの検索処理の高速化を目的として、3.0.15からRootフォルダを利用するように変更しました。
+3.0.14以前を利用して、既にフォルダや保存リストが登録されている場合は、Rootフォルダを利用しないモードで動作しますが、
+3.0.15以降と同様に動作させる場合は、このフラグを `true` に設定してください。 +
+一度、Rootフォルダに対応した後(SavedListFolderエンティティにRootフォルダが作成されているかを確認)は、
+`false` に戻しても平気です。
+| serializedClassResolver | <<SerializedClassResolver>> | 
+保存リストをデシリアライズする際のクラスのリゾルバです。復元処理をカスタマイズしたい場合に利用可能です。
+|===
+
+[[SerializedClassResolver]]
+.SerializedClassResolver
+classはorg.iplass.mtp.impl.listing.SerializedClassResolverの実装クラスを指定します。
+
+SerializedClassResolverを実装するクラスでは、 `Class<?> resolveClass(String serializedClassName)` メソッドを実装し、クラス名から解決されるClassインスタンスを返却するようにします。
+
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.listing.ListingService</interface>
+	
+	<!-- 3.0.15未満からの移行用。RootFolderを利用するモードに自動的に変換する場合にtrue -->
+	<property name="automaticConversionToRootFolderMode" value="false"/>
+	
+</service>
+----

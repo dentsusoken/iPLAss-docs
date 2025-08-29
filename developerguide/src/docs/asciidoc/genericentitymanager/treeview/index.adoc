@@ -1,0 +1,12 @@
+= Generic Entity Manager (TreeView)
+:_hreflang-path: developerguide/genericentitymanager/treeview/index.html
+:_relative-root-path: ../../../
+
+[[treeview]]
+== TreeView
+TreeViewはエンティティと参照プロパティのデータを、ツリー構造で表示するための画面部品です。
+定義の作成後、TopViewの `Widget Area` または `Main Area` に配置することで画面に表示できます。
+
+include::operationguide.adoc[]
+
+include::setting.adoc[]

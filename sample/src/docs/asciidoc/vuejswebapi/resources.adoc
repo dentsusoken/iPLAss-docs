@@ -1,0 +1,12 @@
+[[VueJS_WebAPI_Resources]]
+== リソース定義
+
+include::resources_metadata.adoc[]
+
+include::resources_message.adoc[]
+
+include::resources_beanvalidation.adoc[]
+
+
+
+

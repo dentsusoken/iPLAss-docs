@@ -1,0 +1,10 @@
+[[localize]]
+= 国際化
+:_hreflang-path: developerguide/i18n/index.html
+:_relative-root-path: ../../
+
+include::definition_localize.adoc[]
+
+include::data_localize.adoc[]
+
+include::locale_timestamp.adoc[]

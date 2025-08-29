@@ -1,0 +1,178 @@
+[[initial_setting]]
+=== 初期設定
+WAMモジュールを利用する際には以下の設定が必要となります。
+
+==== WAMモジュールの追加
+
+.mtp-service-configの編集
+mtp-service-configに以下を追記し、WAMモジュールの設定ファイルを読み込めるようにします。
+iplass-ee-skeletonを利用している場合は該当箇所のコメント化を解除します。
+
+----
+<inherits>/wam-service-config.xml</inherits>
+----
+
+.build.gradleの編集
+build.gradleに以下を追記し、WAMモジュールを実行時の依存関係に追加します。
+iplass-ee-skeletonを利用している場合は該当箇所のコメント化を解除します。
+
+----
+runtime group: 'org.iplass.ee', name: 'iplass-ee-wam', version: iPLAssVersion
+----
+
+追記後、プロジェクトのコンテキストメニューから `Gradleプロジェクトのリフレッシュ` を行ってください。
+
+
+==== アカウントポリシーの追加
+WAMを利用してユーザーアカウントを登録する際に適用するアカウントポリシー（認証ポリシー）を作成します。
+アカウントポリシーの名前は<<wam_wampreference, Preference>>の `initialAccountPolicy` で指定した値（デフォルト値 : `WAM`）にします。
+
+`initialAccountPolicy` として利用するアカウントポリシーでは、次の設定を有効化する必要があります。
+
+----
+Create Account with Specific Password
+----
+
+パスワードリカバリ機能を利用する場合、<<wam_wampreference, Preference>>の `activatedAccountPolicy`（未指定の場合は `initialAccountPolicy`）に設定されているアカウントポリシーでは、次の設定を有効化する必要があります。
+
+----
+Reset Password with Specific Password
+----
+
+==== 権限設定
+AdminConsoleのPermissionExplorer等を利用して、WAMを利用するユーザーのための権限設定を行います。
+
+.グループ
+WAMユーザーが登録時に所属するグループを作成します。
+グループのコードは<<wam_wampreference, Preference>>の `signUp > initialGroup` で指定した値（デフォルト値 : `WAM`）にします。
+
+.ロール
+WAMユーザー用のロールを作成します。
+ロールのコードは<<wam_wampreference, Preference>>の  `wamUserIdentifierRole` で指定した値（デフォルト値 : `WAM`）にします。
+
+ロール条件を追加し、前項で作成したグループに所属していることを条件にします。
+
+----
+user.memberOf("WAM")
+----
+
+.Entity権限
+WAMユーザーがWAMを利用する上で必要となる最低限のEntity権限を設定します。
+ここで対象とするEntity以外の権限については、アプリケーションの要件にあわせて適宜設定してください。
+
+[cols="1,1,1,1,1", options="header"]
+|===
+|Entity
+|参照権限
+|登録権限
+|更新権限
+|削除権限
+
+|mtp.auth.Group
+|○
+|
+|
+|
+
+|mtp.auth.Rank
+|○
+|
+|
+|
+
+|mtp.auth.User
+|○
+|
+|○
+|
+|===
+
+.Action権限
+WAMユーザーが利用するWAMモジュールのActionに対して権限を設定します。
+`wam` 配下の全てのActionに対して許可を設定するため、PermissionExplorerのActionPermissionにて、WAMユーザー用のロールの列と `wam` の階層フォルダが交差するセルをクリックし、Nameに適切な名前を設定してOKボタンを押してください。
+
+==== 画面定義
+WAMユーザーが自身の情報を更新するための画面で利用するユーザー情報(`mtp.auth.User`)の詳細画面定義(DetailView)を作成してください。
+View名は<<wam_wampreference, Preference>>の `settings > settingsLayoutName` で指定した値にします。
+
+なお、この詳細画面定義(DetailView)ではユーザーに必要以上の項目を編集させないよう注意してください。
+例えば、権限に絡む項目（グループ、ランク、アカウントポリシー等）を更新してしまった場合、それ以降WAMの画面が操作できなくなる可能性があります。
+
+==== Preference
+Admin ConsoleのPreference設定画面で `wam/wamPreference` の設定を行います。各項目の詳細は<<wam_wampreference,Preference>>を参照してください。
+
+image::images/wam_preference.png[]
+
+==== 管理対象サイト用Action権限
+
+WAM機能では、管理対象サイトのコンテンツ閲覧権限チェックを<<../authorization/index.adoc#en_actionperm, Action権限>>を用いて行います。 +
+Action名と管理対象サイトのコンテンツのURLパスをマッピングする際、<<wam_wampreference, Preference>>の当該管理対象サイトの `manageSite > mappingActionPath` の値がAction名のprefixとして利用されます。
+
+例）下記URLの管理対象サイトのコンテンツの閲覧制御する場合
+====
+https://www.mysite.com/demo/test
+====
+
+当該管理対象サイトの `manageSite > mappingActionPath` の値が `local` だった場合には、以下のAction名としてAction権限がチェックされます。
+----
+local/demo/test
+----
+
+.バインド変数
+
+Action権限の許可条件の設定において、 `parameter` には管理対象サイトのコンテンツ閲覧時のURLのクエリパラメータがバインドされます。 +
+
+[source, groovy]
+----
+def value = parameter.クエリパラメータのキー
+
+def value = parameter.getValue("クエリパラメータのキー")
+----
+
+`request.externalResourceParameter` には `org.iplass.wam.siteauth.URIExternalResourceParameter` のインスタンスがバインドされます。 +
+JSON形式の `requestInfo` をパラメータに含めてWAMの権限チェックWebApiを呼び出すことで、以下のような許可条件を設定することができます。 +
+また、許可条件で `request.externalResourceParameter.responseStatus` に任意の戻り値を指定することで、条件に沿った戻り値が返却されます。
+
+[source, groovy]
+----
+if(request.externalResourceParameter.requestInfo.get("clientIp").equals("xxx.xxx.xxx.xxx")){ request.externalResourceParameter.responseStatus = "IP_ALLOW"; true;}
+----
+
+.（例）
+ユースケースとして、 「特定のURLパス配下(`denytest/*`)のコンテンツを、特定のグループ(グループコード : `wam_allow`)に所属しているユーザーが閲覧可能にする」 といった制御を行う場合の設定方法を説明します。
+
+* グループ
+
+グループ(グループコード : `wam_allow`)を作成します。
+
+image::images/wam_auth_1.png[]
+
+特定のURLパス配下(denytest/*)のコンテンツを参照可能としたいユーザー(サイト会員)を作成したグループに所属させます。 +
+
+image::images/wam_auth_2.png[]
+
+* ロール
+
+制御用ロール(ロールコード : `wamrole`)を作成します。 +
+ロール条件を追加し、前項で作成したグループに所属していることを条件にします。
+
+image::images/wam_auth_3.png[]
+
+* Action権限設定
+
+最後に作成したロールに対するAction権限を設定します。 +
+特定のロール(ロールコード : `wamrole`) を持つユーザーに対して、 `denytest/*` パスに対するアクセスを許可する設定をしています。
+
+Action名のprefixには、実際の<<wam_wampreference, Preference>>の当該管理対象サイトの `manageSite > mappingActionPath` の値を設定してください。以下の例では、 `local` が設定されている前提です。
+
+image::images/wam_auth_4.png[]
+
+==== ユーザー情報取得WebApi +
+WAMモジュールでは、ユーザー情報(サイト会員)の取得が可能なWebApi(`wam/auth/user`)を標準で提供しています。
+
+サイトID(パラメータ名 : `siteid`) 、サイトシークレット(パラメータ名 : `sitesecret`) をパラメータに含めてユーザー情報取得WebApiを呼び出すと、<<wam_wampreference, Preference>>の当該管理対象サイトの `manageSite > publicUserProperty` の設定に基づきユーザー情報を返却します。
+
+ユーザー情報取得WebApiを利用するかつ、クロスオリジンでのWebApi呼び出しとなる場合には、
+Admin ConsoleのWebApi画面で `wam/auth/user` を開き、 `Access-Control-Allow-Credentials` にチェックを入れて `Access-Control-Allow-Origin` にサイト側のオリジンを設定する必要があります。
+
+image::images/wam_webapi.png[]

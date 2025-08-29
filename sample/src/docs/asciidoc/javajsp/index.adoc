@@ -1,0 +1,21 @@
+[[Java_JSP]]
+= Java／JSP版
+:_hreflang-path: sample/javajsp/index.html
+:_relative-root-path: ../../
+:example-caption!:
+:figure-caption!:
+:table-caption!:
+
+include::overview.adoc[]
+
+include::setup.adoc[]
+
+include::features.adoc[]
+
+include::configfiles.adoc[]
+
+include::resourcefiles.adoc[]
+
+include::testcode.adoc[]
+
+

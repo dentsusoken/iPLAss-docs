@@ -1,0 +1,165 @@
+[[PushNotificationService]]
+=== PushNotificationService
+This service manages push notification template definitions (Metadata) and push notifications for mobile devices.
+A module using Firebase Cloud Messaging (FCM) is provided as a standard implementation of the push notification service.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.pushnotification.PushNotificationService
+----
+
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.pushnotification.fcmv1.PushNotificationService
+org.iplass.mtp.impl.pushnotification.fcm.FCMPushNotificationService //<1>
+----
+<1> FCMPushNotificationService has been deprecated in favor of PushNotificationService, which supports the FCM HTTP v1 API.
+
+==== Settings of PushNotificationService(FCM HTTP v1 API)
+Configure the PushNotificationService to use the FCM HTTP v1 API. +
+This service depends on <<GoogleCloudSettings>>. If you want to use this service, you need to include GoogleCloudSettings in your service-config settings.
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| projectId | String, Required | Set the project ID of the Firebase(Google) project to be used.
+| compressRequest | boolean | If this parameter is set to true, the HTTP request message is compressed when FCM is called. If not specified, the default value is true.
+| apiRequestValidateOnly | boolean | If this parameter is set to true, it sets the value of the validate_only key to true when calling FCM (FCM can test the request without actually sending the message). If not specified, the default value is false.
+| enableRetry | boolean | Whether to retry if the FCM call fails with an error that can be retried.
+The default value is true if not specified.
+| exponentialBackoff | <<ExponentialBackoff>>  | This is for the  value setting of link:https://developers.google.com/api-client-library/java/google-http-java-client/backoff[ExponentialBackOff^] when retrying with ExponentialBackoff class property.
+| defaultRetryAfterSeconds | int | Sets the time to wait if `retry-after` is not set in the response header after an FCM call. If not specified, the default value is 60 (seconds).
+| httpClientConfig | <<HttpClientConfig_pn, HttpClientConfig>>  | Settings related to HTTP connection when calling WebApi.
+| registrationTokenHandler | <<RegistrationTokenHandler>> | Sets the implementation class to process the Token when notified that RegistrationToken is not registered as a result of executing the FCM notification request. If unspecified, nothing is processed.
+| listener | <<PushNotificationListener>>, Multiple | The listener when processing PushNotification.
+|===
+
+==== Settings of FCMPushNotificationService (deprecated)
+Set up a PushNotificationService that uses the FCM Legacy API. +
+FCMPushNotificationService has been deprecated. Please consider migrating to PushNotificationService, which uses the FCM HTTP v1 API.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| authorizationKey | String, Required | Server key for authentication issued by FCM.
+| enableRetry | boolean | Whether to retry if the FCM call fails with an error that can be retried.
+The default value is true if not specified.
+| exponentialBackoff | <<ExponentialBackoff>>  | This is for the  value setting of link:https://developers.google.com/api-client-library/java/google-http-java-client/backoff[ExponentialBackOff^] when retrying with ExponentialBackoff class property.
+| registrationIdHandler | <<RegistrationIdHandler>>  | This set the implementation class of RegistrationIdHandler to process the notification when registrationId does not exist or when FCM notifies a existed registrationId.
+If it is not specified, nothing will be processed.
+| httpClientConfig | <<HttpClientConfig_pn, HttpClientConfig>>  | Settings related to HTTP connection when calling WebApi.
+| listener | <<PushNotificationListener>>, Multiple | The listener when processing PushNotification.
+| dryRun | boolean | If this parameter is set to true when calling FCM, FCM will not actually send the message in real, thus this is for the purpose to test the request. The default value is false.
+| endpoint | String | The URL of the endpoint that will make the FCM call. If not specified, the default value is `https://fcm.googleapis.com/fcm/send`.
+|===
+
+[[ExponentialBackoff]]
+.ExponentialBackoff
+Please specify org.iplass.mtp.impl.http.ExponentialBackoff to the class.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| retryIntervalMillis | int | Specifies the retry interval in milliseconds. The default value is 500.
+| randomizationFactor | double | Random element when retrying.
+If 0.5, the value specified for retryIntervalMillis will fluctuate in the range of 25%. The default value is 0.5.
+| multiplier | double | Exponential element of retry interval when retrying.
+If 1.5 and retryIntervalMillis is 500, the second retry is 750ms and the third retry is 1125ms. The default value is 1.5.
+| maxIntervalMillis | int | Maximum retry interval. The default value is 60000 (1 minute).
+| maxElapsedTimeMillis | int | Maximum retry execution time.
+If retry processing is not successful during this time, retry processing is terminated and the results up to that point are returned to the application. The default value is 300000 (5 minutes).
+|====================
+
+[[RegistrationIdHandler]]
+.RegistrationIdHandler
+Please specify the implementing class of org.iplass.mtp.pushnotification.fcm.RegistrationIdHandler.
+
+As a standard implementation, the simple log:
+org.iplass.mtp.impl.pushnotification.fcm.LoggingRegistrationIdHandler is provided.
+LoggingRegistrationIdHandler does not have configurable items.
+
+[[RegistrationTokenHandler]]
+.RegistrationTokenHandler
+Please specify the implementing class of org.iplass.mtp.pushnotification.fcmv1.RegistrationTokenHandler.
+
+There are no standard features provided.
+
+[[HttpClientConfig_pn]]
+.HttpClientConfig
+Please specify org.iplass.mtp.impl.http.HttpClientConfig to the class.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| proxyHost | String | Host name for proxy.
+| proxyPort | int | Port when using proxy.
+| connectionTimeout | int | Timeout in milliseconds for establishing an HTTP connection. The default value is 30000 (30 seconds).
+| soTimeout | int | Specify socket timeout (SO_TIMEOUT) in milliseconds for HTTP communication. The default value is 30000 (30 seconds).
+| poolingMaxTotal | int | Maximum number of pools for http connections. The default value is 20.
+| poolingDefaultMaxPerRoute | int | Maximum number of http connections per domain. The default value is 2.
+| poolingTimeToLive | int | Lifetime of pooled http connections (milliseconds). The default is unlimited.
+| httpClientBuilderFactory | <<HttpClientBuilderFactory_pn, HttpClientBuilderFactory>> | Specify this if you want to create a custom HttpClientBuilder.
+|====================
+
+[[HttpClientBuilderFactory_pn]]
+.HttpClientBuilderFactory
+Please specify the implementation class of org.iplass.mtp.impl.http.HttpClientBuilderFactory to the class.
+
+The following HttpClientBuilderFactory is provided as standard.
+
+* <<MicrometerHttpClientBuilderFactory, [.eeonly]#MicrometerHttpClientBuilderFactory#>>
+
+[[PushNotificationListener]]
+.PushNotificationListener
+Please specify the implementing class of org.iplass.mtp.pushnotification.PushNotificationListener.
+
+As the standard implementation, the following PushNotificationListener are provided.
+
+- <<MetricsPushNotificationListener>>
+
+[[MetricsPushNotificationListener]]
+.[.eeonly]#MetricsPushNotificationListener#
+Please specify org.iplass.mtp.impl.micrometer.metrics.pushnotification.MetricsPushNotificationListener to the class.
+
+It’s PushNotificationListener with the metric collection function by Micrometer.
+There are no settings that can be configured.
+
+===== Example
+[source, xml]
+----
+<service>
+    <interface>org.iplass.mtp.impl.pushnotification.PushNotificationService</interface>
+
+    <class>org.iplass.mtp.impl.pushnotification.fcmv1.PushNotificationService</class>
+    <property name="projectId" value="[set Firebase(Google) Project Id]" />
+    <property name="compressRequest" value="true" />
+    <property name="apiRequestValidateOnly" value="false" />
+    <property name="enableRetry" value="true" />
+    <property name="exponentialBackoff" class="org.iplass.mtp.impl.http.ExponentialBackoff">
+        <property name="retryIntervalMillis" value="500" />
+        <property name="randomizationFactor" value="0.5" />
+        <property name="multiplier" value="1.5" />
+        <property name="maxIntervalMillis" value="60000" />
+        <property name="maxElapsedTimeMillis" value="300000" />
+    </property>
+    <property name="defaultRetryAfterSeconds" value="60" />
+    <property name="httpClientConfig" class="org.iplass.mtp.impl.http.HttpClientConfig">
+        <property name="proxyHost" value="xxxxxx.dentsusoken.com" />
+        <property name="proxyPort" value="8080" />
+    </property>
+    <!-- 
+    Can specify the implementation class of org.iplass.mtp.pushnotification.fcmv1.RegistrationTokenHandler.
+    -->
+    <!--
+    <property name="registrationTokenHandler" class="[set class of implements org.iplass.mtp.pushnotification.fcmv1.RegistrationTokenHandler]" />
+    -->
+    <!-- PushNotificationListener implementation class. Multiple settings are possible. -->
+    <!-- 
+    <property name="listener" class="[set class of implements org.iplass.mtp.pushnotification.PushNotificationListener]" />
+    <property name="listener" class="[set class of implements org.iplass.mtp.pushnotification.PushNotificationListener]" />
+    -->
+</service>
+----

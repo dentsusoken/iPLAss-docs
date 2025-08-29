@@ -1,0 +1,65 @@
+[[TaskIdCounter]]
+=== TaskIdCounter
+This is the service to assign task ID when using RdbQueueService.
+Depending on the grouping settings of the task, the settings to be imported will change.
+If no grouping is specified, use the settings of `TaskIdCounter`. If specified, use the settings of `TaskIdCounterGrouping` .
+
+==== Interface Name
+----
+org.iplass.mtp.impl.counter.CounterService
+----
+
+==== Implementing Class Name
+.No Cache
+----
+org.iplass.mtp.impl.counter.RdbTableCounterService
+----
+
+.With Cache
+----
+org.iplass.mtp.impl.counter.CachableRdbTableCounterService
+----
+
+==== Settings of RdbTableCounterService
+The settings of RdbTableCounterService can be configured in the following way.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| separateTransaction | boolean | Whether to separate transactions when counting. The default value is false.
+| retryCount | int | Set the retry count when fail to count. The default is 3.
+| counterTypeName | String |  Specify the name of the counter type. the default is `defaultCounter`.
+|===
+
+==== Settings of CachableRdbTableCounterService
+CachableRdbTableCounterService can be configured in the following way.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| separateTransaction | boolean | Whether to separate transactions when counting.The default value is false.
+| retryCount | int |Set the retry count when fail to count. The default is 3.
+| counterTypeName | String |  Specify the name of the counter type. the default is `defaultCounter`.
+| cacheSize | int | Cache size. The default is 20.です。
+|===
+
+===== Example
+[source, xml]
+----
+<service name="TaskIdCounter">
+	<interface>org.iplass.mtp.impl.counter.CounterService</interface>
+	<class>org.iplass.mtp.impl.counter.CachableRdbTableCounterService</class>
+	<property name="counterTypeName" value="TaskIdCounter" />
+	<property name="cacheSize" value="20" />
+	<property name="retryCount" value="3" />
+</service>
+<service name="TaskIdCounterGrouping">
+	<interface>org.iplass.mtp.impl.counter.CounterService</interface>
+	<class>org.iplass.mtp.impl.counter.RdbTableCounterService</class>
+	<property name="counterTypeName" value="TaskIdCounter" />
+	<property name="separateTransaction" value="true" />
+	<property name="retryCount" value="3" />
+</service>
+----

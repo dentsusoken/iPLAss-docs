@@ -1,0 +1,327 @@
+== Webhook
+特定のEvent発生時に外部サービスと連携し、ユーザーに更新情報を通知するための機能です。iPLAssでは、エンドポイントや認証情報、送信するHTTPリクエスト内容を「WebhookEndpoint」と「WebhookTemplate」に分けて登録・管理します。
+
+=== WebhookEndpoint
+エンドポイントや認証情報をWebhookEndpointとして登録・管理することが可能です。 +
+WebhookEndpointはAdminConsoleにて登録・管理します。
+
+
+==== WebhookEndpointの作成
+AdminConsoleからNotificationカテゴリのWebhookフォルダ内にあるWebhookEndpointの定義を作成します（WebhookEndpoint -> 右クリック -> 作成）。
+
+
+==== 設定項目の説明
+次の項目を設定可能です。
+
+.Endpoint Address
+Webhookのエンドポイントを指定します。
+
+[cols="1,4a", options="header"]
+|===
+| 項目 | 設定内容
+| Endpoint URL | エンドポイントURLを指定します。GroovyTemplate形式で動的に値をセットすることも可能です。
+|===
+
+
+.Header Authentication
+Authorizationヘッダに含む認証情報を設定します。
+[cols="1,4a", options="header"]
+|===
+| 項目 | 設定内容
+| Token Type | 認証方式を指定します。認証方式は、``Basic Authentication``, ``Bearer Authentication``, ``Custom Authentication``, ``Disabled(無効)``から選択してください。
+
+|Customize Token Type Name|（Token Typeが``Custom Authentication ``の場合） +
+カスタムのスキーム名を設定してください。
+
+|「Header認証を編集」ボタン| 選択したToken Typeに応じた認証情報を設定してください。設定した認証情報はToken Type毎に保持されます。
+
+|「Header認証を削除」ボタン| 設定済の認証情報を削除します。
+
+|===
+
+.HMAC Authentication
+必要に応じて、 HMAC認証を設定します。
+[cols="1,4a", options="header"]
+|===
+| 項目 | 設定内容
+| Enable HMAC | HMAC認証を利用する場合は、チェックを入れてください。
+| Header Name |HMACの値をセットするヘッダ名を設定します。未入力の場合は、service-configで設定されたデフォルトのヘッダ名が適用されます。
+| 「HMACの秘密鍵を生成」ボタン | service-configで設定したハッシュアルゴリズムを用いて、ランダムのHMACの秘密鍵が生成されます。
+| 「HMACの秘密鍵を編集」ボタン | 設定済みのHMACの秘密鍵を編集することが可能です。
+| 「HMACの秘密鍵を削除」ボタン | 設定済みのHMACの秘密鍵を削除します。
+
+|===
+
+CAUTION: Authentication情報は編成ダイアログの「Save」ボタンを押した時点でデータベースに保存されます。
+
+
+=== WebhookTemplate
+外部システムに送信するHTTPリクエストの内容をWebhookTemplateとして登録・管理することが可能です。 +
+WebhookTemplateはAdminConsoleにて登録・管理します。
+
+
+==== WebhookTemplateの作成
+AdminConsoleからNotificationカテゴリのWebhookフォルダ内にあるWebhookTemplateの定義を作成します（WebhookTemplate -> 右クリック -> 作成）。
+
+
+===== 設定項目の説明
+次の項目を設定可能です。
+
+[cols="1,4a", options="header"]
+|===
+| 項目 | 設定内容
+|Content-Type|Content-Typeを指定します。
+
+- 外部サービスのAPI仕様に合わせて、 ``application/x-www-form-urlencoded, application/json, text/plain``などを指定してください。
+
+- 後述の``Custom Header``にもContent-Typeを指定した場合、こちらの設定が優先されます。 
+
+|Http Request Method|HTTPメソッド(通常はPOST)を指定します。
+
+|Custom Header|HTTPリクエストヘッダにカスタムヘッダを指定することが可能です。 +
+ヘッダー名、値のペアで設定してください。
+
+|Sub Path/Query String|
+サブパス、クエリストリングを設定します。GroovyTemplate形式で記述可能です。
+
+entityがバインドされている場合の記述例:: 
+
+``www.url.com/something?var=1``のURLで、varの値にバインドしたEntityのProperty値を利用したい場合、 +
+``?var=${entity.oid}``の様に記述してください。
+
+| Webhook Payload Contents |（POST, PUT, PATCHの場合） +
+HTTPリクエストボディのコンテンツを記述します。 +
+Content-Typeに応じた内容を、外部サービスのAPI仕様に合わせて記述してください。
+
+|===
+
+=== 利用方法
+==== Webhookの送信処理
+EntityのEventListenerをトリガーとしてWebhookを実行することが可能です。WebhookManagerを利用するコード実装も可能です。実際にWebhookを実行する場合は、mtp-service-config.xmlにて、<<../../serviceconfig/index.adoc#WebhookService,WebhookService>>を正しく設定する必要があります。
+
+WebhookManagerを利用したWebhook送信は以下のように実装します。
+[source, java]
+----
+import org.iplass.mtp.webhook.Webhook;
+import org.iplass.mtp.webhook.WebhookManager;
+
+//Webhookの送信はWebhookManagerを利用
+private WebhookManager webhookManager = ManagerLocator.manager(WebhookManager.class);
+
+
+private void sendWebhook() {
+
+    try {
+        //WebhookTemplateに渡すバインド変数設定（例ではentityを設定）
+        Map<String, Object> bindings = new HashMap<String, Object>();
+        bindings.put("entity", entity);
+
+        //WebhookManager#createWebhook(WebhookTemplate名, バインド変数, WebhookEndpoint名) を呼び出し、Webhookインスタンスを生成
+        Webhook webhook = webhookManager.createWebhook("sampleWebhookTemplateName", bindings,"sampleWebhookEndpointName");<1>
+
+        //WebhookManager#sendWebhookAsync(Webhook)を呼び出し、Webhookを非同期処理として送信
+        webhookManager.sendWebhookAsync(webhook);<2>
+        
+        //WebhookManager#sendWebhookSync(Webhook)を呼び出し、Webhookを同期処理として送信
+        webhookManager.sendWebhookSync(webhook);<3>
+
+    } catch (RuntimeException e) {
+    }
+}
+----
+<1> 既存のWebhookTemplate定義とWebhookEndpoint定義を利用して、Webhookのエンドポイントや送信メッセージを指定。
+バインド変数とGroovyTemplate書式を利用して動的に送信メッセージを生成。
+<2> Webhookを非同期処理として送信。
+<3> Webhookを同期処理として送信。
+
+=== 利用例
+以下では、利用例としてMicrosoft Teams、Slack、LINEと連携してユーザーにメッセージを通知するサンプルを紹介します。
+
+==== Microsoft Teamsと連携
+Microsoft Teamsの「Incoming Webhook」を用いて、メッセージを通知する簡単なサンプルをここでは紹介します。
+
+===== 「Incoming Webhook」の作成
+. サイドバー左下の[アプリ]を選択して、アプリ一覧から[Incoming Webhook]を選択する
+. [チームに追加]をクリックして、Webhookで通知を行いたいチャネルを選択し、[コネクタを設定]をクリックする。
+. 任意の名前を入力し、必要に応じてWebhookの画像アバターをアップロードした後、[作成]をクリックする。
+. 作成された``Webhook URL``をメモし、[完了]をクリックする。
+
+===== WebhookEndpointの作成
+AdminConsoleからWebhookEndpoint定義を新規で作成します。
+以下の内容を入力してWebhookEndpointを作成してください。
+
+[cols="1,4a", options="header"]
+|===
+| 項目 | 内容
+| Endpoint URL | 先程メモした``Webhook URL``を入力する。
+|===
+
+===== WebhookTemplateの作成
+AdminConsoleからWebhookTemplate定義を新規で作成します。
+以下の内容を入力してWebhookTemplateを作成してください。
+
+[cols="1,4a", options="header"]
+|===
+| 項目 | 内容
+| Content-Type | application/json
+| Http Request Method | POST
+| webHook Payload Content |本サンプルでは、以下の簡単なテキストメッセージを通知します
+。
+[source, json]
+----
+{
+    "text": "new Entity: ${entity.name} が作成されました"
+}
+----
+|===
+
+===== EntityのEventListenerを設定する
+任意のEntityにEventListenerを設定します。
+
+[cols="1,4a", options="header"]
+|===
+| 項目 | 内容
+| Type | SendNotification
+| Notification type | Webhook
+| Template | 先程作成した``WebhookTemplate``を選択してください。
+| Destination | 先程作成した``WebhookEndpoint``のnameを入力してください。
+| Events | ``afterInsert``をチェックしてください。
+|===
+
+
+===== 結果確認
+対象のEntityにデータを挿入してみてください。 +
+正しく設定されている場合、Microsoft Teamsの選択したチャネルにWebhookボットから通知メッセージが送信されます。
+
+
+==== Slackと連携
+Slackの「Incoming Webhook」を用いて、メッセージを通知する簡単なサンプルをここでは紹介します。
+
+===== 「Incoming Webhook」の作成
+. Slackの https://slack.com/apps/A0F7XDUAZ[Incoming Webhookの設定ページ^]に遷移する
+. [Slackに追加]をクリックして、Webhookで通知を行いたいチャンネルを選択し、[Incoming Webhook インテグレーションの追加]をクリックする。
+. 作成された``Webhook URL``をメモする。
+
+===== WebhookEndpointの作成
+AdminConsoleからWebhookEndpoint定義を新規で作成します。
+以下の内容を入力してWebhookEndpointを作成してください。
+
+[cols="1,4a", options="header"]
+|===
+| 項目 | 内容
+| Endpoint URL | 先程メモした``Webhook URL``を入力する。
+|===
+
+===== WebhookTemplateの作成
+AdminConsoleからWebhookTemplate定義を新規で作成します。
+以下の内容を入力してWebhookTemplateを作成してください。
+
+[cols="1,4a", options="header"]
+|===
+| 項目 | 内容
+| Content-Type | application/json
+| Http Request Method | POST
+| webHook Payload Content |本サンプルでは、以下の簡単なテキストメッセージを通知します
+。
+[source, json]
+----
+{
+    "text": "new Entity: ${entity.name} が作成されました"
+}
+----
+|===
+
+
+
+
+===== EntityのEventListenerを設定する
+任意のEntityにEventListenerを設定します。
+
+[cols="1,4a", options="header"]
+|===
+| 項目 | 内容
+| Type | SendNotification
+| Notification type | Webhook
+| Template | 先程作成した``WebhookTemplate``を選択してください。
+| Destination | 先程作成した``WebhookEndpoint``のnameを入力してください。
+| Events | ``afterInsert``をチェックしてください。
+|===
+
+
+===== 結果確認
+対象のEntityにデータを挿入してみてください。 +
+正しく設定されている場合、Slackの選択したチャネルにWebhookボットから通知メッセージが送信されます。
+
+
+
+==== LINEと連携
+LINEの「Messaging API」を用いて、メッセージを通知する簡単なサンプルをここでは紹介します。簡単の為、本サンプルでは、 https://developers.line.biz/ja/reference/messaging-api/#send-broadcast-message[ブロードキャストメッセージを送信するAPI^]を利用します。
+
+===== 「Messaging API」の設定
+. https://developers.line.biz/ja/docs/messaging-api/getting-started/#%E3%83%81%E3%83%A3%E3%83%8D%E3%83%AB%E3%81%AE%E4%BD%9C%E6%88%90[LINEのチャネル作成ガイド^]を参照して、Messaging APIチャネルを作成する。
+
+. 「チャネルアクセストークン」を取得する。チャネルアクセストークンは、コンソールの[チャネル設定]から対象のチャネルを選択して、[チャネル基本設定]タブで発行可能です。
+
+===== WebhookEndpointの作成
+AdminConsoleからWebhookEndpoint定義を新規で作成します。
+以下の内容を入力してWebhookEndpointを作成してください。
+
+
+[cols="1,4a", options="header"]
+|===
+| 項目 | 内容
+| Endpoint URL | https://api.line.me/v2/bot/message/broadcast
+| Header Authentication | ``TokenType``で「Bearer Authentication」を選択し、「Header認証を編集」をクリックする。入力フォームに先程取得したチャネルアクセストークンを入力する。
+|===
+
+
+===== WebhookTemplateの作成
+AdminConsoleからWebhookTemplate定義を新規で作成します。
+以下の内容を入力してWebhookTemplateを作成してください。
+
+[cols="1,4a", options="header"]
+|===
+| 項目 | 内容
+| Content-Type | application/json
+| Http Request Method | POST
+| webHook Payload Content | 
+本サンプルでは、以下の簡単なテキストメッセージを通知します。
+
+[source, json]
+----
+{
+    "messages":[
+        {
+            "type":"text",
+            "text":"Hello"
+        },
+        {
+            "type":"text",
+            "text": "new Entity: ${entity.name} が作成されました"
+        },
+        {
+            "type":"text",
+            "text":"説明：${entity.description} "
+        },
+    ]
+}
+----
+|===
+
+===== EntityのEventListenerを設定する
+任意のEntityにEventListenerを設定します。
+
+[cols="1,4a", options="header"]
+|===
+| 項目 | 内容
+| Type | SendNotification
+| Notification type | Webhook
+| Template | 先程作成した``WebhookTemplate``を選択してください。
+| Destination | 先程作成した``WebhookEndpoint``のnameを入力してください。
+| Events | ``afterInsert``をチェックしてください。
+|===
+
+
+===== 結果確認
+対象のEntityにデータを挿入してみてください。 +
+正しく設定されている場合、LINE公式アカウントと友だちになっているすべてのユーザーにプッシュメッセージが送信されます。

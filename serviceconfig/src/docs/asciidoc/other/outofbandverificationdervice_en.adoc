@@ -1,0 +1,150 @@
+[[OutOfBandVerificationService]]
+=== [.eeonly]#OutOfBandVerificationService#
+This is the service to manage the verification process using email and SMS.
+
+==== Interface Name
+----
+org.iplass.wam.impl.outofbandverify.OutOfBandVerificationService
+----
+
+
+==== Implementing Class
+----
+org.iplass.wam.impl.outofbandverify.OutOfBandVerificationService
+----
+
+
+==== The settings of OutOfBandVerificationService
+OutOfBandVerificationService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| verifier | <<OutOfBandVerifier>>, Multiple | The settings of the verifier with OutOfBand method.
+|===
+
+[[OutOfBandVerifier]]
+.OutOfBandVerifier
+The settings of the verifier with OutOfBand method.
+
+Please specify org.iplass.wam.impl.outofbandverify.OutOfBandVerifier to the class.
+The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| name | String | The name of the OutOfBand
+| outOfBand | <<OutOfBand>> |The settings of the OutOfBand
+| strategy | <<VerifyStrategy>> | The settings of the verifying strategy.
+| store | <<VerificationStore>> | Set where to store the target objects.
+|===
+
+[[OutOfBand]]
+.OutOfBand
+Please specify the implementing class of org.iplass.wam.impl.outofbandverify.outofband.OutOfBand to the class.
+
+As the standard implementation, the following OutOfBands are provided.
+
+* <<MailOutOfBand>>
+* <<SMSOutOfBand>>
+
+[[MailOutOfBand]]
+.MailOutOfBand
+The OutOfBand using mail services.
+
+Please specify org.iplass.wam.impl.outofbandverify.outofband.MailOutOfBand to the class.
+There is no configurable items.
+
+[[SMSOutOfBand]]
+.SMSOutOfBand
+The OutOfBand using SMS services.
+
+Please specify org.iplass.wam.impl.outofbandverify.outofband.SMSOutOfBand to the class.
+There is no configurable items.
+
+[[VerifyStrategy]]
+.VerifyStrategy
+Please specify the implementing class of org.iplass.wam.impl.outofbandverify.strategy.VerifyStrategy to the class.
+
+As the standard implementation, the following VerifyStrategies are provided.
+
+* <<ActivationURLVerifyStrategy>>
+* <<OnetimeCodeVerifyStrategy>>
+
+[[ActivationURLVerifyStrategy]]
+.ActivationURLVerifyStrategy
+Verify by activation URL.
+
+Please specify org.iplass.wam.impl.outofbandverify.strategy.ActivationURLVerifyStrategy to the class.
+There is no configurable items.
+
+[[OnetimeCodeVerifyStrategy]]
+.OnetimeCodeVerifyStrategy
+Verify by one-time code.
+
+Please specify org.iplass.wam.impl.outofbandverify.strategy.OnetimeCodeVerifyStrategy to the class.
+The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| numberOfDigits | int | Number of digits of the one time code. The default is 6.
+|===
+
+[[VerificationStore]]
+.VerificationStore
+Please specify the implementing class of org.iplass.wam.impl.outofbandverify.store.VerificationStore to the class.
+
+As the standard implementation, the following VerificationStore are provided.
+
+* <<CacheVerificationStore>>
+* <<EntityVerificationStore>>
+* <<SessionVerificationStore>>
+
+[[CacheVerificationStore]]
+.CacheVerificationStore
+Save the verification target in the cache.
+
+Please specify org.iplass.wam.impl.outofbandverify.store.CacheVerificationStore to the class.
+There is no configurable items.
+
+[[EntityVerificationStore]]
+.EntityVerificationStore
+Save the verification target in Entity.
+
+Please specify org.iplass.wam.impl.outofbandverify.store.EntityVerificationStore to the class.
+There is no configurable items.
+
+[[SessionVerificationStore]]
+.SessionVerificationStore
+Save the verification target in the user's Session.
+
+Please specify org.iplass.wam.impl.outofbandverify.store.SessionVerificationStore to the class.
+There is no configurable items.
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.wam.impl.outofbandverify.OutOfBandVerificationService</interface>
+	<property name="verifier" class="org.iplass.wam.impl.outofbandverify.OutOfBandVerifier">
+		<property name="name" value="email"/>
+		<property name="outOfBand" class="org.iplass.wam.impl.outofbandverify.outofband.MailOutOfBand"/>
+		<property name="strategy" class="org.iplass.wam.impl.outofbandverify.strategy.ActivationURLVerifyStrategy"/>
+		<property name="store" class="org.iplass.wam.impl.outofbandverify.store.EntityVerificationStore"/>
+	</property>
+	<property name="verifier" class="org.iplass.wam.impl.outofbandverify.OutOfBandVerifier">
+		<property name="name" value="mobileMail"/>
+		<property name="outOfBand" class="org.iplass.wam.impl.outofbandverify.outofband.MailOutOfBand"/>
+		<property name="strategy" class="org.iplass.wam.impl.outofbandverify.strategy.OnetimeCodeVerifyStrategy"/>
+		<property name="store" class="org.iplass.wam.impl.outofbandverify.store.SessionVerificationStore"/>
+	</property>
+	<property name="verifier" class="org.iplass.wam.impl.outofbandverify.OutOfBandVerifier">
+		<property name="name" value="sms"/>
+		<property name="outOfBand" class="org.iplass.wam.impl.outofbandverify.outofband.SMSOutOfBand"/>
+		<property name="strategy" class="org.iplass.wam.impl.outofbandverify.strategy.OnetimeCodeVerifyStrategy"/>
+		<property name="store" class="org.iplass.wam.impl.outofbandverify.store.SessionVerificationStore"/>
+	</property>
+</service>
+----

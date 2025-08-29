@@ -1,0 +1,15 @@
+= Sample
+
+== Sample Codes
+
+//GitHub上ではincludeはlink表示されてしまう
+//include::./src/docs/asciidoc/codes/index.adoc[]
+
+link:src/docs/asciidoc/codes/index.adoc[Top Index]
+
+== EC Demo Application
+
+//GitHub上ではincludeはlink表示されてしまう
+//include::./src/docs/asciidoc/ec/index.adoc[]
+
+link:src/docs/asciidoc/ec/index.adoc[Top Index]

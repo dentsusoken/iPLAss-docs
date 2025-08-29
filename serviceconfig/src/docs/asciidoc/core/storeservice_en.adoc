@@ -1,0 +1,150 @@
+[[StoreService]]
+=== StoreService
+The service to configure how to save Entity data permanently.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.datastore.StoreService
+----
+
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.datastore.StoreService
+----
+
+
+==== Settings of StoreService
+The settings for StoreService are described below.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| dataStore | <<DataStore>> | Settings of DataStore.
+|===
+
+[[DataStore]]
+.DataStore
+Please specify the implementing class of org.iplass.mtp.impl.datastore.DataStore to the class.
+
+The following DataStore are provided in standard.
+
+- <<GRdbDataStore>>
+- <<EnterpriseGRdbDataStore>>
+
+[[GRdbDataStore]]
+.GRdbDataStore
+Please specify org.iplass.mtp.impl.datastore.grdb.GRdbDataStore to the class.
+This is the DataStore for community edition.
+
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| storageSpace | <<StorageSpaceMap>>, Multiple | Settings of StorageSpace.
+|===
+
+[[EnterpriseGRdbDataStore]]
+.[.eeonly]#EnterpriseGRdbDataStore#
+Please specify org.iplass.mtp.impl.datastore.grdb.EnterpriseGRdbDataStore to the class.
+This is the DataStore for enterprise edition.
+
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| enableWindowFunctionEmulation | boolean | Whether to enable Windows function emulation. The default value is false
+| storageSpace | <<StorageSpaceMap>>, Multiple | Settings of StorageSpace
+|===
+
+[[StorageSpaceMap]]
+.StorageSpaceMap
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| storageSpaceName | String | StorageSpace name displayed when selecting in Entity definition.
+| tableNamePostfix | String | Suffix added to the table for StorageSpace.
+Please use only alphanumeric characters.
+Since `MTP` and `USER` are defined by default, set other names.
+| varcharColumns | int | Number of columns to store string type properties.
+| decimalColumns | int | Number of columns to store Decimal type properties.
+| timestampColumns | int | Number of columns for storing Timestamp type properties.
+| doubleColumns | int | Number of columns to store floating point properties.
+| useExternalIndexedTable | boolean | Whether to use `obj_index` tables. The default value is true. 
+| indexedVarcharColumns | int | Index Number of columns to store the specified string type property.
+| indexedDecimalColumns | int | Index Number of columns to store the specified Decimal type property.
+| indexedTimestampColumns | int | Index Number of columns to store the specified Timestamp type property.
+| indexedDoubleColumns | int | Index Number of columns to store the specified floating-point type property.
+| useExternalUniqueIndexedTable | boolean | Whether to use `obj_unique_index` tables. The default value is true. 
+| uniqueIndexedVarcharColumns | int | Unique Index Number of columns to store the specified string type property.
+| uniqueIndexedDecimalColumns | int | Unique Index Number of columns to store the specified Decimal type property.
+| uniqueIndexedTimestampColumns | int | Unique Index Number of columns to store the specified Timestamp type property.
+| uniqueIndexedDoubleColumns | int | Unique Index Number of columns to store the specified floating point type property.
+| varcharColumnLength | int | Set the length of the character string storage column. Used to determine if a LongText value can be stored inline. The default value is -1 (meaning undefined).
+| customPartition | boolean | Whether to use a partition that is different from the standard partition when using Partition. The default value is false.
+| tableCount | int | Set a value larger than 0 when you want to  physically divide the storage table and performing pseudo partitioning (Not a database partitioning function, but a function that allows iPLAss to allocate physical tables by Entity definition). The default value is 0.
+| tableAllocator | <<TableAllocator>> | TableAllocator settings, which allows you to set the allocation method for each physical table when pseudo-partitioning.
+The default value is HashingTableAllocator.
+|===
+
+[[TableAllocator]]
+.TableAllocator
+When pseudo-partitioning, it is possible to set the allocation method to the physical table where Entity data is stored. +
+Please specify the implementing class of org.iplass.mtp.impl.datastore.grdb.TableAllocator to the class.
+
+The following TableAllocator are provided in standard.
+
+- <<HashingTableAllocator>>
+- <<RoundRobinTableAllocator>>
+
+[[HashingTableAllocator]]
+.HashingTableAllocator
+Please specify org.iplass.mtp.impl.datastore.grdb.tableallocators.HashingTableAllocator to the class. 
+The physical table is determined by hashing from tenantId, and metaDataId, which is a unique key for each Entity definition.
+
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| useTenantId | boolean | True if tenantId is used when calculating the hash. Default value is true.
+| useMetaDataId | boolean | True if metaDataId is used when calculating the hash. Default value is true.
+If both useTenantId and useMetaDataId are true, both will be used.
+|===
+
+[[RoundRobinTableAllocator]]
+.RoundRobinTableAllocator
+Please specify org.iplass.mtp.impl.datastore.grdb.tableallocators.RoundRobinTableAllocator to the class. 
+Allocate the physical table that has the least number of Entity definitions used in the same tenant among the physical tables that make up the pseudo partition.
+There are no configurable items.
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.datastore.StoreService</interface>
+
+	<property name="dataStore" class="org.iplass.mtp.impl.datastore.grdb.GRdbDataStore">
+		<property name="storageSpace" additional="true">
+			<property name="storageSpaceName" value="MyCustomSpace" />
+			<property name="tableNamePostfix" value="MCS" />
+			<property name="varcharColumns" value="128" />
+			<property name="decimalColumns" value="32" />
+			<property name="timestampColumns" value="32" />
+			<property name="doubleColumns" value="32" />
+			<property name="useExternalIndexedTable" value="true" />
+			<property name="indexedVarcharColumns" value="8" />
+			<property name="indexedDecimalColumns" value="4" />
+			<property name="indexedTimestampColumns" value="4" />
+			<property name="indexedDoubleColumns" value="4" />
+			<property name="useExternalUniqueIndexedTable" value="true" />
+			<property name="uniqueIndexedVarcharColumns" value="2" />
+			<property name="uniqueIndexedDecimalColumns" value="2" />
+			<property name="uniqueIndexedTimestampColumns" value="2" />
+			<property name="uniqueIndexedDoubleColumns" value="2" />
+			<property name="customPartition" value="false" />
+		</property>
+	</property>
+</service>
+----

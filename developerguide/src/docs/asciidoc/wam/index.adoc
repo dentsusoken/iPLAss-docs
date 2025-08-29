@@ -1,0 +1,18 @@
+= WAM（Web Account Manager）
+:_hreflang-path: developerguide/wam/index.html
+:_relative-root-path: ../../
+:_menu-title-ee-only: true
+
+コンシューマ向けサイトの会員をiPLAss上で管理する機能として、WAM（Web Account Manager）機能を提供します。 +
+WAM機能は、`WAMモジュール` 、 `WAMプラグインモジュール` の2つのモジュールから構成されます。
+
+WAMモジュール::
+iPLAss framework上で動作し、会員管理を行うモジュールです。会員管理機能として、認証機能、アカウント情報のセルフメンテナンス機能、コンテンツの閲覧権限チェック機能などを提供します。
+
+WAMプラグインモジュール::
+HTTPサーバー上で動作し、サイトコンテンツへのアクセスをフックして閲覧制御を行うモジュールです。WAMモジュールとHTTP連携し、未ログインユーザーのログイン画面へのリダイレクト、閲覧権限に応じたコンテンツアクセス制御などを行います。 +
+`Apache HTTP Server` 、`IIS`、`JavaEE Server` 、 `Serverless(JavaScript)` で動作するプラグインモジュールを標準で提供します。
+
+include::webaccountmanager/index.adoc[]
+
+include::plugin/index.adoc[]

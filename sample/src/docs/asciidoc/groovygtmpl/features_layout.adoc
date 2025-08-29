@@ -1,0 +1,34 @@
+[[Groovy_GTmpl_Layout]]
+=== Top画面の作成
+* Layoutの利用 + 
+Top画面の構成は下図のようになっています。画面共通で利用するレイアウト用テンプレート `defaultLayout` と `shippingLayout` を用意し、画面右部分はそれぞれの機能に併せて呼びだす形にしています。ここでは"top"テンプレートを呼び出して利用しています。
++
+image:images/sample-ec_groovy-gtmpl-template-layout.png[align=left]
++
+レイアウト用テンプレート
++
+image:images/sample-ec_groovy-gtmpl-defaultlayout-template.png[align=left]
++
+. テンプレートを読み込む側（この例だとdefaultLayoutテンプレート）では、読みこんだテンプレートを表示したい箇所に
++
+[source]
+----
+<%renderContent(); %>
+----
++
+を記述します。
++
+* レイアウトアクション
++
+image:images/sample-ec_groovy-gtmpl-defaultlayout-action.png[align=left]
++
+. "privilege execute"にチェックをいれて特権モードにすると、登録していないユーザーにも公開できます。
+.  レイアウトテンプレートに関してはパーツとしての利用になる為"parts.not direct access"にチェックをいれます。
+
+* Top画面アクション 
++
+image:images/sample-ec_groovy-gtmpl-top-action.png[align=left]
++
+image:images/sample-ec_groovy-gtmpl-top-layout-action.png[align=left]
++
+. 読み込まれる側（この例だとTop画面アクション）のテンプレートでレイアウトアクションを　`defaultLayout` のアクションに指定しています。

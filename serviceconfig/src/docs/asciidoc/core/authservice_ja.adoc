@@ -1,0 +1,1250 @@
+[[AuthService]]
+=== AuthService
+認証を行うためのサービスです。
+認証プロバイダを切り替えることにより、様々な認証を行うことができます。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.auth.AuthService
+----
+
+
+==== 実装クラス名
+.コミュニティエディション版
+----
+org.iplass.mtp.impl.auth.AuthService
+----
+.[.eeonly]#エンタープライズエディションエディション版#
+----
+org.iplass.mtp.impl.auth.EnterpriseAuthService
+----
+
+
+==== AuthServiceの設定
+AuthServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| userSessionStore | <<UserSessionStore>> | ユーザーのセッションを管理するストアオブジェクトの設定。
+| authorizationProvider | <<AuthorizationProvider>>  | 認可処理を行うプロバイダの設定。
+| authenticationProvider | <<AuthenticationProvider>>、複数指定可 | 認証処理を行うプロバイダの設定。
+|===
+
+
+==== [.eeonly]#EnterpriseAuthServiceの設定#
+AuthServiceを設定します。
+
+===== 設定項目
+AuthServiceの設定を参照してください。
+
+
+[[UserSessionStore]]
+.UserSessionStore
+classはorg.iplass.mtp.impl.auth.authenticate.UserSessionStoreの実装クラスを指定します。
+
+.実装クラス名
+----
+org.iplass.mtp.impl.auth.authenticate.DefaultUserSessionStore
+----
+
+[[DefaultUserSessionStore]]
+.DefaultUserSessionStore
+標準で提供しているUserSessionStoreです。
+
+classはorg.iplass.mtp.impl.auth.authenticate.DefaultUserSessionStoreを指定します。
+以下の項目を指定可能です。
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| shareLoginSession | boolean | セッションに保持するログイン情報を複数テナントで共有するか。
+| sessionFixationProtection | DefaultUserSessionStore.SessionFixationProtectionMethod a| セッション固定攻撃対策方法。DefaultUserSessionStore.SessionFixationProtectionMethodのenum値を指定。
+次のいずれかを指定します。
+
+CHANGE_SESSION_ID:: ログイン時にセッションIDを変更します。ログイン前にセッションに保持していたデータは引き継がれます。
+
+NEW_SESSION:: ログイン時に新規にセッションを生成しなおします。ログイン前にセッションに保持していたデータは引き継がれません。
+
+デフォルト値は `CHANGE_SESSION_ID` です。
+|====================
+
+
+[[AuthorizationProvider]]
+.AuthorizationProvider
+classはorg.iplass.mtp.impl.auth.authorize.AuthorizationProviderの実装クラスを指定します。
+
+.実装クラス名
+----
+org.iplass.mtp.impl.auth.authorize.builtin.BuiltinAuthorizationProvider
+----
+
+[[BuiltinAuthorizationProvider]]
+.BuiltinAuthorizationProvider
+iPLAssの標準認可プロバイダです。
+
+classはorg.iplass.mtp.impl.auth.authorize.builtin.BuiltinAuthorizationProviderを指定します。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| authorizationContextHandler | <<AuthorizationContextHandler>>、複数指定可 | Permission毎の処理を表現するクラスの設定。
+| grantAllPermissionsToAdmin | boolean | Adminユーザーに対し全権限を与えるか。
+falseが設定された場合はAdminユーザーに対しロール制御が適用されます。
+デフォルト値はtrueです。
+|====================
+
+[[AuthorizationContextHandler]]
+.AuthorizationContextHandler
+classはorg.iplass.mtp.impl.auth.authorize.builtin.AuthorizationContextHandlerの実装クラスを指定します。
+
+.実装クラス名
+----
+org.iplass.mtp.impl.auth.authorize.builtin.action.ActionAuthContextHandler
+org.iplass.mtp.impl.auth.authorize.builtin.cube.CubeAuthContextHandler
+org.iplass.mtp.impl.auth.authorize.builtin.entity.EntityAuthContextHandler
+org.iplass.mtp.impl.auth.authorize.builtin.webapi.WebApiAuthContextHandler
+org.iplass.mtp.impl.auth.authorize.builtin.workflow.WorkflowAuthContextHandler
+----
+
+.ActionAuthContextHandler
+WebApi権限の処理を行うクラスです。
+
+classはorg.iplass.mtp.impl.auth.authorize.builtin.action.ActionAuthContextHandlerを指定します。
+
+.[.eeonly]#CubeAuthContextHandler#
+WebApi権限の処理を行うクラスです。
+
+classはorg.iplass.mtp.impl.auth.authorize.builtin.cube.CubeAuthContextHandlerを指定します。
+
+.EntityAuthContextHandler
+Entity権限の処理を行うクラスです。
+
+classはorg.iplass.mtp.impl.auth.authorize.builtin.entity.EntityAuthContextHandlerを指定します。
+以下の項目を指定可能です。
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| useCorrelatedSubqueryOnEntityLimitCondition | boolean |Entity権限による限定条件を付与する際、相関サブクエリにするか否か。 デフォルト値はtrueです。
+|====================
+
+.WebApiAuthContextHandler
+WebApi権限の処理を行うクラスです。
+
+classはorg.iplass.mtp.impl.auth.authorize.builtin.webapi.WebApiAuthContextHandlerを指定します。
+
+.[.eeonly]#WorkflowAuthContextHandler#
+Workflow権限の処理を行うクラスです。
+
+classはorg.iplass.mtp.impl.auth.authorize.builtin.workflow.WorkflowAuthContextHandlerを指定します。
+
+[[AuthenticationProvider]]
+.AuthenticationProvider
+classはorg.iplass.mtp.impl.auth.authenticate.AuthenticationProviderの実装クラスを指定します。
+
+.実装クラス名
+----
+org.iplass.mtp.impl.auth.authenticate.builtin.BuiltinAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.simpletoken.SimpleAuthTokenAuthenticationProvider
+org.iplass.mtp.impl.auth.oauth.AccessTokenAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.configfile.ConfigFileAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.jaas.JaasAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.jee.JeeContainerManagedAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.ldap.LdapAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.preexternal.PreExternalAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.x509.X509AuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.saml.SamlAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.twostep.TwoStepAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.onetime.OnetimeCodeAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.knowledgebased.KnowledgeBasedAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.timebased.TimeBasedAuthenticationProvider
+org.iplass.mtp.impl.auth.authenticate.rememberme.RememberMeTokenAuthenticationProvider
+----
+
+[[BuiltinAuthenticationProvider]]
+.BuiltinAuthenticationProvider
+iPLAssの標準認証プロバイダです。
+DBに保存されたユーザー情報を元にid/password認証します。
+パスワードの複雑度、ロックアウト設定など、認証ポリシーにて設定可能です。
+
+classはorg.iplass.mtp.impl.auth.authenticate.builtin.BuiltinAuthenticationProviderを指定します。
+以下の項目を設定可能です。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| providerName | String | プロバイダ名称。
+複数のプロバイダを設定する場合は、それぞれ一意となる名称を設定してください。
+デフォルト値は `default` です。
+| updatable | boolean | アカウント管理モジュールの使用可否。
+デフォルト値はtrueです。
+
+true:: アカウントの管理が可能となります。
+本認証プロバイダにてユーザーのパスワード更新、リセットを有効化します。
+通常はtrueを設定してください。
+false:: アカウント管理不能となります。
+| passwordHashSetting | <<PasswordHashSetting>> 、複数指定可 | パスワードHashアルゴリズム。
+複数定義することにより既存アルゴリズムを動作させつつ、新規のパスワード更新時には新しいバージョンのアルゴリズムにて動作させることが可能です。
+| autoLoginHandler | AutoLoginHandler |
+自動ログインハンドラ。
+この認証プロバイダを利用した自動ログイン処理を行う場合に設定します。
+デフォルトの実装として次のクラスを利用可能です。
+
+<<IdPasswordAutoLoginHandler,IdPasswordAutoLoginHandler>>
+
+| userEntityResolver | UserEntityResolver | 認証成功後のユーザーEntityの取得方法を設定します。
+次のいずれかを指定可能です。
+
+<<DefaultUserEntityResolver_builtin,DefaultUserEntityResolver>> （デフォルト） +
+<<UserEntityResolver_builtin,UserEntityResolverを実装する独自クラス>>
+
+|===
+
+[[PasswordHashSetting]]
+.PasswordHashSetting
+パスワードHashアルゴリズムに関する設定です。 +
+classはorg.iplass.mtp.impl.auth.authenticate.builtin.PasswordHashSettingクラス、もしくはそのサブクラスを指定します。
+
+標準で、以下のPasswordHashSettingを提供します。
+
+- <<PasswordHashSetting>>（デフォルト）
+- <<Argon2PasswordHashSetting>>
+
+PasswordHashSettingクラスを利用する場合は、
+以下の項目を設定可能です。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| version | String | パスワードHashアルゴリズムのバージョン値。
+アルゴリズム設定を変更する場合は、世代順にインクリメントし、重複しない値を設定してください。
+デフォルト値は1です。
+| passwordHashAlgorithm | String | 設定可能なアルゴリズムについては link:http://docs.oracle.com/javase/jp/8/docs/technotes/guides/security/StandardNames.html#MessageDigest[MessageDigest アルゴリズム^] を参照して下さい。
+デフォルト値は `SHA-256` です。
+| systemSalt | String | システムで取り扱うソルト値（俗に言うペッパーです）。実際のソルト値はユーザ単位のランダムのソルト値とこのsystemSaltの両方が適用されます。
+新しいversionを追加する度に新しい値を設定することを推奨します。
+デフォルト値は `iPLAssSystemSalt` です。
+| stretchCount | int | パスワードのHashを行う際のストレッチ回数。
+デフォルト値は1000です。
+|===
+
+[[Argon2PasswordHashSetting]]
+.Argon2PasswordHashSetting
+classはorg.iplass.mtp.impl.auth.authenticate.builtin.Argon2PasswordHashSettingを指定します。
+
+Argon2によるパスワードHashアルゴリズムに関する設定です。
+
+以下の項目を設定可能です。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| version | String | パスワードHashアルゴリズムのバージョン値。
+アルゴリズム設定を変更する場合は、世代順にインクリメントし、重複しない値を設定してください。
+| passwordHashAlgorithm | String | `Argon2d` `Argon2i` `Argon2id` のいずれかを設定可能です。
+デフォルト値は `Argon2id` です。
+| hashLength | int | 生成するハッシュのサイズ（byte）。デフォルト値は32です。
+| systemSalt | String | システムで取り扱うソルト値（俗に言うペッパーです）。Argon2におけるsecretパラメータです。
+新しいversionを追加する度に新しい値を設定することを推奨します。
+| parallelism | int | 並列数。
+| memorySizeKB | int | メモリサイズ（KiB）。
+| iterations | int | 反復回数。
+|===
+
+[[IdPasswordAutoLoginHandler]]
+.IdPasswordAutoLoginHandler
+IdPasswordAutoLoginHandlerを利用すると、WebApi呼び出し時にHTTPヘッダーにID、パスワードを指定することにより、認証することが可能となります。
+次のいずれかの方法を利用可能です。
+
+- カスタムヘッダーによる認証 +
+X-Auth-Id、X-Auth-PasswordヘッダーにそれぞれID、パスワードを指定することにより認証します。
+
+- BASIC認証による認証 +
+BASIC認証方式による認証を行います。
+AuthorizationヘッダーにID、パスワードを指定します。
+
+classはorg.iplass.mtp.impl.auth.authenticate.builtin.web.IdPasswordAutoLoginHandlerを指定します。
+
+以下の項目を設定可能です。
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| enableBasicAuthentication | boolean | WebApi呼び出し時にBASIC認証による認証を有効化する場合はtrueを設定します。デフォルト値はfalseです。
+| rejectAmbiguousRequest | boolean | すでにログイン済みの場合にID、パスワードを指定された場合の挙動を制御します。デフォルト値はfalseです。
+
+true:: 不正な呼び出しとしてエラーを返却します。
+false:: ログイン済みのセッションを優先します。
+|===
+
+[[DefaultUserEntityResolver_builtin]]
+.DefaultUserEntityResolver
+Userエンティティを検索してユーザー情報を取得します。
+ユーザーが検索出来ない場合ログイン失敗とします。
+
+classはorg.iplass.mtp.impl.auth.authenticate.DefaultUserEntityResolverを指定します。
+
+以下の項目を設定可能です。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| unmodifiableUniqueKeyProperty | String | Userエンティティを検索する際のキーとするプロパティ名。
+このプロパティに指定された項目=[ユニークID]（uniquePrincipalTypeで指定したPrincipalの値）を条件にUserエンティティを検索します。
+デフォルト値はoidです。
+| eagerLoadReferenceProperty | String、複数指定可 | ログイン後のUserエンティティ検索時に同時に取得する参照プロパティ。
+デフォルトの設定では、Userの参照プロパティであるrankおよびgroupsが指定されています。
+| filterCondition | String | ユーザー検索時のフィルター条件を指定可能です。
+|===
+
+[[UserEntityResolver_builtin]]
+.UserEntityResolverを実装する独自クラス
+classはorg.iplass.mtp.impl.auth.authenticate.UserEntityResolverを実装する独自クラスを指定します。
+UserEntityResolverの実装クラスにてUserエンティティを取得するロジックを記述します。
+
+[[SimpleAuthTokenAuthenticationProvider]]
+.SimpleAuthTokenAuthenticationProvider
+ユーザー自身に紐づけられた、永続的なopaqueな（それ自体に意味を持たないランダムな文字列の）Tokenにより認証するプロバイダです。
+Tokenは事前に 'org.iplass.mtp.auth.tokenAuthTokenInfoList' インタフェースを用いて事前に生成されている必要があります。
+
+
+classはorg.iplass.mtp.impl.auth.authenticate.simpletoken.SimpleAuthTokenAuthenticationProviderを指定します。
+
+以下の項目を設定可能です。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| providerName | String | <<BuiltinAuthenticationProvider>>参照
+| autoLoginHandler | AutoLoginHandler |
+自動ログインハンドラ。
+この認証プロバイダを利用した自動ログイン処理を行う場合に設定します。
+デフォルトの実装として次のクラスを利用可能です。
+
+<<BearerTokenAutoLoginHandler,BearerTokenAutoLoginHandler>>
+
+| credentialTypeForTrust | String |
+信頼された認証に格上げする際に必要なCredentialの実装クラス名を指定します。
+例えば、 `org.iplass.mtp.auth.login.IdPasswordCredential` を指定します。
+| accountHandleClassForTrust | String |
+信頼された認証に格上げする際に必要なAccountHandleの実装クラス名を指定します。
+例えば、 `org.iplass.mtp.impl.auth.authenticate.builtin.BuiltinAccountHandle` を指定します。
+| userEntityResolver | UserEntityResolver | 認証成功後のユーザーEntityの取得方法を設定します。
+次のいずれかを指定可能です。
+
+<<DefaultUserEntityResolver_simpletoken,DefaultUserEntityResolver>> （デフォルト） +
+<<UserEntityResolver_simpletoken,UserEntityResolverを実装する独自クラス>>
+
+|===
+
+[[BearerTokenAutoLoginHandler]]
+.BearerTokenAutoLoginHandler
+WebApi呼び出し時に、Bearer Tokenによる認証をすることが可能となります。
+
+classはorg.iplass.mtp.impl.auth.authenticate.token.web.BearerTokenAutoLoginHandlerを指定します。
+
+以下の項目を設定可能です。
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| rejectAmbiguousRequest | boolean | すでにログイン済みの場合にBearer Tokenを指定された場合の挙動を制御します。デフォルト値はfalseです。
+
+true:: 不正な呼び出しとしてエラーを返却します。
+false:: ログイン済みのセッションを優先します。
+| bearerTokenHeaderOnly | boolean | Bearer TokenをHTTP Headerからのみ取得する場合はtrueを指定します。 +
+デフォルト値はfalseです。
+| authTokenType | String | AuthTokenServiceで定義される、このBearerTokenAutoLoginHandlerが扱うAuthTokenHandlerのtypeを指定します。
+
+|===
+
+[[DefaultUserEntityResolver_simpletoken]]
+.DefaultUserEntityResolver
+classはorg.iplass.mtp.impl.auth.authenticate.DefaultUserEntityResolverを指定します。
+
+詳細は <<DefaultUserEntityResolver_builtin,DefaultUserEntityResolver>> を参照してください。
+
+[[UserEntityResolver_simpletoken]]
+.UserEntityResolverを実装する独自クラス
+classはorg.iplass.mtp.impl.auth.authenticate.UserEntityResolverを実装する独自クラスを指定します。
+
+org.iplass.mtp.impl.auth.authenticate.UserEntityResolverの実装クラスにてUserエンティティを取得するロジックを記述します。
+
+
+[[AccessTokenAuthenticationProvider]]
+.AccessTokenAuthenticationProvider
+OAuth2.0のアクセストークンにより認証するプロバイダです。
+
+WebApi呼び出し時に引き渡されるアクセストークンによりユーザーを認証します。アクセストークンは事前にOAuth2.0のフローに従い取得します。
+
+classはorg.iplass.mtp.impl.auth.oauth.AccessTokenAuthenticationProviderを指定します。
+
+以下の項目を設定可能です。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| providerName | String | <<BuiltinAuthenticationProvider>>参照
+| autoLoginHandler | AutoLoginHandler |
+自動ログインハンドラ。
+この認証プロバイダを利用した自動ログイン処理を行う場合に設定します。
+次のクラスを利用します。
+
+<<BearerTokenAutoLoginHandler_accesstoken,BearerTokenAutoLoginHandler>>
+
+| credentialTypeForTrust | String |
+信頼された認証に格上げする際に必要なCredentialの実装クラス名を指定します。
+例えば、 `org.iplass.mtp.auth.login.IdPasswordCredential` を指定します。
+| accountHandleClassForTrust | String |
+信頼された認証に格上げする際に必要なAccountHandleの実装クラス名を指定します。
+例えば、 `org.iplass.mtp.impl.auth.authenticate.builtin.BuiltinAccountHandle` を指定します。
+| userEntityResolver | UserEntityResolver | 認証成功後のユーザーEntityの取得方法を設定します。
+次のいずれかを指定可能です。
+
+<<DefaultUserEntityResolver_accesstoken,DefaultUserEntityResolver>> （デフォルト） +
+<<UserEntityResolver_accesstoken,UserEntityResolverを実装する独自クラス>>
+
+|===
+
+[[BearerTokenAutoLoginHandler_accesstoken]]
+.BearerTokenAutoLoginHandler
+classはorg.iplass.mtp.impl.auth.authenticate.token.web.BearerTokenAutoLoginHandlerを指定します。
+
+アクセストークンを利用する場合、authTokenTypeは `OAT` 、rejectAmbiguousRequestは `true` を指定します。
+
+詳細は <<BearerTokenAutoLoginHandler,BearerTokenAutoLoginHandler>> を参照してください。
+
+[[DefaultUserEntityResolver_accesstoken]]
+.DefaultUserEntityResolver
+classはorg.iplass.mtp.impl.auth.authenticate.DefaultUserEntityResolverを指定します。
+
+詳細は <<DefaultUserEntityResolver_builtin,DefaultUserEntityResolver>> を参照してください。
+
+[[UserEntityResolver_accesstoken]]
+.UserEntityResolverを実装する独自クラス
+classはorg.iplass.mtp.impl.auth.authenticate.UserEntityResolverを実装する独自クラスを指定します。
+
+org.iplass.mtp.impl.auth.authenticate.UserEntityResolverの実装クラスにてUserエンティティを取得するロジックを記述します。
+
+[[ConfigFileAuthenticationProvider]]
+.ConfigFileAuthenticationProvider
+設定ファイルに記載されたアカウント情報から認証するプロバイダです。
+全テナントを管理する開発者用のadminユーザーアカウントをFileに記述し、各テナントのUserエンティティにはadminユーザーがなくともメタデータ管理ができるようにする、といった用途を想定しています。
+
+以下に設定例を示します。
+なお、管理者権限のユーザーを設定ファイルに記述することになるので、ConfigFileAuthenticationProviderを使用する際は<<obfuscation, 設定値の難読化>>も併せて使用してください。
+
+[source, xml]
+----
+<service>
+  <interface>org.iplass.mtp.impl.auth.AuthService</interface>
+  <property name="authenticationProvider" class="org.iplass.mtp.impl.auth.authenticate.configfile.ConfigFileAuthenticationProvider" >
+    <property name="tenantIds" value="1" />
+    <property name="tenantIds" value="2" />
+    <property name="tenantIds" value="5" />
+    <property name="accounts">
+      <property name="id" value="configUser" />
+      <property name="password" value="password000" />
+      <property name="admin" value="true" />
+      <property name="attributeMap">
+          <property name="attr1" value="xxx" />
+          <property name="attr2" value="yyy" />
+          <property name="attr3" value="zzz" />
+      </property>
+    </property>
+  </property>
+  :
+  :
+</service>
+----
+
+classはorg.iplass.mtp.impl.auth.authenticate.configfile.ConfigFileAuthenticationProviderを指定します。
+以下の項目を設定可能です。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| providerName | String | <<BuiltinAuthenticationProvider>>参照
+| accounts | <<AccountConfig>>、複数指定可 | アカウント情報の設定。
+| tenantIds | int、複数指定可 | `accounts` で指定したアカウントがログイン可能なテナント。
+|===
+
+[[AccountConfig]]
+.AccountConfig
+以下の項目が設定可能です。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| id | String | アカウントのID。
+| password | String | アカウントのパスワード。
+| admin | boolean | このアカウントが管理者権限を持つか。
+| attrributeMap | String | 任意のキー名（name）と値（value）。
+`attrributeMap` で指定した属性情報は、GroovyScript等でユーザー情報としてバインドした際に、ユーザーの属性として参照することができます。
+|===
+
+[[JaasAuthenticationProvider]]
+.JaasAuthenticationProvider
+JAAS(Java Authentication and Authorization Service)を利用してid/password認証するプロバイダです。
+設定により、iPLAssのDB内にUserエンティティが存在していなくとも認証が可能となります。
+
+JAAS認証モジュールの定義はログイン構成ファイル（やjavax.security.auth.login.Configuration実装）で定義されている必要があります。
+JAAS認証モジュールを定義する方法としてはJVM起動時のシステム変数でログイン構成ファイルを指定する方法等があります。
+
+例： -Djava.security.auth.login.config=/someware/conf/jaas.cfg
+
+.jaas.cfg
+[source]
+----
+mtplogin {
+    com.sun.security.auth.module.LdapLoginModule REQUIRED
+    userProvider="ldap://example.dentsusoken.com:389/dc=mtp,dc=dentsusoken,dc=com" <1>
+    userFilter="(uid={USERNAME})"
+    useSSL=false
+    debug=true
+    ;
+};
+----
+<1> userProvider、userFilterのUSERNAMEには適宜ldapサーバの情報を設定して下さい。
+
+classはorg.iplass.mtp.impl.auth.authenticate.jaas.JaasAuthenticationProviderを指定します。
+
+以下の項目を設定可能です。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| providerName | String | <<BuiltinAuthenticationProvider>>参照
+| entryName | String | JAAS認証設定に定義されるentry名。
+デフォルト値はmtploginです。
+| uniquePrincipalType | java.security.Principal | 当該の認証モジュールにおける、ユニークIDを指し示すPrincipalクラス名。
+
+例えば、com.sun.security.auth.module.LdapLoginModuleを利用する場合は、com.sun.security.auth.LdapPrincipalや、com.sun.security.auth.UserPrincipalを指定可能です。
+uniquePrincipalTypeが未指定の場合は、認証時に入力されたidがユニークIDとして利用されます。
+| userEntityResolver | UserEntityResolver | 認証成功後のユーザーEntityの取得方法を設定します。
+次のいずれかを指定可能です。
+
+<<DefaultUserEntityResolver_jaas,DefaultUserEntityResolver>> （デフォルト） +
+<<AccountBaseUserEntityResolver_jaas,AccountBaseUserEntityResolver>> +
+<<UserEntityResolver_jaas,UserEntityResolverを実装する独自クラス>>
+
+userEntityResolverの定義エントリ自体がない場合は、ユーザーEntityはaccountIdで検索されます。
+DefaultUserEntityResolverの定義エントリがあり、unmodifiableUniqueKeyPropertyの定義が未設定の場合はoidで検索されます。
+|===
+
+[[DefaultUserEntityResolver_jaas]]
+.DefaultUserEntityResolver
+classはorg.iplass.mtp.impl.auth.authenticate.DefaultUserEntityResolverを指定します。
+
+詳細は <<DefaultUserEntityResolver_builtin,DefaultUserEntityResolver>> を参照してください。
+
+[[AccountBaseUserEntityResolver_jaas]]
+.AccountBaseUserEntityResolver
+classはorg.iplass.mtp.impl.auth.authenticate.AccountBaseUserEntityResolverを指定します。
+
+UserエンティティがDB上に存在せずともログイン可能とします。
+oidにJAAS認証モジュールより返却された[ユニークID]（uniquePrincipalTypeで指定したPrincipalの値）、accountId、nameに認証時に入力したidがセットされたUserエンティティを疑似的に生成します。
+
+[[UserEntityResolver_jaas]]
+.UserEntityResolverを実装する独自クラス
+classはorg.iplass.mtp.impl.auth.authenticate.UserEntityResolverを実装する独自クラスを指定します。
+
+org.iplass.mtp.impl.auth.authenticate.UserEntityResolverの実装クラスにてUserエンティティを取得するロジックを記述します。
+
+[[JeeContainerManagedAuthenticationProvider]]
+.JeeContainerManagedAuthenticationProvider
+JavaEE（Servlet仕様）に規定される認証機構を用いて認証する認証プロバイダです。
+HttpServletRequest#getUserPrincipal()で取得されるPrincipalオブジェクトにより認証します。
+ログイン処理は事前にJavaEEコンテナが提供する仕組みによって、iPLAss外で行われている想定です。
+設定により、iPLAssのDB内に当該Principalに該当するUserエンティティが存在していなくとも認証を可能とすることができます。
+
+classはorg.iplass.mtp.impl.auth.authenticate.jee.JeeContainerManagedAuthenticationProviderを指定します。
+
+以下の項目を設定可能です。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| providerName | String | <<BuiltinAuthenticationProvider>>参照
+| validateOnlyLogin | boolean | PrincipalがiPLAssセッションで認識しているUserと一致するかをリクエストの都度確認するか否か。
+デフォルト値はfalseです。
+| roleAsGroup | String、複数指定可 | JavaEEに規定されるrole（HttpServletRequest#isUserInRole(String)）をグループコードとして扱いたい場合、グループコードとして扱いたいrole名を指定します。
+| userEntityResolver | UserEntityResolver | 認証成功後のユーザーEntityの取得方法。
+次のいずれかを指定可能です。
+実際に指定するclassはリンク先を参照してください。
+
+<<DefaultUserEntityResolver_jee,DefaultUserEntityResolver>> （デフォルト） +
+<<AccountBaseUserEntityResolver_jee,AccountBaseUserEntityResolver>> +
+<<UserEntityResolver_jee,UserEntityResolverを実装する独自クラス>>
+
+userEntityResolverの定義エントリ自体がない場合は、ユーザーEntityはaccountIdで検索されます。
+DefaultUserEntityResolverの定義エントリがあり、unmodifiableUniqueKeyPropertyの定義が未設定の場合はoidで検索されます。
+|===
+
+[[DefaultUserEntityResolver_jee]]
+.DefaultUserEntityResolver
+classはorg.iplass.mtp.impl.auth.authenticate.DefaultUserEntityResolverを指定します。
+
+詳細は <<DefaultUserEntityResolver_builtin,DefaultUserEntityResolver>> を参照してください。
+
+[[AccountBaseUserEntityResolver_jee]]
+.AccountBaseUserEntityResolver
+classはorg.iplass.mtp.impl.auth.authenticate.AccountBaseUserEntityResolverを指定します。
+
+UserエンティティがDB上に存在せずともログイン可能とします。
+oid、accountId、nameにJEEコンテナが返却したPrincipalオブジェクトのnameをセットしたUserエンティティを疑似的に生成します。
+roleAsGroupが指定されている場合、当該roleはグループコードとして設定されます。
+
+[[UserEntityResolver_jee]]
+.UserEntityResolverを実装する独自クラス
+classはorg.iplass.mtp.impl.auth.authenticate.UserEntityResolverを実装する独自クラスを指定します。
+
+org.iplass.mtp.impl.auth.authenticate.UserEntityResolverの実装クラスにてUserエンティティを取得するロジックを記述します。
+
+[[LdapAuthenticationProvider]]
+.LdapAuthenticationProvider
+LDAPサーバ（Active Directory含む）を利用してid/password認証するプロバイダです。
+設定により、iPLAssのDB内にUserエンティティが存在していなくとも認証を可能とすることができます。
+その際、LDAPサーバ上で管理されているユーザーの属性値、所属グループを取得することも可能です。
+
+classはorg.iplass.mtp.impl.auth.authenticate.ldap.LdapAuthenticationProviderを指定します。
+
+以下の項目を設定可能です。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| providerName | String | <<BuiltinAuthenticationProvider>>を参照してください。
+| jndiEnv | <<JNDIEnv>> | LDAP接続用のJNDI環境プロパティ。
+| userDn | String | 認証時のユーザーのDNのパターン。
+認証要求されたユーザーのID、テナント名はそれぞれ${userName}、${tenantName}で埋め込まれます。
+====
+cn=${userName},cn=Users,ou=${tenantName}
+====
+====
+${userName}@example.dentsusoken.com ※Active Directoryの場合
+====
+
+未指定の場合は、認証処理の前にユーザーDNを取得するため、userFilterの設定値を利用してユーザーを検索、DNを取得し、その取得したユーザーDNを用いて認証します。
+認証要求時のユーザーID、テナント名からユーザーDNが一意に導き出せる場合は、この値を設定することを推奨します。
+| getUser | boolean | ユーザー認証成功後、LDAP上のユーザーの属性値を取得するか否か。
+userFilterが設定されている場合、それを利用してユーザーを検索します。
+userFilterが未設定の場合、ユーザーDNを用いてユーザーを取得します。
+デフォルト値はfalseです。
+| userBaseDn | String | ユーザー検索の際のbaseDN（のパターン）。
+テナント単位にユーザーのbaseDNが分かれる場合、${tenantName}でテナント名を埋め込むことが可能です。
+====
+cn=Users,ou=${tenantName}
+====
+userBaseDnが指定されない場合、java.naming.provider.urlで指定されたルートDN以下から検索します。
+| userFilter | String | ユーザー検索の際のfilterのパターン。
+認証要求されたユーザーのID、テナント名はそれぞれ${userName}、${tenantName}で埋め込まれます。
+====
+(&(objectClass=user)(userPrincipalName=${userName}@local))
+====
+userDn指定がされていない場合は、userFilterの設定は必須です。
+| uniqueKeyAttribute | String | LDAPから取得するユーザー属性のうち、ユーザーを一意に特定するための属性名。
+未指定の場合は、認証要求時のユーザーIDの値がユニークキーとして設定されます。
+userAttributeLDAPから取得するユーザー属性名。複数の設定が可能です。
+未指定の場合は、すべての属性をLDAPより取得します。
+| getGroup | boolean | ユーザー認証成功後、ユーザーが所属するLDAP上のグループ情報を取得するか否か。
+取得したグループ情報はiPLAssでのロール定義にて利用可能となります。
+デフォルト値はfalseです。
+| groupBaseDn | String | グループ検索の際のbaseDN（のパターン）。
+テナント単位にグループのbaseDNが分かれる場合、${tenantName}でテナント名を埋め込むことが可能です。
+====
+cn=Groups,ou=${tenantName}
+====
+groupBaseDnが指定されない場合、java.naming.provider.urlで指定されたルートDN以下から検索します。
+| groupFilter | String | グループ検索の際のfilterのパターン。
+所属検索対象のユーザーのDN、テナント名はそれぞれ${userDn}、${tenantName}で埋め込まれます。
+====
+(&(objectClass=groupOfNames)(member=${userDn}))
+====
+getGroupがtrueの場合は、groupFilterの設定は必須です。
+| groupCodeAttribute | String | グループコードとして取得するLDAP上の属性名（例：cn）。
+getGroupがtrueの場合は、groupCodeAttributeの設定は必須です。
+| groupAsTenant | boolean | ユーザーが認証対象のテナントに所属しているか否かをLDAP上のグループで判別するか。
+デフォルト値はfalseです。
+| tenantGroupCode | String | groupAsTenantがtrueの場合、tenantGroupCodeに設定されるパターンにグループコードが一致した場合、テナントに所属していると判断し、認証成功とします。
+${tenantName}でテナント名を埋め込むことが可能です。
+====
+T-${tenantName}
+====
+テナント判断用のグループはgroupFilterで検索される結果に含まれている必要があります。
+| userEntityResolver | UserEntityResolver | 認証成功後のユーザーEntityの取得方法。
+次のいずれかを指定可能です。
+実際に指定するclassはリンク先を参照してください。
+
+<<DefaultUserEntityResolver_ldap,DefaultUserEntityResolver>> （デフォルト） +
+<<AccountBaseUserEntityResolver_ldap,AccountBaseUserEntityResolver>> +
+<<UserEntityResolver_ldap,UserEntityResolverを実装する独自クラス>>
+
+userEntityResolverの定義エントリ自体がない場合は、ユーザーEntityはaccountIdで検索されます。
+DefaultUserEntityResolverの定義エントリがあり、unmodifiableUniqueKeyPropertyの定義が未設定の場合はoidで検索されます。
+|===
+
+[[JNDIEnv]]
+.JNDIEnv
+設定可能な項目は、以下に説明している基本的な項目以外にも設定可能です。
+詳細はlink:http://docs.oracle.com/javase/jp/8/docs/technotes/guides/jndi/jndi-ldap.html#PROP[こちら^]の内容を参照下さい。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| java.naming.factory.initial | String | JNDIのInitialContextFactoryの指定です。
+デフォルト値はcom.sun.jndi.ldap.LdapCtxFactoryです。
+| java.naming.provider.url | String | LDAP接続先を指し示すURL。URLには検索ルートとなるbaseDNを含むことも可能です。
+====
+ldap://example.dentsusoken.com:389/dc=mtp,dc=dentsusoken,dc=com
+====
+| java.naming.security.principal | String | ユーザー検索、グループ検索が可能な管理用ユーザーのID。
+未設定の場合、ユーザー検索、グループ検索の際には、認証時のユーザーアカウントを利用します。
+認証ユーザーに検索権限がない場合は設定してください。
+| java.naming.security.credentials | String | ユーザー検索、グループ検索が可能な管理用ユーザーのパスワード。
+|===
+
+[[DefaultUserEntityResolver_ldap]]
+.DefaultUserEntityResolver
+classはorg.iplass.mtp.impl.auth.authenticate.DefaultUserEntityResolverを指定します。
+
+詳細は<<DefaultUserEntityResolver_builtin,DefaultUserEntityResolver>>を参照してください。
+
+[[AccountBaseUserEntityResolver_ldap]]
+.AccountBaseUserEntityResolver
+UserエンティティがDB上に存在せずともログイン可能とします。
+LDAP認証モジュールの場合は、LDAPより返却されたユーザー属性値とUserエンティティのプロパティをマッピングすることが可能です。
+attributeMappingUserエンティティのプロパティとLDAPから取得した属性とのマッピングを定義します。
+プロパティ名単位に複数件の設定が可能です。
+
+classはorg.iplass.mtp.impl.auth.authenticate.AccountBaseUserEntityResolverを指定します。
+以下の項目を設定可能です。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| propertyName | String | マッピング先のUserエンティティのプロパティ名。
+| accountAttributeName | String | マッピング元のLDAPから取得した属性値の名前。
+LDAP上に定義される属性名の他、以下の設定値を利用可能です。
+
+id:: ユーザー認証時に入力されたユーザーIDです
+unmodifiableUniqueKey:: 上記uniqueKeyAttribute定義で設定した属性値です
+
+また、${属性値}形式を利用したGroovyTemplate形式で複数の属性を結合することが可能です。
+
+====
+${sn ?:''} ${givenName ?:''} ※snとgivenNameをスペースで結合
+====
+| type | Class | LDAPから取得した値を変換する際の型（java.lang.String、java.lang.Booleanなど）。
+未指定の場合は、LDAPより返却された型のままセットします。
+| defaultValue | Object | LDAPより値が取得出来なかった際のデフォルト値。
+未指定の場合、かつ値が取得できなかった場合はnullがセットされます。
+|===
+
+[[UserEntityResolver_ldap]]
+.UserEntityResolverを実装する独自クラス
+classはorg.iplass.mtp.impl.auth.authenticate.UserEntityResolverを実装する独自クラスを指定します。
+
+org.iplass.mtp.impl.auth.authenticate.UserEntityResolverの実装クラスにてUserエンティティを取得するロジックを記述します。
+
+
+.Active Directoryで認証する際の注意点
+Active Directoryに対してLdapAuthenticationProviderを利用する場合、ユーザー認証時のuserDnは次の形式となる点を注意してください。
+
+----
+[userID]@[domainName]
+----
+
+また、Active Directory上でユーザーオブジェクトを一意に識別可能なobjectGUIDの値をuniqueKeyAttributeとして利用する場合、objectGUIDはバイナリで格納されている点注意が必要となります。
+バイナリの属性を正しくハンドリングするためにはJNDI環境プロパティ（java.naming.ldap.attributes.binary）を正しく設定する必要があります。
+
+以下にActive Directoryを利用する際の設定例を示します。
+
+[source, xml]
+----
+<service>
+  <interface>org.iplass.mtp.impl.auth.AuthService</interface>
+  <property name="authenticationProvider" class="org.iplass.mtp.impl.auth.authenticate.ldap.LdapAuthenticationProvider" >
+    <property name="providerName" value="ad" />
+    <property name="jndiEnv">
+      <property name="java.naming.provider.url" value="ldap://example.dentsusoken.com:389/DC=example,DC=dentsusoken,DC=com" />
+      <property name="java.naming.ldap.attributes.binary" value="objectGUID" /><!-- objectGUIDはバイナリと宣言 -->
+    </property>
+    <property name="getUser" value="true" />
+    <property name="userBaseDn" value="CN=Users" />
+    <property name="userDn" value="${userName}@example.dentsusoken.com" />
+    <property name="userFilter" value="(&amp;(objectClass=user)(userPrincipalName=${userName}@example.dentsusoken.com))" />
+    <property name="uniqueKeyAttribute" value="objectGUID" />
+    <property name="userAttribute" value="name" />
+    <property name="userAttribute" value="sn" />
+    <property name="userAttribute" value="givenName" />
+    <property name="getGroup" value="true" />
+    <property name="groupBaseDn" value="CN=Groups" />
+    <property name="groupFilter" value="(&amp;(objectClass=groupOfNames)(member=${userDn}))" />
+    <property name="groupCodeAttribute" value="cn" />
+    <property name="groupAsTenant" value="true" />
+    <property name="tenantGroupCode" value="T-${tenantName}" />
+
+    <property name="userEntityResolver" class="org.iplass.mtp.impl.auth.authenticate.AccountBaseUserEntityResolver">
+      <property name="attributeMapping">
+        <property name="propertyName" value="oid" />
+        <property name="accountAttributeName" value="objectGUID" />
+        <property name="type" value="java.lang.String" /><!-- byte[]で取得されるので、文字列に変換 -->
+      </property>
+      <property name="attributeMapping">
+        <property name="propertyName" value="name" />
+        <property name="accountAttributeName" value="${sn ?:''} ${givenName ?:''}" />
+        <property name="type" value="java.lang.String" />
+      </property>
+      <property name="attributeMapping">
+        <property name="propertyName" value="firstName" />
+        <property name="accountAttributeName" value="givenName" />
+      </property>
+      <property name="attributeMapping">
+        <property name="propertyName" value="lastName" />
+        <property name="accountAttributeName" value="sn" />
+      </property>
+      <property name="attributeMapping">
+        <property name="propertyName" value="admin" />
+        <property name="defaultValue" value="false" class="java.lang.Boolean"/>
+      </property>
+    </property>
+  </property>
+  :
+  :
+</service>
+----
+
+[[PreExternalAuthenticationProvider]]
+.PreExternalAuthenticationProvider
+SSO製品（またはそれに類する独自認証基盤）におけるエージェント型、リバースプロキシ型での認証機構に対応するための認証プロバイダです。
+通常これらのSSO製品を利用した場合、認証情報はHTTPヘッダーやHttpServletRequestのattribute、HttpSessionのattributeとしてアプリケーション側に連携されます。
+当認証プロバイダにおいては、これら外部認証機構から連携された情報を元にiPLAss上での認証処理を行います。
+ログイン画面、またログイン処理は外部認証機構側で提供され、iPLAss外で行われている想定です。
+設定により、iPLAssのDB内に当該ユーザーに該当するUserエンティティが存在していなくとも認証を可能とすることができます。
+
+classはorg.iplass.mtp.impl.auth.authenticate.preexternal.PreExternalAuthenticationProviderを指定します。
+以下の項目を設定可能です。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| providerName | String | <<BuiltinAuthenticationProvider>>参照
+| validateOnlyLogin | boolean | 連携されるユーザー情報がiPLAssセッションで認識しているUserと一致するかをリクエストの都度確認するか否か。
+デフォルト値はfalseです。
+| sourceType | <<SourceType>> | 外部認証機構から渡されるユーザー情報が格納されている場所。
+| accountIdAttribute | String | 外部認証機構から渡されるユーザー情報のうちアカウントIDが格納されているキー名。
+| uniqueKeyAttribute | String | 外部認証機構から渡されるユーザー情報のうちユニークキー（OIDに相当）が格納されているキー名。
+未指定の場合は、accoutIdAttributeに指定された値がユニークキーとして利用されます。
+| userAttribute | String、複数指定可 | 外部認証機構から渡されるユーザー情報のうちユーザーの属性として扱う値のキー名。
+| logoutUrl | String | 外部認証機構のログアウト処理を行うURL。
+iPLAssの標準画面でログアウトが呼び出された場合、当該画面へリダイレクトします。
+| userEntityResolver | UserEntityResolver | 認証成功後のユーザーEntityの取得方法。
+次のいずれかを指定可能です。
+実際に指定するclassはリンク先を参照してください。
+
+<<DefaultUserEntityResolver_pre,DefaultUserEntityResolver>> （デフォルト） +
+<<AccountBaseUserEntityResolver_pre,AccountBaseUserEntityResolver>> +
+<<UserEntityResolver_pre,UserEntityResolverを実装する独自クラス>>
+
+userEntityResolverの定義エントリ自体がない場合、かつuniqueKeyAttributeが未指定の場合ユーザーEntityはaccountIdで検索されます。
+上記以外の場合、unmodifiableUniqueKeyPropertyの定義が未設定の場合はoidで検索されます。
+|===
+
+[[SourceType]]
+.SourceType
+外部認証機構から渡されるユーザー情報が格納されている場所を指定します。
+
+HEADER:: ヘッダーからgetHeader(String)にてユーザー情報を取得します
+REQUEST:: HttpServletRequestからgetAttribute(String)にてユーザー情報を取得します
+SESSION:: HttpSessionからgetAttribute(String)にてユーザー情報を取得します
+
+
+[[DefaultUserEntityResolver_pre]]
+.DefaultUserEntityResolver
+classはorg.iplass.mtp.impl.auth.authenticate.DefaultUserEntityResolverを指定します。
+
+詳細は <<DefaultUserEntityResolver_builtin,DefaultUserEntityResolver>> を参照してください。
+
+[[AccountBaseUserEntityResolver_pre]]
+.AccountBaseUserEntityResolver
+classはorg.iplass.mtp.impl.auth.authenticate.AccountBaseUserEntityResolverを指定します。
+
+詳細は <<AccountBaseUserEntityResolver_ldap,AccountBaseUserEntityResolver>> を参照してください。
+外部認証機構から渡されたuserAttributeの値をUserエンティティのプロパティにマッピング可能です。
+
+[[UserEntityResolver_pre]]
+.UserEntityResolverを実装する独自クラス
+classはorg.iplass.mtp.impl.auth.authenticate.UserEntityResolverを実装する独自クラスを指定します。
+
+org.iplass.mtp.impl.auth.authenticate.UserEntityResolverの実装クラスにてUserエンティティを取得するロジックを記述します。
+
+[[X509AuthenticationProvider]]
+.[.eeonly]#X509AuthenticationProvider#
+X509クライアント証明書を用いて認証する認証プロバイダです。
+X509クライアント証明書自体の正当性はSSL/TLSレイヤーで検証されているものとして処理します（iPLAss内で再検証は行いません）。
+
+X509AuthenticationProviderは単独で認証プロバイダとして利用される他、TwoStepAuthenticationProviderのセカンダリの認証要素としての利用も可能です。
+単独の認証プロバイダとして利用する場合、証明書内のCNがaccountIdと一致している必要がありますが、TwoStepAuthenticationProviderのセカンダリの認証要素として利用する場合は、CNとaccountIdの一致は必須ではありません。
+
+また、単独の認証プロバイダとして利用する場合、クライアント証明書の性質上、ログアウト処理を行ったとしても、それに引き続くリクエストですぐに再認証されてしまいます。
+
+設定により、iPLAssのDB内に当該ユーザーに該当するUserエンティティが存在していなくとも認証を可能とすることができます。
+
+classはorg.iplass.mtp.impl.auth.authenticate.x509.X509AuthenticationProviderを指定します。
+以下の項目を設定可能です。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| providerName | String | <<BuiltinAuthenticationProvider>>参照
+| validateOnlyLogin | boolean | 連携されるユーザー情報がiPLAssセッションで認識しているUserと一致するかをリクエストの都度確認するか否か。
+デフォルト値はfalseです。
+| twoStep2ndFactor | boolean | TwoStepAuthenticationProviderのセカンダリの認証要素としての設定の場合、trueに設定する必要があります。
+デフォルト値はfalseです。
+| userEntityResolver | UserEntityResolver | 認証成功後のユーザーEntityの取得方法。
+次のいずれかを指定可能です。
+実際に指定するclassはリンク先を参照してください。
+
+<<DefaultUserEntityResolver_x509,DefaultUserEntityResolver>> （デフォルト） +
+<<AccountBaseUserEntityResolver_x509,AccountBaseUserEntityResolver>> +
+<<UserEntityResolver_x509,UserEntityResolverを実装する独自クラス>>
+
+userEntityResolverの定義エントリ自体がない場合は、ユーザーEntityはaccountIdで検索されます。
+DefaultUserEntityResolverの定義エントリがあり、unmodifiableUniqueKeyPropertyの定義が未設定の場合はoidで検索されます。
+|===
+
+[[DefaultUserEntityResolver_x509]]
+.DefaultUserEntityResolver
+classはorg.iplass.mtp.impl.auth.authenticate.DefaultUserEntityResolverを指定します。
+
+詳細は <<DefaultUserEntityResolver_builtin,DefaultUserEntityResolver>> を参照してください。
+
+[[AccountBaseUserEntityResolver_x509]]
+.AccountBaseUserEntityResolver
+classはorg.iplass.mtp.impl.auth.authenticate.AccountBaseUserEntityResolverを指定します。
+
+UserエンティティがDB上に存在せずともログイン可能とします。
+oid、accountId、nameに証明書内のCNをセットしたUserエンティティを疑似的に生成します。
+
+[[UserEntityResolver_x509]]
+.UserEntityResolverを実装する独自クラス
+classはorg.iplass.mtp.impl.auth.authenticate.UserEntityResolverを実装する独自クラスを指定します。
+
+org.iplass.mtp.impl.auth.authenticate.UserEntityResolverの実装クラスにてUserエンティティを取得するロジックを記述します。
+
+[[SamlAuthenticationProvider]]
+.[.eeonly]#SamlAuthenticationProvider#
+SAML2.0ベースでSSO/SLOを行う認証プロバイダです。
+iPLAssはSAML2.0仕様のSPモードをサポートします。
+外部のIdPにて認証された認証情報を連携し、iPLAssにログイン可能です。
+SamlAuthenticationProviderを利用する際は、別途
+<<../developerguide/authentication/index.adoc#authpolicy,AuthenticationPolicy>>でのSAML有効化の設定が必要です。
+
+classはorg.iplass.mtp.impl.auth.authenticate.saml.SamlAuthenticationProviderを指定します。
+
+以下の項目を設定可能です。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| providerName | String | <<BuiltinAuthenticationProvider>>参照
+| userEntityResolver | UserEntityResolver | 認証成功後のユーザーEntityの取得方法。
+次のいずれかを指定可能です。
+実際に指定するclassはリンク先を参照してください。
+
+<<SamlUserEntityResolver_saml,[.eeonly]#SamlUserEntityResolver#>> （デフォルト） +
+<<AccountBaseUserEntityResolver_saml,AccountBaseUserEntityResolver>> +
+<<UserEntityResolver_saml,UserEntityResolverを実装する独自クラス>>
+|===
+
+[[SamlUserEntityResolver_saml]]
+.[.eeonly]#SamlUserEntityResolver#
+メタデータとして設定されたSAML定義のNameIDのマッピングに従いユーザーEntityを検索します。
+
+classはorg.iplass.mtp.impl.auth.authenticate.saml.SamlUserEntityResolverを指定します。
+
+以下の項目を設定可能です。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| eagerLoadReferenceProperty | String、複数指定可 | ログイン後のUserエンティティ検索時に同時に取得する参照プロパティ。
+デフォルトの設定では、Userの参照プロパティであるrankおよびgroupsが指定されています。
+| filterCondition | String | ユーザー検索時のフィルター条件。
+|===
+
+[[AccountBaseUserEntityResolver_saml]]
+.AccountBaseUserEntityResolver
+classはorg.iplass.mtp.impl.auth.authenticate.AccountBaseUserEntityResolverを指定します。
+
+詳細は <<AccountBaseUserEntityResolver_ldap,AccountBaseUserEntityResolver>> を参照してください。
+SAML経由で渡されたユーザー属性値をUserエンティティのプロパティにマッピング可能です。
+
+[[UserEntityResolver_saml]]
+.UserEntityResolverを実装する独自クラス
+classはorg.iplass.mtp.impl.auth.authenticate.UserEntityResolverを実装する独自クラスを指定します。
+
+org.iplass.mtp.impl.auth.authenticate.UserEntityResolverの実装クラスにてUserエンティティを取得するロジックを記述します。
+
+[[TwoStepAuthenticationProvider]]
+.[.eeonly]#TwoStepAuthenticationProvider#
+2step認証を行う認証プロバイダです。
+プライマリの認証プロバイダを1つ、セカンダリの認証プロバイダを１つ以上設定します。
+設定された認証プロバイダ、および認証ポリシーにおける設定により、2ステップ認証処理が実行されます。
+認証ポリシーの詳細については[ユーザー-管理]シートを参照下さい。
+
+TwoStepAuthenticationProviderの設定では、以下の例のようにプライマリ、セカンダリのAuthenticationProviderを内包する形で定義します。
+
+[source, xml]
+----
+<service>
+  <interface>org.iplass.mtp.impl.auth.AuthService</interface>
+  <property name="authenticationProvider" class="org.iplass.mtp.impl.auth.authenticate.twostep.TwoStepAuthenticationProvider">
+    <property name="primary" class="org.iplass.mtp.impl.auth.authenticate.builtin.BuiltinAuthenticationProvider">
+      <property name="updatable" value="true" />
+      <property name="providerName" value="default" />
+      <property name="passwordHashSettings">
+        <property name="version" value="1" />
+        <property name="passwordHashAlgorithm" value="SHA-256" />
+        <property name="systemSalt" value="salt" />
+        <property name="stretchCount" value="3000" />
+      </property>
+    </property>
+
+    <property name="secondary" class="org.iplass.mtp.impl.auth.authenticate.onetime.OnetimeCodeAuthenticationProvider" />
+    <property name="secondary" class="org.iplass.mtp.impl.auth.authenticate.timebased.TimeBasedAuthenticationProvider">
+      <property name="maxFailureCount" value="5" />
+      <property name="failureExpirationInterval" value="10" />
+      <property name="unmodifiableUniqueKeyResolver" class="org.iplass.mtp.impl.auth.authenticate.timebased.DefaultUnmodifiableUniqueKeyResolver">
+      	<property name="unmodifiableUniqueKeyProperty" value="oid" />
+      </property>
+    </property>
+    <property name="secondary" class="org.iplass.mtp.impl.auth.authenticate.knowledgebased.KnowledgeBasedAuthenticationProvider">
+  </property>
+  :
+  :
+</service>
+----
+
+classはorg.iplass.mtp.impl.auth.authenticate.twostep.TwoStepAuthenticationProviderを指定します。
+以下の項目を設定可能です。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| providerName | String | <<BuiltinAuthenticationProvider>>参照。
+未指定の場合は、primaryに定義されるproviderNameが適用されます。
+| primary | AuthenticationProvider | プライマリのAuthenticationProvider。
+指定可能（※）なAuthenticationProviderは認証時のCredentialとしてIdPasswordCredentialを利用する次の認証プロバイダ、もしくはカスタムの認証プロバイダです。
+
+<<BuiltinAuthenticationProvider>> +
+<<JaasAuthenticationProvider>> +
+<<LdapAuthenticationProvider>>
+
+※ iPLAss GEM提供のログイン認証処理を利用する場合
+| secondary | AuthenticationProvider | セカンダリのAuthenticationProviderを指定します。
+secondaryは複数指定可能です。
+次のいずれかの認証プロバイダを指定可能（※）です。
+
+<<OnetimeCodeAuthenticationProvider>> +
+<<TimeBasedAuthenticationProvider>> +
+<<KnowledgeBasedAuthenticationProvider>> +
+<<X509AuthenticationProvider>>
+
+※ iPLAss GEM提供のログイン認証処理を利用する場合
+|===
+
+[[OnetimeCodeAuthenticationProvider]]
+.[.eeonly]#OnetimeCodeAuthenticationProvider#
+ワンタイムの認証コードを用いて認証を行うプロバイダです。
+通常、2step認証時のセカンダリの認証プロバイダとして利用します。
+ワンタイムコードの生成方式は、別途OnetimeCodeGeneratorServiceにて定義します。
+ワンタイムコード生成方式のうちいずれを利用するかの設定は認証ポリシーに定義します。
+詳細は認証機能の<<../developerguide/authentication/index.adoc#ref_two_step,2段階認証>>を参照してください。
+
+OnetimeCodeAuthenticationProvider自体にて設定可能な項目はありません。
+
+classはorg.iplass.mtp.impl.auth.authenticate.onetime.OnetimeCodeAuthenticationProviderを指定します。
+
+[[TimeBasedAuthenticationProvider]]
+.[.eeonly]#TimeBasedAuthenticationProvider#
+時間ベース認証（2段階認証アプリで認証）を行うプロバイダです。
+通常、2step認証時のセカンダリの認証プロバイダとして利用します。
+詳細は認証機能の<<../developerguide/authentication/index.adoc#ref_two_step,2段階認証>>を参照してください。
+
+以下の項目を設定可能です。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| maxFailureCount | int | 最大認証失敗回数。デフォルト値は5です。
+| failureExpirationInterval | int | 認証失敗の有効期限（分）です。指定した時間以内に認証失敗した回数を失敗回数とします。
+デフォルト値は10です。
+| unmodifiableUniqueKeyResolver | UnmodifiableUniqueKeyResolver | Userエンティティの一意キーを検索する方法を設定します。
+<<DefaultUnmodifiableUniqueKeyResolver_builtin,[.eeonly]#DefaultUnmodifiableUniqueKeyResolver#>> （デフォルト） +
+<<UnmodifiableUniqueKeyResolver_builtin,[.eeonly]#UnmodifiableUniqueKeyResolverを実装する独自クラス#>>
+|===
+
+[[DefaultUnmodifiableUniqueKeyResolver_builtin]]
+.[.eeonly]#DefaultUnmodifiableUniqueKeyResolver#
+
+Userエンティティを検索してUserエンティティの一意キーを取得します。
+
+classはorg.iplass.mtp.impl.auth.authenticate.timebased.DefaultUnmodifiableUniqueKeyResolverを指定します。
+
+以下の項目を設定可能です。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| unmodifiableUniqueKeyProperty | String | Userエンティティを検索する際に取得する一意キーのプロパティ名。
+デフォルト値はoidです。
+|===
+
+[[UnmodifiableUniqueKeyResolver_builtin]]
+.[.eeonly]#DefaultUnmodifiableUniqueKeyResolverを実装する独自クラス#
+classはorg.iplass.mtp.auth.login.timebased.UnmodifiableUniqueKeyResolverを実装する独自クラスを指定します。
+
+org.iplass.mtp.auth.login.timebased.UnmodifiableUniqueKeyResolverの実装クラスにてUserエンティティの一意キーを取得するロジックを記述します。
+
+[[KnowledgeBasedAuthenticationProvider]]
+.[.eeonly]#KnowledgeBasedAuthenticationProvider#
+ナレッジベース認証（秘密の質問に答えることで認証する）を行うプロバイダです。
+通常、2step認証時のセカンダリの認証プロバイダとして利用します。
+Userエンティティに保持するプロパティを質問項目として利用することが可能です。
+どのプロパティを質問項目とするか、質問の数などの設定は、認証ポリシーにて行います。
+詳細は認証機能の<<../developerguide/authentication/index.adoc#ref_two_step,2段階認証>>を参照してください。
+
+KnowledgeBasedAuthenticationProvider自体にて設定可能な項目はありません。
+
+classはorg.iplass.mtp.impl.auth.authenticate.knowledgebased.KnowledgeBasedAuthenticationProviderを指定します。
+
+[[RememberMeTokenAuthenticationProvider]]
+.RememberMeTokenAuthenticationProvider
+RememberMe機能（ログインしたままにする機能）を実現する認証プロバイダです。
+前回ログイン時にブラウザCookie（永続Cookie）に保存されたトークンによって認証を行うプロバイダです。
+ログインしたままにする有効期間の設定などは、認証ポリシーにいて行います。
+詳細は認証機能の<<../developerguide/authentication/index.adoc#ref_rememberme_policy,Remember Me>>を参照してください。
+
+RememberMeTokenAuthenticationProviderは、実際の各種AuthenticationProviderにRememberMe機能を付与するラッパーとして動作します。
+設定ファイルにはRememberMe機能を付与したいAuthenticationProviderを内包する形で定義します。
+
+設定例を以下に示します。
+
+[source, xml]
+----
+<service>
+  <interface>org.iplass.mtp.impl.auth.AuthService</interface>
+  <property name="authenticationProvider"
+        class="org.iplass.mtp.impl.auth.authenticate.rememberme.RememberMeTokenAuthenticationProvider">
+    <property name="authenticationProvider" class="org.iplass.mtp.impl.auth.authenticate.builtin.BuiltinAuthenticationProvider">
+      <property name="updatable" value="true" />
+      <property name="providerName" value="default" />
+      :
+      :
+    </property>
+  </property>
+  :
+  :
+</service>
+----
+
+classはorg.iplass.mtp.impl.auth.authenticate.rememberme.RememberMeTokenAuthenticationProviderを指定します。
+
+以下の項目を設定可能です。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| providerName | String | <<BuiltinAuthenticationProvider>>参照
+未指定の場合は、内包するauthenticationProviderに定義されるproviderNameが適用されます。
+| authenticationProvider | AuthenticationProvider | 実際の認証処理を行うAuthenticationProvider。
+| deleteTokenOnFailure | boolean | 認証失敗時にトークンを削除するか否かを設定します。デフォルトはtrueです。
+| clientStore | AuthTokenClientStore | クライアント側のトークン保存方法の設定です。
+デフォルトで次の実装クラスを提供します。
+
+<<AuthTokenCookieStore>>
+| autoLoginHandler | AutoLoginHandler |
+自動ログインハンドラ。
+RememberMeTokenAuthenticationProviderに実装されているRememberMeトークンを利用した自動ログイン処理をカスタマイズしたい場合に、カスタムのAutoLoginHandlerを設定します。
+|===
+
+[[AuthTokenCookieStore]]
+.AuthTokenCookieStore
+クライアント側のトークン保存方法としてCookieを利用するクラスです。
+
+classはorg.iplass.mtp.impl.auth.authenticate.token.web.AuthTokenCookieStoreを指定します。
+以下の項目を設定可能です。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| cookieName | String | Cookie名。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.auth.AuthService</interface>
+	<class>org.iplass.mtp.impl.auth.EnterpriseAuthService</class>
+		<property name="authenticationProvider" class="org.iplass.mtp.impl.auth.authenticate.rememberme.RememberMeTokenAuthenticationProvider">
+		<property name="deleteTokenOnFailure" value="true" />
+		<property name="clientStore" class="org.iplass.mtp.impl.auth.authenticate.token.web.AuthTokenCookieStore">
+			<property name="cookieName" value="iprmtkn" />
+		</property>
+
+		<property name="authenticationProvider" class="org.iplass.mtp.impl.auth.authenticate.twostep.TwoStepAuthenticationProvider">
+			<property name="primary" class="org.iplass.mtp.impl.auth.authenticate.builtin.BuiltinAuthenticationProvider">
+                <property name="updatable" value="true" />
+                <property name="providerName" value="default" />
+
+                <!-- if load custom reference property at login, set userEntityResolver.eagerLoadReferenceProperty -->
+                <!--
+                <property name="userEntityResolver" class="org.iplass.mtp.impl.auth.authenticate.DefaultUserEntityResolver">
+                    <property name="eagerLoadReferenceProperty" value="rank" />
+                    <property name="eagerLoadReferenceProperty" value="groups" />
+                    <property name="eagerLoadReferenceProperty" value="yourCustomReference" />
+                </property>
+                -->
+
+				<property name="passwordHashSettings">
+					<property name="version" value="1" />
+					<property name="passwordHashAlgorithm" value="SHA-256" />
+					<property name="systemSalt" value="yourSystemSalt" />
+					<property name="stretchCount" value="1000" />
+				</property>
+			</property>
+			<property name="secondary" class="org.iplass.mtp.impl.auth.authenticate.onetime.OnetimeCodeAuthenticationProvider">
+			</property>
+      <property name="secondary" class="org.iplass.mtp.impl.auth.authenticate.timebased.TimeBasedAuthenticationProvider">
+        <property name="maxFailureCount" value="5" />
+        <property name="failureExpirationInterval" value="10" />
+        <property name="unmodifiableUniqueKeyResolver" class="org.iplass.mtp.impl.auth.authenticate.timebased.DefaultUnmodifiableUniqueKeyResolver">
+          <property name="unmodifiableUniqueKeyProperty" value="oid" />
+        </property>
+			</property>
+			<property name="secondary" class="org.iplass.mtp.impl.auth.authenticate.knowledgebased.KnowledgeBasedAuthenticationProvider">
+			</property>
+			<property name="secondary" class="org.iplass.mtp.impl.auth.authenticate.x509.X509AuthenticationProvider">
+				<property name="twoStep2ndFactor" value="true" />
+			</property>
+		</property>
+    </property>
+    <property name="authenticationProvider" class="org.iplass.mtp.impl.auth.authenticate.saml.SamlAuthenticationProvider">
+         <property name="updatable" value="false" />
+         <property name="providerName" value="saml" />
+	</property>
+
+	<property name="authorizationProvider" class="org.iplass.mtp.impl.auth.authorize.builtin.BuiltinAuthorizationProvider">
+		<property name="grantAllPermissionsToAdmin" value="true" />
+
+		<property name="authorizationContextHandler" class="org.iplass.mtp.impl.auth.authorize.builtin.action.ActionAuthContextHandler" />
+		<property name="authorizationContextHandler" class="org.iplass.mtp.impl.auth.authorize.builtin.webapi.WebApiAuthContextHandler" />
+		<property name="authorizationContextHandler" class="org.iplass.mtp.impl.auth.authorize.builtin.cube.CubeAuthContextHandler" />
+		<property name="authorizationContextHandler" class="org.iplass.mtp.impl.auth.authorize.builtin.entity.EntityAuthContextHandler">
+			<property name="useCorrelatedSubqueryOnEntityLimitCondition" value="true" />
+		</property>
+		<property name="authorizationContextHandler" class="org.iplass.mtp.impl.auth.authorize.builtin.workflow.WorkflowAuthContextHandler" />
+	</property>
+</service>
+----

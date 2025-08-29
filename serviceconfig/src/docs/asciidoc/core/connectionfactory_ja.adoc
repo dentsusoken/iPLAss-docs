@@ -1,0 +1,275 @@
+[[ConnectionFactory]]
+=== ConnectionFactory
+データベース接続を行うためのサービスです。
+データベース接続の実装として、DriverManagerを利用した接続と、DataSourceを利用した接続のモジュールを標準提供します。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.rdb.connection.ConnectionFactory
+----
+
+
+==== 実装クラス名
+.DriverManagerを利用した接続
+----
+org.iplass.mtp.impl.rdb.connection.DriverManagerConnectionFactory
+----
+
+.DataSourceを利用した接続
+----
+org.iplass.mtp.impl.rdb.connection.DataSourceConnectionFactory
+----
+
+.DataSourceを利用した接続（リードレプリカ対応版）
+----
+org.iplass.mtp.impl.rdb.connection.ReplicationAwareDataSourceConnectionFactory
+----
+
+
+==== DriverManagerConnectionFactoryの設定
+DriverManagerを利用したデータベースの接続情報を設定します。
+
+===== 設定項目
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| url | String | データベース接続文字列のURL。
+| user | String | ログインに使用されるユーザー名。
+| password | String | 接続するユーザーのパスワード。
+| driver | String | JDBCドライバの完全修飾クラス名。
+| warnLogThreshold | int |  警告ログを出力する処理時間（ミリ秒）の閾値。 +
+デフォルト値は0です。 +
+閾値を越えるスロークエリーが実行された場合、ログ出力されます。
+| warnLogBefore | boolean |  事前警告ログを出力するか否かを指定します。 +
+デフォルトはtrueです。 +
+現状、当該フラグがtrueの場合は、INDEXを利用しないEQLクエリーが発行される場合に、事前警告ログが出力されます。
+| countSqlExecution | boolean |  SQL発行回数を記録するか否かを指定します。記録されたSQL実行回数はAction、Web APIなどの実行単位とともにログ出力されます。 +
+デフォルト値はtrueです。
+| transactionIsolationLevel | String | トランザクションの分離レベル。以下が設定可能。
+
+NONE:: ConnectionのTRANSACTION_NONEに対応
+READ_UNCOMMITTED:: ConnectionのTRANSACTION_READ_UNCOMMITTEDに対応
+READ_COMMITTED:: ConnectionのTRANSACTION_READ_COMMITTEDに対応
+REPEATABLE_READ:: ConnectionのTRANSACTION_REPEATABLE_READに対応
+SERIALIZABLE:: ConnectionのTRANSACTION_SERIALIZABLEに対応
+| clientInfoMap | String、Map形式 | ConnectionのclientInfoへセットする値をMap形式で指定します。nameにはclientInfoのname、valueにはセットする値のMDCのキー名を指定します。valueに `thread` が指定された場合はThread名がセットされます。
+| clientInfoMaxLength | int | ConnectionのclientInfoへセットする値の最大文字数を指定します。
+-1の場合は、無制限です。 +
+デフォルト値は-1です。
+| isCreateConnectionIfReadOnlyTransaction | boolean | 実行対象のトランザクションが読み取り専用の場合に、フレームワーク内で管理している未使用コネクションを利用せず、新規にコネクションを作成するか否かを指定します。true が指定されると、新規にコネクションを作成します。 +
+デフォルト値は `false` です。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>
+	<class>org.iplass.mtp.impl.rdb.connection.DriverManagerConnectionFactory</class>
+
+	<property name="url" value="jdbc:oracle:thin:ADDRESS:PORT:DB" />
+	<property name="user" value="yourName" />
+	<property name="password" value="yourPassword" />
+	<property name="driver" value="oracle.jdbc.driver.OracleDriver" />
+
+	<property name="warnLogThreshold" value="0" />
+
+	<property name="clientInfoMap">
+		<property name="OCSID.CLIENTID" value="thread" />
+		<property name="OCSID.ACTION" value="command" />
+	</property>
+	<property name="clientInfoMaxLength" value="64" />
+	<property name="isCreateConnectionIfReadOnlyTransaction" value="false" />
+</service>
+----
+
+==== DataSourceConnectionFactoryの設定
+DataSourceを利用したデータベースの接続情報を設定します。
+DataSourceは次のいずれかの方法で取得します。
+
+- JNDI経由で取得する
+- DataSourceのインスタンスを直接生成する
+
+===== 設定項目
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| dataSourceName | String | データソース名。デフォルト値は `java:comp/env/jdbc/defaultDS` です。 +
+JNDI経由で取得する場合に指定します。
+| jndienv.＜キー名＞ | String、複数指定可 | JNDIの環境プロパティ。 +
+JNDI経由で取得する場合に指定します。
+| dataSource | javax.sql.DataSource | javax.sql.DataSourceを実装するクラスのインスタンスを指定。 +
+DataSourceのインスタンスを直接生成する場合に指定します。
+| warnLogThreshold | int |  警告ログを出力する処理時間（ミリ秒）の閾値。 +
+デフォルト値は0です。 +
+閾値を越えるスロークエリーが実行された場合、ログ出力されます。
+| warnLogBefore | boolean |  事前警告ログを出力するか否かを指定します。 +
+デフォルトはtrueです。 +
+現状、当該フラグがtrueの場合は、INDEXを利用しないEQLクエリーが発行される場合に、事前警告ログが出力されます。
+| countSqlExecution | boolean |  SQL発行回数を記録するか否かを指定します。記録されたSQL実行回数はAction、Web APIなどの実行単位とともにログ出力されます。 +
+デフォルト値はtrueです。
+| transactionIsolationLevel | String | トランザクションの分離レベル。以下が設定可能。
+
+NONE:: ConnectionのTRANSACTION_NONEに対応
+READ_UNCOMMITTED:: ConnectionのTRANSACTION_READ_UNCOMMITTEDに対応
+READ_COMMITTED:: ConnectionのTRANSACTION_READ_COMMITTEDに対応
+REPEATABLE_READ:: ConnectionのTRANSACTION_REPEATABLE_READに対応
+SERIALIZABLE:: ConnectionのTRANSACTION_SERIALIZABLEに対応
+| clientInfoMap | String、Map形式 | ConnectionのclientInfoへセットする値をMap形式で指定します。nameにはclientInfoのname、valueにはセットする値のMDCのキー名を指定します。valueに `thread` が指定された場合はThread名がセットされます。
+| clientInfoMaxLength | int | ConnectionのclientInfoへセットする値の最大文字数を指定します。
+-1の場合は、無制限です。 +
+デフォルト値は-1です。
+| isCreateConnectionIfReadOnlyTransaction | boolean | 実行対象のトランザクションが読み取り専用の場合に、フレームワーク内で管理している未使用コネクションを利用せず、新規にコネクションを作成するか否かを指定します。true が指定されると、新規にコネクションを作成します。 +
+デフォルト値は `false` です。
+|===
+
+===== 設定例（JNDI経由）
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>
+	<class>org.iplass.mtp.impl.rdb.connection.DataSourceConnectionFactory</class>
+
+	<property name="dataSourceName" value="java:comp/env/jdbc/sampleDS" />
+	<property name="jndienv.java.naming.factory.initial"
+	    value="custom.JNDIInitialContextFactory" />
+	<property name="jndienv.java.naming.provider.url"
+	    value="custom://server:1234:path/to/context" />
+
+	<property name="warnLogThreshold" value="0" />
+
+	<property name="clientInfoMap">
+		<property name="threadName" value="thread" />
+		<property name="commandName" value="command" />
+	</property>
+	<property name="isCreateConnectionIfReadOnlyTransaction" value="false" />
+</service>
+----
+
+===== 設定例（直接生成）
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>
+	<class>org.iplass.mtp.impl.rdb.connection.DataSourceConnectionFactory</class>
+
+	<property name="dataSource" class="com.zaxxer.hikari.HikariDataSource">
+		<property name="jdbcUrl" value="jdbc:mysql://server:3306/mtdb" />
+		<property name="username" value="user" />
+		<property name="password" value="pass" />
+		<property name="dataSourceProperties">
+			<property name="serverTimezone" value="JST" />
+		</property>
+	</property>
+
+	<property name="warnLogThreshold" value="0" />
+
+	<property name="clientInfoMap">
+		<property name="threadName" value="thread" />
+		<property name="commandName" value="command" />
+	</property>
+	<property name="isCreateConnectionIfReadOnlyTransaction" value="false" />
+</service>
+----
+
+==== ReplicationAwareDataSourceConnectionFactoryの設定
+DataSourceを利用したデータベースの接続情報を設定します。
+オリジナル（読み書き可能）、リードレプリカ（読み取り専用）、それぞれのDataSourceを設定します。
+
+NOTE: MySQLのJDBCドライバはドライバレベルでリードレプリカに対応しているため、ReplicationAwareDataSourceConnectionFactoryを利用せずともリードレプリカへの対応は可能です。詳しくはMySQLのドキュメントを参照ください。
+
+オリジナル、リードレプリカそれぞれのDataSourceは次のいずれかの方法で取得します。
+
+- JNDI経由で取得する
+- DataSourceのインスタンスを直接生成する
+
+===== 設定項目
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| dataSourceName | String | オリジナルのデータソース名。デフォルト値は `java:comp/env/jdbc/defaultDS` です。 +
+JNDI経由で取得する場合に指定します。
+| replicaDataSourceName | String、複数指定可 | リードレプリカのデータソース名。 +
+JNDI経由で取得する場合に指定します。 +
+複数指定された場合は、コネクション取得時にランダムに振り分けされます。
+| jndienv.＜キー名＞ | String、複数指定可 | JNDIの環境プロパティ。 +
+JNDI経由で取得する場合に指定します。
+| dataSource | javax.sql.DataSource | javax.sql.DataSourceを実装するクラスのインスタンスを指定。 +
+DataSourceのインスタンスを直接生成する場合に指定します。
+| replicaDataSource | javax.sql.DataSource、複数指定可 | javax.sql.DataSourceを実装するクラスのインスタンスを指定。 +
+リードレプリカのDataSourceのインスタンスを直接生成する場合に指定します。 +
+複数指定された場合は、コネクション取得時にランダムに振り分けされます。
+| warnLogThreshold | int |  警告ログを出力する処理時間（ミリ秒）の閾値。 +
+デフォルト値は0です。 +
+閾値を越えるスロークエリーが実行された場合、ログ出力されます。
+| warnLogBefore | boolean |  事前警告ログを出力するか否かを指定します。 +
+デフォルトはtrueです。 +
+現状、当該フラグがtrueの場合は、INDEXを利用しないEQLクエリーが発行される場合に、事前警告ログが出力されます。
+| countSqlExecution | boolean |  SQL発行回数を記録するか否かを指定します。記録されたSQL実行回数はAction、Web APIなどの実行単位とともにログ出力されます。 +
+デフォルト値はtrueです。
+| transactionIsolationLevel | String | トランザクションの分離レベル。以下が設定可能。
+
+NONE:: ConnectionのTRANSACTION_NONEに対応
+READ_UNCOMMITTED:: ConnectionのTRANSACTION_READ_UNCOMMITTEDに対応
+READ_COMMITTED:: ConnectionのTRANSACTION_READ_COMMITTEDに対応
+REPEATABLE_READ:: ConnectionのTRANSACTION_REPEATABLE_READに対応
+SERIALIZABLE:: ConnectionのTRANSACTION_SERIALIZABLEに対応
+| clientInfoMap | String、Map形式 | ConnectionのclientInfoへセットする値をMap形式で指定します。nameにはclientInfoのname、valueにはセットする値のMDCのキー名を指定します。valueに `thread` が指定された場合はThread名がセットされます。
+| clientInfoMaxLength | int | ConnectionのclientInfoへセットする値の最大文字数を指定します。
+-1の場合は、無制限です。 +
+デフォルト値は-1です。
+| isCreateConnectionIfReadOnlyTransaction | boolean | 実行対象のトランザクションが読み取り専用の場合に、フレームワーク内で管理している未使用コネクションを利用せず、新規にコネクションを作成するか否かを指定します。true が指定されると、新規にコネクションを作成します。 +
+デフォルト値は `true` です。
+|===
+
+===== 設定例（JNDI経由）
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>
+	<class>org.iplass.mtp.impl.rdb.connection.ReplicationAwareDataSourceConnectionFactory</class>
+
+	<property name="dataSourceName" value="java:comp/env/jdbc/sampleDS" />
+	<property name="replicaDataSourceName" value="java:comp/env/jdbc/sampleReplicaDS1" />
+	<property name="replicaDataSourceName" value="java:comp/env/jdbc/sampleReplicaDS2" />
+
+	<property name="jndienv.java.naming.factory.initial"
+	    value="custom.JNDIInitialContextFactory" />
+	<property name="jndienv.java.naming.provider.url"
+	    value="custom://server:1234:path/to/context" />
+
+	<property name="warnLogThreshold" value="0" />
+	<property name="isCreateConnectionIfReadOnlyTransaction" value="true" />
+
+</service>
+----
+
+===== 設定例（直接生成）
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>
+	<class>org.iplass.mtp.impl.rdb.connection.ReplicationAwareDataSourceConnectionFactory</class>
+
+	<property name="dataSource" class="com.zaxxer.hikari.HikariDataSource">
+		<property name="jdbcUrl" value="jdbc:postgresql://server:5432/mtdb" />
+		<property name="username" value="user" />
+		<property name="password" value="pass" />
+	</property>
+
+	<property name="replicaDataSource" class="com.zaxxer.hikari.HikariDataSource">
+		<property name="jdbcUrl" value="jdbc:postgresql://replicaServer1:5432/mtdb" />
+		<property name="username" value="user" />
+		<property name="password" value="pass" />
+	</property>
+	<property name="replicaDataSource" class="com.zaxxer.hikari.HikariDataSource">
+		<property name="jdbcUrl" value="jdbc:postgresql://replicaServer2:5432/mtdb" />
+		<property name="username" value="user" />
+		<property name="password" value="pass" />
+	</property>
+
+	<property name="warnLogThreshold" value="0" />
+	<property name="isCreateConnectionIfReadOnlyTransaction" value="true" />
+
+</service>
+----

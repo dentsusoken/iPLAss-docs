@@ -1,0 +1,125 @@
+[[wamsettingfile_ex_apache]]
+==== 設定方法/設定例
+
+Apache版のWAMプラグインモジュールでは、`iplass-wam.conf` を使ってWAMプラグインモジュールの設定を行います。
+
+.サンプル
+----
+# WAMプラグインモジュールをロードします.
+LoadModule iplass_wam_plugin_apache_module modules/mod_iplass_wam_plugin_apache.so
+
+# 管理対象サイトの識別情報です. AdminConsoleで設定した値と一致させてください.
+IplassSiteId local
+IplassSiteSecret 123
+
+# 管理対象サイトのドメインとプロトコルを指定します.
+IplassSiteCookieDomain mysite.example.com
+IplassSiteScheme https
+
+# WAMモジュールが稼働するiPLAssサーバーのURLを指定します.
+IplassWamBaseUrl https://my.iplass.jp/myiplassapp/mytenant/
+IplassWamCookieDomain my.iplass.jp
+
+# 管理対象サイトで認証処理を組み込みたいパスパターンを正規表現で指定します.
+IplassProtectedPathPattern "^/contents/.*$"
+
+# 認証時にコールバックとして使う管理対象サイトのパスを指定します. そのサイトで未使用のパスとしてください.
+IplassWamAuthCallbackPath /wamauthcallback
+
+# WAMモジュールとWAMプラグインモジュールでアクセストークンをやり取りするためのCookie名とパスを指定します.
+IplassWamCookieName JSESSIONID
+IplassWamCookiePath /
+IplassSiteCookieName ipw
+IplassSiteCookiePath /
+
+# CSRFトークンをやり取りするためのCookie名を指定します.
+IplassCsrfTokenCookieName _csrft
+
+# WAMモジュールからのJSONレスポンスの文字コードを指定します.
+IplassCharset utf-8
+----
+
+===== iPLAssのUserエンティティを連携する
+管理対象サイト側のプログラム言語で独自に認可処理を組み込んだり、ユーザー情報を利用したりしたい場合、次のように設定します。 +
+この例では、独自に定義したリクエストヘッダーにWAMモジュールから返却されたユーザー情報が格納されるようになります。
+
+----
+IplassMapUserAttribute On
+IplassAttributeMap x-wam-user-id accountId
+IplassAttributeMap x-wam-user-name name
+----
+
+例えばPHPの場合、次のようなソースコードでUserエンティティ情報を取得可能です。
+
+[source,php]
+----
+<?php
+header("Content-Type: text/html; charset=UTF-8");
+echo “get user data from WAM Headers. <br/>";
+foreach (getallheaders() as $name => $value) {
+    echo “ '$name': '$value' <br/> ";
+}
+<br/>";
+?>
+----
+
+===== Apacheの基本認証と統合する
+以下は、Apacheの基本認証と統合する設定です。基本認証に成功した場合、WAM機能の認証処理をスキップできます。
+
+----
+IplassIntegrateBasicAuth On
+----
+
+===== localhostのiPLAssと連携する
+以下は、管理対象サイトとiPLAssを同一サーバーで稼動させる環境の設定です。
+
+----
+IplassWamBaseUrl http://localhost:8080/mytenant/
+IplassWamRedirectUrl https://mysite.example.com/myiplassapp/mytenant/
+IplassWamCookieDomain
+
+RewriteRule ^/wamauthcallback(.*) /wamauthcallback$1 [L] //<1>
+RewriteRule ^/contents/(.*) /contents/$1 [L] //<1>
+----
+
+<1> ApacheからiPLAssのアプリケーションサーバーにプロキシしている環境では、コールバックのパスと認証対象のコンテンツのパスをプロキシしないようにリライトルールを定義します。
+
+===== コンテンツにJavaScriptを追加する
+以下は、指定したパスパターンにマッチするコンテンツの末尾に任意のJavaScriptを追加する設定です。
+
+----
+IplassJavaScriptPath "/iplasswam/jquery-1.11.0.min.js,/iplasswam/sitexhr2.js" <1>
+
+IplassJavaScriptSrc "iplass.wam.init({wamBaseUrl: \"https://my.iplass.jp/myiplassapp/mytenant/\", funcSignIn: addWamSignInNavi, funcSignOut: addWamSignOutNavi}); $(document).ready(function(){addCss();iplass.wam.addUserInfoContent();});" <2>
+
+IplassAddScriptTagPathPattern "/index.php" <3>
+----
+
+<1> script要素のsrc属性で読み込むJavaScriptファイルを指定します。
+<2> JavaScriptを記述します。
+<3> パスのパターンを指定します。
+
+===== 開発環境向けの設定
+管理対象サイトのサーバーとiPLAssが稼働するサーバーの間にプロキシがある環境では、次のように設定します。
+
+----
+IplassProxyHost my.proxy.host
+IplassProxyPort 8080
+----
+
+iPLAssサーバーに自己署名のサーバー証明書を利用する場合、次のように設定します。
+
+----
+IplassSslVerifyPeer Off
+IplassSslVerifyHost Off
+----
+
+WAMプラグインモジュールのデバッグログを有効にする場合、次のように設定します。 +
+合わせて、Apache本体のログレベルをdebugに指定してください。
+
+----
+IplassWamVerbose On
+IplassHttpVerbose On
+
+LogLevel debug
+----

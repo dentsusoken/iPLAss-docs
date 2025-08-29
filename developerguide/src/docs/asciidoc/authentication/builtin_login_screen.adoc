@@ -1,0 +1,102 @@
+=== ログイン画面
+
+==== 標準提供のログイン画面
+iPLAssでは、以下の3種類のログイン画面を標準で提供しています。
+
+.GEM(Generic Entity Manager)
+エンティティの汎用データ操作画面群を提供するGEMモジュールに含まれるログイン画面です。 +
+初期状態では、GEMモジュールのログイン画面がデフォルトで表示されます。
+
+.[.eeonly]#MDC(Mobile Design Components)#
+モバイルファーストなエンティティの汎用データ操作画面群を提供するMDCモジュールに含まれるログイン画面です。 +
+MDCモジュールを有効化した場合は、MDCモジュールのログイン画面がデフォルトで表示されます。
+
+.[.eeonly]#WAM(Web Account Manager)#
+コンシューマ向けサイトの会員をiPLAss上で管理する機能を提供するWAMモジュールに含まれるログイン画面です。 +
+作成するサイトに合わせてログイン画面を独自に用意する想定であり、iPLAssのWAMモジュールに含まれる標準のログイン画面はその雛形です。
+
+
+==== ログイン画面の表示条件
+以下のような条件でログイン画面が表示されます。
+
+.認証が必要なコンテンツへアクセスしようとした場合
+ログインしていないユーザーが認証の必要なコンテンツへアクセスを試みた場合、ログイン画面が表示されます。
+認証が正常に行われた場合、リクエストされたコンテンツにリダイレクトされます。
+
+NOTE: Action定義のAccess Policyにある `privilege execute` や `public action` を設定することで、未ログインのユーザーでもアクセスを可能にすることができます。 +
+詳細は、<<../customizing/index.adoc#Action-Admin, Action定義（AdminConsole）>>を参照してください。
+
+.セッションがタイムアウトした場合
+一定時間操作がなかった場合はログイン状態が解除され、再度ログイン画面が表示されます。
+
+
+==== ログイン画面の出し分け
+.表示されるログイン画面の解決方法
+ログイン画面は以下の優先度で決定されます。
+
+. Tenantに設定された「ログイン画面Action制御Script」が返すAction名
+. service-configの `WebFrontendService#loginUrlSelector` で設定されたSelectorが返すAction名 +
+
+service-configの設定については<<../../serviceconfig/index.adoc#LoginUrlSelector,LoginUrlSelector>>を参照してください。 +
+デフォルトでは `gem/auth/login` が設定されています。[.eeonly]#MDCモジュール# を有効化した場合のデフォルトは `mdc/auth/login` になります。
+
+.「ログイン画面Action制御Script」でログイン画面を出し分ける具体例
+「ログイン画面Action制御Script」とは、認証が必要なActionに対してリクエストされた場合に起動する制御Scriptです。
+このScriptを設定することで、リクエストされたURLに含まれるパスを基にログイン画面を出し分けることが可能です。
+
+例えば、システム運用者向けにはGEMのログイン画面、コンシューマ向けにはGEM以外のカスタムしたログイン画面（SAMLやOpenID Connectでシングルサインオンさせたい場合など）で画面を構成している場合に、
+リクエストされたパスを判定して、表示するログイン画面のActionを切り替えることができます。
+
+以下は、「ログイン画面Action制御Script」の設定例です。
+
+[source,groovy]
+----
+if (path != null) {
+    //pathがmemberで始まる場合は、メンバー用のログイン画面を利用
+    //（member/loginというActionを自分で用意）
+    if (path.startsWith("member")) {
+        return "member/login";
+    }
+
+    //requestのパラメータはsetParamで変更可能です
+    if (path.startsWith("admin")) {
+        request.setParam("requireAsAdmin", 'true');
+        return "admin/login";
+    }
+}
+
+//nullが返された場合には、service-configの設定が適用されます
+//（WebFrontendService#loginUrlSelector で設定されたSelectorが返すAction名でログイン画面が決定される）
+return null;
+----
+
+このScriptで返ってきたActionにリダイレクトします。
+その際、もともとアクセスしようとしたパスについてはrequestのattributeに `redirectPath` KEYで格納されます。 +
+
+[source,java]
+----
+//redirectPathの定数
+org.iplass.mtp.web.WebRequestConstants#REDIRECT_PATH;
+----
+
+具体的な設定内容については<<../multitenant/index.adoc#_画面遷移設定, 画面遷移設定>>を参照してください。
+
+
+==== カスタマイズ
+ログイン画面をカスタマイズしたい場合は、標準提供されているログイン画面を元にカスタマイズするか、コマンドおよびJSPを独自に実装する方法があります。 +
+デフォルトでは以下のように実装されています。カスタマイズする際の参考にしてください。
+
+* GEMモジュール +
+Command : `gem/auth/LoginCommand` +
+Java ClassName : `org.iplass.gem.command.auth.LoginCommand` +
+JSP : `jsp/gem/auth/Login.jsp`
+
+* [.eeonly]#MDCモジュール# +
+Command : `mdc/auth/LoginCommand` +
+Java ClassName : `org.iplass.mtp.mdc.command.auth.LoginCommand` +
+JSP : `jsp/mdc/auth/login.jsp`
+
+* [.eeonly]#WAMモジュール# +
+Command : `wam/auth/LoginCommand` +
+Java ClassName : `org.iplass.wam.command.auth.LoginCommand` +
+JSP : `jsp/wam/auth/login.jsp`

@@ -1,0 +1,39 @@
+= iPLAss Document
+
+This document explains the mechanisms and practical usages of iPLAss for developers.
+
+
+[NOTE]
+====
+The features attached with the following labels(EE Only) are available only to iPLAss Enterprise Editions
+
+[.eeonly]#Data Audit Log#
+
+====
+
+== <<./overview/index.adoc#, Overview>>
+This document depicts the overall features of the iPLAss.
+
+== <<./gettingstarted/index.adoc#, Getting Started>>
+Recommanded for starters.
+It contains the tutorials about installing and configuring the environments and also has some sample use cases on the basic features.
+
+== <<./developerguide/index.adoc#, Developer Guide>>
+The references of detailed guides for each specific feature. This document is meant for experienced developers.
+
+== link:./javadoc/index.html[API Reference^]
+JAVA API references (javadoc) for the developments on iPLAss.
+
+== <<./eqlreference/index.adoc#, EQL Reference>>
+The documents about the EQL (Entity Query Language) for the developments on iPLAss.
+
+== <<./serviceconfig/index.adoc#, Configuration>>
+The references for the configuration files of iPLAss.
+
+== <<./environment/index.adoc#, Environment>>
+A summary of notes and remiders for configuring the iPLAss environment.
+
+== <<./sample/index.adoc#, Samples>>
+Explaination and description of a sample application on iPLAss.
+
+

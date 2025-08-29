@@ -1,0 +1,27 @@
+[[tutorial_advanced]]
+= Tutorial(Advance)
+:_relative-root-path: ../../
+:toclevels: 2
+
+== Prerequisites
+This tutorial assumes the following prerequisites are satisfied:
+Before proceeding with the tutorial, do one of the following to prepare the environment where the Web application operates.
+
+* <<../gettingstarted/index.adoc#Introduction, Install and Run>>
+* <<../installguide/index.adoc#ConstructionEnvironment, Eclipse Development Environment>>
+* <<../docker/index.adoc#DockerEnvironmentConstruction, Docker Environment>>
+* Some tutorials can only be implemented in the Enterprise Edition.
++
+If you want to upgrade from open sourced version to Enterprise Edition, please refer to <<../../environment/index.adoc#UpgradeToEnterpriseEdition, Enterprise Edition Upgrades>>.
++
+For Docker, use the Enterprise Edition Docker image.
+
+include::description_en.adoc[]
+
+include::customize_en.adoc[]
+
+
+== Next Step
+If you want to utilize Groovy and Java/JSP to implement your own pages and logics please refer to this <<../introductioncustomize/index.adoc#,Tutorial(Customize)>>.
+
+If you want to have a even more closer looks on each features, please refer to the <<../../developerguide/index.adoc#,Developer Guide>> and try to play with it.

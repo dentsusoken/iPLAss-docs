@@ -1,0 +1,150 @@
+[[StoreService]]
+=== StoreService
+Entityデータの永続化を行うサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.datastore.StoreService
+----
+
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.datastore.StoreService
+----
+
+
+==== StoreServiceの設定
+StoreServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| dataStore | <<DataStore>> | DataStoreの設定。
+|===
+
+[[DataStore]]
+.DataStore
+classはorg.iplass.mtp.impl.datastore.DataStoreの実装クラスを指定します。
+
+標準で、以下のDataStoreを提供します。
+
+- <<GRdbDataStore>>
+- <<EnterpriseGRdbDataStore>>
+
+[[GRdbDataStore]]
+.GRdbDataStore
+classはorg.iplass.mtp.impl.datastore.grdb.GRdbDataStoreを指定します。
+コミュニティエディション用のDataStoreです。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| storageSpace | <<StorageSpaceMap>>、複数指定可 | StorageSpaceの設定。
+|===
+
+[[EnterpriseGRdbDataStore]]
+.[.eeonly]#EnterpriseGRdbDataStore#
+classはorg.iplass.mtp.impl.datastore.grdb.EnterpriseGRdbDataStoreを指定します。
+エンタープライズエディション用のDataStoreです。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| enableWindowFunctionEmulation | boolean | Window関数のエミュレートを有効にするか。デフォルト値はfalseです。
+| storageSpace | <<StorageSpaceMap>>、複数指定可 | StorageSpaceの設定。
+|===
+
+[[StorageSpaceMap]]
+.StorageSpaceMap
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| storageSpaceName | String | Entity定義で選択する際に表示されるStorageSpace名。
+| tableNamePostfix | String | StorageSpace用のテーブルに付加する接尾語。
+英数字のみ利用してください。
+標準で、 `MTP` 、 `USER` が定義されているので、それ以外の名前を設定してください。
+| varcharColumns | int | 文字列型のプロパティを格納するための列数。
+| decimalColumns | int | Decimal型のプロパティを格納するための列数。
+| timestampColumns | int | Timestamp型のプロパティを格納するための列数。
+| doubleColumns | int | 浮動小数点型のプロパティを格納するための列数。
+| useExternalIndexedTable | boolean |StorageSpaceにおける外部INDEXテーブル（`obj_index` 系テーブル）を利用するか。デフォルトは `true` です。
+| indexedVarcharColumns | int | Index指定された文字列型のプロパティを格納するための列数。
+| indexedDecimalColumns | int | Index指定されたDecimal型のプロパティを格納するための列数。
+| indexedTimestampColumns | int | Index指定されたTimestamp型のプロパティを格納するための列数。
+| indexedDoubleColumns | int | Index指定された浮動小数点型のプロパティを格納するための列数。
+| useExternalUniqueIndexedTable | boolean | StorageSpaceにおける外部INDEXテーブル（`obj_unique_index` 系テーブル）を利用するか。デフォルトは `true` です。
+| uniqueIndexedVarcharColumns | int | Unique Index指定された文字列型のプロパティを格納するための列数。
+| uniqueIndexedDecimalColumns | int | Unique Index指定されたDecimal型のプロパティを格納するための列数。
+| uniqueIndexedTimestampColumns | int | Unique Index指定されたTimestamp型のプロパティを格納するための列数。
+| uniqueIndexedDoubleColumns | int | Unique Index指定された浮動小数点型のプロパティを格納するための列数。
+| varcharColumnLength | int | 文字列格納カラムの文字列長を設定。LongText値がインライン格納可能かどうかの判断に利用される。デフォルト値は-1（未定義の意）
+| customPartition | boolean | データベースのPartitionを利用する場合に、iPLAssが想定する標準のPartition単位（テナント単位）と異なるPartition設定を利用するか。デフォルト値はfalse（カスタムのPartition設定しない）です。
+| tableCount | int | 物理的に格納テーブルを分割し、擬似パーティショニング（データベースのパーティショニング機能ではなく、iPLAssがEntity単位に物理テーブルを振り分けする機能）する場合に0より大きい値を設定。デフォルト値は0です。
+| tableAllocator | <<TableAllocator>> | TableAllocatorの設定。疑似パーティショニングする場合の各物理テーブルへの振り分け方式を設定可能です。デフォルト値はHashingTableAllocatorです。
+|===
+
+[[TableAllocator]]
+.TableAllocator
+疑似パーティショニングする場合の、Entityデータが格納される物理テーブルへの振り分け方式を設定可能です。 +
+classはorg.iplass.mtp.impl.datastore.grdb.TableAllocatorの実装クラスを指定します。
+
+標準で、以下のTableAllocatorを提供します。
+
+
+- <<HashingTableAllocator>>
+- <<RoundRobinTableAllocator>>
+
+[[HashingTableAllocator]]
+.HashingTableAllocator
+classはorg.iplass.mtp.impl.datastore.grdb.tableallocators.HashingTableAllocatorを指定します。
+tenantId、また、Entity定義単位に一意なキーであるmetaDataIdからのハッシュにより、物理テーブルを決定します。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| useTenantId | boolean | ハッシュ算出時にtenantIdを利用する場合、true。デフォルト値はtrueです。
+| useMetaDataId | boolean | ハッシュ算出時にmetaDataIdを利用する場合、true。デフォルト値はtrueです。
+useTenantId、useMetaDataIdともにtrueの場合は、両方を利用します。
+|===
+
+[[RoundRobinTableAllocator]]
+.RoundRobinTableAllocator
+classはorg.iplass.mtp.impl.datastore.grdb.tableallocators.RoundRobinTableAllocatorを指定します。
+疑似パーティションを構成する物理テーブルの内、同一テナント内において利用しているEntity定義が最も少ない物理テーブルを割り当てるようにします。
+設定可能な項目はありません。
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.datastore.StoreService</interface>
+
+	<property name="dataStore" class="org.iplass.mtp.impl.datastore.grdb.GRdbDataStore">
+		<property name="storageSpace" additional="true">
+			<property name="storageSpaceName" value="MyCustomSpace" />
+			<property name="tableNamePostfix" value="MCS" />
+			<property name="varcharColumns" value="128" />
+			<property name="decimalColumns" value="32" />
+			<property name="timestampColumns" value="32" />
+			<property name="doubleColumns" value="32" />
+			<property name="useExternalIndexedTable" value="true" />
+			<property name="indexedVarcharColumns" value="8" />
+			<property name="indexedDecimalColumns" value="4" />
+			<property name="indexedTimestampColumns" value="4" />
+			<property name="indexedDoubleColumns" value="4" />
+			<property name="useExternalUniqueIndexedTable" value="true" />
+			<property name="uniqueIndexedVarcharColumns" value="2" />
+			<property name="uniqueIndexedDecimalColumns" value="2" />
+			<property name="uniqueIndexedTimestampColumns" value="2" />
+			<property name="uniqueIndexedDoubleColumns" value="2" />
+			<property name="customPartition" value="false" />
+		</property>
+	</property>
+</service>
+----

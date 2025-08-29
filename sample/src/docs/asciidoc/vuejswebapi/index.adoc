@@ -1,0 +1,15 @@
+[[Vuejs_WebAPI]]
+= Vue.js／WebApi版
+:_hreflang-path: sample/vuejswebapi/index.html
+:_relative-root-path: ../../
+:example-caption!:
+:figure-caption!:
+:table-caption!:
+
+include::overview.adoc[]
+
+include::setup.adoc[]
+
+include::features.adoc[]
+
+include::resources.adoc[]

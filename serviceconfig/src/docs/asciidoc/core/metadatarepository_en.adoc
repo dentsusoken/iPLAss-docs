@@ -1,0 +1,305 @@
+[[MetaDataRepository]]
+=== MetaDataRepository
+This is the service to manage metadata.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.metadata.MetaDataRepository
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.metadata.MetaDataRepository
+----
+
+==== Settings of MetaDataRepository
+The metadata can be configured with the following items.
+
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| resourcePath | String, Multiple | The path of the resource file that defines the metadata in XML.
+| filePath | String, Multiple | The path of the file that defines metadata in XML.
+| annotatedClass | String, Multiple | Java class with metadata defined by annotation.
+MetaDataSeeAlso, CommandClass, AsyncCommand, AsyncCommands, ActionMapping, ActionMappings, Template, Templates, WebApi, WebApis, these annotations are targets.
+| tenantLocalStore | <<MetaDataStore>> | MetaDataStore for managing tenant local metadata.
+| SharedStore | <<MetaDataStore>> | MetaDataStore for managing metadata shared across multiple tenants.
+|===
+
+[[MetaDataStore]]
+.MetaDataStore
+Provides a mechanism to manage various metadata.
+
+Please specify the implementing class of org.iplass.mtp.impl.metadata.MetaDataStore.
+
+As the standard implementations, these MetaDataStore are provided.
+
+* <<AnnotationMetaDataStore>>
+* <<XmlResourceMetaDataStore>>
+* <<RdbMetaDataStore>>
+* <<CompositeMetaDataStore>>
+* <<XmlFileMetaDataStore>>
+* <<VersioningXmlFileMetaDataStore>>
+* <<TypeConversionMetaDataStore>>
+
+[[AnnotationMetaDataStore]]
+.AnnotationMetaDataStore
+Reads metadata from annotation of Java class specified in annotatedClass of MetaDataRepository.
+
+If the Java class annotation is MetaDataSeeAlso, the Java class annotation specified in MetaDataSeeAlso is read.
+For other annotations, create metadata corresponding to the annotation from the class specified in annototatableMetaDataFactory.
+
+Beware that it is read-only and cannot register/update/delete metadata.
+
+Please specify org.iplass.mtp.impl.metadata.annotation.AnnotationMetaDataStore to the class.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| annotatableMetaDataFactory | <<AnnotatableMetaDataFactory>>, Multiple | The class to load the annotation.
+|===
+
+[[XmlResourceMetaDataStore]]
+.XmlResourceMetaDataStore
+Metadata is read from the XML file in the class path specified in resourcePath of MetaDataRepository.
+Similarly, it will also read the XML file data from the filePath.
+
+Beware that it is read-only and cannot register/update/delete metadata.
+
+Please specify org.iplass.mtp.impl.metadata.xmlresource.XmlResourceMetaDataStore to the class.
+There is no configurable items for this class.
+
+[[RdbMetaDataStore]]
+.RdbMetaDataStore
+This item will manage metadata using a database.
+MetaDataRepository's tenantLocalStore is the default setting, and the metadata added/edited by each tenant is managed in the database.
+
+Please specify org.iplass.mtp.impl.metadata.rdb.RdbMetaDataStore to the class.
+There is no configurable items for this class.
+
+[[CompositeMetaDataStore]]
+.CompositeMetaDataStore
+The system can manage metadata by switching MetaDataStore for each type.
+
+It is defined in the service-config of blank project(but is commented out).
+When performing metadata version control on the source control server, please uncomment it.
+Except for some special metadata, it can be managed as a local file.
+
+Please specify org.iplass.mtp.impl.metadata.composite.CompositeMetaDataStore to the class.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| defaultStoreClass | String | The class name of the default MetaDataStore class.
+It is a store that manages metadata other than the metadata specified in pathMapping.
+| pathMapping | <<MetaDataStorePathMapping>>, Multiple | Metadata managed by MetaDataStore different from defaultStoreClass.
+| store | <<MetaDataStore>>, Multiple | Class specified in defaultStoreClass and pathMapping store.
+|===
+
+[[XmlFileMetaDataStore]]
+.XmlFileMetaDataStore
+Manage metadata on an XML file basis.
+
+When specifying a relative path, set the working directory to the project root directory in the Eclipse Tomcat startup configuration argument tab.
+====
+${workspace_loc:mtp-blank}
+====
+
+Please specify org.iplass.mtp.impl.metadata.xmlfile.XmlFileMetaDataStore to the class.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| rootPath | String | The root path where the metadata is stored.
+| fileStorePath | String | Storage location of tenant metadata.
+| groovySourceStorePath | String | The storage location for UtilityClass Groovy source files.
+If not specified, it will be saved in fileStorePath.
+| localTenantId | int | Managed tenant ID.
+| suffix | String | Set the extension type of the metadata file. The default is ".xml".
+|===
+
+[[VersioningXmlFileMetaDataStore]]
+.VersioningXmlFileMetaDataStore
+Manage metadata on an XML file basis.
+Metadata is assigned a version and generation management is performed.
+
+Please specify org.iplass.mtp.impl.metadata.xmlfile.VersioningXmlFileMetaDataStore to the class.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| fileStorePath | String | Specify the location to store tenant metadata.
+| versionFormat | String | Specify the format of the version which will be attached to the metadata file name.
+If not specified, the default will be `000`.
+| suffix | String | Set the extension type of the metadata file. The default is ".xml".
+|===
+
+[[TypeConversionMetaDataStore]]
+.TypeConversionMetaDataStore
+It is a mechanism to convert metadata provided by old modules to the current module and make it available.
+
+Please specify org.iplass.mtp.impl.metadata.typeconversion.TypeConversionMetaDataStore to the class.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| store | <<MetaDataStore>> | Specify the MetaDataStore that manages the metadata to be converted.
+| converters | <<TypeConverter>> , Multiple| A converter that performs metadata type conversion.
+|===
+
+[[AnnotatableMetaDataFactory]]
+.AnnotatableMetaDataFactory
+This factory will create the metadata from annotations.
+
+Please specify the implementing class of org.iplass.mtp.impl.metadata.annotation.AnnotatableMetaDataFactory to the class.
+
+As the standard implementations, the following AnnotatableMetaDataFactory will be provided.
+
+* <<MetaCommandClassFactory>>
+* <<MetaAsyncCommandFactory>>
+* <<MetaAsyncCommandsFactory>>
+* <<MetaActionMappingFactory>>
+* <<MetaActionMappingsFactory>>
+* <<MetaTemplateFactory>>
+* <<MetaTemplatesFactory>>
+* <<MetaWebApiFactory>>
+* <<MetaWebApisFactory>>
+
+[[MetaCommandClassFactory]]
+.MetaCommandClassFactory
+It reads CommandClass annotation from the Command.
+
+Please specify org.iplass.mtp.impl.command.MetaCommandClassFactory to the class.
+There is no configurable items.
+
+[[MetaAsyncCommandFactory]]
+.MetaAsyncCommandFactory
+It reads AsyncCommand annotation from Command.
+
+Please specify org.iplass.mtp.impl.command.async.MetaAsyncCommandFactory to the class.
+There is no configurable items.
+
+[[MetaAsyncCommandsFactory]]
+.MetaAsyncCommandsFactory
+It reads AsyncCommands annotation from Command.
+
+Please specify org.iplass.mtp.impl.command.async.MetaAsyncCommandsFactory to the class.
+There is no configurable items.
+
+[[MetaActionMappingFactory]]
+.MetaActionMappingFactory
+It reads ActionMapping annotation from Command.
+
+Please specify org.iplass.mtp.impl.web.actionmapping.MetaActionMappingFactory to the class.
+There is no configurable items.
+
+[[MetaActionMappingsFactory]]
+.MetaActionMappingsFactory
+It reads ActionMappings annotation from Command.
+
+Please specify org.iplass.mtp.impl.web.actionmapping.MetaActionMappingsFactory to the class.
+There is no configurable items.
+
+[[MetaTemplateFactory]]
+.MetaTemplateFactory
+It reads Template annotation from Command.
+
+org.iplass.mtp.impl.web.template.MetaTemplateFactory.
+There is no configurable items.
+
+[[MetaTemplatesFactory]]
+.MetaTemplatesFactory
+It reads Templates annotation from Command.
+
+org.iplass.mtp.impl.web.template.MetaTemplatesFactory.
+There is no configurable items.
+
+[[MetaWebApiFactory]]
+.MetaWebApiFactory
+It read WebApi annotation from Command.
+
+Please specify org.iplass.mtp.impl.webapi.MetaWebApiFactory to the class.
+There is no configurable items.
+
+[[MetaWebApisFactory]]
+.MetaWebApisFactory
+It reads WebApis annotation from Command.
+
+Please specify org.iplass.mtp.impl.webapi.MetaWebApisFactory to the class.
+There is no configurable items.
+
+[[MetaDataStorePathMapping]]
+.MetaDataStorePathMapping
+Used when using MetaDataStore other than defaultStoreClass in CompositeMetaDataStore.
+Map the metadata specified by path Prefix and the MetaDataStore specified by store.
+
+Please specify org.iplass.mtp.impl.metadata.composite.MetaDataStorePathMappin to the class.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| pathPrefix | String | The prefix of the metadata.
+| store | String | The class name of the store that manages the metadata specified by pathPrefix.
+|===
+
+[[TypeConverter]]
+.TypeConverter
+This is the interface to convert the new and old metadata.
+
+Please specify the implementing class of org.iplass.mtp.impl.metadata.typeconversion.TypeConverter to the class.
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.metadata.MetaDataRepository</interface>
+
+	<!-- ■ your app metadata xml file name (additional="true) ■ -->
+	<!--
+	<property name="resourcePath" value="/xxx-metadata.xml" additional="true" />
+	 -->
+
+	<!-- ■ your app command list class (additional="true) ■ -->
+	<!--
+	<property name="annotatedClass" value="xxx.command.CommandList" additional="true" />
+	 -->
+
+	<!-- ■ your tenantLocalStore ■ -->
+	<!--
+		Specify the storage location for tenant metadata. You can specify a different destination for UtilityClass Groovy source files.
+		When specifying a relative path, set the working directory as the project root directory in the Tomcat startup configuration of Eclipse.
+		(Example: ${workspace_loc:mtp-blank})
+	-->
+	<!--
+	<property name="tenantLocalStore" class="org.iplass.mtp.impl.metadata.composite.CompositeMetaDataStore" >
+ 		<property name="pathMapping" class="org.iplass.mtp.impl.metadata.composite.MetaDataStorePathMapping">
+ 			<property name="pathPrefix" value="/entity/"/>
+ 			<property name="store" value="org.iplass.mtp.impl.metadata.rdb.RdbMetaDataStore"/>
+ 		</property>
+		<property name="pathMapping" class="org.iplass.mtp.impl.metadata.composite.MetaDataStorePathMapping">
+ 			<property name="pathPrefix" value="/staticresource/"/>
+ 			<property name="store" value="org.iplass.mtp.impl.metadata.rdb.RdbMetaDataStore"/>
+ 		</property>
+
+ 		<property name="store" class="org.iplass.mtp.impl.metadata.rdb.RdbMetaDataStore" />
+		<property name="store" class="org.iplass.mtp.impl.metadata.xmlfile.XmlFileMetaDataStore" >
+ 			<property name="fileStorePath" value="src/main/tenantLocalStore/" />
+ 			<property name="groovySourceStorePath" value="src/main/groovy/" />
+ 			<property name="localTenantId" value="XXX"/>
+		</property>
+ 		<property name="defaultStoreClass" value="org.iplass.mtp.impl.metadata.xmlfile.XmlFileMetaDataStore"/>
+ 	</property>
+ 	 -->
+
+	<!-- Using WebAPI(old Metadata) as WebApi(new Metadata) -->
+	<!--
+	<property name="tenantLocalStore" class="org.iplass.mtp.impl.metadata.typeconversion.TypeConversionMetaDataStore">
+		<property name="store" class="org.iplass.mtp.impl.metadata.rdb.RdbMetaDataStore" />
+		<property name="converters" class="org.iplass.mtp.impl.webapi.classic.metadata.MetaWebAPITypeConverter" />
+		<property name="converters" class="org.iplass.mtp.impl.webapi.classic.metadata.MetaEntityWebApiDefinitionTypeConverter" />
+	</property>
+	-->
+</service>
+----

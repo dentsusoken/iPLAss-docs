@@ -1,0 +1,65 @@
+[[Groovy_GTmpl_StaticResource]]
+=== StaticResource
+* サンプルアプリではJavascript、css、fontファイルをZip形式の圧縮ファイルにしてメタデータとして登録しています。
++
+image:images/sample-ec_groovy-gtmpl-static-resource-resources.png[align=left]
++
+[cols="1,2"]
+|===
+h|StaticResource名|samples/ec01/resources
+|===
++
+image:images/sample-ec_groovy-gtmpl-static-resource.png[align=left]
++
+resources.zipファイルを解凍したディレクトリ構造が以下のようです。
++
+[source]
+----
+resources
+	┣ scripts <1>
+	┗ styles <2>
+		┗ fonts <3>
+----
+<1> javascriptリソースのフォルダ
+<2> cssリソースのフォルダ
+<3> fontリソースのフォルダ
+
+* Actionの作成
++
+上記の圧縮ファイルにエントリされたリソースファイルを指定するAction。
++
+image:images/sample-ec_groovy-gtmpl-static-resource-ref.png[align=left]
++
+[cols="1,2"]
+|===
+h|Action名|samples/ec01/resource/ref
+|===
+
+* GroovyTemplateでアクセスする例
++
+[source]
+----
+<%@ page import="org.iplass.mtp.web.template.TemplateUtil"%>
+
+<!DOCTYPE html>
+<html lang="<%=TemplateUtil.getLanguage() %>">
+<%
+	def totalAmount = request.totalAmount;
+%>
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<!-- Optional meta tags -->
+	<meta name="keywords" content="キーワードその1,キーワードその2,キーワードその3,キーワードその4,キーワードその5" />
+	<meta name="description" content="ご自身のWebサイトの説明を記載します" />
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="${tcPath()}/samples/ec01/resource/ref/styles/bootstrap.min.css?cv=<%=TemplateUtil.getAPIVersion()%>"> <1>
+    <link rel="stylesheet" href="${tcPath()}/samples/ec01/resource/ref/styles/open-iconic-bootstrap.min.css?cv=<%=TemplateUtil.getAPIVersion()%>"> <1>
+    <link rel="stylesheet" href="${tcPath()}/samples/ec01/resource/ref/styles/bookstore.css?cv=<%=TemplateUtil.getAPIVersion()%>"> <1>
+</head>
+----------------------------------------以下略----------------------------------------
+----
+<1> "{コンテキストルート}/{テナント名}/resource/ref/"のURLで登録されたstatic Resourceをアクセスすることが出来ます。
++
+※ 詳しくは開発者ガイド<<../../developerguide/customizing/index#StaticResource, StaticResource>>の章を参照してください。

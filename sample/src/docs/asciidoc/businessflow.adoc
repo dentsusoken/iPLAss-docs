@@ -1,0 +1,197 @@
+[[Application_Businessflow]]
+== サンプルアプリの業務フロー図 
+
+image:images/sample-ec_fullcustomize_flow.png[align=left]
+
+[red]*※　ワークフロー起動はEnterprise Editionの機能です。*
+
+=== 一般消費者向け（ECサイト）画面
+
+==== 商品の購入
+
+ECサイトの画面で商品を購入することができます。
+
+* 商品詳細画面を開きます。「カートに入れる」ボタンをクリックします。
++
+image:images/sample-ec_consumer-buy-product-detail.png[align=left]
+
+* 商品詳細画面の右上でカートに入れた商品の数量を確認できます。 + 
+「カートの中を見る」ボタンをクリックすると、カートの中画面に遷移します。
++
+image:images/sample-ec_consumer-buy-product-detail-2.png[align=left]
+
+* カートの中の画面でカートに入れた商品を削除したり、商品の数量を更新したりすることができます。 + 
+商品数量を変更し、リフレッシュボタンをクリックすることで商品の合計を更新できます。 + 
+「お会計」ボタンをクリックすると、ログイン画面に遷移します。
++
+image:images/sample-ec_consumer-buy-product-cartinfo.png[align=left]
+
+* 会員アカウントでログインするか、または会員登録せずに購入手続きへ進むかを選択できます。 + 
+会員アカウントでログインする場合、次の配送先情報入力画面で会員登録時に登録された情報を自動に入力してくれます。
++
+image:images/sample-ec_consumer-buy-product-login.png[align=left]
+
+* 配送先情報を入力し、「上記の届き先に送る」ボタンをクリックします。 +
+配送先情報入力画面に<<./javajsp/index#Java_JSP_BeanValidation, Bean Validation>>機能が組み込まれているので、入力値に対するバリデーションが行われます。
++
+image:images/sample-ec_consumer-buy-product-input-shippinginfo.png[align=left]
+
+* 前画面で入力した配送先情報を確認できます。「編集」ボタンまたは「配送先入力画面に戻る」ボタンをクリックすると、 + 
+配送先情報を編集することが出来ます。
++
+image:images/sample-ec_consumer-buy-product-confirm-shippinginfo.png[align=left]
+
+* 注文完了画面 + 
+新規注文が登録された時に、<<./eepackage/index#EEPackage_Order_Processing_Workflow, 注文処理ワークフロー>>が自動に起動されます。 + 
+管理者が運営者向け画面で振り当てられたタスクに対する操作が行えます。
++
+[red]*※　ワークフロー起動はEnterprise Editionの機能です。*
++
+image:images/sample-ec_consumer-buy-product-ordersuccess.png[align=left]
+
+==== お問い合わせの登録
+
+* 一般消費者向け（ECサイト）画面の下でお問い合わせリンクをクリックすると、お問い合わせ登録画面に遷移することができます。
++
+image::images/sample-ec_consumer-inquiry-regist-top.png[align=left]
+
+* お問い合わせ内容を入力し、｢上記の内容でお問い合わせをする｣ボタンをクリックすると、登録処理が実行されます。
++
+お問い合わせ登録画面に<<./javajsp/index#Java_JSP_BeanValidation, Bean Validation>>機能が組み込まれているので、入力値に対するバリデーションが行われます。
++
+image::images/sample-ec_consumer-inquiry-regist-input.png[align=left]
+
+* お問い合わせ登録完了 + 
+新規お問い合わせ情報が登録された時に、<<./eepackage/index#EEPackage_Inquriy_Processing_Workflow, お問い合わせ処理ワークフロー>>が自動に起動されます。 + 
+管理者が運営者向け画面で振り当てられたタスクに対する操作が行えます。
++
+[red]*※　ワークフロー起動はEnterprise Editionの機能です。*
++
+image::images/sample-ec_consumer-inquiry-regist-success.png[align=left]
+
+==== 会員登録
+
+* 一般消費者向け（ECサイト）画面の右上でお会計ボタンをクリックすると、ログイン画面に遷移することができます。
++
+image::images/sample-ec_consumer-user-regist-top.png[align=left]
+
+* ログイン画面で「会員登録をする」ボタンをクリックします。
++
+image::images/sample-ec_consumer-user-regist-login.png[align=left]
+
+* 会員情報入力画面で会員情報を入力し、「会員規約に同意して登録」ボタンをクリックすると、会員情報確認画面に遷移します。 + 
+会員情報入力画面に<<./javajsp/index#Java_JSP_BeanValidation, Bean Validation>>機能が組み込まれているので、入力値に対するバリデーションが行われます。
++
+image::images/sample-ec_consumer-user-regist-input.png[align=left]
+
+* 会員情報確認画面
++
+image::images/sample-ec_consumer-user-regist-confirm.png[align=left]
+
+* 会員情報登録完了画面 + 
++
+※ ECサイトの画面で登録する会員がデフォルトに　`Worker`（利用ユーザー）に属するユーザーとして登録されます。 + 
+開発環境で送信されたメールの中身を確認したい場合、<<index#GlobalSettings_About_User,ユーザーについて>>を参照してください。
++
+image::images/sample-ec_consumer-user-regist-success.png[align=left]
+
+==== 商品検索
+
+デフォルトの設定で全文検索を利用していません。利用するために、<<./index#GlobalSettings_FullTextSearch_Settings, 全文検索について>>を参照してください。
+
+* 一般消費者向け（ECサイト）画面の下で検索リンクをクリックすると、商品検索画面に遷移することができます。
++
+image::images/sample-ec_consumer-fulltext-search-top.png[align=left]
+
+* キーワードを入力し、検索ボタンをクリックすると、検索結果一覧が表示されます。
++
+image::images/sample-ec_consumer-fulltext-search-input.png[align=left]
+
+* 検索結果一覧
++
+image::images/sample-ec_consumer-fulltext-search-result.png[align=left]
+
+=== 運営者向け画面
+
+運営者向け画面は以下のiPLAss機能を利用して作られています。
+
+* エンティティデータ管理
+* 管理用画面のカスタマイズ
++
+Admin Console部分の共通設定の<<./adminconsole/index#AdminConsole_Product_BulkUpdate, 一括更新画面>>の章を参照してください。
+
+* Calendar機能
++
+Admin Console部分の共通設定の<<./adminconsole/index#AdminConsole_Calendar, Calender>>の章を参照してください。
+
+* TreeView機能
++
+Admin Console部分の共通設定の<<./adminconsole/index#AdminConsole_TreeView, TreeView>>の章を参照してください。
+
+* [.eeonly]#EntityListing#
+* [.eeonly]#Aggregation#
+* [.eeonly]#Dashboard#
+* [.eeonly]#Workflow#
++
+Enterprise Edition機能の追加パッケージの<<./eepackage/index#EEPackage_Workflow, Workflow>>の章を参照してください。
+
+* [.eeonly]#SavedList#
+
+AdminConsoleで作成されたカスタムの機能を各ロールのメニューに組み込む形になっています。 + 
+マネージャー用メニューを例として説明して行きます。
+
+==== マネージャー用メニュー
+===== EC基本情報管理
+
+* ショップ情報管理
+* 特定商取引法
+* 支払い方法設定
+* 会員規約
+
+===== EC商品管理
+
+* 商品
+* 商品検索画面のカスタマイズ（検索結果の一括更新機能の有効化）
++
+Admin Console部分の共通設定の<<./adminconsole/index#AdminConsole_Product_SearchView_BulkUpdate, 検索結果の一括更新機能>>の章を参照してください。
+* カテゴリ
+* 商品サブ情報
+* 在庫一括更新
++
+Admin Console部分の共通設定の<<./adminconsole/index#AdminConsole_Product_BulkUpdate, 一括更新画面>>の章を参照してください。
+
+===== 注文管理
+* 注文
+* 注文明細
+* [.eeonly]#注文明細カスタム検索# 
++
+Enterprise Edition機能の追加パッケージの<<./eepackage/index#EEPackage_EntityListing, EntityListing>>の章を参照してください。
+* 請求
+* [.eeonly]#売上集計# 
++
+Enterprise Edition機能の追加パッケージの<<./eepackage/index#EEPackage_Dashboard, ダッシュボード>>の章を参照しください。
+
+===== お問合せ管理
+* 新着情報
+* お問い合わせ
+* [.eeonly]#お問い合わせ状況#
++
+Enterprise Edition機能の追加パッケージの<<./eepackage/index#EEPackage_CrossTab, クロース集計>>の章を参照しください。
+
+===== 権限情報管理
+* ロール
+* Action権限
+* WebApi権限
+* Entity権限
+* [.eeonly]#Workflow権限#
+* [.eeonly]#Cube権限#
+
+===== 基本情報管理
+* グループ権限
++
+<<./index#GlobalSettings_About_User, ユーザーについて>>を参照してください。
+* ランク権限
+* ユーザー情報
+
+===== [.eeonly]#保存リスト#
+Enterprise Edition機能の追加パッケージの<<./eepackage/index#EEPackage_SavedList, 保存リスト>>を参照してください。

@@ -1,0 +1,142 @@
+[[UtilityClass]]
+== UtilityClass
+Groovyを利用してユーティリティ機能やCommandでの共通ロジックなどの処理を実装するためのメタデータです。
+
+Groovyで作成したCommandやGroovyTemplateで作成したTemplateなど、Groovyベースの実装から利用することが可能です。
+またJavaで作成したCommandなどから利用する方法も提供します。
+
+=== UtilityClass定義
+
+==== UtilityClassの作成
+メニューを右クリックし「UtilityClassを作成する」を選択します。
+
+==== UtilityClassの設定項目
+
+===== 共通設定
+[cols="1,3a",options="header"]
+|===
+|項目 | 内容
+|Name | UtilityClass定義名です。 +
+.区切りで階層化可能です。階層はパッケージと同じです。 +
+例： sample.util.SampleUtil
+
+NOTE: ここで定義した名前がUtilityClassのクラス名になります。
+
+|Display Name | 表示名です。現状、AdminConsole上でのみ利用されます。
+|Description | Commandの概要文です。現状、AdminConsole上でのみ利用されます。
+|===
+
+===== 固有設定
+[cols="1,3a",options="header"]
+|===
+|項目|内容
+|Script |GroovyまたはGroovyScriptにて実装します。AdminConsoleより、コードを直接編集します。
+|===
+
+UtilityClassにはバインド変数はありません。
+
+.実装サンプル１(Groovy)
+[source,groovy]
+----
+package sample.util;
+
+class SampleUtil {
+
+	public String sample1() {
+		return "サンプル１";
+	}
+}
+----
+
+CAUTION: パッケージ、クラス名については、UtilityClassのnameにあわせてください。
+一致していない場合にもエラーにはなりません。呼び出し時は、nameに指定した値をクラス名として利用します。
+
+.実装サンプル２(GroovyScript)
+[source,groovy]
+----
+def sample2() {
+	return "サンプル２";
+}
+----
+
+.Commandからの呼び出しサンプル
+[source,groovy]
+----
+import  sample.util.SampleUtil;
+import  sample.util.SampleUtil2;
+
+//ユーティリティクラスのインスタンス生成
+SampleUtil util = new SampleUtil();
+util.sample1();
+
+SampleUtil2 util2 = new SampleUtil2();
+util2.sample2();
+----
+
+=== Javaからの利用
+Javaで実装したCommandで、処理の一部をUtilityClassで実装する場合など、JavaからUtilityClassを利用する方法を説明します。
+
+例えば複数のテナントを利用する場合、Javaで実装するCommandは全てのテナントで共通した処理になりますが、
+一部の処理をUtilityClassを利用することでテナント固有の処理を実行することも可能です。
+
+JavaからUtilityClassを利用する場合は、以下の方法で行います。
+
+. JavaにUtilityClassで実装する処理のインターフェースを定義
+. UtilityClassはインターフェースを実装
+. UtilityClassを利用する場合は、 `UtilityClassDefinitionManager` を利用
+
+.1.Javaでインターフェースを定義
+[source,java]
+----
+package sample.util;
+
+public interface SampleLogic {
+
+	String doLogic();
+}
+----
+
+.2.UtilityClassはインターフェースを実装
+[source,groovy]
+----
+package sample.util;
+
+import sample.util.SampleLogic;    //実装するInterface(Javaクラス)
+
+public class UtilityClassLogic implements SampleLogic {
+
+	@Override
+	public String doLogic() {    //Logicの実装
+		return "hoge";
+	}
+}
+----
+
+.3.JavaのCommandでUtilityClassを利用
+[source,java]
+----
+package sample.util;
+
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.utilityclass.definition.UtilityClassDefinitionManager;
+
+import sample.util.SampleLogic;
+
+:
+
+UtilityClassDefinitionManager ucdm = ManagerLocator.manager(UtilityClassDefinitionManager.class);
+
+SampleLogic logic = null;
+try {
+	//UtilityClassのインスタンスを取得(SampleLogicインターフェースとして)
+	logic = ucdm.createInstanceAs(SampleLogic.class, "sample.util.UtilityClassLogic");
+} catch (ClassNotFoundException e) {
+	//指定したUtilityClassが定義されていなければJavaで実装したLogicを利用するなど
+	logic = new JavaSomeLogic();
+}
+
+logic.doLogic();
+----
+
+CAUTION: 利用しようとしているUtilityClassと同名のJavaクラスが存在する場合、Javaクラスが優先されます。
+この場合、UtilityClassを登録しても利用できないのでUtilityClass名は注意してください。

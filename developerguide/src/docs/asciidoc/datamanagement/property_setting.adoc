@@ -1,0 +1,73 @@
+[[ref_property_settings]]
+=== 高度な設定
+[[ref_property_index]]
+==== インデックス設定
+検索処理の高速化のためのRDBのIndexのような機能として、Propertyに対するIndexを設定できます。
+Indexを設定すると検索時は高速化されますが、データ更新時のパフォーマンスに影響が発生するため、設定時は考慮が必要です。
+
+Index設定には以下の種類があります。
+
+[cols="1,4",options="header"]
+|===
+| タイプ | 説明
+| NON_INDEXED | Indexを利用しません。
+| UNIQUE | 一意のIndexを作成します。重複データを登録しようとした場合、エラーになります。
+| UNIQUE_WITHOUT_NULL | 一意のIndexを作成します。ただし `null` の場合は重複を許可します。
+| NON_UNIQUE | 一意ではないIndexを作成します。
+|===
+
+.Indexの制限事項
+Indexに関する注意点、制約事項を説明します。
+
+* Property単位でのみ設定が可能です。 +
+複合Index(複数Propertyの結合)はサポートしていません。
+* `UNIQUE` 、 `UNIQUE_WITHOUT_NULL` はEntity単位での値の重複をチェックします。 +
+Entity更新時に重複がある場合はエラーとなります。
+* 多重度が1以外のPropertyはIndexを指定できません。
+* `Expression` `Binary` `LongText` `Refernce` はIndexを指定できません。
+* Entityのバージョン管理を行う場合、 `UNIQUE` 、 `UNIQUE_WITHOUT_NULL`
+として指定したPropertyは変更不可になります。
+Entity定義の保存時に自動的に `CanEdit = false` として登録されます。
+* 既に登録済みのEntityデータが存在する場合にIndex Typeを変更すると、Entity定義の保存時にIndexの再作成処理が実行されます。
+大量データが登録されている場合などは考慮が必要です。 +
+`UNIQUE` 、 `UNIQUE_WITHOUT_NULL` の場合、一意でないデータが存在すると再作成時にエラーが発生し、定義自体が保存できません。
+
+.Unique Indexに対するMySQL上での制約について
+`UNIQUE` 、 `UNIQUE_WITHOUT_NULL` は、バックエンドでRDBのUnique Indexを利用しています。
+MySQLではUnique Indexのbyte制限として767byteまでしか格納することができません。
+このため、 `UNIQUE` 、 `UNIQUE_WITHOUT_NULL` を指定した場合は、
+DBの文字コードによって格納できる最大の値長に制約が発生します
+(データ登録時にエラーになります)。
+
+[[ref_encrypt_mode]]
+==== [.eeonly]#データ暗号化#
+当該カラムのデータを暗号化してDBに格納したい場合に設定します。
+DB/OSなどが持つ透過的暗号化機能を利用することを推奨しますが、ライセンス費用の問題やインフラ環境で暗号化サポートしてない場合など、それらの利用が難しい場合、当該機能を利用してください。
+なお、当該機能を利用する場合、アプリケーションの機能的な制限が入ります。
+
+暗号化のモードとして以下の２つ用意をしています。
+
+[cols="1,1,1,1,1", options="header"]
+|===
+|モード|インデックス化|暗号化強度|検索条件指定|備考
+|ECBモード|可能|弱い|完全一致のみサポート|集計はカウントのみ可能
+|CBCモード|不可|強い|不可|集計はカウントのみ可能
+|===
+
+.暗号化した場合の制限事項
+暗号化に関する注意点、制約事項を説明します。
+
+* 検索は `ECBモード` の場合かつ完全一致検索のみ可能。関数の適用、ソートは不可。
+* 未暗号化、暗号化を切り替えた場合、プロパティの実データは引き継がれない。
+* `ECBモード` 、 `CBCモード` を切り替えた場合、プロパティの実データは引き継がれない。
+* 暗号化しているプロパティの型を変更した場合、以下のパターン以外は実データは引き継がれない。 +
+Select型、 AutoNumber型、 Boolean型、 Integer型、 Float型、 Decimal型、 Date型、 DateTime型、 Time型 -> String型 +
+Boolean型 -> Select型 +
+暗号化していない場合と比較し、数値型間の相互変換、日付型間の相互変換、String型からLongText型への変換がされない。
+* Decimal型のscaleを変更した場合、自動的にデータの洗い替えは行われない。
+
+.mtp-service-config.xmlの設定変更
+プロパティ単位の暗号化を利用する場合、<<../../serviceconfig/index.adoc#PropertyEncryptionService, PropertyEncryptionService>>にて、暗号化アルゴリズムなどの設定を行ってください。
+
+暗号化アルゴリズムは複数定義することができます。
+新規に保存される値は一番後に定義された暗号化アルゴリズムを利用して暗号化されます。

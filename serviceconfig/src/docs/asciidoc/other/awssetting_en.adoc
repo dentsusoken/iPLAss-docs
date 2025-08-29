@@ -1,0 +1,64 @@
+[[AWSSetting]]
+=== [.eeonly]#AWSSetting#
+This is the service to manage the settings of AWS.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.aws.AWSSetting
+----
+
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.aws.AWSSetting
+----
+
+
+==== The settings of AWSSetting
+AWSSetting can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| accessKeyId | String | AWS access key ID
+| secretKey | String | AWS secret key
+| clientConfiguration | <<ClientConfiguration>> | The settings of AWSClient side（default）
+| configurationMap | <<ClientConfiguration>>、in format of Map | Individual settings for the AWSClient side. If not configured individually, the default `clientConfiguration` will be applied.
+|===
+
+[[ClientConfiguration]]
+.ClientConfiguration
+Please specify com.amazonaws.ClientConfiguration to the class.
+So to configure the settings when connecting to various kind of service provided by AWS.
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.aws.AWSSetting</interface>
+	<class>org.iplass.mtp.impl.aws.AWSSetting</class>
+
+	<!--
+	<property name="accessKeyId" value="input your access key id" />
+	<property name="secretKey" value="input your secret key" />
+	-->
+
+    <!-- Default AWSClient setting -->
+	<property name="clientConfiguration">
+		<property name="maxConnections" value="100" />
+	</property>
+	
+	<property name="configurationMap">
+		<!-- Individual configuration for S3LobStore -->
+		<property name="S3LobStore" class="com.amazonaws.ClientConfiguration">
+			<property name="maxConnections" value="50" />
+		</property>
+
+		<!-- Individual configuration for AWSHttpSender -->
+		<property name="AWSHttpSender" class="com.amazonaws.ClientConfiguration">
+			<property name="maxConnections" value="80" />
+		</property>
+	</property>
+</service>
+----

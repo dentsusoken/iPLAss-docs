@@ -1,0 +1,150 @@
+[[OutOfBandVerificationService]]
+=== [.eeonly]#OutOfBandVerificationService#
+メールやSMSを利用して検証を行うためのサービスです。
+
+==== インタフェース名
+----
+org.iplass.wam.impl.outofbandverify.OutOfBandVerificationService
+----
+
+
+==== 実装クラス名
+----
+org.iplass.wam.impl.outofbandverify.OutOfBandVerificationService
+----
+
+
+==== OutOfBandVerificationServiceの設定
+OutOfBandVerificationServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| verifier | <<OutOfBandVerifier>>、複数指定可 | アウトオブバンドを利用した検証の設定。
+|===
+
+[[OutOfBandVerifier]]
+.OutOfBandVerifier
+アウトオブバンドを利用した検証の設定です。
+
+classはorg.iplass.wam.impl.outofbandverify.OutOfBandVerifierを指定します。
+以下の項目を設定可能です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| name | String | アウトオブバンドの名前。
+| outOfBand | <<OutOfBand>> | アウトオブバンドの設定。
+| strategy | <<VerifyStrategy>> | 検証機能の設定。
+| store | <<VerificationStore>> | 検証対象の保持設定。
+|===
+
+[[OutOfBand]]
+.OutOfBand
+classはorg.iplass.wam.impl.outofbandverify.outofband.OutOfBandの実装クラスを指定します。
+
+標準で以下のOutOfBandを提供しています。
+
+* <<MailOutOfBand>>
+* <<SMSOutOfBand>>
+
+[[MailOutOfBand]]
+.MailOutOfBand
+メール送信のためのOutOfBandです。
+
+classはorg.iplass.wam.impl.outofbandverify.outofband.MailOutOfBandを指定します。
+設定可能な項目はありません。
+
+[[SMSOutOfBand]]
+.SMSOutOfBand
+SMS送信のためのOutOfBandです。
+
+classはorg.iplass.wam.impl.outofbandverify.outofband.SMSOutOfBandを指定します。
+設定可能な項目はありません。
+
+[[VerifyStrategy]]
+.VerifyStrategy
+classはorg.iplass.wam.impl.outofbandverify.strategy.VerifyStrategyの実装クラスを指定します。
+
+標準で以下のVerifyStrategyを提供しています。
+
+* <<ActivationURLVerifyStrategy>>
+* <<OnetimeCodeVerifyStrategy>>
+
+[[ActivationURLVerifyStrategy]]
+.ActivationURLVerifyStrategy
+アクティベーションURLによる検証を行います。
+
+classはorg.iplass.wam.impl.outofbandverify.strategy.ActivationURLVerifyStrategyを指定します。
+設定可能な項目はありません。
+
+[[OnetimeCodeVerifyStrategy]]
+.OnetimeCodeVerifyStrategy
+ワンタイムコードによる検証を行います。
+
+classはorg.iplass.wam.impl.outofbandverify.strategy.OnetimeCodeVerifyStrategyを指定します。
+以下の項目を設定可能です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| numberOfDigits | int | ワンタイムコードの桁数。デフォルト値は6。
+|===
+
+[[VerificationStore]]
+.VerificationStore
+classはorg.iplass.wam.impl.outofbandverify.store.VerificationStoreの実装クラスを指定します。
+
+標準で以下のVerificationStoreを提供しています。
+
+* <<CacheVerificationStore>>
+* <<EntityVerificationStore>>
+* <<SessionVerificationStore>>
+
+[[CacheVerificationStore]]
+.CacheVerificationStore
+検証対象をキャッシュに保存します。
+
+classはorg.iplass.wam.impl.outofbandverify.store.CacheVerificationStoreを指定します。
+設定可能な項目はありません。
+
+[[EntityVerificationStore]]
+.EntityVerificationStore
+検証対象をEntityに保存します。
+
+classはorg.iplass.wam.impl.outofbandverify.store.EntityVerificationStoreを指定します。
+設定可能な項目はありません。
+
+[[SessionVerificationStore]]
+.SessionVerificationStore
+検証対象をユーザーのSessionに保存します。
+
+classはorg.iplass.wam.impl.outofbandverify.store.SessionVerificationStoreを指定します。
+設定可能な項目はありません。
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.wam.impl.outofbandverify.OutOfBandVerificationService</interface>
+	<property name="verifier" class="org.iplass.wam.impl.outofbandverify.OutOfBandVerifier">
+		<property name="name" value="email"/>
+		<property name="outOfBand" class="org.iplass.wam.impl.outofbandverify.outofband.MailOutOfBand"/>
+		<property name="strategy" class="org.iplass.wam.impl.outofbandverify.strategy.ActivationURLVerifyStrategy"/>
+		<property name="store" class="org.iplass.wam.impl.outofbandverify.store.EntityVerificationStore"/>
+	</property>
+	<property name="verifier" class="org.iplass.wam.impl.outofbandverify.OutOfBandVerifier">
+		<property name="name" value="mobileMail"/>
+		<property name="outOfBand" class="org.iplass.wam.impl.outofbandverify.outofband.MailOutOfBand"/>
+		<property name="strategy" class="org.iplass.wam.impl.outofbandverify.strategy.OnetimeCodeVerifyStrategy"/>
+		<property name="store" class="org.iplass.wam.impl.outofbandverify.store.SessionVerificationStore"/>
+	</property>
+	<property name="verifier" class="org.iplass.wam.impl.outofbandverify.OutOfBandVerifier">
+		<property name="name" value="sms"/>
+		<property name="outOfBand" class="org.iplass.wam.impl.outofbandverify.outofband.SMSOutOfBand"/>
+		<property name="strategy" class="org.iplass.wam.impl.outofbandverify.strategy.OnetimeCodeVerifyStrategy"/>
+		<property name="store" class="org.iplass.wam.impl.outofbandverify.store.SessionVerificationStore"/>
+	</property>
+</service>
+----

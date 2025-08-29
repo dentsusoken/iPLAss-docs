@@ -1,0 +1,64 @@
+[[AWSSetting]]
+=== [.eeonly]#AWSSetting#
+AWSの設定を管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.aws.AWSSetting
+----
+
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.aws.AWSSetting
+----
+
+
+==== AWSSettingの設定
+AWSSettingを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| accessKeyId | String | AWSのアクセスキーID
+| secretKey | String | AWSのシークレットキー
+| clientConfiguration | <<ClientConfiguration>> | AWSClient側の設定(デフォルト)
+| configurationMap | <<ClientConfiguration>>、Map形式 | AWSClient側の個別設定。個別設定しない場合は、デフォルトの `clientConfiguration` が適用されます。
+|===
+
+[[ClientConfiguration]]
+.ClientConfiguration
+classはcom.amazonaws.ClientConfigurationです。
+AWSの各種サービスに接続する際の設定を行うことが可能です。
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.aws.AWSSetting</interface>
+	<class>org.iplass.mtp.impl.aws.AWSSetting</class>
+
+	<!--
+	<property name="accessKeyId" value="input your access key id" />
+	<property name="secretKey" value="input your secret key" />
+    -->
+
+    <!-- デフォルトのAWSClient設定 -->
+	<property name="clientConfiguration">
+		<property name="maxConnections" value="100" />
+	</property>
+	
+	<property name="configurationMap">
+		<!-- S3LobStoreの個別設定 -->
+		<property name="S3LobStore" class="com.amazonaws.ClientConfiguration">
+			<property name="maxConnections" value="50" />
+		</property>
+
+		<!-- AWSHttpSenderの個別設定 -->
+		<property name="AWSHttpSender" class="com.amazonaws.ClientConfiguration">
+			<property name="connectionTimeout" value="10000" />
+		</property>
+	</property>
+</service>
+----

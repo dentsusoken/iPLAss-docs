@@ -1,0 +1,46 @@
+== Web APIについて
+Commandメタデータとして定義したカスタムロジックをWeb APIメタデータを利用して、
+外部からRESTful形式（以下、REST）、 [.eeonly]#SOAP WSDL形式# で呼び出すことが可能です。
+
+またEntityに対するCRUD操作やメタデータ定義に対するCRUD操作、
+バイナリファイルのアップロード、ダウンロードを行うApiを提供します。
+
+Web APIには以下の機能・特徴があります。
+
+* カスタマイズコマンドの実行 +
+カスタマイズで作成したCommandをWeb API経由で呼び出し実行可能です。 +
+本機能はREST形式、 [.eeonly]#SOAP WSDL形式# に対応しています。
+
+* Entityに対するCRUD操作の実行 +
+Entityデータに対して、CRUD操作を実行するApiを提供しています。 +
+本機能はREST形式にのみ対応しています。
+
+* [.eeonly]#OData形式のデータ連携（参照のみ）# +
+OData準拠のサービスエンドポイント、ODataで連携するEntityデータの公開設定を登録/管理する為の機能を提供しています。
+
+* メタデータに対するCRUD操作の実行 +
+メタデータ定義に対するCRUD操作を実行するApiを提供しています。 +
+本機能はREST形式にのみ対応しています。
+
+* バイナリデータのアップロード、ダウンロード +
+マルチパートを利用し、バイナリデータのアップロード、ダウンロードが可能です。 +
+本機能はREST形式、 [.eeonly]#SOAP WSDL形式# に対応しています。
+
+尚、iPLAssではアクセス方法について以下の通り定義し、今後の説明では以下の呼称で記載します。
+
+[cols="1,5",options="header"]
+|===
+|iPLAssでの名称|概要
+|REST FORM|
+クライアントから送信されるMIMEメディアタイプがapplication/x-www-form-urlencoded、multipart/form-dataに対応するREST通信を "REST FORM" と呼びます。 +
+パラメータをFORM形式（Key, Value）で扱います。
+|REST JSON|
+クライアントから送信されるMIMEメディアタイプがapplication/jsonに対応するREST通信を "REST JSON" と呼びます。 +
+パラメータをJSON形式で扱います。
+|REST XML|
+クライアントから送信されるMIMEメディアタイプがapplication/xmlに対応するREST通信を "REST XML" と呼びます。 +
+パラメータをXML形式で扱います。
+|SOAP WSDL|一般のSOAP、WSDL形式での通信と同義です。
+|===
+
+NOTE: REST FORM、REST JSON、REST XMLを総称してREST形式、SOAP WSDLをSOAP形式と記載します。

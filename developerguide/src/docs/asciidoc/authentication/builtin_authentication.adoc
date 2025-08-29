@@ -1,0 +1,16 @@
+== 標準の認証機能
+標準で提供されている認証機能について説明します。
+
+include::builtin_login_screen.adoc[]
+
+include::builtin_account_manage.adoc[]
+
+include::builtin_authentication_policy.adoc[]
+
+include::builtin_user_maintain.adoc[]
+
+include::builtin_customize.adoc[]
+
+include::builtin_two_step.adoc[]
+
+include::builtin_impersonation.adoc[]

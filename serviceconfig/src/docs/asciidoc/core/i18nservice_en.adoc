@@ -1,0 +1,266 @@
+[[I18nService]]
+=== I18nService
+This is the service to manage the implementation of multilingual localizations.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.i18n.I18nService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.i18n.I18nService
+----
+
+==== Settings of I18nService
+I18nService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| enableLanguages | <<EnableLanguages>>, Multiple | Set this to enable specific languages.
+| defaultLocaleFormat | <<LocaleFormat>> | Settings of default locale format.
+| localeFormat | <<LocaleFormat>>, Multiple | Settings of locale format for each language.
+| languageFonts | <<LanguageFonts>>, Multiple | Specify the fonts for each language.
+| genericFontFamilyList | String, Multiple | A list of strings to be interpreted as a generic font family. If a string matching this setting exists in each font in languageFonts, the font is interpreted as a generic font family.
+|===
+
+[[EnableLanguages]]
+.EnableLanguages
+Please specify org.iplass.mtp.impl.i18n.EnableLanguages to the class.
+
+For the enabled language, the following items can be configured.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| languageKey | String | Language Key.
+| languageName | String | Language Name.
+| otherLanguageKey | String, Multiple | Other Language Key.
+|===
+
+[[LocaleFormat]]
+.LocaleFormat
+Please specify org.iplass.mtp.impl.i18n.LocaleFormat to the class.
+
+For the locale format, the following items can be configured.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| locale | String, Multiple | Corresponding locale.
+| serverDateFormat | String | Specify the format of the Date on the server.
+| serverTimeFormat | String | Specify the format of the Time on the server.
+| browserInputDateFormat | String | Specify the input format of the Date on the browser.
+| browserInputTimeSecFormat | String | Specify the input format of the Time(Second) on the browser.
+| browserInputTimeMinFormat | String | Specify the input format of the Time(Minutes) on the browser.
+| browserInputTimeHourFormat | String | Specify the input format of the Time(Hours) on the browser.
+| outputDateFormat | String | Specify the format of the date of Entity Data, such as search results and CSV outputs.
+| outputDateWeekdayFormat | String | Specify the format of the date(Monday, Mon, 1, etc.) of Entity Data, such as search results and CSV outputs.
+| excelDateFormat | String | The Date format in Excel.
+| excelTimeFormat | String | The Time format in Excel.
+| outputTimeSecFormat | String | Date output format of seconds for Entity related outputs, such as search result and CSV output result.
+| outputTimeMinFormat | String | Date output format of minutes for Entity related outputs, such as search result and CSV output result.
+| outputTimeHourFormat | String | Date output format of Hours for Entity related outputs, such as search result and CSV output result.
+| lastNameIsFirst | boolean | Set whether to have the surname in the front.
+|===
+
+[[LanguageFonts]]
+.LanguageFonts
+Please specify org.iplass.mtp.impl.i18n.LanguageFonts to the class.
+
+For the language fonts, the following items can be configured.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| language | String | Language
+| fonts | String, Multiple | Font
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.i18n.I18nService</interface>
+	<class>org.iplass.mtp.impl.i18n.I18nService</class>
+
+	<!-- Enabled Language -->
+	<property name="enableLanguages" class="org.iplass.mtp.impl.i18n.EnableLanguages">
+		<property name="languageKey" value="ja" />
+		<property name="languageName" value="日本語" />
+	</property>
+	<property name="enableLanguages" class="org.iplass.mtp.impl.i18n.EnableLanguages">
+		<property name="languageKey" value="en" />
+		<property name="otherLanguageKey" value="en-US" />
+		<property name="languageName" value="English" />
+	</property>
+	<property name="enableLanguages" class="org.iplass.mtp.impl.i18n.EnableLanguages">
+		<property name="languageKey" value="zh-CN" />
+		<property name="otherLanguageKey" value="zh" />
+		<property name="otherLanguageKey" value="zh-SG" />
+		<property name="languageName" value="简体中文" />
+	</property>
+	<property name="enableLanguages" class="org.iplass.mtp.impl.i18n.EnableLanguages">
+		<property name="languageKey" value="zh-TW" />
+		<property name="otherLanguageKey" value="zh-HK" />
+		<property name="languageName" value="繁體中文" />
+	</property>
+	<property name="enableLanguages" class="org.iplass.mtp.impl.i18n.EnableLanguages">
+		<property name="languageKey" value="th" />
+		<property name="otherLanguageKey" value="th-TH" />
+		<property name="languageName" value="ภาษาไทย" />
+	</property>
+
+	<!-- locale format -->
+	<property name="defaultLocaleFormat" class="org.iplass.mtp.impl.i18n.LocaleFormat">
+		<property name="locale" value="ja" />
+		<property name="locale" value="ja_JP" />
+		<property name="locale" value="zh" />
+		<property name="locale" value="zh_CN" />
+		<property name="locale" value="zh_TW" />
+		<property name="locale" value="zh_HK" />
+
+		<!--
+			The expression used in Format
+				yyyy : full year (four digit)
+				MM   : day of year (two digit)
+				dd   : day of month (two digit)
+				MMM  : month name short (ex. Jan)
+				MMMM : month name long (ex. January)
+				HH   : hour (two digit)
+				mm   : minute (two digit)
+				ss   : second (two digit)
+				SSS  : millisecond (three digit)
+
+			※MMM, MMMM is available only in outputXXX. It is not available in browserInputDateFormat.
+			　Beware that it is a exclusive feature for locale of en and en_XX.
+
+			※Do not change the Server format because it has internal control.
+			※Do not change the Time input format because there is Range control.
+		 -->
+
+		<!-- Format received as the input value of Date on the Server side (cannot be changed) -->
+		<property name="serverDateFormat" value="yyyyMMdd" />
+		<!-- Format received as the input value of Time on the server side (cannot be changed) -->
+		<property name="serverTimeFormat" value="HHmmssSSS" />
+
+		<!-- Date input format on the browser (can be specified individually by tenant) -->
+		<property name="browserInputDateFormat" value="yyyyMMdd" />
+
+		<!-- Time input format on the browser (Time cannot be changed because of the Range control) -->
+		<property name="browserInputTimeSecFormat" value="HH:mm:ss" />
+		<property name="browserInputTimeMinFormat" value="HH:mm" />
+		<property name="browserInputTimeHourFormat" value="HH" />
+
+		<!-- Date type output format (search results, CSV, etc., can be specified individually by tenant) -->
+		<property name="outputDateFormat" value="yyyy/MM/dd" />
+		<property name="outputDateWeekdayFormat" value="yyyy/MM/dd EEEE" />
+		<!-- Date output format in Excel -->
+		<property name="excelDateFormat" value="yyyy/M/d" />
+		<property name="excelTimeFormat" value="H:mm" />
+
+		<!-- Time type output format (search results, CSV, etc. Individual tenant cannot be specified at present) -->
+		<property name="outputTimeSecFormat" value="HH:mm:ss" />
+		<property name="outputTimeMinFormat" value="HH:mm" />
+		<property name="outputTimeHourFormat" value="HH" />
+
+		<property name="lastNameIsFirst" value="true" />
+	</property>
+	<property name="localeFormat" class="org.iplass.mtp.impl.i18n.LocaleFormat">
+		<property name="locale" value="en_US" />
+		<property name="locale" value="en" />
+
+		<property name="serverDateFormat" value="yyyyMMdd" />
+		<property name="serverTimeFormat" value="HHmmssSSS" />
+
+		<property name="browserInputDateFormat" value="MM/dd/yyyy" />
+		<property name="browserInputTimeSecFormat" value="HH:mm:ss" />
+		<property name="browserInputTimeMinFormat" value="HH:mm" />
+		<property name="browserInputTimeHourFormat" value="HH" />
+
+		<property name="outputDateFormat" value="MM/dd/yyyy" />
+		<property name="outputDateWeekdayFormat" value="EEEE, MM/dd/yyyy" />
+		<property name="excelDateFormat" value="M/d/yyyy" />
+		<property name="excelTimeFormat" value="H:mm" />
+		<property name="outputTimeSecFormat" value="HH:mm:ss" />
+		<property name="outputTimeMinFormat" value="HH:mm" />
+		<property name="outputTimeHourFormat" value="HH" />
+
+		<property name="lastNameIsFirst" value="false" />
+	</property>
+	<property name="localeFormat" class="org.iplass.mtp.impl.i18n.LocaleFormat">
+		<property name="locale" value="en_SG" />
+		<property name="locale" value="th" />
+		<property name="locale" value="th_TH" />
+
+		<property name="serverDateFormat" value="yyyyMMdd" />
+		<property name="serverTimeFormat" value="HHmmssSSS" />
+
+		<property name="browserInputDateFormat" value="dd/MM/yyyy" />
+		<property name="browserInputTimeSecFormat" value="HH:mm:ss" />
+		<property name="browserInputTimeMinFormat" value="HH:mm" />
+		<property name="browserInputTimeHourFormat" value="HH" />
+
+		<property name="outputDateFormat" value="dd/MM/yyyy" />
+		<property name="outputDateWeekdayFormat" value="EEEE dd/MM/yyyy" />
+		<property name="excelDateFormat" value="d/M/yyyy" />
+		<property name="excelTimeFormat" value="H:mm" />
+		<property name="outputTimeSecFormat" value="HH:mm:ss" />
+		<property name="outputTimeMinFormat" value="HH:mm" />
+		<property name="outputTimeHourFormat" value="HH" />
+
+		<property name="lastNameIsFirst" value="false" />
+	</property>
+
+	<property name="genericFontFamilyList" value="serif" />
+	<property name="genericFontFamilyList" value="sans-serif" />
+	<property name="genericFontFamilyList" value="monospace" />
+	<property name="genericFontFamilyList" value="cursive" />
+	<property name="genericFontFamilyList" value="fantasy" />
+	<property name="genericFontFamilyList" value="system-ui" />
+	<property name="genericFontFamilyList" value="ui-serif" />
+	<property name="genericFontFamilyList" value="ui-sans-serif" >
+	<property name="genericFontFamilyList" value="ui-monospace" >
+	<property name="genericFontFamilyList" value="ui-rounded" />
+	<property name="genericFontFamilyList" value="math" />
+	<property name="genericFontFamilyList" value="emoji" />
+	<property name="genericFontFamilyList" value="fangsong" />
+
+	<property name="languageFonts" class="org.iplass.mtp.impl.i18n.LanguageFonts">
+		<property name="language" value="ja" />
+		<property name="fonts" value="Meiryo" />
+		<property name="fonts" value="MS PGothic" />
+		<property name="fonts" value="Hiragino Kaku Gothic Pro" />
+		<property name="fonts" value="ヒラギノ角ゴ Pro W3" />
+		<property name="fonts" value="sans-serif" />
+	</property>
+	<property name="languageFonts" class="org.iplass.mtp.impl.i18n.LanguageFonts">
+		<property name="language" value="en" />
+		<property name="fonts" value="Segoe UI" />
+		<property name="fonts" value="Helvetica Neue" />
+		<property name="fonts" value="Arial" />
+		<property name="fonts" value="Helvetica" />
+		<property name="fonts" value="sans-serif" />
+	</property>
+	<property name="languageFonts" class="org.iplass.mtp.impl.i18n.LanguageFonts">
+		<property name="language" value="zh-CN" />
+		<property name="fonts" value="Microsoft Yahei" />
+		<property name="fonts" value="PingHei" />
+		<property name="fonts" value="sans-serif" />
+	</property>
+	<property name="languageFonts" class="org.iplass.mtp.impl.i18n.LanguageFonts">
+		<property name="language" value="zh-TW" />
+		<property name="fonts" value="Microsoft Yahei" />
+		<property name="fonts" value="PingHei" />
+		<property name="fonts" value="sans-serif" />
+	</property>
+	<property name="languageFonts" class="org.iplass.mtp.impl.i18n.LanguageFonts">
+		<property name="language" value="th" />
+		<property name="fonts" value="Leelawadee" />
+		<property name="fonts" value="Tahoma" />
+		<property name="fonts" value="sans-serif" />
+	</property>
+</service>
+----

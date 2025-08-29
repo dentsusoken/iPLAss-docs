@@ -1,0 +1,6 @@
+= セキュリティ対策
+:_hreflang-path: developerguide/securitycoding/index.html
+:_relative-root-path: ../../
+
+include::about.adoc[]
+

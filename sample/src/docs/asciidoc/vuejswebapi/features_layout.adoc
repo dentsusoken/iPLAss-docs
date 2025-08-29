@@ -1,0 +1,35 @@
+[[VueJS_WebAPI_Layout]]
+=== Top画面の作成
+Top画面の構成は下図のようになっています。画面共通で利用するレイアウト用Vueコンポーネント `defaultLayout.vue` と `shippingLayout.vue` を用意し、Vue-routerを利用することでアクセスされたパスによって実際のコンテンツを切り替えています。
+
+image:images/sample-ec_vuejs-webapi-template-layout.png[align=left]
+
+* Vue.jsの部分
++
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/vue/components/layout/DefaultLayout.vue
+|===
++
+[source,html]
+----
+----------------------------------------以上略----------------------------------------
+    <div class="row layout-container">
+        <div class="col-md-3 d-none d-md-block">
+            <div class="row">
+                <div class="col-12">
+                    <div class="list-group list-group-item-dark list-group-flush">
+                        <router-link v-bind:to="{name: 'top'}" class="list-group-item list-group-item-action font-weight-bold border-top">{{$t("samples.ec01.layout.defaultLayout.home")}}</router-link>
+                        <template v-for="category in categoryList">
+                            <router-link v-bind:to="{name: 'category', query: {categoryId: category.oid}}" v-bind:key="category.oid" class="list-group-item list-group-item-action">{{category.name}}</router-link>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <router-view></router-view> <1>
+    </div>
+----------------------------------------以下略----------------------------------------
+----
+<1> 実際のコンテンツを表示する箇所を指定するrouter-viewタグです。 + 
+※ Vue-Router部分の説明は割愛です。公式サイトを参照してください。

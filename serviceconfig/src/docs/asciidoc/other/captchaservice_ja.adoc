@@ -1,0 +1,57 @@
+[[CaptchaService]]
+=== [.eeonly]#CaptchaService#
+reCAPTCHAによるロボット排除を管理するためのサービスです。
+
+==== インタフェース名
+----
+org.iplass.wam.impl.captcha.CaptchaService
+----
+
+
+==== 実装クラス名
+----
+org.iplass.wam.impl.captcha.CaptchaService
+----
+
+
+==== CaptchaServiceの設定
+CaptchaServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| captchaMethod | <<CaptchaMethod>>、複数指定可 | CaptchaMethodの設定。
+|===
+
+[[CaptchaMethod]]
+.CaptchaMethod
+classはorg.iplass.wam.impl.captcha.CaptchaMethodの実装クラスを指定します。
+
+標準でorg.iplass.wam.impl.captcha.ReCaptchaMethodを提供しています。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| siteKey | String | reCAPTCHAのサイトキー。
+| secretKey | String | GoogleのreCAPTCHAのシークレットキー。reCAPTCHA Enterpriseを使用する場合、GCPのAPIキー。
+| projectId | String | reCAPTCHA Enterpriseを使用する場合、GCPのプロジェクトIDを入力します。
+| allowableScoreThreshold | String | 許容するスコアの閾値。設定した閾値以上のスコアの場合、正当であると判断します。reCAPTCHA v3もしくはreCAPTCHA Enterpriseの場合に設定します。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.wam.impl.captcha.CaptchaService</interface>
+	<class>org.iplass.wam.impl.captcha.CaptchaService</class>
+
+	<property name="captchaMethod" class="org.iplass.wam.impl.captcha.ReCaptchaMethod">
+		<property name="siteKey" value="yourSiteKey" />
+		<property name="secretKey" value="yourSecretKey" />
+		<property name="projectId" value="yourProjectId" />
+		<property name="allowableScoreThreshold" value="0.5" />
+	</property>
+
+</service>
+----

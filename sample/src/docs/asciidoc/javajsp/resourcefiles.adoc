@@ -1,0 +1,11 @@
+[[Java_JSP_ResourceFiles]]
+== リソースファイル
+
+include::resourcefiles_metadata.adoc[]
+
+include::resourcefiles_message.adoc[]
+
+include::resourcefiles_beanvalidation.adoc[]
+
+
+

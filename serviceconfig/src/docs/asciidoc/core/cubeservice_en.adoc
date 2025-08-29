@@ -1,0 +1,132 @@
+[[CubeService]]
+=== [.eeonly]#CubeService#
+This service manages Cube definitions (metadata).
+
+==== Interface Name
+----
+org.iplass.mtp.impl.aggregation.cube.CubeService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.aggregation.cube.CubeService
+----
+
+==== Settings of CubeService
+CubeService can be configured with the item below.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| enablePhysicalResourceLoading | boolean | Specify whether to allow access to physical resources such as files and JDBC. The default value is false.
+| useDataCompression | boolean | Specify whether to compress the expanded data in memory. The default value is true.
+| decompressDataReferenceType | String a| When useDataCompression is enabled, this item will specify how the data will be retained. The available choices are `SOFT` and `WEAK`. The default vale is `SOFT`.
+
+SOFT:: The expanded data will be cached as SoftReference.
+Comparing to WeakReference, cache can be easily reused.
+However, for the environment with less affordable memories, the process that will expand large amount of data, such as CSV download, will severely impact the response time performance.
+It is necessary to adjust the life span of SoftReference via the java VM start up option  `-XX:SoftRefLRUPolicyMSPerMB`.
+
+WEAK:: The expanded data will be cached as WeakReference.
+
+| useFlyweightListOnBitSetColData | boolean | Specify Whether to store actual data as a List when storing data in BitMap format. If set to true, the aggregate speed will be faster, but the memory usage will increase. The default value is false.
+| useHashIndexOnListColData | boolean | Specify Whether to generate HashIndex when storing data in ObjectPool format. If set to true, the aggregate speed will be faster, but the memory usage will increase. The default value is false.
+| hashIndexSegmentSize | int | Set hash segment size when using HashIndex. The set value is automatically corrected to the power of 2. The default value is 16.
+| maxRowsOfDimension | int | Maximum number of dimensions at the time of aggregation (number of rows that can be returned to Client). The default value is 10000.
+| maxRowsOfDimensionInternal | int | Maximum number of dimensions when aggregated (in internal processing). The default value is 100000.
+| transferredRawDataInMemoryThreshold | int | The threshold of the raw data in memory which is transferred from other nodes in a distributed environment when raw data is acquired. If the data exceed the threshold, it will be temporally dropped into a file. The default value is 16384 (16K).
+| joinBufferSize | int | Buffer size (number of rows) for Cube join. Increasing the load speeds up loading, but increases memory usage. The default value is 1000.
+| enableDistinctRows | boolean | Whether distinctRow specification is permitted when acquiring row data. The distinct operation consumes memory according to the number of rows to be acquired for duplication detections. The default value is true.
+| inMemoryRowThresholdOfDistinctRows | int | Maximum number of rows to be processed in memory during distinct processing when acquiring raw data. Swap to file to process more lines (slower). -1 handles everything in memory. 0 handles everything in the file. The default value is 10000.
+| loadStrategy | <<LoadStrategy>> | Processing method when acquiring data load to memory.
+| useForkJoin | boolean | fork-join framework based code? If you set it to true for distributed execution with multiple nodes, you can expect high speed. The default value is false.
+| gapFillLimit | int | Maximum number of categories to fill the dimension gap. If there are more categories, the gap will not be filled. The default value is 100.
+| queryTimeoutOfWaitLoading | long | Timeout period (ms) to wait for loading from query execution. The default value is 3000.
+| maxRowsOfDerivedCube | int | Maximum number of rows of raw data when using DerivedCube. Limit the number of rows to process in memory.
+| innerCubeLoadTimeoutSec | long | Maximum time (in seconds) to wait when Cube is LOADING during Cube merge and DerivedCube.
+| innerCubeLoadIntervalSec | int | Interval (in seconds) for checking whether loading is completed when the reference Cube is in LOADING states during Cube merge and DerivedCube.
+| rawDataDimensionResolverBufferSize | int | Buffer size for displaying Reference and SelectValue labels. The default value is 100.
+| listaggDefaultSeparator | String | Default separator when using the LISTAGG aggregate function. The default value is `,` .
+|===
+
+[[LoadStrategy]]
+.LoadStrategy
+Please specify the implementing class of org.iplass.mtp.impl.aggregation.cube.engine.inmemory.fact.load.LoadStrategy.
+
+The following LoadStrategy is provided as standard.
+
+- <<AllPartitionDirectLoadStrategy>>
+- <<PerPartitionLoadStrategy>>
+- <<SaveMemoryLoadStrategy>>
+
+[[AllPartitionDirectLoadStrategy]]
+.AllPartitionDirectLoadStrategy
+Please specify org.iplass.mtp.impl.aggregation.cube.engine.inmemory.fact.load.AllPartitionDirectLoadStrategy to the class.
+
+This is a method to read data directly into memory. There is no configurable items. +
+It consumes a lot of memory but is fast.
+
+[[PerPartitionLoadStrategy]]
+.PerPartitionLoadStrategy
+Please specify org.iplass.mtp.impl.aggregation.cube.engine.inmemory.fact.load.PerPartitionLoadStrategy to the class.
+
+This method reads data in units of partitions. There is no configurable items. +
+When the partition type is MOD, LIST, or when the Cube reading source is CSV and the data is divided to partition unit in advance, then with this option, high-speed loading can be expected while suppressing memory consumption.
+
+[[SaveMemoryLoadStrategy]]
+.SaveMemoryLoadStrategy
+Please specify org.iplass.mtp.impl.aggregation.cube.engine.inmemory.fact.load.SaveMemoryLoadStrategy to the class.
+
+This is a method of loading data while minimizing memory consumption when swapping data to a file. There is no configurable items.
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.aggregation.cube.CubeService</interface>
+	<class>org.iplass.mtp.impl.aggregation.cube.CubeService</class>
+	<!-- Whether to allow access to physical resources such as files and JDBC -->
+	<property name="enablePhysicalResourceLoading" value="false"/>
+	<!-- Whether to compress the data expanded in the memory (if you do not compress, the memory usage will increase, but the aggregation speed will not slow down slightly at the first aggregation after GC) -->
+	<property name="useDataCompression" value="true"/>
+	<!-- Whether to store actual data as a List when storing data in BitMap format. (If set to true, the aggregate speed will be faster, but the memory usage will increase) -->
+	<property name="useFlyweightListOnBitSetColData" value="false"/>
+	<!-- Whether to generate HashIndex when storing data in ObjectPool format. (If set to true, the aggregate speed will be faster, but the memory usage will increase) -->
+	<property name="useHashIndexOnListColData" value="false"/>
+	<!-- Hash segment size when using HashIndex. (Automatically corrected to a power of 2) -->
+	<property name="hashIndexSegmentSize" value="16"/>
+	<!-- Maximum number of dimensions during aggregation (number of rows that can be returned to the Client) -->
+	<property name="maxRowsOfDimension" value="10000"/>
+	<!-- Maximum number of dimensions when counting (in internal processing) -->
+	<property name="maxRowsOfDimensionInternal" value="100000"/>
+	<!-- The threshold of handling the real data transferred from other nodes in a distributed environment in memory. If the threshold was exceeded, the data will be temporally dropped into a file. The default value is 16K. -->
+	<property name="transferredRawDataInMemoryThreshold" value="16384"/>
+	<!-- Buffer size (number of rows) for Cube join. Increasing the load speeds, but also increases memory usage. -->
+	<property name="joinBufferSize" value="1000"/>
+	<!-- Whether to allow distinctRow specification when acquiring row data. The distinct operation consumes memory according to the number of rows to be acquired because of duplication detection.-->
+	<property name="enableDistinctRows" value="true"/>
+	<!-- Maximum number of rows to be processed in memory during distinct processing when acquiring raw data. Swap to file when processing more lines (slower). -1 handles everything in memory. 0 handles everything with files. -->
+	<property name="inMemoryRowThresholdOfDistinctRows" value="10000"/>
+	<!-- Processing method when acquiring data to memory
+			SaveMemoryLoadStrategy: 		A method of loading data and swapping data to a file while minimizing memory consumption.
+			AllPartitionDirectLoadStrategy: A method for loading directly into memory. It consumes a lot of memory but is fast.
+			PerPartitionLoadStrategy: 		A method for loading data in units of partitions.
+				If the partition type is MOD, LIST, or the Cube import source is CSV,
+				or if the data is divided in advance in units of partitions, specifying this can grant a high speed loading with suppressed memory consumption.
+
+			※They are all from the package of org.iplass.mtp.impl.aggregation.cube.engine.inmemory.fact.load
+	 -->
+	<property name="loadStrategy" class="org.iplass.mtp.impl.aggregation.cube.engine.inmemory.fact.load.SaveMemoryLoadStrategy"/>
+	<!-- Whether to process with fork-join framework based code. If true is set for distributed execution with multiple nodes, higher speed can be expected. -->
+	<property name="useForkJoin" value="false"/>
+	<!-- Maximum number of categories when filling a dimension gap. If the category is higher than this, do not fill the gap -->
+	<property name="gapFillLimit" value="100"/>
+	<!-- Maximum number of rows of raw data when using DerivedCube. Limit the number of rows to process in memory. -->
+	<property name="maxRowsOfDerivedCube" value="10000"/>
+	<!-- The maximum waiting time (in seconds) when the Cube of the reference destination is LOADING during Cube merge and DerivedCube. -->
+	<property name="innerCubeLoadTimeoutSec" value="1800"/>
+	<!--Interval (in seconds) for checking whether loading is completed when the reference Cube is LOADING during Cube merge and DerivedCube. -->
+	<property name="innerCubeLoadIntervalSec" value="10"/>
+</service>
+----

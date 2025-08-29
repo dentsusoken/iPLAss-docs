@@ -1,0 +1,63 @@
+[[Java_JSP_ConfigFiles]]
+== 設定ファイル
+
+=== service-config
+
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/resources/mtp-service-config.xml
+|===
+
+* カスタムのErrorUrlSelectorの登録
++
+[source,xml]
+----
+	<!-- Web App Settings -->
+	<service>
+		<interface>org.iplass.mtp.impl.web.WebFrontendService</interface>
+
+		<!-- ■ your error url selector ■ -->
+		<property name="errorUrlSelector" class="samples.ec01.web.EcErrorUrlSelector" /> <1>
+	</service>
+----
+<1> カスタムのErrorUrlSelectorを登録しています。
+
+* メタデータ定義の登録
++
+[source,xml]
+----
+	<!-- XmlResource MetaData and Annotation MetaData Settings -->
+	<service>
+		<interface>org.iplass.mtp.impl.metadata.MetaDataRepository</interface>
+
+		<!-- ■ your app metadata xml file name (additional="true) ■ -->
+		<property name="resourcePath" value="/samples-ec01-ce-metadata.xml" additional="true" /> <1>
+		<!-- ■ your app command list class (additional="true) ■ -->
+		<property name="annotatedClass" value="samples.ec01.command.metadata.CommandList" additional="true"/> <2>
+
+	</service>
+----
+<1> メタデータの定義ファイル
+<2> アノテーションでコマンドのメタデータ定義を作っています。
+
+* 全文検索機能
++
+[source,xml]
+----
+	<!-- Fulltext Search Service Settings -->
+	<service>
+		<interface>org.iplass.mtp.impl.fulltextsearch.FulltextSearchService</interface>
+		<property name="useFulltextSearch" value="true" /> <1>
+		<property name="maxRows" value="1000" />
+		<property name="throwExceptionWhenOverLimit" value="true"/>
+
+		<!-- lucene利用 -->
+		<class>org.iplass.mtp.impl.fulltextsearch.lucene.LuceneFulltextSearchService</class>
+		<property name="directory" value="[set your lucene index file store path. eg: D:\tmp\lucene]" /> <2>
+		<property name="analyzer" value="org.apache.lucene.analysis.ja.JapaneseAnalyzer" />
+		<property name="indexWriterRAMBufferSizeMB" value="64.0"/>
+		<property name="redundantTimeMinutes" value="10"/>
+	</service>
+----
+<1> 全文検索機能を有効化にしてます。
+<2> インデックスファイルの作成場所を指定してください。

@@ -1,0 +1,83 @@
+[[AdminConsoleService]]
+=== AdminConsoleService
+This is the service to manage the general performance of the AdminConsoleService.
+
+==== Interface Name
+----
+org.iplass.adminconsole.server.base.service.AdminConsoleService
+----
+
+==== Implementing Class Name
+----
+org.iplass.adminconsole.server.base.service.AdminConsoleService
+----
+
+==== Settings of AdminConsoleService
+AdminConsoleService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| showServerInfo | boolean | Indicate whether to display the server information on AdminConsole as environment information.
+| logDownloadConfig | <<LogConfig>> | The configurations of the downloads of the application logs.
+| maxUploadFileSize | long | Set the maximum size of the files when uploading files at AdminConsole. The default is 1GBytes.
+|===
+
+[[LogConfig]]
+.LogConfig
+Please specify org.iplass.adminconsole.server.base.service.LogConfig to the class.
+
+It is a setting to download the log output to the server from LogExplorer.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| enabled | boolean | Whether to enable the downloads of the log files.
+| logHome | String, Multiple | Specify the storage folder of the log files.
+| fileFilter | String, Multiple | File name filter for the logs displayed in LogExplorer, specified by regular expression
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.adminconsole.server.base.service.AdminConsoleService</interface>
+
+	<!-- Whether to display server information on AdminConsole as environment information -->
+	<property name ="showServerInfo" value="true" />
+
+	<!-- Configs about the referable logs in AdminConsole -->
+	<property name="logDownloadConfig" class="org.iplass.adminconsole.server.base.service.LogConfig">
+		<property name="enabled" value="true" />
+
+		<!--
+			Specify the storage folder of the log files.
+			${tenantId}:TenantID
+			${tenantName}:TenantName
+			*:Any Folder Name
+
+			Example 1：/logs/${tenantId}/
+				at /logs/ folder, there will be a folder of Tenant Id. Then under that folder will be log folder according to each Tenants.
+
+			Example 2：/logs/*/${tenantId}/
+				at /logs/ folder, there will be any folder, which contains the folder of Tenant Id. Then underneath will be log folder according to each Tenants.
+				For instance, the log folder will be distributed for multiple server in the following way: /logs/ap1/,/logs/ap2/ ....
+		-->
+		<property name="logHome" value="/logs/${tenantId}/" />
+
+		<!--
+			Specifying the filters for the file names(regular expression)
+
+			Example：.*app\.log.* (== *app.log*)
+		-->
+		<property name="fileFilter" value=".*app\.log.*" />
+	</property>
+	
+	<!-- The maximum size of the uploadable files.(Byte) -->
+	<!--
+	<property name ="maxUploadFileSize" value="1073741824" />
+	-->
+	
+</service>
+----

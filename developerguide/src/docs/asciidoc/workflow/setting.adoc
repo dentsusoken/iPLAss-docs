@@ -1,0 +1,1633 @@
+== ワークフローの管理
+
+=== ワークフローの作成
+.編集画面
+フロー定義画面は4つのパーツで構成されています。
+
+image::create_editorlayout.png[align="left"]
+
+.フロー編集
+`Item選択` パーツから必要なItemを `フロー設計` パーツにドロップします。
+ドロップしたItemをFlow Itemでつなげて一連のフローを作成します。
+ドロップしたItemは `フロー設計` パーツ内でドラッグすることで移動やサイズ変更ができます。
+また `フロー設計` パーツ内部でItemを選択すると、 `プロパティ編集` パーツにプロパティが表示されます。
+`Hint` にプロパティに対する説明が表示されるので、必要に応じてプロパティを設定します。
+
+ドロップしたItemを削除する場合は、対象のItemを選択し、右クリックメニューから `Itemを削除する` を選択します。
+
+image::create_itemdelete.png[align="left"]
+
+また各Itemをつなぐ `Flow` については、線を曲げるためのPoint数（頂点）を変更する `Point数を変更する` メニューも表示されます。
+
+image::create_changepoint.png[align="left"]
+
+`フロー設計` パーツに表示されているグリッド表示を消したい場合は、 `プロパティ編集` パーツの上部にあるボタンでON／OFFを切り替えます。
+
+image::create_hidegrid.png[align="left"]
+
+`フロー設計` パーツ上でItemが重なってしまって、Itemを選択しにくい状況になった場合は、 `プロパティ編集` パーツのリストから選択できます。
+
+image::create_itemselect.png[align="left"]
+
+.アイテムの種類
+フローを構成するためのItemは、役割によって5つのカテゴリに分類されます。
+
+Variable ::
+フロー内で共有する変数を定義するItemです。
+この変数に格納した情報は各アイテムで参照できます。
+
+Flow ::
+EventやActivity、Gatewayを結び、処理順序を定義するItemです。
+
+Event ::
+フローの開始、完了、停止（キャンセル）など、処理のきっかけや終了を定義するItemです。
+WorkflowはStartEventから開始されます。
+
+Activity ::
+フロー内で実施する処理（タスク）を定義するItemです。
+業務処理はActivityを利用して定義します。
+ユーザーへのタスク設定やメール送信など予め定義されたActivityを利用したり、Commandで独自に処理を定義できます。
+
+Gateway ::
+フローの分岐、または結合を定義するItemです。
+Gatewayにはフローを分岐する `Split` と、フローを結合する `Join` があります。
+
+またEvent、Activity、GatewayをまとめてNodeと表現します。
+
+=== 設定
+==== Variable
+===== VariableItem
+Workflow内で参照するオブジェクトを格納する入れ物。
+Workflowの開始時または後述するCommandTask内でこの変数に対して値を設定できます。
+またEntityの詳細画面と連携する際は、対象となるEntityをここで定義した変数に格納します。
+
+====== プロパティ
+[cols="2,1,2,8a" options="header"]
+|===
+|設定項目
+|必須
+|デフォルト値
+|内容
+
+|name
+|○
+|
+|アイテムの物理名。英数字のみ指定可能です。
+各Itemからはこの変数名をkeyとして値を参照します。
+
+|displayName
+|×
+|
+|アイテムの表示名。設定画面でのみ利用されます。
+
+|description
+|×
+|
+|アイテムの概要などの説明用。
+この項目は開発・メンテナンス用のものです。
+
+|multiple
+|×
+|false
+|（未実装）
+
+|lock
+|×
+|false
+|この変数にEntityを格納する場合に、Workflowが開始されたタイミングで対象Entityをロックします。
+このWorkflowが終了(またはキャンセル)したタイミングでロックを解除します。
+
+※ロックするユーザーは `workflow` になります
+（Workflowを起動したユーザーではありません）。
+
+|loadReferencesOnVariableRefresh
+|×
+|
+|この変数にEntityを格納する場合に、変数を再読み込み(load)する際のLoadOptionに指定する `loadReferences` を設定します。
+|===
+
+[[workflow_start_parametor]]
+====== 起動時のパラメータについて
+Workflowを開始するには
+ `org.iplass.mtp.workflow.WorkflowManager#startProcess`
+を実行します。
+
+[source,java]
+----
+public String startProcess(String workflowDefinitionName);
+----
+
+[source,java]
+----
+public String startProcess(String workflowDefinitionName, Map<String, Object> parameters);
+----
+
+この `parameters` で指定されたMapのkeyと `name` が一致するVariableItemに、
+Mapのvalue値が格納されます。
+
+起動方法についての詳細は link:#ref_start_proccess[プログラムコードからの起動]
+を参照してください。
+
+==== Flow
+===== SequenceFlow
+各Nodeアイテムを結び、処理の順番を定義します。
+遷移元Nodeの状態が `COMPLETE` になったタイミングで、遷移元Nodeの処理結果に応じて実行されるFlowが決定されます。
+
+====== プロパティ
+[cols="2,1,2,8a" options="header,asciidoc"]
+|===
+|設定項目
+|必須
+|デフォルト値
+|内容
+
+|name
+|○
+|
+|アイテムの物理名。英数字のみ指定可能です。
+各Nodeはこの値を利用して接続情報を保持します。
+
+|displayName
+|×
+|
+|アイテムの表示名。設定画面でのみ利用されます。
+
+|description
+|×
+|
+|アイテムの概要などの説明用。この項目は開発・メンテナンス用のものです。
+
+|sourceNodeName
+|○
+|
+|遷移元のNodeの名前。
+
+|destinationNodeName
+|○
+|
+|遷移先のNodeの名前。
+
+|isDefault
+|○
+|false
+|遷移元Nodeに複数のFlowが接続されていた場合、`nodeResultStatus` または `conditionExpression` に該当するFlowが見つからない場合にこのFlowを実行します。
+
+※遷移元Nodeに対して `isDefault` をtrueに設定するのは1つにしてください
+(複数指定した場合、どれが実行されるかは保障されません)。
+
+|nodeResultStatus
+|×
+|
+|遷移元Nodeの実行結果(String)がここで指定したステータスと一致した場合に、このFlowを実行します。
+未指定の場合、または `*` が含まれている場合は、全ての実行結果が一致しているとみなされます。
+
+※実行結果を設定することができるNodeは `CommandTask` と `UserTask` のみです。
+他のNodeは実行結果を持たないため、これら２つのNodeを遷移元Nodeとしている場合のみ設定してください。 +
+※複数指定する場合は、 `,` (カンマ)で区切ってください。(OR条件で判断されます)
+
+|conditionExpression
+|×
+|
+|GroovyScriptを利用して、遷移元Nodeの処理結果に関係なく実行するための条件を指定できます。
+
+※ここで定義するスクリプトは `boolean`( true：Flowを実行) を返すように実装する必要があります。 +
+link:#ref_sequenceflow_conditionExpression[conditionExpressionの例]
+|===
+
+====== 遷移元Node、遷移先Nodeの指定
+遷移元Node、遷移先Nodeは `フロー設計` パーツ内でFlowをNodeにドロップすることで指定できます。
+ドロップした位置によってNode上の結合部分(上下左右)に設定されます。
+設定されるとPointが緑から黄色になります。
+
+image::sequenceflow_connect.png[align="left"]
+
+====== Nodeの状態(ステータス)
+各Nodeは内部的に実行時の状態を持っています。
+
+[cols="2,2,8" options="header"]
+|===
+|状態
+|説明
+|補足
+
+|NOT_START
+|未開始
+|
+
+|ACTIVE
+|実行中
+|
+
+|COMPLETED
+|完了
+|遷移元Nodeがこの状態になるとFlowの実行条件が判断される。
+
+|CANCELED
+|キャンセル
+|
+|===
+
+遷移元のNodeが `COMPLETED` の状態になったタイミングで、接続されているFlowの実行条件が判断されます。
+
+[[ref_sequenceflow_conditionExpression]]
+====== conditionExpressionの例
+GroovyScriptの例です。
+Workflowに定義されたVariableItemがバインドされています。
+
+.（例）conditionExpression
+[source,groovy]
+----
+/*
+ * 対象商品のカテゴリコードが「category1」かを判定する。
+ * true：「category1」商品
+*/
+
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.entity.Entity;
+import org.iplass.mtp.entity.EntityManager;
+
+//商品カテゴリコード取得
+def getProductCategoryCode() {
+
+    EntityManager em = ManagerLocator.manager(EntityManager.class);
+
+    //VariableItem(product)はnameを変数名にしてバインドされている
+    //変数productのcategoryに設定されているProductCategoryエンティティを検索
+    Entity category = em.load(product.category.oid, product.category.definitionName);
+
+    if (category != null) {
+        return category.code;
+    } else {
+        return "";
+    }
+}
+
+//商品カテゴリコードを取得
+String categoryCode = getProductCategoryCode();
+
+//判定
+return "category1".equals(categoryCode);
+----
+
+==== Node(Event、Activity、Gateway)
+Event、Activity、GatewayをNodeと呼びます。
+
+[[ref_node_property]]
+.プロパティ
+Nodeには共通のプロパティがあります。
+[cols="2,1,2,8a" options="header"]
+|===
+|設定項目
+|必須
+|デフォルト値
+|内容
+
+|name
+|○
+|
+|アイテムの物理名。英数字のみ指定可能です。
+
+|displayName
+|×
+|
+|アイテムの表示名。
+`historyLogging` がtrueの場合、 `mtp.workflow.ProccessHistory` エンティティの `nodeName` に設定されます。
+
+|description
+|×
+|
+|アイテムの概要などの説明用。この項目は開発・メンテナンス用のものです。
+
+|historyLogging
+|×
+|false
+|このタスクを実行した際の処理履歴を保存します。 +
+link:#ref_history_log[履歴データについて]
+|===
+
+[[ref_history_log]]
+.履歴データについて
+`historyLogging` がtrueに設定されている場合、そのNodeの実行結果が `mtp.workflow.ProccessHistory` エンティティに登録されます。
+ここに保存された履歴データは、Workflowエンティティの `reference` プロパティとして参照したり、タスク詳細画面でワークフロー履歴として参照できます。
+
+image::startevent_historylogging.png[align="left"]
+
+==== Event
+===== StartEvent
+Workflowを開始する際の起点。
+`WorkflowManager#startProcess` が実行されると、定義内に存在する `StartEvent` を実行します。
+StartEventが実行されるとWorkflowの状態(ステータス)は `ACTIVE` になります。
+StartEvent自体はWorkflowの状態を変更後、Nodeの状態が `COMPLETED` となり、後続の処理(接続されたFlow)を実行します。
+
+StartEventについては以下の点に注意してください。
+
+* Workflow内で必ず1つ定義してください。
+* 複数定義しないでください。
+* StartEventに対して複数のFlowを接続しないでください。
+
+====== プロパティ
+link:#ref_node_property[共通プロパティ] を参照してください。
+
+====== Flowの決定順序
+後続の実行Flowを以下の優先度で決定します。
+
+. `isDefault` プロパティがtrueのFlow
+. 接続されているFlowが1つのみの場合、接続されているFlow
+. 該当するFlowが見つからない場合、 `WorkflowRuntimeException` をthrow
+
+====== Workflowエンティティについて
+Workflowは、処理が開始されると1起動ごとに `mtp.workflow.Workflow` エンティティを登録します。
+このWorkflowエンティティには `workflowStatus` プロパティがあり、Workflowの状態を保持しています。
+
+[cols="2,2,8" options="header"]
+|===
+|状態
+|説明
+|補足
+
+|NOT_START
+|未開始
+|StartEventが存在しない場合(定義的には不正な状態です)
+
+|ACTIVE
+|実行中
+|StartEventによってこの状態に設定される
+
+|COMPLETED
+|完了
+|EndEventによってこの状態に設定される
+
+|CANCELED
+|キャンセル
+|TerminateEventやCommandTask、SubProcessTaskによってこの状態に設定される
+|===
+
+これは各Nodeの実行状態とは異なります。
+Workflow全体のステータスです。
+
+===== EndEvent
+Workflowを終了させるNode定義。
+EndEventが実行されるとWorkflowの状態(ステータス)は `COMPLETED` になり、Workflowは終了します。
+
+====== プロパティ
+link:#ref_node_property[共通プロパティ] を参照してください。
+
+===== TerminateEvent
+WorkflowをキャンセルさせるNode定義。
+TerminateEventが実行されるとWorkflowの状態(ステータス)は `CANCELED` になり、Workflowは終了します。
+
+====== プロパティ
+link:#ref_node_property[共通プロパティ] を参照してください。
+
+===== IntermediateEvent
+Workflowの中間イベントを表すNode定義。
+HistoryLogの出力によるWorkflowの状態マーク用イベント。
+このイベント内での処理は実行されず、続けて後続のフローに遷移します。
+
+====== プロパティ
+link:#ref_node_property[共通プロパティ] を参照してください。
+
+===== IntermediateTimerEvent
+Workflowの中間イベントを表すNode定義。
+このNodeを完了させるための日付を指定したり、到達後の遅延時間を指定できます。
+(タイマー機能)
+
+====== プロパティ
+[cols="2,1,2,8a" options="header"]
+|===
+|設定項目
+|必須
+|デフォルト値
+|内容
+
+|timer
+|○
+|
+|イベントを完了する時間を指定します。 +
+link:#ref_IntermediateTimerEvent_timer[Timerの設定]
+|===
+
+その他は link:#ref_node_property[共通プロパティ] を参照してください。
+
+[[ref_IntermediateTimerEvent_timer]]
+====== Timerの設定
+Timerを設定する方法は2種類あります。
+それぞれの方法によって設定するプロパティがあります。
+
+.SpecificDate
+このイベントを完了させる日時を直接指定する方法です。
+
+[cols="2,1,2,8a" options="header"]
+|===
+|設定項目
+|必須
+|デフォルト値
+|内容
+
+|Date Expression
+|○
+|
+|GroovyScriptを利用して、イベントの実行日時を指定します。
+ここで定義するスクリプトは `java.util.Date` のインスタンス、
+または日付書式のStringを返すようにする必要があります。
+|===
+
+.Delay
+このイベントを完了させる日時を、イベント到達時からの遅延時間として指定する方法です。
+
+[cols="2,1,2,8a" options="header"]
+|===
+|設定項目
+|必須
+|デフォルト値
+|内容
+
+|Time Unit
+|○
+|
+|遅延時間として指定する単位を指定します。
+
+|Delay Expression
+|○
+|
+|GroovyScriptを利用して、遅延時間を指定します。
+ここで定義するスクリプトは `Long` のインスタンス、
+または数値を表すStringを返すようにする必要があります。
+|===
+
+==== Activity
+===== CommandTask
+メタデータとして定義されたCommandを実行するタスク定義。
+Commandの実行結果（String）によってNode自体の実行ステータスを制御できます。
+またCommandの実行結果をNodeの実行結果として返します
+(接続されているFlowの `nodeResultStatus` で利用可能)。
+
+====== プロパティ
+[cols="2,1,2,8a" options="header"]
+|===
+|設定項目
+|必須
+|デフォルト値
+|内容
+
+|commandConfig
+|○
+|
+|実行するCommandメタデータを指定します。 +
+link:#ref_CommandTask_commandConfig[Commandの実装例]
+
+|keepActiveStatus
+|×
+|
+|Nodeのステータスを `ACTIVE` にするCommandの実行結果を指定します。
+`ACTIVE` の状態でNode処理を中断した場合、このNodeを完了させるには `WorkflowManager#signalEvent` メソッドを利用してEventを送る必要があります。
+
+|completedStatus
+|○
+|
+|Nodeのステータスを `COMPLETED` にするCommandの実行結果を指定します。
+続けて後続の処理（接続されたFlow）を実行します。
+
+|canceledStatus
+|×
+|
+|Nodeのステータスを `CANCELED` にするCommandの実行結果を指定します。
+Workflowは状態(ステータス) `CANCELED` で終了します。
+
+|listenEventClassName
+|×
+|
+| `keepActiveStatus` で `ACTIVE` の状態で処理を中断した場合に、`signalEvent` で送られてくるEvent(Serialize Object)のクラス名を指定します。
+ここで指定したEventが送られてきた場合、再度Commandを実行します。
+|===
+
+その他は link:#ref_node_property[共通プロパティ] を参照してください。
+
+====== NodeがACTIVE状態の挙動
+Nodeが `ACTIVE` の状態で処理を終了すると、後続のFlowへと遷移されない状態となり、Workflow自体が実行中の状態のまま処理が中断されます。
+この状態のWorkflowを再開するには、
+`org.iplass.mtp.workflow.WorkflowManager#signalEvent`
+メソッドを実行する必要があります。
+
+[source,java]
+----
+public void signalEvent(Object event, String workflowInstanceId);
+----
+
+第2引数の `workflowInstanceId` は１起動ごとに生成されるWorkflowエンティティのOIDです。
+startEvent時の戻り値としても返ってきます。
+第1引数で指定する `event` パラメータのインスタンスが `listenEventClassName` で指定したクラスと一致する場合、再度Commandが実行されます。
+
+[[ref_CommandTask_commandConfig]]
+====== Commandの実装例
+Commandにバインドされる `request` からVariableItemを取得できます。
+またCommand内からVariableItemに対して値を設定する場合は、 `request.getSession().setAttribute("変数名", 値);` を使います。
+
+.（例）Scriptで定義したCommand
+[source,groovy]
+----
+/*
+ * 現在の商品登録ステータスから次の登録ステータスを算出する。
+ */
+
+//ステータス算出
+def getNextStatus(status) {
+    String updateStatus = "";
+
+    if (status == "01") {
+        updateStatus = "11";
+    } else if (status == "11") {
+        updateStatus = "21";
+    } else if (status == "21") {
+        updateStatus = "31";
+    }
+
+    return updateStatus;
+}
+
+//商品Entityを取得（VariableItemとしてproductが定義されている）
+def product = request.getAttribute("product");
+//println("product:" + product);
+
+//現在のステータスから次のステータスを取得
+String updateStatus = getNextStatus(product.wfStatus.value);
+//println("update-status:" + updateStatus);
+
+//変数にセット
+request.getSession().setAttribute("updateStatus", updateStatus);
+
+//コマンドの戻り値を返す（利用しないためなんでもいい）
+return "OK";
+----
+
+===== UserTask
+登録ユーザーに対して、タスク(承認、差戻しなどの作業)を割り当て、その回答を制御するタスク定義。
+ユーザーの処理結果(回答)をタスク実行結果とします。
+(接続されているFlowの `nodeResultStatus` で利用可能)
+またユーザーに直接タスクを割り当てずにQueue(キュー)にタスクを貯める方法もあります。
+ここで割り当てられたタスクは `タスク一覧` や `タスク詳細` 画面から実行できます。
+
+====== プロパティ
+[cols="2,1,2,8a" options="header"]
+|===
+|設定項目
+|必須
+|デフォルト値
+|内容
+
+|assignRule
+|○
+|
+|ユーザーの割当ルールを設定します。 +
+link:#ref_usertask_assign_rule[割当ルールの設定]
+
+|autoSkipRule
+|×
+|
+|GroovyScriptを利用して、自動的にこのタスクを終了する条件を設定します。
+スキップした場合はタスク実行結果が `skipped` になります。
+またこのタイミングでNodeのステータスは `COMPLETED` になります。 +
+link:#ref_usertask_auto_skip[スキップルールの設定]
+
+|waitCompleted
+|×
+|true
+|`false` にした場合、ユーザーにタスクを割り当ててユーザーの回答が返ってくるを待たずに、後続の処理(接続されたFlow)を実行します。
+`false` にした場合はタスク実行結果が `notified` になります。
+またこのタイミングでNodeのステータスは `COMPLETED` になります。
+
+|taskTargetEntity
+|×
+|
+|このタスクで対象とするデータがEntityの場合に、そのEntityが格納されている変数名（VariableItem）を設定します。
+ここで設定されたEntityは `タスク詳細` 画面からリンクで参照することができます。
+
+|lockEntity
+|×
+|
+|このタスクで対象とするデータがEntityの場合で、かつタスクを実行しているユーザーによってEntityをロックさせたい場合に、そのEntityが格納されている変数名(VariableItem)を設定します。
+このタスクを実行中( `ACTIVE` の間)は割り当てられたユーザーでEntityがロックされます。
+
+※`assignRule` で単一のユーザーに割当られた場合で、かつ `waitCompleted=true` の場合のみ有効です。 +
+※VariableItemの `lock` がtrueの場合は、ロックするユーザーは `workflow` になります(割り当てられたユーザーではありません)。
+
+|taskResultStatus
+|○
+|
+|ユーザーが選択することができる回答を設定します。 +
+link:#ref_usertask_result_status[タスク結果の設定]
+
+|userTaskName
+|×
+|
+|ユーザータスクの名前を設定します。 +
+link:#ref_usertask_entity[UserTaskエンティティについて]
+
+|userTaskDescription
+|×
+|
+|ユーザータスクの説明を設定します。
+
+|priority
+|×
+|
+|ユーザータスクの優先度をGroovyTemplate形式で設定します。
+UserTaskEntityの優先度のいずれかの値を返却してください。
+
+|limit
+|×
+|
+|ユーザータスクの期限をGroovyScript形式で設定します。
+`java.util.Date` のインスタンス、 `yyyy/MM/dd` 形式もしくは、`yyyy/MM/dd HH:mm:ss.SSS` 形式(DateFormat.MEDIUM形式)のStringを返却してください。
+
+|delegate
+|×
+|false
+|自身に割り当てられたタスクを他の人に委譲できるようにするかを指定します。 +
+link:#ref_usertask_delegate[委譲の設定]
+
+|notifyMailTemplate
+|×
+|
+|ユーザーがタスクを割り当てられた際にメールで通知する場合、送信するMailTemplateを指定します。
+
+|notificationClassName
+|×
+|
+|ユーザーへのタスクの割り当てが発生した際に独自の処理を組み込む場合、 `UserTaskNotification` インターフェースを実装したクラスの名前を指定します。 +
+link:#ref_usertask_notification[カスタム処理の設定]
+|===
+
+その他は link:#ref_node_property[共通プロパティ] を参照してください。
+
+[[ref_usertask_entity]]
+====== UserTaskエンティティについて
+UserTaskが起動されると、 `mtp.workflow.UserTask` エンティティが登録されます。
+
+.プロパティ設定
+`UserTask` の設定項目の内、以下の項目が `UserTask` エンティティに反映されます。
+
+[cols="2,8a" options="header"]
+|===
+|設定項目
+|形式
+
+|userTaskName
+|`UserTask` エンティティの `name` に設定する値をGroovyTemplate形式で指定します。
+未指定の場合、 `name` が設定されます。
+
+|userTaskDescription
+|`UserTask` エンティティの `description` に設定する値をGroovyTemplate形式で指定します。
+
+|priority
+|`UserTask` エンティティの `taskPriority` に設定する値をGroovyTemplate形式で指定します。
+`taskPriority` のSelect値を返すように実装します。
+
+|limit
+|`UserTask` エンティティの `taskLimit` に設定する値をGroovyScript形式で指定します。
+`java.util.Date` インスタンス、または `yyyy/MM/dd` 形式もしくは、`yyyy/MM/dd HH:mm:ss.SSS` 形式の文字列を返すように実装します。
+|===
+
+.（例）userTaskName
+[source,GroovyTemplate]
+----
+sample01/ProductFlow1-${workflowInstanceId}_${product.code}_${updateStatus}
+----
+
+.（例）priority
+[source,GroovyTemplate]
+----
+<%@import java.util.Date%>
+<%@import org.iplass.mtp.web.template.TemplateUtil%>
+
+<%
+//販売開始日とシステム日付を比較し優先度を設定
+
+//販売開始日
+Date startDate = (java.util.Date)product.getValue("startSalesDate");
+//システム日時
+Date systemDate = TemplateUtil.getCurrentTimestamp();
+
+long diffDays = (startDate.getTime() - systemDate.getTime()) / (1000 * 60 * 60 * 24);
+
+%>
+
+<% if (diffDays < 3){ %>
+31_CRITICAL
+<% } else if (diffDays < 5){ %>
+21_HIGH
+<% } else { %>
+11_NORMAL
+<% } %>
+----
+
+.（例）limit
+[source,GroovyScript]
+----
+/*
+ * 販売開始日の２日前をWorkflowの期限に設定
+ */
+
+import java.util.Date;
+import java.util.Calendar;
+
+//販売開始日を取得
+Date startDate = (java.util.Date)product.getValue("startSalesDate");
+
+//２日前を計算
+Calendar cal = Calendar.getInstance();
+cal.setTimeInMillis(startDate.getTime());
+cal.add(Calendar.DATE, -2);
+
+return cal.getTime();
+----
+
+.タスク一覧での見え方
+登録された `UserTask` データは、TOP画面の `タスク一覧` パーツで表示されます。
+
+image::usertask_topparts.png[align="left"]
+
+[[ref_usertask_assign_rule]]
+====== 割当ルールの設定
+対象のタスクをユーザーに割り当てる設定を行います。
+
+[cols="2,8a" options="header"]
+|===
+|設定項目
+|内容
+
+|種類
+|ユーザーにタスクを割り当てる方法は3種類あります。
+
+ById ::
+割り当てるユーザーを直接指定する方法です。
+ToPrevious ::
+既に完了した同一タスク定義の中で、最後に割当てられたユーザーに再度割り当てる方法です。
+ToQueue ::
+ユーザーに直接タスクを割り当てず、キュー(Queue)という入れ物にタスクをプールさせる方法です。
+ここでプールされたタスクは、ユーザー自身が明示的に取得する(割当てをもらう)必要があります。
+プールされたタスクは `タスク一覧` 画面の `全てのタスク` タブに表示されます。
+
+|適用フロー名
+|ルールはこのタスクに接続されているフロー(このタスクを遷移先としているフロー)ごとに設定することが可能です。
+フローごとにルールを変更したい場合は、フロー名を設定します。
+`*` を指定することで全てのフローに適用されます。
+
+|割当種別
+|タスクの割当対象となったユーザー全員に同じタスクを割り当てるか、そのうちの誰か１人に割り当てるかを指定します。
+
+ANYONE ::
+対象ユーザーのうちシステムでランダムに割当先を決定します。
+ALL ::
+対象ユーザー全員に割当を行ないます。
+
+|完了条件
+|割当条件で割り当てられたユーザーの各自のタスク完了に対して、UserTaskとしてどうなったタイミングで完了にするかを指定します。 +
+ユーザーの回答が競合した場合に実行される、競合解決ロジックを設定できます。
+
+ANYONE ::
+割り当てられたユーザーのうち、誰か１人が回答したタイミングで処理を終了します。
+タスク結果は回答したユーザーの結果になります。
+ALL ::
+全員一致方式。
+割り当てられたユーザー全員のタスクが完了したタイミングで処理を終了します。
+回答が一致した場合、その回答がタスク結果になります。
+全員の回答が一致しない場合、競合解決ロジックによりタスク結果を決定します。
+VOTE ::
+多数決方式。
+割り当てられたユーザー全員のタスクが完了したタイミングで処理を終了します。
+多いほうの結果がタスク結果になります。
+同一の投票数の場合、競合解決ロジックによりタスク結果を決定します。
+|===
+
+.割当種類と完了条件
+割当の設定には、 `割当種別` と `完了条件` というプロパティを指定する必要があります。
+例えば `ALL` － `ANYONE` を指定した場合は、全対象ユーザーにタスクを割り当て、割り当てられたユーザーのうち誰かが回答したタイミングで処理を完了します。
+
+.ByIdによるユーザーの割当
+ユーザーを直接割り当てる方法です。
+割り当てるユーザーを指定する方法は3種類あります。
+
+* SCRIPT +
+GroovyScriptを利用して定義する方法です。
+戻り値としてUserEntityのアカウントIDを返すように実装します。
+返されたアカウントIDのユーザーにタスクが割り当てられます。
+VariableItemがバインドされます。 +
++
+.（例）Scriptで定義した割当ルール
+[source,groovy]
+----
+/*
+ * 登録ステータスを元に承認対象グループを取得し、
+ * そのグループに所属するユーザーのIDを返す。
+ */
+
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.entity.Entity;
+import org.iplass.mtp.entity.EntityManager;
+import org.iplass.mtp.entity.query.Query;
+
+//グループに所属するユーザーのコードを取得
+def getGroupUserAccountId(groupCode) {
+
+    EntityManager em = ManagerLocator.manager(EntityManager.class);
+
+    //Groupの取得(多参照のためList)
+    List groups = em.searchEntity(
+        new Query()
+            .select("code", "children.code")
+            .from("mtp.auth.Group")
+            .where("code = '" + groupCode + "'"))
+    .getList();
+
+    //グループが存在しない場合は空を返す
+    if (groups.size == 0) {
+        return []
+    }
+
+    //Groupに所属するUserの取得
+    List users = em.searchEntity(
+        new Query()
+            .select("accountId")
+            .from("mtp.auth.User")
+            .where("groups.code = '" + groupCode + "'"))
+    .getList();
+
+    //accountIdの取得
+    List accounts = [];
+    if (users.size() > 0) {
+        accounts = users.collect{e -> e.accountId}
+    }
+
+    /*
+    //子GroupのUser検索（再帰）
+    //Groupが階層化されていて、子Groupに所属するユーザーも対象とする場合
+    for (Entity group : groups) {
+        if (group.children.code != null) {
+            List subUsers = getGroupUserAccountId(group.children.code);
+            accounts = accounts + subUsers;
+        }
+    }
+    */
+
+    return accounts;
+}
+
+//更新ステータスに対する承認ユーザーの取得
+def getAccountIdByStatus(status) {
+    String groupCode = "";
+    if (status == "11") {
+        groupCode = "product_approval_group1";
+    } else if (status == "21") {
+        groupCode = "product_approval_group2";
+    }
+
+    return getGroupUserAccountId(groupCode);
+}
+
+
+//VariableItem(updateStatus変数)に格納されている更新ステータスに対する承認ユーザーの取得
+getAccountIdByStatus(updateStatus)
+----
+
+* EQL +
+Userエンティティに対するWhere条件を指定する方法です。
+Where条件のみ指定可能なので注意してください。
+VariableItemがバインドされます。 +
++
+.（例）EQLで定義した割当ルール
+[source,EQL]
+----
+groups.code = 'product_approval_group1'
+----
+
+* STRING（GroovyTemplate） +
+アカウントIDを直接指定する方法です。
+VariableItemがバインドされます。
+複数返す場合はカンマで区切ります。
+(GroovyTemplate書式のため、シングルクォーテーション、ダブルクォーテーションなし) +
++
+.（例）Stringで定義した割当ルール
+[source,GroovyTemplate]
+----
+user2-1@approval1,user2-2@approval1
+----
+
+.ToQueueによるユーザーの割当
+ユーザーに直接タスクを割り当てずに、キューにタスクをプールする方法です。
+
+* UserTaskQueueエンティティの登録 +
+この方法を利用する場合は、あらかじめ `mtp.workflow.UserTaskQueue` エンティティにキューをプールするためのデータを登録する必要があります。
+汎用画面などから登録してください。
++
+----
+http://hostname:port/コンテキストパス/テナント名/gem/generic/search/view/mtp.workflow.UserTaskQueue
+----
++
+image::usertask_queue_entity.png[align="left"]
++
+なお、割当を行うユーザーには `mtp.workflow.UserTaskQueue` エンティティに対する参照権限が必要になります。
+ユーザーが属するロールに対して、Entity権限を設定してください。
+
+* 割当ルールの定義 +
+GroovyScriptを利用して定義します。
+戻り値として登録済みの `UserTaskQueue` エンティティの `code` を返すように実装します。
+VariableItemがバインドされます。 +
++
+.（例）Scriptで定義した割当ルール
+[source,groovy]
+----
+/*
+ * 登録ステータスを元に承認対象用のキューコードを返す。
+ */
+
+//更新ステータスに対するキューコードの取得
+def getQueueCodeByStatus(status) {
+    String queueCode = "";
+    if (status == "11") {
+        queueCode = "ProductApproval1";
+    } else if (status == "21") {
+        queueCode = "ProductApproval2";
+    }
+
+    return queueCode;
+}
+
+//VariableItem(updateStatus変数)に格納されている更新ステータスに対するキューコードの取得
+getQueueCodeByStatus(updateStatus)
+----
+
+* Queueに登録されたタスクの割り当て +
+Queueに登録されたタスクは未割当の状態になっています。
+タスクを処理するためには、ユーザーが自身にタスクを割り当てる必要があります。
+TOP画面の `タスク一覧` パーツでの割当方法を説明します。
++
+作成されたタスクは `全てのタスク` タブに表示されます。
++
+image::usertask_queue_alltask.png[align="left"]
++
+この状態では、まだユーザーには割り当てられていません。
+このキューを参照可能なユーザーが、この一覧から `割当` を実行することで、
+そのユーザーにタスクが割り当てられます。
++
+image::usertask_queue_assign.png[align="left"]
++
+ユーザーに割り当てられると、 `MYタスク` タブに表示されます。
++
+image::usertask_queue_mytask.png[align="left"]
+
+.ユーザー回答の競合解決
+割当種別が `ALL` かつ完了条件が `ALL` や `VOTE` の場合、ユーザーの回答不一致などによりタスク結果を確定できない可能性があります。
+こうした場合に実行される競合解決ロジックを設定できます。
+
+競合解決ロジックはGroovyScriptを利用して定義します。
+戻り値としてタスクの `taskResultStatus` のnameを返すよう実装します。
+VariableItemと各ユーザーの回答結果がバインドされます。
+
+競合解決ロジックが実行されると、戻り値をタスク結果としてUserTaskが完了します。 +
+競合解決ロジックが未設定、または競合解決ロジックから `taskResultStatus` 以外の値が返された場合は、 `CONFLICTED` をタスク結果としてUserTaskは未完了のまま待機します。
+
+[[ref_usertask_result_status]]
+====== タスク結果の設定
+ユーザーがタスクを実行する際に結果として選択可能な値を `taskResultStatus` に設定します。
+ここで設定した値は、 `タスク詳細` 画面でユーザーが選択する候補(ボタン)になります。
+
+image::usertask_result_status_button.png[align="left"]
+
+[cols="2,8a" options="header"]
+|===
+|設定項目
+|内容
+
+|name
+|ステータスの値です。この値がユーザーが選択した結果として利用されます。
+|displayName
+|表示名です。ユーザータスクに表示されるボタン文言になります。
+|primary
+|`true` に設定するとボタンが強調表示されます。
+|===
+
+ここでユーザーが選択した結果と割当ルールの完了条件によって、このタスクの実行結果が決定されます。
+
+[[ref_usertask_auto_skip]]
+====== スキップルールの設定
+タスクを自動的に完了(スキップ)するルールをGroovyScriptとして定義できます。
+ここで定義するスクリプトは `boolean`(true：スキップ)を返すようにする必要があります。
+VarialbleItemがバインドされます。
+
+.（例）autoSkipRule
+[source,groovy]
+----
+/*
+ * 商品の価格が500円未満でステータスが「21」(G3承認待ち)の場合はスキップする。
+ * true：500円未満かつステータスが「21」(G3承認待ち)
+ */
+
+//println("checkPrice:" + product.price);
+//println("checkWfStatus:" + product.wfStatus);
+return (product.price < 500 && "21".equals(product.wfStatus.value));
+----
+
+[[ref_usertask_delegate]]
+====== 委譲の設定
+`delegate` をtrueにするとユーザーが処理を他者に委譲できます。
+委譲可能な場合、 `タスク詳細` 画面に `委譲` ボタンが表示され、委譲するユーザーが選択できます。
+
+image::usertask_delegate.png[align="left"]
+
+委譲先のユーザーを選択すると、委譲先のユーザーにタスクが割り当てられます。
+(委譲したユーザーのタスクはキャンセルされます)
+
+image::usertask_delegate_complete.png[align="left"]
+
+[[ref_usertask_notification]]
+====== カスタム処理の設定
+ユーザーにタスクが割り当てられた際に実行するカスタム処理を設定できます。
+`org.iplass.mtp.workflow.UserTaskNotification` インターフェースを実装したクラスの名前を指定します。
+
+.（例）UserTaskNotificationの実装サンプル
+[source,Java]
+----
+package sample;
+
+import java.util.Arrays;
+
+import org.iplass.mtp.workflow.Assignment;
+import org.iplass.mtp.workflow.UserTask;
+import org.iplass.mtp.workflow.UserTaskNotification;
+
+public class SampleUserTaskNotification implements UserTaskNotification {
+
+	@Override
+	public void assigned(UserTask userTask, Assignment[] assignments) {
+		System.out.println("userTask:" + userTask.getOid());
+		if (assignments != null) {
+			Arrays.asList(assignments).stream().forEach(a -> {
+				System.out.println("assignment:" + a.getOid());
+			});
+		}
+	}
+}
+----
+
+
+===== UpdateEntityTask
+Entityが格納されている変数(VariableItem)を指定して、格納されているEntityを更新するタスク定義。
+UpdateEntityTask自体はEntityを変更後、Nodeの状態が `COMPLETED` となり、後続の処理(接続されたFlow)を実行します。
+
+====== プロパティ
+[cols="2,1,2,8a" options="header"]
+|===
+|設定項目
+|必須
+|デフォルト値
+|内容
+
+|variableName
+|○
+|
+|Entityが格納されている変数名(VariableItem)を設定します。
+
+|updateRule
+|○
+|
+|更新内容を設定します。 +
+link:#ref_updateentitytask_update_rule[updateRuleの設定]
+|===
+
+その他は link:#ref_node_property[共通プロパティ] を参照してください。
+
+[[ref_updateentitytask_update_rule]]
+====== updateRuleの設定
+`updateRule` を指定する方法は2種類あります。
+それぞれの方法によって設定するプロパティがあります。
+
+//これ以上Sectionがないので*指定
+* Property +
+対象EntityのProperty名と設定値を直接指定する方法です。 +
+設定値が固定できる場合に利用します。 +
++
+[cols="2,1,2,8a" options="header"]
+|===
+|設定項目
+|必須
+|デフォルト値
+|内容
+
+|プロパティ名
+|○
+|
+|更新対象のプロパティ名を指定します。
+
+|更新値
+|○
+|
+|更新する値を指定します。
+|===
++
+* Scripting +
+GroovyScriptを利用してバインドされたEntityのプロパティを設定する方法です。
+指定したVariableItemに格納されたEntityは `entity` としてバインドされます。
+他のVariableItem値を取得したい場合は `context.変数名` で取得できます。 +
++
+.（例）Scriptingの例
+[source,groovy]
+----
+/*
+ * 対象商品の更新ステータスに「updateStatus」変数に設定されたステータスをセットする。
+ *
+ * 対象となるproductエンティティは「entity」としてバインドされる。
+ * （variableNameプロパティで「product」を設定する必要がある）
+ * また変数を取得したい場合は「context.変数名」で取得できる。
+ */
+
+import org.iplass.mtp.entity.SelectValue;
+
+//変数updateStatusにセットされた値でステータスを更新
+//println("更新Status:" + context.updateStatus);
+entity.wfStatus = new SelectValue(context.updateStatus);
+----
+
+===== MailTask
+メタデータとして定義されたMailTemplateをメール本文のテンプレートとして、メールを送信するタスク定義。
+MailTask自体はメールを送信後、Nodeの状態が `COMPLETED` となり、後続の処理（接続されたFlow）を実行します。
+
+====== プロパティ
+[cols="2,1,2,8a" options="header"]
+|===
+|設定項目
+|必須
+|デフォルト値
+|内容
+
+|mailTemplateName
+|○
+|
+|利用するMailTemplateメタデータを指定します。
+MailTemplateにはVariableItemがバインドされます。
+
+|sendIndividual
+|×
+|false
+|To、Cc、Bccに指定されたユーザーが複数いる場合に、個別にメールを送信する場合に `true` を設定します。
+
+|from
+|×
+|
+|送信元メールアドレスを設定します。未指定の場合、テナントの設定値が指定されます。
+
+|replyTo
+|×
+|
+|返信先メールアドレスを設定します。未指定の場合、テナントの設定値が指定されます。
+
+|to
+|×
+|
+|TOメールアドレスを設定します。
+
+|cc
+|×
+|
+|CCメールアドレスを設定します。
+
+|bcc
+|×
+|
+|BCCメールアドレスを設定します。
+|===
+
+その他は link:#ref_node_property[共通プロパティ] を参照してください。
+
+[[ref_mailtask_address]]
+====== メールアドレスの設定
+`from` と `replyTo` は1つのみ、 `to` 、 `cc` 、 `bcc` は複数指定できます。
+またメールアドレスを指定する方法は3種類あります。
+
+//これ以上Sectionがないので*指定
+* SCRIPT +
+GroovyScriptによる設定方法です。
+戻り値としてメールアドレスの文字列を返すように実装します。 +
++
+.（例）SCRIPTの例
+[source,groovy]
+----
+new String[] {"user2-1@approval1", "user2-2@approval1"};
+----
++
+* EQL +
+EQLの結果としてメールアドレスを返すQueryを定義する方法です。 +
++
+.（例）EQLの例
+[source,EQL]
+----
+select mail
+from mtp.auth.User
+where oid = ${product.updateBy}
+----
++
+* STRING(GroovyTemplate) +
+メールアドレスを直接指定する方法です。
+複数返す場合はカンマで区切ります。 +
+(GroovyTemplate書式のため、シングルクォーテーション、ダブルクォーテーションなし) +
++
+.（例）STRINGの例
+[source,GroovyTemplate]
+----
+user2-1@approval1,user2-2@approval1
+----
+
+===== SubProcessTask
+メタデータとして定義されたWorkflowをサブプロセスとして実行するタスク定義。
+フローを分割したり、共通のフローなどを別途Workflowとして定義しておくことで利用できます。 +
+サブプロセスとして実行されるWorkflowが状態(ステータス) `CANCELED` で終了した場合は、SubProcessTaskを実行するWorkflowも `CANCELED` で終了します。
+
+====== プロパティ
+[cols="2,1,2,8a" options="header"]
+|===
+|設定項目
+|必須
+|デフォルト値
+|内容
+
+|subWorkflowName
+|○
+|
+|サブプロセスとして実行するWorkflowメタデータを指定します。
+
+|variableMapping
+|×
+|
+|サブプロセスで定義したWorkflowの変数(VariableItem)に自身の変数を引き渡す際、変数名が異なる場合にMappingを定義します。
+変数名が同じ場合は指定する必要はありません。 +
+link:#ref_subprocesstask_variableMapping[変数の連携]
+|===
+
+その他は link:#ref_node_property[共通プロパティ] を参照してください。
+
+[[ref_subprocesstask_variableMapping]]
+====== 変数の連携
+GroovyScript形式で設定します。
+SubProccessに渡す変数設定用のMapは `subParam` としてバインドされます。
+この変数に対して、 `subParam.SubProccess変数名 = 自身の変数名` の形式でMappingを定義します。
+
+.（例）SubProccessの変数連携
+[source,groovy]
+----
+/*
+ * SubProcessに渡す変数Map(バインド変数:subParam)に対して変数をセットする。
+ */
+
+//println("before.subParam.size=" + subParam.size()); //空のMap
+//println("product=" + product);
+
+subParam.productSub = product;
+----
+
+==== Gateway
+===== SplitParallelGateway
+分岐用。自身が接続元になっている全てのFlowを実行します。
+SplitParallelGateway自体はすぐにNodeの状態が `COMPLETED` となり、後続の処理（接続されたFlow）を実行します。
+
+接続されているFlowに `conditionExpression` が設定されている場合は、trueのもののみ実行します。
+
+====== プロパティ
+link:#ref_node_property[共通プロパティ] を参照してください。
+
+===== SplitExclusiveGateway
+分岐用。自身が接続元になっているFlowのうち、どれか1つを実行します。
+SplitExclusiveGateway自体はすぐにNodeの状態が `COMPLETED` になり、後続の処理(接続されたFlow)を実行します。
+
+====== プロパティ
+link:#ref_node_property[共通プロパティ] を参照してください。
+
+====== Flowの決定順序
+後続の実行Flowを以下の優先度で決定します。
+
+. `conditionExpression` が指定されていない、または `conditionExpression` がtrueのFlow
+. 該当するFlowが見つからない場合、`isDefault` がtrueのFlow
+. 該当するFlowが見つからない場合、 `WorkflowRuntimeException` をthrow
+
+`conditionExpression` の判定にて複数のFlowが該当する場合、
+どのFlowが実行されるかは不確定となります。
+
+===== JoinAsyncGateway
+結合用。自身が接続先となっているそれぞれのFlowが到達するタイミングで、後続の処理（接続されたFlow）を実行します。
+もし複数Flowが別々のタイミングで到達した場合は、都度、後続の処理（接続されたFlow）を実行します。
+JoinAsyncGateway自体はすぐにNodeの状態が `COMPLETED` となり、後続の処理(接続されたFlow)を実行します。
+
+====== プロパティ
+link:#ref_node_property[共通プロパティ] を参照してください。
+
+====== Flowの決定順序
+後続の実行Flowを以下の優先度で決定します。
+
+. `isDefault` がtrueのFlow
+. 接続されているFlowが1つのみの場合、接続されているFlow
+. 該当するFlowが見つからない場合、 `WorkflowRuntimeException` をthrow
+
+JoinAsyncGatewayに対して複数のFlowを接続しないでください。
+
+===== JoinSyncGateway
+結合用。自身が接続先となっているFlowが全て到達したタイミングで、後続の処理（接続されたFlow）を実行します。
+JoinSyncGatewayは全てのFlowが到達するまで `ACTIVE` 状態のままで、全て到達したタイミングで `COMPLETED` となり、後続の処理(接続されたFlow)を実行します。
+
+====== プロパティ
+link:#ref_node_property[共通プロパティ] を参照してください。
+
+====== Flowの決定順序
+後続の実行Flowを以下の優先度で決定します。
+
+. `isDefault` がtrueのFlow
+. 接続されているFlowが1つのみの場合、接続されているFlow
+. 該当するFlowが見つからない場合、 `WorkflowRuntimeException` をthrow
+
+JoinSyncGatewayに対して複数のFlowを接続しないでください。
+
+=== 利用方法
+
+[[ref_start_proccess]]
+==== プログラムコードからの起動
+プログラムコードからワークフローを起動するには、`org.iplass.mtp.workflow.WorkflowManager` の `startProcess(ワークフロー定義名, パラメータ)` を実行します。
+パラメータにワークフローのVariableItemの名前をキーにして値を格納することで、ワークフロー内で変数として利用できるようになります。
+
+[source,groovy]
+.(例)エンティティのイベントリスナーの登録後処理でワークフローを起動
+----
+import java.util.LinkedHashMap;
+import java.util.Map;
+import org.iplass.mtp.workflow.WorkflowManager;
+
+def wm = manager(WorkflowManager.class);
+
+//ワークフロー内で変数として利用するパラメータ
+Map<String, Object> parameters = new LinkedHashMap<String, Object>();
+parameters.put("orderDetail", entity);
+parameters.put("orderMail", entity.orderMail);
+
+//ワークフロー定義とパラメータを指定してワークフローを起動
+wm.startProcess("order/deliveryOrder", parameters);
+----
+
+==== gem画面からの起動
+定義したWorkflowとEntityを紐づけてEntityの詳細画面からWorkflowを起動したり、ログインユーザーに割り当てられたタスクをTop画面上に表示し、タスクを処理する画面を提供しています。
+
+===== 詳細画面連携
+Entityの詳細画面と、定義したWorkflowを連携できます。
+Entityの詳細画面上からWorkflowを起動します。
+
+連携方法については、<<../genericentitymanager/entityview/index.adoc#workflowsetting_setting, ワークフロー設定>>を参照してください。
+
+===== ユーザータスク画面
+UserTaskを利用した場合、ユーザーにタスクが割り当てられます。
+キューを利用した場合はキューにタスクがプールされます。
+この割り当てられたタスクをユーザーに通知する機能として、TOP画面のパーツ `タスク一覧` があります。
+また、この `タスク一覧` からユーザーに割り当てられたタスクを実行するための編集画面が表示されます。
+
+TOP画面の設定方法については、<<../genericentitymanager/topview/index.adoc#topview, TopView>>を参照してください。
+
+タスク一覧及び編集画面の表示設定は、TOP画面のパーツにて行います。
+
+.タスク一覧
+TOP画面にユーザーに割り当てられたタスクの一覧を表示します。
+ワークフローの処理はこの一覧からタスク詳細を表示し、処理を行っていきます。
+
+[cols="1,2a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|Title
+|タイトルをカスタマイズしたい場合に指定します。
+未設定の場合は `タスク一覧` と表示されます。
+
+|Icon Tag
+|Fontawsomeによるアイコンタグを設定します。
+
+|Class
+|スタイルシートのクラス名を指定します。複数指定する場合は半角スペースで区切って下さい。
+
+|Height
+|タスク一覧の高さを設定します。
+
+|Tab Settings
+|タブの表示を設定します。
+
+Show ::
+表示するタブを選択します。
+Custom Title ::
+タブのタイトルを変更する場合に指定します。
+
+|Search Limit
+|タスク一覧に表示するタスクの件数を設定します。
+
+|hide [Detail] link when editable
+|タスクが編集可能な場合に、詳細リンクを非表示にするかを設定します。
+非表示にした場合、完了しているタスクは `詳細` のみ、未完了のタスクは `編集` のみ表示されます。
+
+|hide [Edit] link
+|編集リンクを非表示にするかを設定します。
+必ず詳細画面に遷移させてから編集させたい場合に利用します。
+
+|Detail Link Display name
+|詳細リンクの表示文言を設定します。
+未指定の場合は `詳細` です。
+
+|Edit Link Display name
+|編集リンクの表示文言を設定します。
+未指定の場合は `編集` です。
+また詳細画面から編集画面に遷移する際のボタン名としても利用されます。
+
+|Mark processed assignment as complete.
+|未完了のタスクでも、自身の割当が完了すれば完了済みのタスクとして扱うかどうかを設定します。
+チェックした場合、`MYタスク` にて自身への割当てが完了済みのタスクは一覧に表示されなくなります。他のユーザが未回答でタスク自体が完了していない場合でも、この設定が適用されます。`完了を含む` を有効にすると、一覧に表示されます。
+
+|Display tasks completed by other assigned people.
+|自分以外の人が完了したタスクを表示するかを設定します。
+チェックした場合、 `MYタスク` の `完了を含む` が有効な時に、 `他者が完了したタスクも表示` を選択できるようになります。
+
+|Display only the user who processed the tasks.
+|ワークフロー履歴の詳細にタスクを完了させた人のみ表示するかを設定します。
+
+|Default Sort Setting
+|ソートする項目と種別（昇順、降順）を指定します。
+
+|Target Workflow
+|タスク一覧の `作成したタスク` に表示表示するワークフローを指定します。
+未指定の場合、全てのワークフローのユーザータスクが対象になります。
+指定した場合、そのタスクに紐づくユーザータスクのみが対象になります。
+
+|Task Queue Select Condition
+| `全てのタスク` に表示するキューを取得する際の条件を指定します。
+条件を指定した場合、 `全てのタスク` にはタスク一覧で指定したキューか、未指定の場合には選択可能なキューに紐づくタスクのみ表示します。
+
+|Display tasks whoes taskQueues is null.
+|キューの取得条件を指定した場合に、キューに紐づかないタスクを取得するかを指定します。
+チェックした場合、キューが未指定のタスクも取得します。
+
+|Show Properties
+|タスク一覧に表示するタスクの項目を指定します。
+
+|Variable
+|タスク一覧に変数の項目を表示する場合に、対象となる変数を選択します。
+
+|Entity
+|タスク一覧に変数の項目を表示する場合に、対象となるEntityを選択します。
+
+|Entity Properties
+| `Entity` で選択したEntiyのプロパティが表示されます。
+`Show Properties` に表示対象のプロパティをドラッグ&ドロップすることでタスク一覧の表示項目となります。
+
+|Show Properties
+| `Variable` で選択した変数に `Entity` で選択したEntityが設定された場合にタスク一覧に表示する項目です。
+`Entity Properties` からドラッグ&ドロップで表示対象を指定します。
+|===
+
+.タスク詳細
+タスク詳細画面の表示項目を設定します。
+
+[cols="1,2a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|Show Section Properties
+|タスク詳細で表示する項目を選択します。カスタマイズ多言語対応可能です。
+詳細は<<taskviewitem, タスク詳細項目>>を参照してください。
+
+|Variable Entity View Names
+|リンクまたはタスク詳細内で表示するタスク対象データの表示設定を行います。
+詳細は<<variableentityviewname, Variable Entity View Name>>を参照してください。
+
+|Section Configuration
+|タスク詳細で表示する項目のカスタマイズ多言語対応などを設置します。
+|===
+
+[[taskviewitem]]
+.タスク詳細項目
+タスク詳細画面に表示される項目です。
+
+[cols="1,2,2", options="header"]
+|===
+|Property
+|Section
+|詳細画面の項目名
+
+|Variable Item
+|Task Target
+|タスク対象データ
+
+|Status
+|Detail
+|詳細情報 - ステータス
+
+|Workflow
+|Detail
+|詳細情報 - ワークフロー名
+
+|Workflow Status
+|Detail
+|詳細情報 - ワークフロー状態
+
+|Task Result
+|Detail
+|詳細情報 - 処理結果
+
+|QueueName
+|Detail
+|詳細情報 - タスクキュー名
+
+|CompletionDate
+|Detail
+|詳細情報 - 完了日
+
+|User
+|Propsessing reseult of the user assignment
+|割当ユーザーの処理結果 - ユーザー
+
+|Task
+|Propsessing reseult of the user assignment
+|割当ユーザーの処理結果 - 処理結果
+
+|Assign State
+|Propsessing reseult of the user assignment
+|割当ユーザーの処理結果 - アサイン状態
+
+|CompletionDate
+|Propsessing reseult of the user assignment
+|割当ユーザーの処理結果 - 完了日
+
+|Comment
+|Propsessing reseult of the user assignment
+|割当ユーザーの処理結果 - コメント
+
+|Process Name
+|Workflow History
+|ワークフロー履歴 - 処理名
+
+|Task Status
+|Workflow History
+|ワークフロー履歴 - ステータス
+
+|Task Result
+|Workflow History
+|ワークフロー履歴 - 処理結果
+
+|ProcessBy
+|Workflow History
+|ワークフロー履歴 - プロセス実行者
+
+|CompletionDate
+|Workflow History
+|ワークフロー履歴 - 完了日
+
+|Detail
+|Workflow History
+|ワークフロー履歴 - 詳細
+|===
+
+[[variableentityviewname]]
+.Variable Entity View Name
+タスク詳細内でタスク対象データを表示する際の設定を行います。
+`Display in Detail` をチェックした場合、Entityの詳細画面をタスク詳細内に表示します。
+未チェックの場合はリンクで表示され、リンククリックでEntityの詳細画面を表示します。
+
+[cols="1,2a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|Workflow
+|表示設定を行うワークフローを選択します。
+
+|Variable
+|表示設定を行う変数を選択します。
+
+|Entity
+|表示設定を行うEntityを選択します。
+
+|Entity View Name
+|上記で選択したワークフロー、変数、Entityが一致するタスク対象データに使用するビュー名を設定します。
+タスク詳細からのリンク、タスク詳細内での表示を行う際に利用されます。
+※GroovyTemplate書式で記述してください。
+
+|Display in Detail
+|タスク詳細にEntityを表示する場合にチェックします。
+|===
+
+==== Workflowの実行権限
+Workflowを実行できるユーザーをロールをベースに制御できます。
+Entityの詳細画面では、この設定により実行ボタンの表示・非表示が自動的に制御されます。
+
+連携方法については、<<../authorization/index.adoc#en_workflowperm, Workflow権限>>を参照してください。
+
+==== UserTaskの管理権限
+タスク詳細からタスクを操作できるのは、タスクを割り当てられたユーザーだけですが、管理権限がある場合、割り当てられたユーザーの代わりにタスクの操作を行ったり、ユーザーの割り当てを変更出来るようになります。
+
+タスク一覧の `管理可能なタスク` タブをクリックすると、管理可能な未処理のタスクが表示されます。
+ここから編集画面を表示することで代理でタスクの処理が行えます。
+
+連携方法については、<<../authorization/index.adoc#en_usertaskperm, UserTask権限>>を参照してください。
+
+
+

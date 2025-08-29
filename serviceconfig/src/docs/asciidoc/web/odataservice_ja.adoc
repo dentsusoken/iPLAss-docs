@@ -1,0 +1,33 @@
+[[ODataService]]
+=== [.eeonly]#ODataService#
+ODataサービスの動作を管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.webapi.odata.ODataService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.webapi.odata.ODataServiceImpl
+----
+
+==== ODataServiceの設定
+ODataServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| queryPaging | int | ODataのQuery操作時のデフォルトのページングサイズ。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+    <interface>org.iplass.mtp.impl.webapi.odata.ODataService</interface>
+    <class>org.iplass.mtp.impl.webapi.odata.ODataServiceImpl</class>
+    <property name="queryPaging" value="20" />
+</service>
+----

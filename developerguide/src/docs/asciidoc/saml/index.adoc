@@ -1,0 +1,231 @@
+= SAML
+:_hreflang-path: developerguide/saml/index.html
+:_relative-root-path: ../../
+:_menu-title-ee-only: true
+:toclevels: 2
+
+[[saml]]
+== SAML
+iPLAssはSAML2.0のWeb Browser SSO Profileをサポートします。
+SAMLとは異なるドメイン間でのユーザー認証を行うための、XMLベースの標準規格です。
+認証情報を利用するService Provider(SP)は認証情報を提供するIdentify Provider(IdP)を利用することで、シングルサインオンを実現できます。
+iPLAssでは設定によりアプリケーションをSPまたはIdPとして動作させることが可能です。
+
+SAMLを有効化するためには、SamlServiceでSAMLサービス全体に対する設定を行ったうえで、AdminConsole等にてテナント単位のSAMLメタデータ定義を行います。テナント単位にIdp、SPを設定可能です。
+
+[[samlservice_setting]]
+== SamlServiceの設定
+SAML認証に関する共通の設定をSamlServiceに設定します。
+SAMLメッセージに署名するための秘密鍵及び証明書ストアに関する設定などを行います。
+詳細は <<../../serviceconfig/index.adoc#SamlService,SamlService>> を参照してください。
+
+
+== SAML定義の設定
+SAMLのメタデータ定義にて次の項目を設定します。
+
+[cols="2,^1,4a", options="header"]
+|===
+|設定項目|必須|設定値
+|Enable Single Logout||シングルログアウトを有効にする場合チェック
+|Enable Unsolicited Response||非要求応答(他サービス契機のシングルログアウトによるログアウト要求)を有効にする場合チェック
+|My SAML Entity id||自身を表す固有の識別子。未指定の場合は、SAMLメタデータURLをEntity idとして設定
+|Base URL||テナントコンテキストまでのURL。未指定の場合は自動解決。Apache等にてサーバ名、パスの変換を行っている場合に指定
+|Signature Algorithm||署名アルゴリズム、未指定の場合のデフォルトは「SHA256withRSA」
+|===
+
+[[serviceprovidersetting]]
+=== ServiceProviderの設定
+iPLAssをServiceProviderとして動作させる際には次の項目を設定します。
+
+[cols="2,^1,4a", options="header"]
+|===
+|設定項目|必須|設定値
+|Act as ServiceProvider||ServiceProviderとして動作させる場合チェック
+|NameID Format||NameID Formatの設定
+====
+urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress
+urn:oasis:names:tc:SAML:2.0:nameid-format:persistent
+====
+などSAML仕様で定義されるNameID Format。
+未指定の場合のデフォルト値は
+====
+urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified
+====
+|NameID mapping User proprety|○|NameIDに対応するUserエンティティのプロパティ名を指定
+
+NOTE: SAMLベースでログインする場合、当該プロパティをキーに検索するため、指定するプロパティにはINDEXを付与することを推奨します
+
+|User mapping by attribute||NameIdではなく、属性値を用いてUserエンティティのマッピングする場合チェック
+|User mapping attributeName||（User mapping by attributeがtrueの場合）SAMLメッセージ上でのAttributeのNameを指定
+
+|User mapping propertyName||（User mapping by attributeがtrueの場合）Userエンティティのプロパティ名を指定
+
+NOTE: SAMLベースでログインする場合、当該プロパティをキーに検索するため、指定するプロパティにはINDEXを付与することを推奨します
+|Share mapped user property with multiple IdProvider||IdProviderから連携されるユーザー識別子（nameIdもしくはユーザー属性）をマッチングするUserエンティティのプロパティを複数のSAML定義のRemoteIdProviderで共有して利用する場合、かつそのユーザー識別子がIdPovider間で重複する可能性がある場合にtrueを設定。 +
+trueに設定された場合、Userエンティティの当該のプロパティに格納されている値には、次の形式で格納されていると想定して動作します。
+
+`[ユーザー識別子]@[SAML定義名]`
+
+但し、SAML定義名がDEFAULTの場合は、@[SAML定義名]は付与されません
+
+.例
+ユーザー識別子が `E1234` 、SAML定義名が `sample1` の場合: `E0001234@sample1` +
+ユーザー識別子が `F4321` 、SAML定義名が `DEFAULT` の場合: `F4321`
+
+|AutoUserProvisioningHandler||org.iplass.mtp.auth.saml.AutoUserProvisioningHandlerを実装したクラスを設定。
+IdPからフェデレーションされた認証情報に基づき、自動プロビジョニング（新規ユーザーの登録、ユーザー属性の更新）を行う場合に指定
+|RemoteIdProvider Setting||<<remoteidprovidersetting, RemoteIdProvider Setting>>参照
+|===
+
+[[remoteidprovidersetting]]
+.RemoteIdProvider Setting
+IdProviderとして利用する外部サービスの設定
+[cols="2,^1,4a", options="header"]
+|===
+|設定項目|必須|設定値
+|SAML EntityId|○|IdProvider固有の識別子
+|SSO Setting||<<sp_ssosetting, SSO Setting>>参照
+|SLO Setting||<<sp_slosetting, SLO Setting>>参照
+|RedirectUrl(after logout)||ログアウト後にリダイレクトするURL
+|Certificate Setting|○|IdPの証明書
+|===
+
+[[sp_ssosetting]]
+.SSO Setting
+シングルサインオン設定
+[cols="2,^1,4a", options="header"]
+|===
+|設定項目|必須|設定値
+|Endpoint URL|○|AssertionConsumerServiceのエンドポイントURL(Location)
+|Request Binding|○|リクエストの送信方式(Binding)
+
+HTTP_REDIRECT:: urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect
+HTTP_POST:: urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
+|Request With Sign||署名付のSSOリクエストを送信する場合チェック。
+自身の証明書の登録が必要。 <<samlservice_setting,SamlService>> の設定を参照。
+|===
+
+[[sp_slosetting]]
+.SLO Setting
+シングルログアウト設定
+[cols="2,^1,4a", options="header"]
+|===
+|設定項目|必須|設定値
+|Endpoint URL||SingleLogoutServiceのエンドポイントURL(Location)
+|Request Binding||<<sp_ssosetting, SSO Setting>>のRequest Binding参照
+|Response Endpoint URL||ResponseLocationログアウトのレスポンスエンドポイントURL(ResponseLocation)
+|Response Binding||<<sp_ssosetting, SSO Setting>>のRequest Binding参照
+|===
+
+[[idprovidersetting]]
+=== IdProviderの設定
+iPLAssをIdProviderとして動作させる際には次の項目を設定します。
+
+[cols="2,^1,4a", options="header"]
+|===
+|設定項目|必須|設定値
+|Act as IdProvider||IdProviderとして動作させる場合チェック
+|NameID Format Setting||サポートするNameIDのFormatを指定。複数可。
+|RemoteServiceProvider Setting||<<idp_remoteserviceprovidersetting,RemoteServiceProvider Setting>>参照
+|===
+
+[[idp_remoteserviceprovidersetting]]
+.RemoteServiceProvider Setting
+ServiceProviderとしてiPLAssを利用する外部サービスの設定
+[cols="2,^1,4a", options="header"]
+|===
+|設定項目|必須|設定値
+|SAML Entity Id|○|ServiceProvider固有の識別子
+|ACS Endpoint Url|○|ACS(アサーション コンシューマ サービス)のログインURL
+|ACS Response Binding|○|<<sp_ssosetting,SSO Setting>>のRequest Binding参照
+|Validate SSO Request with sign||シングルサインオンリクエスト時に署名検証を行う場合チェック
+|NameID Format||<<serviceprovidersetting,ServiceProvider Setting>>のNameID Format参照
+|NameID mapped User property|○|NameIDに対応するUserエンティティのプロパティ名を指定
+|SLO Setting||<<idp_slosetting,SLO Setting>>参照
+|Enable Impersonation||代理ログイン状態でシングルサインオンを許可するか否か
+|SAML attribute mapping setting||<<idp_samlattributemappingsetting,SAML attribute mapping setting>>参照
+|Certificate Setting||SPの証明書
+|===
+
+[[idp_slosetting]]
+.SLO Setting
+シングルログアウト設定
+[cols="2,^1,4a", options="header"]
+|===
+|設定項目|必須|設定値
+|Endpoint URL||SPのSingleLogoutServiceのエンドポイントURL(Location)
+|Request Binding||<<sp_ssosetting, SSO Setting>>のRequest Binding参照
+|Response Endpoint URL||SPのResponseLocationログアウトのレスポンスエンドポイントURL(ResponseLocation)
+|Response Binding||<<sp_ssosetting, SSO Setting>>のRequest Binding参照
+|Validate SLO Request with sign||シングルログアウトリクエスト時に署名検証を行う場合チェック
+|===
+
+[[idp_samlattributemappingsetting]]
+.SAML attribute mapping setting
+SAML経由で連携する属性値のマッピング定義
+[cols="2,^1,4a", options="header"]
+|===
+|設定項目|必須|設定値
+|AttributeName||SAMLメッセージ上でのAttributeのName
+|User propertyName||Userのプロパティ名、CustomValue Scriptとどちらかを指定する
+|CustomValue Script||マッピング対象の項目をGroovyScriptで指定、"user"変数にUserエンティティがバインドされている
+|===
+
+=== 認証ポリシーによるSAML認証の有効化
+認証ポリシー単位にSAMLベースの認証を有効化することが可能です。
+AdminConsoleの認証ポリシー設定画面にて利用するSAML定義を指定します。 +
+認証ポリシーの設定では複数のSAML定義を指定することが可能です。
+また、次の書式で定義することにより、複数定義を一括して指定することも可能です。
+
+`[SAML定義のプレフィックスパス]/*`
+
+.設定例
+`DEFAULT` : SAML定義名が"DEFAULT"の定義を有効化します。 +
+`sample/\*` : sample階層配下のすべてのSAML定義を有効化します。 +
+`*` : すべてのSAML定義を有効化します。
+
+
+=== SAMLサービスの各エンドポイント利用方法
+==== SAMLメタデータの取得
+外部のIdPまたSPにiPLAssを登録するためのSAMLメタデータは、以下のURLを表示することにより取得可能です。
+----
+http(s)://[server]/[appContext]/[tenantName]/saml/md/[SAML definitionName]
+----
+
+====
+https://example.dentsusoken.com/app/tenantA/saml/md/DEF1
+====
+
+定義名を"DEFAULT"として定義したSAML定義の場合、SAML definitionNameは未指定で取得できます。
+
+ファイルとしてダウンロードし、IdPに手動で登録するか、もしくは上記URLをメタデータURLとして登録してください。
+なお、メタデータURLを登録する場合は外部のIdP、SPのサイトからiPLAssが稼働するサーバへURLにて参照可能である必要があります。
+
+==== iPLAssをSPとして動作させる
+SAML2.0のSP Initiated SSOを起動するURLは以下です。
+----
+http(s)://[server]/[appContext]/[tenantName]/saml/ssoar/[SAML definitionName]
+----
+
+====
+https://example.dentsusoken.com/app/tenantA/saml/ssoar/DEF1
+====
+
+定義名を"DEFAULT"として定義したSAML定義の場合、SAML definitionNameは未指定で取得できます。
+
+当該URLを呼び出すことにより、SSO処理が開始されます。
+
+==== iPLAssをIdPとして動作させる
+SAML2.0のIdP Initiated SSOを起動するURLは以下です。
+----
+http(s)://[server]/[appContext]/[tenantName]/saml/sso/idpi/[SAML definitionName]?entityId=[外部SPのEntityID]
+----
+
+====
+https://example.dentsusoken.com/app/tenantA/saml/sso/idpi/DEF2?entityId=http%3A%2F%2Fexample.dentsusoken.com%2Fspapp
+====
+
+定義名を"DEFAULT"として定義したSAML定義の場合、SAML definitionNameは未指定で取得できます。
+
+当該URLを呼び出すことにより、SSO処理が開始されます。
+

@@ -1,0 +1,18 @@
+= infinispan連携
+:_hreflang-path: developerguide/infinispan/index.html
+:_relative-root-path: ../../
+
+readmeくらい？ +
+要作成
+
+== 概要
+infinispanについてとか
+
+== モジュールダウンロード
+xxx
+
+== 設定
+xxx
+
+== 機能詳細
+xxx

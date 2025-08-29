@@ -1,0 +1,40 @@
+[[SyntaxService]]
+=== SyntaxService
+A service for syntax analysis.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.parser.SyntaxService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.parser.SyntaxService
+----
+
+==== Settings of SyntaxService
+SyntaxService can be configured in the following way.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| syntaxRegister | <<SyntaxRegister>>, Multiple| SyntaxRegister Implementing Class Name。
+|===
+
+[[SyntaxRegister]]
+.SyntaxRegister
+Please specify the implementing class of org.iplass.mtp.impl.parser.SyntaxRegister.
+
+org.iplass.mtp.impl.query.QuerySyntaxRegister is provided as a standard implementation.
+There is no configurable items for this setting options.
+
+===== Example
+[source, xml]
+----
+<service final="true">
+	<interface>org.iplass.mtp.impl.parser.SyntaxService</interface>
+	<class>org.iplass.mtp.impl.parser.SyntaxService</class>
+	<property name="syntaxRegister" value="org.iplass.mtp.impl.query.QuerySyntaxRegister" />
+ </service>
+----

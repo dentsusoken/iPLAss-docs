@@ -1,0 +1,29 @@
+= GEM(Generic Entity Manager)
+:_hreflang-path: developerguide/genericentitymanager/index.html
+:_relative-root-path: ../../
+
+GEM(Generic Entity Manager)機能は、エンティティのCRUDの機能を持った汎用的な操作画面モジュール群を指します。Entity定義情報や画面定義情報を元にエンティティを様々な形で表示ます。 +
+GEMには、モバイルファーストなデータ操作画面群を提供する [.eeonly]#MDCモジュール(Mobile Design Components)# が存在します。詳細は、 <<../mobiledesigncomponents/index.adoc#, [.eeonly]#MDC（Mobile Design Components）# >> を参照してください。
+
+== <<./entityview/index.adoc#, EntityView>>
+エンティティの定義を元にデータを操作する検索一覧、詳細画面を自動生成します。
+レイアウト設定を行うことで、画面毎に細かいカスタマイズができます。
+
+== <<./topview/index.adoc#, TopView>>
+ログイン時に表示するTop画面の設定です。
+用意されたパーツや、独自のテンプレート等を配置し、自由にカスタマイズすることができます。
+ロール毎に表示する内容を制御できます。
+
+== <<./menu/index.adoc#, Menu>>
+EntityViewや各種アクションを呼び出すためのメニューを管理しています。
+ロール毎に表示する内容を制御できます。
+
+== <<./calendar/index.adoc#, Calendar>>
+エンティティが持つ日付プロパティを元に、カレンダー上にエンティティを表示します。
+月単位、週単位、日単位での表示ができます。
+
+== <<./treeview/index.adoc#, TreeView>>
+参照プロパティを含めたエンティティの構造をツリー形式で表示できます。
+
+== <<./gemauth/index.adoc#, 権限制御>>
+GEM機能に対する権限制御Utilityの提供や、EntityViewの管理設定によるView単位での参照制御をすることができます。

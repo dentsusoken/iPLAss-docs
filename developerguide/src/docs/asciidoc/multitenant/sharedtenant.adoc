@@ -1,0 +1,91 @@
+[[ref_shared_tenant]]
+== 共有テナント機能
+
+共有テナントはメタデータ、データを複数テナント間で共有する機能です。
+あるテナントを共有テナントとして設定すると、その共有テナントに登録されたメタデータ定義、Entityのデータを共有テナント以外のテナントでも利用できるようになります。
+
+共有テナント側に登録されるメタデータについては、参照側テナント（ローカルテナント、子テナント）に対して、各メタデータを「共有するか」（公開）、「上書きしてもよいか」（カスタマイズ）等を設定できます。
+
+=== 共有テナントの設定
+共有テナントの設定はservice-configで行います。
+
+<<../../serviceconfig/index.adoc#TenantContextService,TenantContextService>>の「sharedTenantId」に共有テナントとするテナントのIDを設定します。
+共有テナントは1つのテナントのみ指定可能です。
+共有テナントが設定された場合、その共有テナント上で共有設定されたメタデータ、データはすべてのテナントで共有可能となります。
+
+
+メタデータの共有方法としては、メタデータ設定ファイルやAnnotationを利用することでも実現可能です。
+メタデータ設定ファイル、Annotationで定義されたメタデータは共有テナントに所属するメタデータとして動作します。
+
+NOTE: TenantContextServiceにsharedTenantIdが定義されない場合、-1がデフォルトの共有テナントIDとなります。その場合、メタデータ設定ファイル、Annotationで定義されたメタデータのみがすべてのテナントで利用可能となります。
+
+
+=== 共有設定
+共有設定の項目には以下があり、メタデータの形式により設定手段が異なります。
+
+* 共有設定
+* 上書き可否
+* データ共有
+* 権限共有
+
+このうち「データ共有」はEntity定義、Cube定義で利用できます。
+また、「権限共有」はEntity定義、Action、WebApi、Workflow定義、Cube定義で利用できます。
+
+Entity定義を変更した場合は、それに連動してデータのメンテナンス処理が実行されますが、共有されたEntity定義を変更した場合は、すべてのテナントのデータに対してメンテナンス処理が実行されます。 +
+
+CAUTION: Entityデータを格納するDBを複数のプロジェクト・システムで共有している場合、共有テナントを有効化した場合、意図せず他のプロジェクト・システムのデータを上書きしてしまう危険性があります。 +
+共有テナントを有効化する場合、他のプロジェク・システムトとDBの共有はおこなわないことを推奨します。
+
+==== メタデータ設定ファイルによる共有設定
+XMLファイルによるメタデータ定義の場合、「metaDataEntry」のAttribute属性として設定します。
+
+[options="header"]
+|===
+|項目|設定方法|デフォルト値|備考
+|共有設定|指定不可|true|
+|上書き可否|overwritable|true|
+|データ共有|dataSharable|false|
+|権限共有|permissionSharable|false|
+|===
+
+.設定例
+[source, xml]
+----
+<metaDataEntry name="/entity/sampleSampleEntity" overwritable="true">
+    <metaData xsi:type="metaEntity" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+----
+
+==== Annotation記述による共有設定
+Annotation定義の場合、各Annotation（ActionMapping、CommandClass、WebApi）のプロパティとして設定します。
+
+[options="header"]
+|===
+|項目|設定方法|デフォルト値|備考
+|共有設定|設定不可|true|
+|上書き可否|overwritable|true|
+|データ共有|設定不可|false|
+|権限共有|permissionSharable|false|CommandClassでは指定不可
+|===
+
+.設定例
+[source, java]
+----
+@ActionMapping(
+    overwritable=true,
+    permissionSharable=false,
+    name="sample/sampleSearch",
+----
+
+
+==== AdminConsoleによる共有設定
+共有テナントにログインし、AdminConsoleから共有設定することが可能です。
+各メタデータの編集画面の「Common Attribute」領域に表示されている「Shared Setting」から設定を行います。
+
+[options="header"]
+|===
+|項目|設定方法|デフォルト値|備考
+|共有設定|canShare|false|
+|上書き可否|canOverwrite|false|
+|データ共有|canDataShare|false|
+|権限共有|canSecurityShare|false|
+|===

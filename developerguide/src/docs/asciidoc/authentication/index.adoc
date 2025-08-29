@@ -1,0 +1,9 @@
+= 認証
+:_hreflang-path: developerguide/authentication/index.html
+:_relative-root-path: ../../
+
+include::about.adoc[]
+
+include::builtin_authentication.adoc[]
+
+include::authentication_provider.adoc[]

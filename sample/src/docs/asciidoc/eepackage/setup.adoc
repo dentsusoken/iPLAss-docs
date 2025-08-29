@@ -1,0 +1,4 @@
+[[EEPackage_Setup]]
+== [.eeonly]#セットアップ#
+. 有償版のSDKに同梱されているEnterprise Edition機能の追加パッケージ `iplass-ee-sample-app-package.zip` を取得します。
+. 既に作成したTenantでAdmin ConsoleのPackaging機能を利用して追加パッケージをインポートします。

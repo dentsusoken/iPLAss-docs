@@ -1,0 +1,23 @@
+[[EEPackage]]
+= Enterprise Edition機能の追加パッケージ
+:_hreflang-path: sample/eepackage/index.html
+:_relative-root-path: ../../
+:_menu-title-ee-only: true
+:example-caption!:
+:figure-caption!:
+:table-caption!:
+
+include::setup.adoc[]
+
+include::aggregation.adoc[]
+
+include::cube.adoc[]
+
+include::dashboard.adoc[]
+
+include::entitylisting.adoc[]
+
+include::savedList.adoc[]
+
+include::workflow.adoc[]
+

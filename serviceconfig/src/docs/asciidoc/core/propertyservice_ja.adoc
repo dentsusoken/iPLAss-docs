@@ -1,0 +1,40 @@
+[[PropertyService]]
+=== PropertyService
+プロパティを管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.entity.property.PropertyService
+----
+
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.entity.property.PropertyService
+----
+
+
+==== PropertyServiceの設定
+PropertyServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| longTextInlineStoreMaxLength | int | LongText型の文字列をLobStoreに保存せず、DataStoreのレコード内部で保持する場合の最大サイズ（文字列長）。デフォルト値は1024です。文字列の先頭から設定された最大サイズ分がレコード内部に保持されます。
+StoreServiceの <<StorageSpaceMap>> に定義されるvarcharColumnLengthがlongTextInlineStoreMaxLengthより小さい場合は、StorageSpaceMapの設定が優先されます。
+| remainInlineText | boolean | LongText型の文字列を検索用にDataStoreレコード内部で保持するか。デフォルト値はfalseです。ただし、レコード内部に保持可能な文字列長を超える部分は検索対象にはなりません。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.entity.property.PropertyService</interface>
+
+	<!-- if longtext property value length is over this byte, offstorage to LOB -->
+	<property name="longTextInlineStoreMaxLength" value="1024" />
+	<!-- To enable search long text property, this flag set to true. note:Search text limit is longTextInlineStoreMaxLength. And storage space more consume. -->
+	<property name="remainInlineText" value="false" />
+</service>
+----

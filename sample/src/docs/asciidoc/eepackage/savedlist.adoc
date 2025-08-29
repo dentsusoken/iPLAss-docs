@@ -1,0 +1,22 @@
+[[EEPackage_SavedList]]
+== [.eeonly]#保存リスト#
+
+このサンプルでは幾つかの注文明細カスタム検索結果を保存リストとして保存しています。 + 
+マネージャーに属するユーザーが「保存リスト」メニューを開き、保存フォルダと保存リスト一覧を参照することができます。
+
+image::images/sample-ec_savedlist-folder-list.png[align=left]
+
+. 保存フォルダ
+. 保存リスト
+
+また、管理用Top画面左側のウェジェットエリアからも参照することができます。
+
+image::images/sample-ec_savedlist-widget.png[align=left]
+
+「2018年10月：小平太郎の注文履歴」保存リストをクリックすると、以下の保存情報が表示されます。
+
+image::images/sample-ec_savedlist-sample-1.png[align=left]
+
+image::images/sample-ec_savedlist-sample-2.png[align=left]
+
+※　検索結果の保存と表示方法は開発者ガイドの<<../../developerguide/entitylisting/index#,EntityListing>>の章を参照してください。

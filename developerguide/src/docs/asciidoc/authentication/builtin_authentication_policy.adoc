@@ -1,0 +1,212 @@
+[[authpolicy]]
+=== 認証ポリシーの設定
+ユーザーが設定可能なパスワードの有効日数や複雑度、ログイン時の処理などは
+認証ポリシー( `AuthenticationPolicy` )としてメタデータで管理します。
+複数定義することで、ユーザーにあわせた認証方法を個別に設定することができます。
+
+認証ポリシーは初期状態で `DEFAULT` という設定が登録されています。
+ユーザー登録時にアカウントポリシーが未選択の場合、 `DEFAULT` が適用されます。
+
+==== 認証ポリシーの作成
+AuthenticationPolicyアイコンを右クリックして「AuthenticationPolicyを作成する」を選択してください。
+
+[[policysetting]]
+==== 設定
+認証ポリシーでは、以下の項目を設定します。
+
+[cols="1,3a",options="header"]
+|===
+| 設定項目 | 内容
+| <<ref_password_policy, パスワードポリシー>> | パスワードの有効期限、複雑度、自動生成するパスワードに関する設定。
+| <<ref_account_lock_policy,ロックポリシー>> | ログインに失敗した場合のユーザーのロックに関する設定。
+| <<ref_rememberme_policy,Remember Meポリシー>> | Remember Me 機能を利用する場合の設定。
+| <<ref_audit_log,ロギング>> | ログインした際のログに関する設定。
+| 通知 | 認証に関するイベントが発生した場合の通知設定。 +
+この設定により、例えばユーザー作成時にメールでパスワードを通知するという処理を組み込むことができます。 +
+通知設定については、 <<ref_notification_listener, 通知設定>> で詳しく説明します。
+| 認証プロバイダ | 利用する認証プロバイダを指定します。 +
+認証プロバイダについては、 <<ref_authentication_provider, 認証プロバイダ>> で詳しく説明します。
+| [.eeonly]#2段階認証、リスク算出# | 2段階認証の種類や、2段階認証を実行するかの判断に関する設定。 +
+2段階認証については、 <<ref_two_step, 2段階認証>> で詳しく説明します。
+| [.eeonly]#代理ログイン# | 代理ログインに関する設定。
+代理ログインについては、 <<ref_impersonation_policy, 代理ログイン>> で詳しく説明します。
+| [.eeonly]#SAML# | SAMLを利用した認証に関する設定。
+SAMLについての詳細は<<../saml/index.adoc#, SAML>>を参照してください。
+|===
+
+[[ref_password_policy]]
+===== パスワードポリシー
+
+[cols="1,3a", options="header"]
+|===
+|項目名|内容
+|maximum password age|パスワードが有効な最大期間 （日）。0は無限。
+|minimum password age|パスワード変更に最低限必要な期間（日）。
+|password pattern|パスワードの複雑度チェックに利用する正規表現。
+|deny same password as account id|アカウントIDと同じパスワードを指定不可とするか。
+|deny list|パスワードの拒否リスト。複数指定する場合は改行で区切ってください。 +
+Userエンティティに紐づく情報は `${user.プロパティ名}` と記述することで指定可能です。 +
+例えば、 `${user.mail}` でユーザーの `mail` を指定します。また、参照先のプロパティも `${user.groups.name}` のような形で指定が可能です。
+|password pattern error message|パスワードの複雑度エラーのメッセージ。
+|random password include signs|自動生成で作成するパスワードに利用する記号。
+|random password exclude chars|自動生成で作成するパスワードで除外する文字。
+|random password length|自動生成で作成するパスワードの長さ。
+|maximum random password age|自動生成で作成するパスワードが有効な最大期間 （日）。0は無限。パスワードが自動生成された場合、ユーザーにこの日付をもとにした有効終了日がセットされます。
+自動生成パスワードからパスワード変更した際に終了日はリセットされます。
+|custom user end date script|パスワードを自動生成されたパスワードから変更した際にリセットされるユーザーの終了日をカスタマイズしたい場合に指定します。
+GroovyScript形式でTimestampのインスタンスを返却するように実装します。
+未指定の場合、ユーザーの終了日にはnull（有効期限なし）が設定されます。
+|password history count|過去入力したパスワードを覚えておく個数。履歴に残っているパスワードは設定できなくなります。
+|password history period|過去入力したパスワードを覚えておく期間 （日）。履歴に残っている期間内のパスワードは設定できなくなります。
+|create account with specific password|アカウント作成の際、初期パスワードを指定可能とするか。
+|reset password with specific password|パスワードリセットの際、パスワードを指定可能とするか。
+|===
+
+NOTE: `password history count` と `password history period` の両方が設定されている場合、パスワード保持個数内またはパスワード保持期間内のパスワードが設定できなくなります。
+
+[[ref_account_lock_policy]]
+===== ロックポリシー
+ロックした場合は、AdminConsoleなどでロックを解除する必要があります。
+
+[cols="1,3a", options="header"]
+|===
+|項目名|内容
+|lockout failure count|アカウントがロックする失敗回数。0はロックアウトしません。
+|lockout duration|ロックアウトしている期間（分）。0は無制限。
+|lockout failure expiration interval|失敗回数を記憶しておく期間（分） 。0は無制限。
+|===
+
+[[ref_rememberme_policy]]
+===== Remember Me
+Remember Me機能用の設定です。
+Remember Me は、ログイン後、一定期間の間、認証情報の入力を省略する機能です。
+
+NOTE: Remember Me機能を有効化する場合は、AdminConsoleのTenant設定画面で「Remember Me機能を利用する」を
+「利用する」に設定する必要があります。
+
+[cols="1,3a", options="header"]
+|===
+|項目名|内容
+|lifetime minutes|有効となる自動ログイン期間（分）。0はRememberMe機能を利用しないと同じ動作になります。
+|absolute lifetime|有効期間の開始日時。ONの場合は画面入力（ID/パスワード）によるログイン日時から有効期間まで、
+OFFの場合は最終アクセス日時から有効期間まで。
+|===
+
+[[ref_audit_log]]
+===== ロギング
+
+[cols="1,3a", options="header"]
+|===
+|項目名|内容
+|record last login date|最終ログイン日時を記録する場合にONにします。
+|===
+
+[[ref_notification_listener]]
+==== 通知設定
+ユーザー情報に変更が発生した際のリスナー設定です。
+このListenerを設定することにより、ユーザー情報に対する変更を制御することが可能になります。
+Listenerとしては、以下の３つのタイプを選択することが可能です。
+
+[cols="1,3a", options="header"]
+|===
+|タイプ|内容
+|<<notificationlistener_mail, Mail>>|メールを送信するためのListener。
+|<<notificationlistener_java,Java Class>>|Javaで実装したListener。
+|<<notificationlistener_scripting, Scripting>>|GroovyScript形式のListener。
+|===
+
+[[notificationlistener_mail]]
+===== Mail
+メールを送信するためのListener定義です。
+
+
+* テンプレート定義 +
+各イベントに対するメールテンプレートを指定してください。
++
+[cols="1,3a", options="header"]
+|===
+|項目名|内容
+|create user|ユーザー作成時のメールテンプレート名。
+|credential reset|パスワードリセット時のメールテンプレート名。
+|create user with specified password|パスワード指定によるユーザー作成時のメールテンプレート名。
+|credential reset with specified password|パスワード指定によるリセット時のメールテンプレート名。
+|locked out|ユーザーロック時のメールテンプレート名。
+|credential updated|パスワード変更時のメールテンプレート名。
+|property updated|プロパティ変更時のメールテンプレート名。 +
+ `Properties For Update Notification` で指定されたプロパティに変更があった際に通知されます。
+|remove user|ユーザー削除時のメールテンプレート名。
+|===
++
+NOTE: 未指定の場合はメール送信は行いません。
+
+* バインド変数 +
+メールテンプレートには以下の変数がバインドされます。
++
+[cols="1,3a,1a", options="header"]
+|===
+|変数名|バインド値|クラス
+|tenant|対象テナント| `org.iplass.mtp.tenant.Tenant`
+|user|対象ユーザー| `org.iplass.mtp.auth.User`
+|newPassword|パスワード +
+ユーザー作成時、パスワードリセット時のみ設定されます。
+パスワード指定時やパスワード変更時などには設定されません。
+| `String`
+|===
+
+* 送信設定 +
+宛先、送信元情報は以下の通り設定されます。
++
+[cols="1,3a", options="header"]
+|===
+|設定項目|設定値
+|TO送信先|対象 `User` エンティティの `mail` プロパティに設定されたアドレス
+|送信元、返信先|テナントの設定値
+|===
++
+実際のメール送信処理は、メール送信機能の設定により行われます。
+詳細は<<../notification/index.adoc#mail, メール>>を参照してください。
+
+* Properties For Update Notification +
+プロパティ変更通知としてチェックするプロパティを指定します。
+
+[[notificationlistener_java]]
+===== Java
+
+====
+org.iplass.mtp.auth.policy.AccountNotificationListener
+====
+を実装したJavaクラスを指定してください。
+
+[[notificationlistener_scripting]]
+===== Scripting
+Groovyスクリプトで処理を定義します。
+スクリプト形式での定義方法には2パターン存在します。
+
+* AccountNotificationListenerの実装 +
+Javaタイプと同様に、 `org.iplass.mtp.auth.policy.AccountNotificationListener`
+を実装したクラスを定義することが可能です。 +
+<<../customizing/index.adoc#UtilityClass,UtilityClass>>での記載方法と同様の要領で記載してください。
+パッケージは不要です。
+
+* Script形式での指定 +
+EntityのEventListenerと同様の形式で指定します。
+「Notification Type」で選択したイベントに対して実行されます。
+バインド変数として以下が設定されていますので、処理内で利用することが可能です。
++
+[cols="1a,3a,1a", options="header"]
+|===
+|変数名|バインド値|クラス
+|notification|AccountNotificationのインスタンス。 +
+`NotificationType` と `userOid` を持っています。
+| `org.iplass.mtp.auth.policy.AccountNotification`
+|===
++
+.利用例
+[source, Groovy]
+----
+import org.iplass.mtp.auth.policy.definition.NotificationType;
+
+if (notification.type == NotificationType.CREATED) {
+	println "create user:" + notification.userOid;
+}
+----

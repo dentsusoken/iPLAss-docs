@@ -1,0 +1,154 @@
+[[AuditLoggingService]]
+=== AuditLoggingService
+This service manages the outputs of the logs about the operations on Entity, such as registration, update, and deletion.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.entity.auditlog.AuditLoggingService
+----
+
+==== Implementing Class Name
+.The Log Output with Logger
+----
+org.iplass.mtp.impl.entity.auditlog.LoggerAuditLoggingService
+----
+.[.eeonly]#The Log Output with Logger and Rdb#
+----
+org.iplass.mtp.impl.entity.auditlog.RdbAuditLoggingService
+----
+
+==== Settings of LoggerAuditLoggingService
+Specify the contents to output to logger.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+|logCompact | boolean | Whether to cut the texts at the specified length of characters when strings such as LongText went too long.
+|logQuery | boolean | Whether to output the query to the logger. The default value is false.
+|logSelectValueWithLabel | boolean | Whether to output the SelectValue as a label when outputting to the log. The default value is false.
+| logReferenceWithLabel | boolean | Whether to output the Reference with name when outputting to log. If false, oid is used instead. The default value is false.
+| textMaxLength | int | Number of characters to limit long strings such as LongText. The default value is 256.
+| maskTarget | <<MaskTarget>> | Set an individual MaskTarget to be used when masking logs.
+|===
+
+[[MaskTarget]]
+.MaskTarget
+The class is specified as org.iplass.mtp.impl.entity.auditlog.MaskTarget.
+Sets the Entity and Property to be masked and the masking method.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| entity | String | Specifies the Entity to be masked. "*" to specify all entities.
+| property | String | Specify the Property to be masked. "\*" to specify all Properties.Also, by specifying individual property names, even for Entity and Property with "*" designation, the individually specified `maskHandler` setting will take precedence.
+| maskHandler | <<maskHandler>> | Sets the mask method
+|===
+
+[[maskHandler]]
+.MaskHandler
+Specify the implementing class of org.iplass.mtp.impl.entity.auditlog.LogMaskHandler.
+The following MaskHandler is provided by default.
+
+- <<LogAllMaskHandler>>
+- <<LogRegexMaskHandler>>
+- <<LogHashMaskHandler>>
+- <<LogNoMaskHandler>>
+
+[[LogAllMaskHandler]]
+.LogAllMaskHandler
+LogMaskHandler to mask the value with a fixed string.
+The following items can be set.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| maskString | String | Replaces the value with a set string.
+|===
+
+[[LogRegexMaskHandler]]
+.LogRegexMaskHandler
+LogMaskHandler to mask values with regular expressions.
+The following items can be set.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| maskChar | String | Replaces characters matching the regular expression with  `maskChar` .
+| maskRegex | String | A regular expression pattern. The string can be a pattern from  `java.util.regex.Pattern` .
+|===
+
+[[LogHashMaskHandler]]
+.LogHashMaskHandler
+LogMaskHandler to hash and mask the value.
+The following items can be set.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| hashAlgorithm | String | Specifies the algorithm for hashing. Default is  `SHA-256` .
+|===
+
+[[LogNoMaskHandler]]
+.LogNoMaskHandler
+LogMaskHandler, which explicitly states that it is not masked.
+Even if a property is masked by specifying "*", it can be unmasked by specifying LogNoMaskHandler for the individual property.
+
+==== [.eeonly]#Settings of RdbAuditLoggingService#
+Specify the contents to output to logger and Rdb.
+In addition to LoggerAuditLoggingService, these items can be configured.
+
+===== Configurable items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| searchResultCacheLimit | long | Internal cache size for retrieving additional information, such as user name, from search result.
+| logIndexOrder | boolean | Whether or not to change the order of arrangement (index of the array) when recording update logs for multiple multiplicity properties. The default value is true.
+| disableLogging | boolean | Set to true if you want to temporarily disable the logging of RDB.
+If you want to prevent logging during data maintenance as the system administrator, you can temporarily disable loggings with this option.
+|===
+
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.entity.auditlog.AuditLoggingService</interface>
+	<class>org.iplass.mtp.impl.entity.auditlog.RdbAuditLoggingService</class>
+
+	<!--  Set to true if you don't want the long paragraphs such as LongText to be logged in full When outputting to log file, -->
+	<property name="logCompact" value="false" />
+	<!-- if log query, set to true -->
+	<property name="logQuery" value="false" />
+
+	<!-- Internal cache size for retrieving additional information, such as user name, from search result -->
+	<property name="searchResultCacheLimit" value="50" />
+
+	<!-- Set to true if you want the code and label of  SelectValue to be logged when logging  -->
+	<property name="logSelectValueWithLabel" value="true" />
+	<!-- Set to true if you want the oid and name of the reference item to be logged when logging -->
+	<property name="logReferenceWithLabel" value="true" />
+
+	<!-- Mask settings for properties output to log files -->
+	<property name="maskTarget" class="org.iplass.mtp.impl.entity.auditlog.MaskTarget">
+		<property name="entity" value="entityA" />
+		<property name="property" value="propertyA" />
+		<property name="maskHandler" ref="allMaskHandler" />
+	</property>
+	<property name="maskTarget" class="org.iplass.mtp.impl.entity.auditlog.MaskTarget">
+		<property name="entity" value="*" />
+		<property name="property" value="propertyB" />
+		<property name="maskHandler" ref="regexMaskHandler" />
+	</property>
+	<bean name="allMaskHandler" class="org.iplass.mtp.impl.entity.auditlog.LogAllMaskHandler">
+		<property name="maskString" value="*****" />
+	</bean>
+	<bean name="regexMaskHandler" class="org.iplass.mtp.impl.entity.auditlog.LogRegexMaskHandler">
+		<property name="maskChar" value="*" />
+		<property name="maskRegex" value=".+?" />
+	</bean>
+	<bean name="hashMaskHandler" class="org.iplass.mtp.impl.entity.auditlog.LogHashMaskHandler">
+		<property name="hashAlgorithm" value="SHA-256" />
+	</bean>
+	<bean name="noMaskHandler" class="org.iplass.mtp.impl.entity.auditlog.LogNoMaskHandler">
+	</bean>
+</service>
+----

@@ -1,0 +1,161 @@
+[[logback]]
+== ログ（Slf4j/Logback）
+iPLAssではログ出力にSlf4j/Logbackを利用しています。
+
+=== ロガー名
+iPLAssでは以下のログが標準で出力されます。
+必要に応じログファイル等に出力したいログのロガー名をlogback.xmlに指定してください。
+
+* 監査に関するログ
++
+[cols="1,2",options="header"]
+|===
+| ロガー名 | 出力内容
+| mtp.audit | データの操作に関するログが出力されます。
+| mtp.audit.admin | AdminConsoleでの操作に関するログが出力されます。
+ファイルのダウンロード操作( `mtp.audit.admin.download` )、AuditLogデータのメンテナンス操作( `mtp.audit.admin.auditlog` )に関するログが出力されます。
+| mtp.audit.download | ファイルのダウンロード操作に関するログが出力されます。
+| mtp.audit.porting.entity | エンティティの操作に関するログが出力されます。
+| mtp.audit.porting.metadata | メタデータの操作に関するログが出力されます。
+| mtp.audit.porting.pack | パッケージの操作に関するログが出力されます。
+|===
+
+* 認証に関するログ
++
+[cols="1,2",options="header"]
+|===
+| ロガー名 | 出力内容
+| mtp.auth | 認証に関するログが出力されます。
+|===
+
+* 実行ログ
++
+[cols="1,2",options="header"]
+|===
+| ロガー名 | 出力内容
+| mtp.action | Actionを呼び出した際の実行ログです。実行時間、クエリー発行回数、エラー内容などが出力されます。
+| mtp.webapi | Web APIを呼び出した際の実行ログです。実行時間、クエリー発行回数、エラー内容などが出力されます。
+| mtp.async | 非同期実行した際の実行ログです。実行時間、エラー内容などが出力されます。
+|===
+
+////
+* ツールに関するログ
++
+[cols="1,2",options="header"]
+|===
+| ロガー名 | 出力内容
+| mtp.tools.entity |
+| mtp.tools.metadata |
+| mtp.tools.packaging |
+|===
+////
+
+* 致命的なエラーに関するログ
++
+[cols="1,2",options="header"]
+|===
+| ロガー名 | 出力内容
+| mtp.fatal | 致命的なエラーに関するログが出力されます。
+| mtp.fatal.cube | Cube機能で発生したエラーのログが出力されます。
+| mtp.fatal.async | 非同期実行で発生したエラーのログが出力されます。
+| mtp.fatal.async.rdb | 非同期実行が中断またはリトライ回数を超えた場合にログが出力されます。
+| mtp.fatal.async.rdb.processworker | 非同期実行中に発生したエラーのログが出力されます。
+| mtp.fatal.asynctask | 非同期タスクの実行が中断された場合にログが出力されます。
+| mtp.fatal.mail | メール送信で発生したエラーのログが出力されます。
+| mtp.fatal.cluster | クラスタ間通信で発生したエラーのログが出力されます。
+| mtp.fatal.classloader | GroovyScriptのClassLoaderで発生したエラーのログが出力されます。
+|===
+
+* GroovyScriptに関するログ
++
+[cols="1,2",options="header"]
+|===
+| ロガー名 | 出力内容
+| mtp.script.out | バインド変数outのprintln()メソッドによりログが出力されます。
+|===
+
+* SQLに関するログ
++
+[cols="1,2",options="header"]
+|===
+| ロガー名 | 出力内容
+| org.iplass.mtp.impl.rdb.connection | SQLの実行時間、警告ログが出力されます。
+|===
+
+=== 診断コンテキスト
+iPLAssでは以下の情報が診断コンテキスト(MDC)によりログ出力されます。
+
+[cols="1,1,2",options="header"]
+|===
+| キー名 | ログ出力書式 | 出力値
+| taskId | %X{taskId} | タスクID
+| user | %X{user} | ユーザー（クライアントID）
+| tenant | %X{tenant} | テナントID
+| tenantName | %X{tenantName} | テナント名
+| action | %X{action} | アクション名
+| command | %X{command} | コマンド名
+| webapi | %X{webapi} | WebApi名
+| traceId | %X{traceId} | [.eeonly]#iplass-ee-awsモジュール# 適用の場合、X-Amzn-Trace-IdのRootを出力 +
+また、WebFrontendServiceにて出力値を設定可能
+| [.eeonly]#impersonatedUser# | %X{impersonatedUser} | 代理ログインユーザー
+|===
+
+=== フィルター
+iPLAssでは `org.iplass.mtp.impl.logging.logback.LogConditionTurboFilter` を提供します。このTurboFilterを適用することにより、テナント単位にて動的にログ出力する条件を変更可能となります。
+
+.LogConditionTurboFilter設定例
+[source, xml]
+----
+<configuration>
+    <turboFilter class="org.iplass.mtp.impl.logging.logback.LogConditionTurboFilter" />
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %X{tenant} %X{user} %X{command} %X{taskId} %logger{36} - %replace(%msg){'\r|\n', ' '}%n</pattern>
+		</encoder>
+	</appender>
+
+    :
+    :
+
+
+	<logger name="org.iplass" level="INFO">
+		<appender-ref ref="STDOUT" />
+	</logger>
+
+	<logger name="mtp" level="INFO">
+		<appender-ref ref="STDOUT" />
+	</logger>
+	<root level="OFF" />
+</configuration>
+
+----
+
+=== 構造化ログ
+Logstash Logback Encoderを利用してログをJSON形式で出力可能です。
+Action/WebAPIの実行時間、クエリー発行回数などに関しては属性としても出力しています。
+
+.Logstash Logback Encoder設定例
+[source, xml]
+----
+<configuration>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+	</appender>
+
+    :
+    :
+
+
+	<logger name="org.iplass" level="INFO">
+		<appender-ref ref="STDOUT" />
+	</logger>
+
+	<logger name="mtp" level="INFO">
+		<appender-ref ref="STDOUT" />
+	</logger>
+	<root level="OFF" />
+</configuration>
+
+----

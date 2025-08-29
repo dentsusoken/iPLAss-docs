@@ -1,0 +1,74 @@
+[[GoogleCloudSettings]]
+=== GoogleCloudSettings
+This service manages GoogleCloud settings.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.googlecloud.GoogleCloudSettings
+----
+
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.googlecloud.GoogleCloudSettings
+----
+
+
+==== The settings of GoogleCloudSettings
+GoogleCloudSettings can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| credentialsFactory | <<GoogleCredentialsFactory>>, Required | Set the class to generate GoogleCredentials.
+|===
+
+[[GoogleCredentialsFactory]]
+.GoogleCredentialsFactory
+This class implements the interface org.iplass.mtp.impl.googlecloud.GoogleCredentialsFactory.
+
+The following GoogleCredentialsFactory features are provided as standard features.
+
+- org.iplass.mtp.impl.googlecloud.ServiceAccountSecretKeyGoogleCredentialsFactory
+  * This function generates authentication information using a private key file for service accounts.
+
+[[ServiceAccountSecretKeyGoogleCredentialsFactory]]
+.The settings of ServiceAccountSecretKeyGoogleCredentialsFactory
+Set the org.iplass.mtp.impl.googlecloud.ServiceAccountSecretKeyGoogleCredentialsFactory.
+
+It is assumed that the service account private key file will be used for authentication when using a non-Google environment. +
+If you use the Google environment, please consider a method other than a service account private key file. cf. link:https://cloud.google.com/iam/docs/best-practices-for-managing-service-account-keys[Best practices for managing service account keys^]
+
+ServiceAccountSecretKeyGoogleCredentialsFactory can be configured with the following items.
+
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| serviceAccountSecretKeyFilePath | String, Required | Set the path (physical file path or resource path) to the service account private key file obtained from the Google Cloud environment.
+| scope | String, Multiple | Scope to be set for GoogleCredentials. Check link:https://developers.google.com/identity/protocols/oauth2/scopes[OAuth 2.0 Scopes for Google APIs^] for available scopes.
+| proxyHost | String | Host name when using proxy.
+| proxyPort | int | port when using proxy.
+|====================
+
+
+===== Example
+[source, xml]
+----
+<!-- GoogleCloudSettings -->
+<service>
+    <interface>org.iplass.mtp.impl.googlecloud.GoogleCloudSettings</interface>
+    <class>org.iplass.mtp.impl.googlecloud.GoogleCloudSettings</class>
+
+    <property name="credentialsFactory" class="org.iplass.mtp.impl.googlecloud.ServiceAccountSecretKeyGoogleCredentialsFactory">
+        <!-- Set up a private key file (json) for the service account -->
+        <property name="serviceAccountSecretKeyFilePath" value="/path/to/service-account.json" />
+		<property name="scope" value="https://www.googleapis.com/auth/datastore" />
+		<property name="scope" value="https://www.googleapis.com/auth/cloud-platform" />
+        <property name="scope" value="https://www.googleapis.com/auth/firebase.messaging" />
+        <!-- Setting when using proxy -->
+        <property name="proxyHost" value="xxxxxx.dentsusoken.com" />
+        <property name="proxyPort" value="8080" />
+    </property>
+</service>
+----

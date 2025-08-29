@@ -1,0 +1,64 @@
+[[OpenIdConnectService]]
+=== OpenIdConnectService
+OpenID Connect Relying Partyの機能を管理するためのサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.auth.authenticate.oidc.OpenIdConnectService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.auth.authenticate.oidc.OpenIdConnectService
+----
+
+==== OpenIdConnectServiceの設定
+OpenIdConnectServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| allowedClockSkewMinutes | int | 許容されるクロックスキュー時間。デフォルト値は0（分）です。
+| jwksCacheLifetimeMinutes | int | jwksのキャッシュ時間。デフォルト値は360（分）です。
+| clientSecretType | String | Client Secretの種別。デフォルト値は `OIDCCS` です。
+| httpClientConfig | <<HttpClientConfig_oidc, HttpClientConfig>> | HTTPクライアントの設定。
+|===
+
+[[HttpClientConfig_oidc]]
+.HttpClientConfig
+classはorg.iplass.mtp.impl.http.HttpClientConfigを指定します。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| connectionTimeout | int | HTTPコネクションを確立する際のタイムアウト（ミリ秒）。デフォルト値は30000（30秒）です。
+| soTimeout | int | HTTP通信時のsocket timeout (SO_TIMEOUT)（ミリ秒）。デフォルト値は30000（30秒）です。
+| poolingMaxTotal | int | httpコネクションのプールの最大数。デフォルト値は20です。
+| poolingDefaultMaxPerRoute | int | ドメイン単位のhttpコネクションの最大数。デフォルト値は2です。
+| poolingTimeToLive | int | プールされているhttpコネクションの生存期間（ミリ秒）。デフォルトは無制限です。
+| proxyHost | String | プロキシサーバのホスト。
+| proxyPort | int | プロキシサーバのポート番号。
+| httpClientBuilderFactory | <<HttpClientBuilderFactory_oidc, HttpClientBuilderFactory>> | カスタムのHttpClientBuilderを生成したい場合に指定します。
+|====================
+
+[[HttpClientBuilderFactory_oidc]]
+.HttpClientBuilderFactory
+classはorg.iplass.mtp.impl.http.HttpClientBuilderFactoryを実装するクラスを指定します。
+
+標準で以下のHttpClientBuilderFactoryを提供します。
+
+* <<MicrometerHttpClientBuilderFactory, [.eeonly]#MicrometerHttpClientBuilderFactory#>>
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.auth.authenticate.oidc.OpenIdConnectService</interface>
+		<property name="httpClientConfig" class="org.iplass.mtp.impl.http.HttpClientConfig">
+			<property name="proxyHost" value="proxyhost.dentsusoken.com"/>
+			<property name="proxyPort" value="8080"/>
+		</property>
+</service>
+----

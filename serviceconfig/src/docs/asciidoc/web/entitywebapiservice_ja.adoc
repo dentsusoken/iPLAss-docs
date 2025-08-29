@@ -1,0 +1,55 @@
+[[EntityWebApiService]]
+=== EntityWebApiService
+EntityWebApiを管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.webapi.EntityWebApiService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.webapi.EntityWebApiService
+----
+
+==== EntityWebApiServiceの設定
+EntityWebApiServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| maxLimit | int | EntityWebApiの取得件数の上限。
+
+NOTE: Web APIのパラメータにて `tabular=ture` を指定した場合、もしくはAcceptが `text/csv`  の場合はこの制約は適用されません。
+| throwSearchResultLimitExceededException | boolean | 取得件数がmaxLimitを超えた際、例外をスローする場合はtrueを指定します。デフォルト値はfalseです。
+| csvDateTimeFormat | String | EntityWebApiのQuery検索でCSV形式の結果を返す場合のDateTime型の出力形式。未指定の場合は、実行時のLocaleFormatを利用します。
+| csvDateFormat | String | EntityWebApiのQuery検索でCSV形式の結果を返す場合のDate型の出力形式。未指定の場合は、実行時のLocaleFormatを利用します。
+| csvTimeFormat | String | EntityWebApiのQuery検索でCSV形式の結果を返す場合のTime型の出力形式。未指定の場合は、実行時のLocaleFormatを利用します。
+| loadWithMappedByReference | boolean | EntityWebApiのLoad処理で被参照プロパティを取得するか否かのデフォルト値です。デフォルト値はfalseです。
+| listWithMappedByReference | boolean | EntityWebApiのQuery検索で被参照プロパティを取得するか否かのデフォルト値です。デフォルト値はfalseです。
+| csvListWithMappedByReference | boolean | EntityWebApiのQuery検索のCSV形式の場合、被参照プロパティを取得するか否かのデフォルト値です。
+未設定時はlistWithMappedByReferenceの設定値が適用されます。
+
+CAUTION: 後方互換性のための設定フラグです。将来のバージョンでは本設定項目は削除されます。
+| enableNativeHint | boolean | EntityWebApiの呼び出し時にNative Hintの指定を可能とするか否かを設定。デフォルト値はfalseです。
+| permitRolesToSpecifyOptions | String、複数指定可 | EntityWebApiの呼び出し時に制御オプションの指定を可能とするロールを設定。Adminユーザーの場合はロールが設定されていなくても制御オプションは利用できます。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.webapi.EntityWebApiService</interface>
+	<property name="maxLimit" value="1000" />
+	<property name="csvDateTimeFormat" value="yyyy/MM/dd HH:mm:ss" />
+	<property name="csvDateFormat" value="yyyy/MM/dd" />
+	<property name="csvTimeFormat" value="HH:mm:ss" />
+
+	<property name="loadWithMappedByReference" value="true" />
+
+	<property name="permitRolesToSpecifyOptions" value="RoleA" />
+	<property name="permitRolesToSpecifyOptions" value="RoleB" />
+
+</service>
+----

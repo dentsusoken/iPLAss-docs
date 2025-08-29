@@ -1,0 +1,614 @@
+[[MicrometerService]]
+=== [.eeonly]#MicrometerService#
+This is a service to collect metrics and link to monitoring systems. The module that uses link:https://micrometer.io/[Micrometer^] is provided in the standard. +
+For more information on the metrics that can be collected, see <<../developerguide/support/index.adoc#_サポートするメトリクス, Supported Metrics>>  in the Developer's Guide
+
+==== Interface Name
+----
+org.iplass.mtp.impl.micrometer.MicrometerService
+----
+
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.micrometer.MicrometerService
+----
+
+
+==== The settings of MicrometerService
+MicrometerService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| enableEntityMetrics | boolean | Specify whether to record the latency and processing count of CRUD operations of Entity as metrics. The default value is true. +
+To actually collect the metrics, you need to add the Micrometer module's <<EntityEventMetricsInterceptor>> to the `interceptor` of the EntityService (it is added by default).
+| entityConfig | <<TimerConfig>> | The histograms and percentiles setting for the latency metrics of the Entity's CRUD operations.
+| enableActionLatencyMetrics | boolean | Specify whether to record the latency and number of calls of the Action as a metric. The default value is true. +
+To actually collect the metrics, you need to add the Micrometer module's <<ActionMetricsInterceptor>> to the `interceptor` of the ActionMappingService (it is added by default).
+| actionConfig | <<TimerConfig>> | The histograms and percentiles setting for the metrics of the Action Latency.
+| enableWebApiLatencyMetrics | boolean | Specify whether to record the latency and number of calls of the WebAPI as metrics. The default value is true. +
+To actually collect the metrics, you need to add the Micrometer module <<WebApiMetricsInterceptor>> to the InterceptorService `webApi, soap` (it is added by default). 
+| webApiConfig | <<TimerConfig>> | The histograms and percentiles setting for the metrics of the WebAPI Latency.
+| enableSqlExecutionMetrics | boolean | Specify whether to record the number of times SQL is executed as a metric when calling Action or WebAPI. The default value is true. +
+To actually collect the metrics, you need to add the Micrometer module's <<ActionMetricsInterceptor>> to the `interceptor` of the ActionMappingService ,and the Micrometer module <<WebApiMetricsInterceptor>> to the InterceptorService `webApi, soap` (it is added by default).
+| sqlConfig | <<DistributionSummaryConfig>> | The histograms and percentiles setting for the metrics of the numberof times SQL is executed.
+| enableHttpClientMetrics | boolean | Specify whether to record the request duration and number of requests of each Http Request in HttpClient and Http connection pool statistics as metrics. The default value is true. +
+To actually collect metrics, you need to specify the Micrometer module <<MicrometerHttpClientBuilderFactory>> in the `httpClientBuilderFactory` of the target HttpClientConfig.
+| enableCacheStoreMetrics | boolean | Specify whether to record the CacheStore size and the number of hits/misses (Query cache and ActionContent cache only) as metrics. The default value is true. +
+To actually collect the metrics, you need to specify the target CacheStore in the `wrappedStore` of the <<MetricsCacheStoreFactory>> in the Micrometer module (by default, enable metrics collection for the default CacheStore defined inside the infrastructure).
+| enableAuthenticationMetrics | boolean | Specify whether to record the number of successful and failed authentication attempts as metrics. The default value is true. +
+To actually collect the metrics, the `loggers` of the AuthLoggerService must include the Micrometer module <<AuthenticationEventMetrics>> (enabled by default, along with <<EnterpriseSlf4jAuthLogger>>).
+| enableAsyncMetrics | boolean | Specify whether to record the number of successful/unsuccessful asynchronous execution, the number of timeout, execution time as metrics. The default value is true. +
+To actually collect the metrics, the `workerFactory` of the RdbQueueService must include the Micrometer module <<MetricsWorkerFactory>>.
+| enableS3Metrics | boolean | Specify whether to record the request duration and number of requests of AWS S3 as metrics. The default value is true. +
+To actually collect the metrics, the `binaryStore` of the LobStoreService must include the Micrometer module <<MetricsS3LobStore>>.
+| enableMailMetrics | boolean | Specify whether to record  the number of successful/unsuccessful attempts and execution time of the mail transmission events as metrics. The default value is true. +
+To actually collect the metrics, the `listener` of the MailService must include the Micrometer module <<MetricsSendMailListener>>.
+| enablePushMetrics | boolean | Specify whether to record  the number of successful/unsuccessful attempts and execution time of the push transmission events as metrics. The default value is true. +
+To actually collect the metrics, the `listener` of the PushNotificationService must include the Micrometer module <<MetricsPushNotificationListener>>.
+| enableSmsMetrics | boolean | Specify whether to record  the number of successful/unsuccessful attempts and execution time of the SMS transmission events as metrics. The default value is true. +
+To actually collect the metrics, the `listener` of the SmsService must include the Micrometer module <<MetricsSendSmsMailListener>>.
+| meterBinder | <<MeterBinder>>, multiple | The Binder class that registers one or more metrics.
+| commonTags | String, in format of Map | Tags that are commonly assigned to all metrics, and can be specified in format of Map.
+| actionPathResolver | <<PathResolver>>, multiple | Resolver class for resolving paths that are tied to Action metrics as values of `uri` and `uri_method` tags.
+| webApiPathResolver | <<PathResolver>>, multiple | Resolver class for resolving paths that are tied to WebAPI metrics as values of `uri` and `uri_method` tags.
+| customTagActionPathResolver | <<PathResolver>>, in format of Map | The tag and <<PathResolver>> class that resolves that value can be specified to Action metrics in format of Map by custom.
+| customTagWebApiPathResolver | <<PathResolver>>, in format of Map | The tag and <<PathResolver>> class that resolves that value can be specified to WebAPI metrics in format of Map by custom.
+| customizerClass | <<MeterRegistryCustomizer>> | This can be specified when you want to write your own logic to customize the metrics settings.
+| meterRegistryFactory | <<MeterRegistryFactory>> | The Factory class that generates a MeterRegistry that manages and holds metrics.
+|===
+
+[[TimerConfig]]
+.TimerConfig
+Please specify org.iplass.mtp.impl.micrometer.metrics.TimerConfig to the class.
+
+Histograms and percentiles settings for metrics that record the latency or frequency of events. +
+The following items can be configured. For details on each item, please see link:https://micrometer.io/docs/concepts#_histograms_and_percentiles[Histograms and percentiles^].
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| publishPercentiles | double, multiple | Settings for publishing the percentile values calculated by the application.
+| publishPercentileHistogram | boolean | If true, publish a histogram suitable for computing aggregable (across dimensions) percentile approximations. Only ships metrics that are within the range set by minimumExpectedValue and maximumExpectedValue.
+| maximumExpectedValue | double | The maximum value of the range used to control the number of buckets targated by the histogram.
+| minimumExpectedValue | double | The minimum value of the range used to control the number of buckets targated by the histogram.
+| serviceLevelObjectives | long, multiple | Publish a cumulative histogram with buckets defined by SLOs.
+|====================
+
+[[DistributionSummaryConfig]]
+.DistributionSummaryConfig
+Please specify org.iplass.mtp.impl.micrometer.metrics.DistributionSummaryConfig to the class.
+
+Histograms and percentiles settings for metrics that record track the distribution of events. +
+The following items can be configured. For details on each item, please see link:https://micrometer.io/docs/concepts#_histograms_and_percentiles[Histograms and percentiles^].
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| publishPercentiles | double, multiple | Settings for publishing the percentile values calculated by the application.
+| publishPercentileHistogram | boolean | If true, publish a histogram suitable for computing aggregable (across dimensions) percentile approximations. Only ships metrics that are within the range set by minimumExpectedValue and maximumExpectedValue.
+| maximumExpectedValue | double | The maximum value of the range used to control the number of buckets targated by the histogram.
+| minimumExpectedValue | double | The minimum value of the range used to control the number of buckets targated by the histogram.
+| serviceLevelObjectives | double, multiple | Publish a cumulative histogram with buckets defined by SLOs.
+|====================
+
+[[EntityEventMetricsInterceptor]]
+.EntityEventMetricsInterceptor
+Please specify org.iplass.mtp.impl.micrometer.metrics.entity.EntityEventMetricsInterceptor to the class.
+
+This is an interceptor that records the latency and execution count of Entity operations as metrics. This is added by default when the Micrometer module is applied. The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| provider | EntityEventMetricsTagsProvider | A class that implements org.iplass.mtp.impl.micrometer.metrics.entity.EntityEventMetricsTagsProvider. This can be specified if you want to customize the tags that are given to metrics. By default, org.iplass.mtp.impl.micrometer.metrics.entity.DefaultEntityEventMetricsTagsProvider is used.
+|===
+
+[[MicrometerHttpClientBuilderFactory]]
+.MicrometerHttpClientBuilderFactory
+Please specify org.iplass.mtp.impl.micrometer.metrics.httpclient.MicrometerHttpClientBuilderFactory to the class.
+
+This is a customized HttpClientBuilderFactory that records the request time and count of each Http request and Http connection pool statistics for the target HttpClient as metrics. +
+This is configurable when the Micrometer module is added to the dependency. There are no configurable items.
+
+[[MeterBinder]]
+.MeterBinder
+Please specify the implementation class of io.micrometer.core.instrument.binder.MeterBinder to the class (multiple classes can be specified).
+
+By default, the following MeterBinder included in the core module of the Micrometer is specified. There are no configurable items.
+
+* io.micrometer.core.instrument.binder.jvm.JvmGcMetrics
+* io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
+* io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics
+* io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics
+* io.micrometer.core.instrument.binder.logging.LogbackMetrics
+* io.micrometer.core.instrument.binder.system.ProcessorMetrics
+* io.micrometer.core.instrument.binder.system.UptimeMetrics
+* io.micrometer.core.instrument.binder.system.FileDescriptorMetrics
+
+In addition, the following MeterBinder are provided as standard.
+
+* <<TomcatMeterBinder>>
+* <<TomcatDbcp2MeterBinder>>
+* <<CommonsDbcp2MeterBinder>>
+* <<HikariCPMeterBinder>>
+
+
+[[TomcatMeterBinder]]
+.TomcatMeterBinder
+Please specify org.iplass.mtp.impl.micrometer.metrics.tomcat.TomcatMeterBinder to the class.
+
+This is a MeterBinder that registers metrics such as Tomcat threads, sessions, and total number of requests. There are no configurable items.
+
+[[TomcatDbcp2MeterBinder]]
+.TomcatDbcp2MeterBinder
+Please specify org.iplass.mtp.impl.micrometer.metrics.jdbc.tomcatdbcp2.TomcatDbcp2MeterBinder to the class.
+
+This is a MeterBinder that registers metrics related to the Tomcat dbcp2 (org.apache.tomcat.dbcp.dbcp2) connection pool. The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| poolName | String | Connection Pool name. The default value is "mtpPool".
+|====================
+
+[[CommonsDbcp2MeterBinder]]
+.CommonsDbcp2MeterBinder
+Please specify org.iplass.mtp.impl.micrometer.metrics.jdbc.commonsdbcp2.CommonsDbcp2MeterBinder to the class.
+
+This is a MeterBinder that registers metrics related to the Commons dbcp2（org.apache.commons.dbcp2） connection pool. The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| poolName | String | Connection Pool name. The default value is "mtpPool".
+|====================
+
+[[HikariCPMeterBinder]]
+.HikariCPMeterBinder
+Please specify org.iplass.mtp.impl.micrometer.metrics.jdbc.hikaricp.HikariCPMeterBinder to the class.
+
+This is a MeterBinder that registers metrics about HikariCP's connection pool. There are no configurable items.
+
+[[PathResolver]]
+.PathResolver
+Please specify the implementation class of org.iplass.mtp.impl.micrometer.metrics.web.PathResolver to the class (multiple classes can be specified).
+
+This is a Resolver class for resolving a Path that is tied to an Action and WebAPI metrics as a URI tag. Please write the logic for resolving the Path from the RequestContext.
+
+Call PathResolver#resolve in the order defined in actionPathResolver (webApiPathResolver), and tie the returned result to the URI tag when a non-null result is returned. If the result of the last call to PathResolver#resolve is null, only the Action name (WebAPI name) will be tied to the URI tag by default (SubPath will not be included).
+
+And call PathResolver#resolve in the order defined in customTagActionPathResolver (customTagWebApiPathResolver), and tie the returned result to the specified tag by custom when a non-null result is returned.
+
+The following PathResolver is defined by default.
+
+* <<DefaultActionPathResolver>>
+* <<DefaultWebApiPathResolver>>
+* <<ActionHierarchicalPathResolver>>
+* <<WebApiHierarchicalPathResolver>>
+
+[[DefaultActionPathResolver]]
+.DefaultActionPathResolver
+Please specify org.iplass.mtp.impl.micrometer.metrics.web.action.DefaultActionPathResolver to the class.
+
+This is a Resolver class that resolves the Path of a standard GEM Action. Returns "Action name + definition name" if the definition name is specified in the parameter mapping. There are no configurable items.
+
+[[DefaultWebApiPathResolver]]
+.DefaultWebApiPathResolver
+Please specify org.iplass.mtp.impl.micrometer.metrics.web.webapi.DefaultWebApiPathResolver to the class.
+
+This is a Resolver class that resolves the path of GEM standard WebAPI and Entity CRUD API. There are no configurable items.
+
+* For the GEM standard WebAPI, if the definition name is specified in the parameter mapping, "WebAPI name + definition name" is returned. 
+* For Entity CRUD API, if SubPath exists, return "WebAPI name + the first path of SubPath". 
+
+[[ActionHierarchicalPathResolver]]
+.ActionHierarchicalPathResolver
+Please specify org.iplass.mtp.impl.micrometer.metrics.web.action.ActionHierarchicalPathResolver to the class.
+
+About the path of a standard GEM Action, this is a Resolver class that resolves the path that specifies the depth of the hierarchy. Specify depth to specify the hierarchy. +
+For example, if uri is gem/generic/search/view/test and depth is 2, the value will be gem/generic. +
+The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| depth | int | Depth to specify the hierarchy. Specify a value greater than or equal to 1.
+|====================
+
+[[WebApiHierarchicalPathResolver]]
+.WebApiHierarchicalPathResolver
+Please specify org.iplass.mtp.impl.micrometer.metrics.web.webapi.WebApiHierarchicalPathResolver to the class.
+
+About the path of GEM standard WebAPI and Entity CRUD API, this is a Resolver class that resolves the path that specifies the depth of the hierarchy. Specify depth to specify the hierarchy. +
+For example, if uri is gem/workflow/getUserTaskListParts and depth is 2, the value will be gem/workflow. +
+The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| depth | int | Depth to specify the hierarchy. Specify a value greater than or equal to 1.
+|====================
+
+[[MeterRegistryCustomizer]]
+.MeterRegistryCustomizer
+Please specify your custom implementation of org.iplass.mtp.impl.micrometer.MeterRegistryCustomizer to the class.
+
+You can write the logic for customizing the metrics settings in the org.iplass.mtp.impl.micrometer.MeterRegistryCustomizer implementation class.
+
+[[MeterRegistryFactory]]
+.MeterRegistryFactory
+Please specify the implementation class of org.iplass.mtp.impl.micrometer.registry.MeterRegistryFactory to the class.
+
+The following MeterRegistryFactory are provided in the standard.
+
+* <<ElasticMeterRegistryFactory>>
+* <<JmxMeterRegistryFactory>>
+* <<PrometheusMeterRegistryFactory>>
+* <<CloudWatchMeterRegistryFactory>>
+* <<NewRelicMeterRegistryFactory>>
+* <<LoggingMeterRegistryFactory>>
+
+[[ElasticMeterRegistryFactory]]
+.ElasticMeterRegistryFactory
+Please specify org.iplass.mtp.impl.micrometer.registry.elastic.ElasticMeterRegistryFactory to the class.
+
+Factory class of io.micrometer.elastic.ElasticMeterRegistry that supports Elasticsearch. To specify this class, please add `io.micrometer:micrometer-registry-elastic` to a runtime dependency. The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|====================
+| Item | Value | Description
+| configMap | String, in format of Map | Configuration parameters for ElasticMeterRegistry. The main settings are as follows.
+
+* `host` ： Elasticsearch Host.
+* `index` ： The index where the metrics are stored (default value is "micrometer-metrics").
+* `step` ： Metrics transmission interval (default value is "1m").
+
+For details of all the possible settings, please see JavaDoc of the  link:https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-elastic/src/main/java/io/micrometer/elastic/ElasticConfig.java[ElasticConfig^].
+| httpSender | <<HttpSender, HttpSender>> | A Class that controls how perform Http calls.
+|====================
+
+[[HttpSender]]
+.HttpSender
+Please specify the implementation class of io.micrometer.core.ipc.http.HttpSender to the class.
+
+The following HttpSender is provided in the standard. If not specified, <<HttpUrlConnectionSender, HttpUrlConnectionSender>> will be used.
+
+* <<AWSHttpSender>>
+
+[[AWSHttpSender]]
+.AWSHttpSender
+Please specify org.iplass.mtp.impl.aws.micrometer.AWSHttpSender to the class.
+
+This is an implementation class of HttpSender that supports Amazon OpenSearch Service. The access key, secret key, and AWSClient side settings can be configured in <<AWSSetting, [.eeonly]#AWSSetting#>>. The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| serviceName | String | Service name. The default value is "es".  +
+If you are using Amazon OpenSearch Service, do not change the default value.
+| region | String | Region of Amazon OpenSearch Service.
+|====================
+
+[[HttpUrlConnectionSender]]
+.HttpUrlConnectionSender
+The class is io.micrometer.core.ipc.http.HttpUrlConnectionSender.
+
+This is the implementation class of HttpSender used by default. Please specify the parameters to `configMap` in Map format. The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| connectTimeoutMs | String | Connect timeout (in milliseconds) when establishing a connection. The default value is 1000 (1 second).
+| readTimeoutMs | String | Read timeout (in milliseconds) when receiving a response The default value is 10000 (10 second).
+| proxyHost | String | Proxy host for http communication.
+| proxyPort | int | Proxy port for http communication.
+|====================
+
+[[JmxMeterRegistryFactory]]
+.JmxMeterRegistryFactory
+Please specify org.iplass.mtp.impl.micrometer.registry.jms.JmxMeterRegistryFactory to the class.
+
+Factory class of io.micrometer.jmx.JmxMeterRegistry that supports JMX. To specify this class, please add `io.micrometer:micrometer-registry-jmx` to a runtime dependency. The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|====================
+| Item | Value | Description
+| configMap | String, in format of Map | Configuration parameters for JmxMeterRegistry. The main settings are as follows.
+
+* `domain` ： The JMX domain to publish the metrics to (default value is "metrics").
+
+For details of all the possible settings, please see JavaDoc of the  link:https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-jmx/src/main/java/io/micrometer/jmx/JmxConfig.java[JmxConfig^].
+| tagsAsPrefix | String, multiple | This can be specified to give prefix to all metrics in common.
+|====================
+
+[[PrometheusMeterRegistryFactory]]
+.PrometheusMeterRegistryFactory
+Please specify org.iplass.mtp.impl.micrometer.registry.prometheus.PrometheusMeterRegistryFactory to the class.
+
+Factory class of io.micrometer.prometheus.PrometheusMeterRegistry that supports Prometheus. To specify this class, please add `io.micrometer:micrometer-registry-prometheus` to a runtime dependency. The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|====================
+| Item | Value | Description
+| configMap | String, in format of Map | Configuration parameters for PrometheusMeterRegistry. The main settings are as follows.
+
+* `step` ： The step interval used to calculate statistics such as maximum and average. To get the most out of the statistics, set the step interval to be close to the Prometheus scrape interval (The default is 1 minute).
+
+For details of all the possible settings, please see JavaDoc of the  link:https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-prometheus/src/main/java/io/micrometer/prometheus/PrometheusConfig.java[PrometheusConfig^].
+|====================
+
+[[CloudWatchMeterRegistryFactory]]
+.CloudWatchMeterRegistryFactory
+Please specify org.iplass.mtp.impl.aws.micrometer.registry.cloudwatch.CloudWatchMeterRegistryFactory to the class.
+
+Factory class of io.micrometer.cloudwatch.CloudWatchMeterRegistry that supports Amazon CloudWatch. This class can be specified when an AWS module is added to a dependency. To specify this class, please add `io.micrometer:micrometer-registry-cloudwatch` to a runtime dependency. +
+The access key, secret key, and AWSClient side settings can be configured in <<AWSSetting, [.eeonly]#AWSSetting#>>. The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|====================
+| Item | Value | Description
+| configMap | String, in format of Map | Configuration parameters for CloudWatchMeterRegistry. The main settings are as follows.
+
+* `region` ： CloudWatch Region.
+* `namespace` ： Namespace to store the submitted custom metrics (default value is "micrometer-namespace").
+* `step` ： Metrics transmission interval (default value is "1m").
+
+For details of all the possible settings, please see JavaDoc of the  link:https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-cloudwatch/src/main/java/io/micrometer/cloudwatch/CloudWatchConfig.java[CloudWatchConfig^].
+|====================
+
+[[NewRelicMeterRegistryFactory]]
+.NewRelicMeterRegistryFactory
+Please specify org.iplass.mtp.impl.micrometer.registry.newrelic.NewRelicMeterRegistryFactory to the class.
+
+Factory class of com.newrelic.telemetry.micrometer.NewRelicRegistry that supports New Relic. To specify this class, please add `com.newrelic.telemetry:micrometer-registry-new-relic` to a runtime dependency. +
+The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|====================
+| Item | Value | Description
+| configMap | String, in format of Map | Configuration parameters for NewRelicRegistry. The main settings are as follows.
+
+* `apiKey` ： API key.
+* `serviceName` ： The service name.
+* `step` ： Metrics transmission interval (default value is "1m").
+
+For details of all the possible settings, please see JavaDoc of the  link:https://github.com/newrelic/micrometer-registry-newrelic/blob/main/src/main/java/com/newrelic/telemetry/micrometer/NewRelicRegistryConfig.java[NewRelicRegistryConfig^].
+| httpSender | <<HttpSender, HttpSender>> | A Class that controls how perform Http calls.
+|====================
+
+[[LoggingMeterRegistryFactory]]
+.LoggingMeterRegistryFactory
+Please specify org.iplass.mtp.impl.micrometer.registry.logging.LoggingMeterRegistryFactory to the class.
+
+Factory class of io.micrometer.core.instrument.logging.LoggingMeterRegistry that supports logging. For logging, please specify the logger name as io.micrometer.core.instrument.logging.LoggingMeterRegistry and the log level as INFO in logback.xml. +
+The following items can be configured.
+
+[cols="1,1,3a", options="header"]
+|====================
+| Item | Value | Description
+| configMap | String, in format of Map | Configuration parameters for LoggingMeterRegistry. The main settings are as follows.
+
+* `step` ： Metrics transmission interval (default value is "1m").
+
+For details of all the possible settings, please see JavaDoc of the  link:https://github.com/micrometer-metrics/micrometer/blob/main/micrometer-core/src/main/java/io/micrometer/core/instrument/logging/LoggingRegistryConfig.java[LoggingRegistryConfig^].
+|====================
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.micrometer.MicrometerService</interface>
+
+	<!-- ■ Custom Metrics Settings ■ -->
+	<!-- Latency of Entity CRUD operations -->
+	<property name="enableEntityMetrics" value="true" />
+	<property name="entityConfig" class="org.iplass.mtp.impl.micrometer.metrics.TimerConfig">
+		<!--
+		<property name="publishPercentiles" value="0.5" />
+		<property name="publishPercentiles" value="0.9" />
+		<property name="publishPercentiles" value="0.99" />
+		-->
+	</property>
+
+	<!-- Latency of Action -->
+	<property name="enableActionLatencyMetrics" value="true" />
+	<property name="actionConfig" class="org.iplass.mtp.impl.micrometer.metrics.TimerConfig">
+		<!--
+		<property name="publishPercentiles" value="0.5" />
+		<property name="publishPercentiles" value="0.9" />
+		<property name="publishPercentiles" value="0.99" />
+		-->
+	</property>
+
+	<!-- Latency of WebAPI -->
+	<property name="enableWebApiLatencyMetrics" value="true" />
+	<property name="webApiConfig" class="org.iplass.mtp.impl.micrometer.metrics.TimerConfig">
+		<!--
+		<property name="publishPercentiles" value="0.5" />
+		<property name="publishPercentiles" value="0.9" />
+		<property name="publishPercentiles" value="0.99" />
+		-->
+	</property>
+
+	<!-- Number of times SQL is executed for Action and WebAPI -->
+	<property name="enableSqlExecutionMetrics" value="true" />
+	<property name="sqlConfig" class="org.iplass.mtp.impl.micrometer.metrics.DistributionSummaryConfig">
+		<!--
+		<property name="publishPercentiles" value="0.5" />
+		<property name="publishPercentiles" value="0.9" />
+		<property name="publishPercentiles" value="0.99" />
+		-->
+	</property>
+	
+	<!-- Http request count, latency, and http connection pool metrics in HttpClient -->
+	<property name="enableHttpClientMetrics" value="true" />
+
+	<!-- CacheStore size, number of hits/Miss Count -->
+	<property name="enableCacheStoreMetrics" value="true" />
+
+	<!-- Number of success/failure authentication attempts -->
+	<property name="enableAuthenticationMetrics" value="true" />
+
+	<!-- Number of success/failure asynchronous execution, number of timeout, execution time -->
+	<property name="enableAsyncMetrics" value="true" />
+
+	<!-- Execution time and request count of S3 -->
+	<property name="enableS3Metrics" value="true" />
+
+	<!-- Number of success/failure and execution time of Mail -->
+	<property name="enableMailMetrics" value="true" />
+
+	<!-- Number of success/failure and execution time of Push -->
+	<property name="enablePushMetrics" value="true" />
+
+	<!-- Number of success/failure and execution time of SMS -->
+	<property name="enableSmsMetrics" value="true" />
+
+	<!-- ■ MeterBinder Settings ■ -->
+	<!-- jvm -->
+	<property name="meterBinder" class="io.micrometer.core.instrument.binder.jvm.JvmGcMetrics" />
+	<property name="meterBinder" class="io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics" />
+	<property name="meterBinder" class="io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics" />
+	<property name="meterBinder" class="io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics" />
+
+	<!-- logging -->
+	<property name="meterBinder" class="io.micrometer.core.instrument.binder.logging.LogbackMetrics" />
+
+	<!-- system -->
+	<property name="meterBinder" class="io.micrometer.core.instrument.binder.system.UptimeMetrics" />
+	<property name="meterBinder" class="io.micrometer.core.instrument.binder.system.ProcessorMetrics" />
+	<property name="meterBinder" class="io.micrometer.core.instrument.binder.system.FileDescriptorMetrics" />
+
+	<!-- tomcat -->
+	<!--
+	<property name="meterBinder" class="org.iplass.mtp.impl.micrometer.metrics.tomcat.TomcatMeterBinder" />
+	-->
+
+	<!-- Tomcat dbcp2 (tomcat default) -->
+	<!--
+	<property name="meterBinder" class="org.iplass.mtp.impl.micrometer.metrics.jdbc.tomcatdbcp2.TomcatDbcp2MeterBinder">
+		<property name="poolName" value="mtpPool" />
+	</property>
+	-->
+
+	<!-- commons dbcp 2 -->
+	<!--
+	<property name="meterBinder" class="org.iplass.mtp.impl.micrometer.metrics.jdbc.commonsdbcp2.CommonsDbcp2MeterBinder">
+		<property name="poolName" value="mtpPool" />
+	</property>
+	-->
+
+	<!-- hikari cp -->
+	<!--
+	<property name="meterBinder" class="org.iplass.mtp.impl.micrometer.metrics.jdbc.hikaricp.HikariCPMeterBinder" />
+	-->
+
+
+	<!-- ■ CommonTags Settings ■ -->
+	<!--
+	<property name="commonTags" >
+		<property name="tagKey1" value="tagValue1" />
+		<property name="tagKey2" value="tagValue2" />
+		<property name="tagKey3" value="tagValue3" />
+	</property>
+	 -->
+
+	 <!-- ■ PathResolver Settings ■ -->
+	<property name="actionPathResolver" class="org.iplass.mtp.impl.micrometer.metrics.web.action.DefaultActionPathResolver" />
+	<property name="webApiPathResolver" class="org.iplass.mtp.impl.micrometer.metrics.web.webapi.DefaultWebApiPathResolver" />
+
+	<!-- ■ Custom PathResolver Settings ■ -->
+	<!--
+	<property name="customTagActionPathResolver"> 
+		<property name="customHierarchicalUri1" class="org.iplass.mtp.impl.micrometer.metrics.web.action.ActionHierarchicalPathResolver">
+			<property name="depth" value="1" />
+		</property>
+	</property>
+	
+	<property name="customTagWebApiPathResolver"> 
+		<property name="customHierarchicalUri1" class="org.iplass.mtp.impl.micrometer.metrics.web.webapi.WebApiHierarchicalPathResolver">
+			<property name="depth" value="1" />
+		</property>
+	</property>
+	-->
+
+	 <!-- ■ Customizer Settings ■ -->
+	<!--
+	<property name="customizerClass" value="yourCustomizerClassName" />
+	 -->
+
+	<!-- ■ MeterRegistry Settings ■ -->
+	<!--
+		Please remove the comment-out for the monitoring system you want to use, and add/change the properties as needed.
+	-->
+	<!-- for Elastic -->
+	<!--
+	<property name="meterRegistryFactory" class="org.iplass.mtp.impl.micrometer.registry.elastic.ElasticMeterRegistryFactory">
+	-->
+		<!-- ■ If want to use Amazon OpenSearch Service, uncomment the following and change the properties. ■ -->
+		<!--
+		<property name="httpSender" class="org.iplass.mtp.impl.aws.micrometer.AWSHttpSender">
+			<property name="serviceName" value="es" />
+			<property name="region" value="yourESRegion" />
+		</property>
+		-->
+	<!--
+		<property name="configMap" >
+			<property name="host" value="yourElasticHost" />
+			<property name="step" value="1m" />
+			<property name="index" value="micrometer-metrics" />
+			<property name="connectTimeoutMs" value="2000" />
+		</property>
+	</property>
+	-->
+
+	<!-- for Jmx -->
+	<!--
+	<property name="meterRegistryFactory" class="org.iplass.mtp.impl.micrometer.registry.jmx.JmxMeterRegistryFactory">
+		<property name="configMap" >
+			<property name="domain" value="metrics" />
+		</property>
+		<property name="tagsAsPrefix" value="prefix1" />
+	</property>
+	 -->
+
+	<!-- for Prometheus -->
+	<!--
+	<property name="meterRegistryFactory" class="org.iplass.mtp.impl.micrometer.registry.prometheus.PrometheusMeterRegistryFactory">
+		<property name="configMap" >
+		</property>
+	</property>
+	-->
+	
+	<!-- for CloudWatch -->
+	<!--
+	<property name="meterRegistryFactory" class="org.iplass.mtp.impl.aws.micrometer.registry.cloudwatch.CloudWatchMeterRegistryFactory">
+		<property name="configMap" >
+			<property name="step" value="1m" />
+			<property name="region" value="yourRegion" />
+			<property name="namespace" value="micrometer-namespace" />
+		</property>
+	</property>
+	-->
+
+	<!-- for New Relic -->
+	<!--
+	<property name="meterRegistryFactory" class="org.iplass.mtp.impl.micrometer.registry.newrelic.NewRelicMeterRegistryFactory"> 
+		<property name="configMap" >
+			<property name="step" value="1m" />
+			<property name="apiKey" value="yourApiKey" />
+		</property>
+	</property>
+	-->
+
+	<!-- for Logging -->
+	<!--
+	<property name="meterRegistryFactory" class="org.iplass.mtp.impl.micrometer.registry.logging.LoggingMeterRegistryFactory">
+		<property name="configMap" >
+			<property name="step" value="1m" />
+		</property>
+	</property>
+	-->
+</service>
+----

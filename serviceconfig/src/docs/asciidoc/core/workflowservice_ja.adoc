@@ -1,0 +1,67 @@
+[[WorkflowService]]
+=== [.eeonly]#WorkflowService#
+ワークフローの動作を管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.workflow.WorkflowService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.workflow.WorkflowService
+----
+
+==== WorkflowServiceの設定
+WorkflowServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| workflowInstanceStore | <<WorkflowInstanceStore>> | ワークフローインスタンスの管理方法。
+| historyLogStore | <<HistoryLogStore>> | ワークフロー履歴の管理方法。
+| queueForWorkflow | String | ワークフロー用のキュー名。
+|===
+
+[[WorkflowInstanceStore]]
+.WorkflowInstanceStore
+classにorg.iplass.mtp.impl.workflow.WorkflowInstanceStoreの実装クラスを指定します。
+
+標準でorg.iplass.mtp.impl.workflow.store.EntityWorkflowInstanceStoreを提供します。
+ワークフローインスタンスをEntityとして管理します。
+設定可能な項目はありません。
+
+[[HistoryLogStore]]
+.HistoryLogStore
+classにorg.iplass.mtp.impl.workflow.HistoryLogStoreの実装クラスを指定します。
+
+標準で以下のHistoryLogStoreを提供します。
+
+* <<LoggerHistoryLogStore>>
+* <<EntityHistoryLogStore>>
+
+[[LoggerHistoryLogStore]]
+.LoggerHistoryLogStore
+ワークフロー履歴をログとして管理します。
+
+classはorg.iplass.mtp.impl.workflow.store.LoggerHistoryLogStoreを指定します。
+設定可能な項目はありません。
+
+[[EntityHistoryLogStore]]
+.EntityHistoryLogStore
+ワークフロー履歴をEntityとして管理します。
+
+classはorg.iplass.mtp.impl.workflow.store.EntityHistoryLogStoreを指定します。
+設定可能な項目はありません。
+
+===== 設定例
+[source, xml]
+----
+<service final="true">
+	<interface>org.iplass.mtp.impl.workflow.WorkflowService</interface>
+	<class>org.iplass.mtp.impl.workflow.WorkflowService</class>
+	<property name="workflowInstanceStore" class="org.iplass.mtp.impl.workflow.store.EntityWorkflowInstanceStore" />
+	<property name="historyLogStore" class="org.iplass.mtp.impl.workflow.store.EntityHistoryLogStore" />
+</service>
+----

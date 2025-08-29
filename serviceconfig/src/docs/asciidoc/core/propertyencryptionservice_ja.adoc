@@ -1,0 +1,115 @@
+[[PropertyEncryptionService]]
+=== [.eeonly]#PropertyEncryptionService#
+プロパティ単位の暗号化を行うサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.properties.extend.crypt.PropertyEncryptionService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.properties.extend.crypt.PropertyEncryptionService
+----
+
+==== PropertyEncryptionServiceの設定
+PropertyEncryptionServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| encryptionSettings | <<EncryptionSetting>>、複数指定可 | 暗号化の方式。
+標準で提供するクラス、もしくはEncryptionSettingインタフェースを実装するカスタムのEncryptionSetting。
+異なるversionのencryptionSettingsを複数定義することにより、暗号化ロジックのロールオーバーが可能です。
+新規に保存される値は最後に定義されたencryptionSettingsを利用して暗号化されます。
+| cachePrivateKeyInMemory | boolean | シークレットキーをメモリにキャッシュするか。デフォルト値はfalseです。
+| logEncryptProperty | boolean | 暗号化したプロパティを暗号化前の値でログ出力するか。デフォルト値はtrueです。
+| encryptValueLogExpression | String | 暗号化した際に出力される文字列。デフォルト値は `"\***"` です。
+|===
+
+[[EncryptionSetting]]
+.EncryptionSetting
+暗号化の方式を定義します。
+
+classはorg.iplass.mtp.impl.properties.extend.crypt.EncryptionSettingの実装クラスを指定します。
+
+標準で以下のEncryptionSettingを提供します。
+
+* <<PBKDF2EncryptionSetting>>
+* <<KeyStoreEncryptionSetting>>
+
+
+[[PBKDF2EncryptionSetting]]
+.PBKDF2EncryptionSetting
+PBKDF2（Password-Based Key Drivation Function 2）を用いた暗号化を行います。
+
+classにorg.iplass.mtp.impl.properties.extend.crypt.PBKDF2EncryptionSettingを指定します。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| version | String | 暗号化アルゴリズム設定のバージョン。
+複数のencryptionSettings定義でそれぞれ一意な番号を指定する。
+| keyFactoryAlgorithm | String | 鍵生成アルゴリズム。
+デフォルト値は `PBKDF2WithHmacSHA256`。
+| keySalt | String | 鍵生成時のSalt。
+未指定の場合はシステムのデフォルト値を利用。
+| keyStretch | int | 鍵生成時のストレッチ回数。
+デフォルト値は2048。
+| cipherAlgorithm | String | ブロック暗号化のアルゴリズム。
+デフォルト値は `AES`。
+| keyLength | int | 鍵長。デフォルト値は128。
+| keyPassword | String | 鍵生成の元となるパスワード文字列。
+|===
+
+[[KeyStoreEncryptionSetting]]
+.KeyStoreEncryptionSetting
+KeyStoreファイルを用いた暗号化を行います。
+
+classにorg.iplass.mtp.impl.properties.extend.crypt.KeyStoreEncryptionSettingを指定します。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| version | String | 暗号化アルゴリズム設定のバージョン。
+複数のencryptionSettings定義でそれぞれ一意な番号を指定する。
+| cipherAlgorithm | String | ブロック暗号化のアルゴリズム。
+デフォルト値は `AES`。
+| keyLength | int | 鍵長。デフォルト値は128。
+| keyStoreType | String | 秘密鍵を保存するkeyStoreのタイプ。
+デフォルト値は `JCEKS`。
+| keyStoreFilePath | String | keyStoreファイルのファイルパス。
+| keyStorePassword | String | keyStoreのパスワード。
+| keyAlias | String | keyStore内に格納されている秘密鍵のエイリアス名。
+| keyPassword | String | keyStore内に格納されている秘密鍵取得のためのパスワード。
+|===
+
+
+===== 設定例
+[source, xml]
+----
+<service>
+    <interface>org.iplass.mtp.impl.properties.extend.crypt.PropertyEncryptionService</interface>
+    <property name="encryptionSettings" class="org.iplass.mtp.impl.properties.extend.crypt.PBKDF2EncryptionSetting">
+        <property name="version" value="1" />
+        <property name="keyPassword" value="yourOwnPass" />
+    </property>
+    <property name="encryptionSettings" class="org.iplass.mtp.impl.properties.extend.crypt.KeyStoreEncryptionSetting">
+        <property name="version" value="2" />
+		<property name="keyStoreFilePath" value="yourOwnKeyStoreFilePass" />
+		<property name="keyStorePassword" value="yourOwnKeyStorePassword" />
+		<property name="keyAlias" value="yourOwnKeyAliasName" />
+		<property name="keyPassword" value="yourOwnKeyPassword" />
+    </property>
+	<!--
+		By default the secret key is cached in memory.
+		For enhanced security,
+		set cachePrivateKeyInMemory to false if you do not want to cache secret keys in memory.
+	 -->
+	<property name="cachePrivateKeyInMemory" value="true" />
+</service>
+----
+
+keyPassword、keyStorePasswordは秘匿情報なので、取り扱いに注意してください。
+設定ファイルのアクセス権を厳重にする、または設定ファイルの難読化を施すなどの対策をしてください。

@@ -1,0 +1,34 @@
+[[AggregationService]]
+=== [.eeonly]#AggregationService#
+集計機能の定義（メタデータ）を管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.aggregation.unit.AggregationService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.aggregation.unit.AggregationService
+----
+
+==== AggregationServiceの設定
+AggregationServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| useSubQueryIfPossible | boolean | フィルター条件に保存リストを利用する場合に、可能な限りサブクエリを利用するか。デフォルト値はfalseです。
+|===
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.aggregation.unit.AggregationService</interface>
+	<class>org.iplass.mtp.impl.aggregation.unit.AggregationService</class>
+	<!-- フィルター条件に保存リストを利用する場合に、可能な限りサブクエリを利用するか否か -->
+	<property name="useSubQueryIfPossible" value="false" />
+</service>
+----

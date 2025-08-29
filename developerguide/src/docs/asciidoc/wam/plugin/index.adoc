@@ -1,0 +1,17 @@
+== WAMプラグインモジュール
+
+HTTPサーバー上で動作し、サイトコンテンツへのアクセスをフックして閲覧制御を行うモジュールです。WAMモジュールとHTTP連携し、未ログインユーザーのログイン画面へのリダイレクト、閲覧権限に応じたコンテンツアクセス制御などを行います。 +
+`Apache HTTP Server` 、`IIS`、`JavaEE Server` 、 `Serverless(JavaScript)` で動作するプラグインモジュールを標準で提供します。
+
+
+include::sequence.adoc[]
+
+include::settingfile.adoc[]
+
+include::apache/index.adoc[]
+
+include::iis/index.adoc[]
+
+include::javaee/index.adoc[]
+
+include::serverless/index.adoc[]

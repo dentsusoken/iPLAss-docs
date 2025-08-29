@@ -1,0 +1,203 @@
+[[Mail]]
+== メール送信
+CommandやListenerなどからメールを送信する機能です。
+MailManagerクラスを介してメールを送信します。
+送信する文面はMailTemplateとして登録・管理することが可能です。
+
+=== MailTemplateの作成
+MailTemplateアイコンを右クリックして「メールテンプレートを作成する」を選択してください。
+
+=== 設定
+==== テンプレートの編集
+件名、文字コード（テキストメッセージ文字コード、HTMLメッセージ文字コード）、テキストメッセージ（Plainメッセージ）、HTMLメッセージを設定します。
+
+[cols="1,2", options="header"]
+|===
+|項目|設定内容
+|表示名|表示名を設定します。
+|説明|説明を設定します。
+|文字コード|テキストメッセージの文字コードを設定します。
+未指定の場合、メールの基本設定のデフォルトキャラクタセット（mail.charset）が設定されます。
+|HTML文字コード|HTMLメッセージの文字コードを設定します。
+未指定の場合、文字コードと同じ値が設定されます。
+|Fromアドレス|標準の送信元アドレスを設定します。
+詳細は<<from,送信元>>を参照してください。
+|Fromアドレス個人名|標準の送信元アドレス個人名を設定します。
+詳細は<<from,送信元>>を参照してください。
+|ReplyToアドレス|標準の返信先アドレスを設定します。
+詳細は<<from,送信元>>を参照してください。
+|ReplyToアドレス個人名|標準の返信先アドレス個人名を設定します。
+詳細は<<from,送信元>>を参照してください。
+|ReturnPathアドレス|標準のエラーメール返信先アドレスを設定します。
+詳細は<<from,送信元>>を参照してください。
+|S/MIME電子署名|S/MIMEによる署名を行う場合、チェックをいれてください。
+事前に、S/MIME用の証明書（および秘密鍵）ストアに送信者のメールアドレスに対する証明書、秘密鍵が格納されている必要があります。
+詳細はservice-configのMailServiceの<<../../serviceconfig/index.adoc#SmimeCertStore, SmimeCertStore>>を参照してください。
+|S/MIME暗号化|S/MIMEによる暗号化を行う場合、チェックをいれてください。
+事前に、S/MIME用の証明書ストアに受信者のメールアドレスに対する証明書が格納されている必要があります。
+詳細はservice-configのMailServiceの<<../../serviceconfig/index.adoc#SmimeCertStore, SmimeCertStore>>を参照してください。
+|件名|件名を設定します。
+GroovyTemplate形式で記述します。
+|テキストメッセージ|テキスト形式のメッセージを設定します。
+テキストメッセージとHTMLメッセージが両方設定された場合は、「multipart/alternative」形式でメールを送信します。
+GroovyTemplate形式で記述します。
+|HTMLメッセージ|HTML形式のメッセージを設定します。
+テキストメッセージとHTMLメッセージが両方設定された場合は、「multipart/alternative」形式でメールを送信します。
+GroovyTemplate形式で記述します。
+|===
+
+.バインド変数の利用
+件名、メッセージ内部でバインド変数を利用する場合は、メール生成処理に引数としてバインド変数を渡す必要があります。
+----
+MailManager#createMail(String tmplDefName, Map<String, Object> bindings)
+----
+
+また、次の変数がデフォルトでバインドされており、テンプレート内で利用可能です。
+
+[cols="1,3a", options="header"]
+|===
+|変数名|説明
+|mail| `org.iplass.mtp.mail.Mail` のインスタンス。
+|===
+
+.多言語の利用
+複数の言語に対応したメールテンプレートを作成し、利用することができます。
+Multilingual MailTemplateの「Add」ボタンをクリックする事で多言語用メールテンプレート作成ダイアログが表示されます。
+
+設定項目は以下のとおりです。
+その他の項目はメールテンプレートの編集と同様です。
+送信時に選択される言語については<<sendlang,送信時の言語>>を参照してください。
+[cols="1,4a", options="header"]
+|===
+|項目|設定内容
+|言語設定情報バインド名|この項目の設定値をバインド変数のキー、値に言語名かユーザーEntity（内部で言語プロパティを参照）をセットすることで、Mail作成時にユーザーに合わせた言語でメールを作成することができます。
+
+例として、英語のメールテンプレートを送信する場合、言語設定情報バインド名に「sampleLangKey」と設定。
+メール生成処理にて下記をバインド変数として渡します。
+
+[source, java]
+----
+Map<String, Object> bindings = new HashMap<String, Object>();
+bindings.put("sampleLangKey", "en");
+----
+|Language|言語を設定します。
+|===
+
+[[sendlang]]
+.送信時の言語
+送信時の言語は以下の順で決まります。
+
+. 本テンプレートで指定されている言語設定情報バインド名で取得できる値 +
+取得した値がStringであれば、その値を言語として利用 +
+取得した値がユーザーEntityであれば、言語プロパティを利用
+. テナントの言語
+. システムのデフォルト言語
+
+
+==== テナント
+テナント情報に設定するメール送信関連の設定については<<../multitenant/index.adoc#_テナント管理,テナント管理>>を参照してください。
+
+==== MailService
+メール送信時の基本設定はservice-configの<<../../serviceconfig/index.adoc#MailService,MailService>>を参照してください。
+
+=== 利用方法
+==== メール送信処理
+EntityのEventListenerを利用して、宛先を設定すればメッセージが出せます。MailManagerを利用するコード実装も可能です。
+MailManagerを利用したメール送信は以下のように実装します。
+
+[source, java]
+----
+import org.iplass.mtp.mail.Mail;
+import org.iplass.mtp.mail.MailManager;
+
+//メールの送信はMailManagerを利用
+private MailManager mailManager = ManagerLocator.manager(MailManager.class);
+
+
+private void sendMail() {
+
+    try {
+        //MailTemplateに渡すバインド変数設定（例ではtenantとuserを設定）
+        Map<String, Object> bindings = new HashMap<String, Object>();
+        bindings.put("tenant", tenant);
+        bindings.put("user", user);
+
+        //MailManager#createMail(メールテンプレート名, バインド変数) を呼び出し、Mailを生成
+        Mail mail = mailManager.createMail("sampleMailTemplateName", bindings);<1>
+
+        //送信先の設定（例ではTOの設定）
+        mail.addRecipientTo((String)user.getValue(User.MAIL), (String)user.getValue(User.LAST_NAME) + "様");<2>
+
+        //MailManager#sendMail(Mail)を呼び出し、メールを送信
+        mailManager.sendMail(mail);<3>
+
+    } catch (RuntimeException e) {
+    }
+}
+----
+<1> MailTemplateを利用して送信用メッセージを作成。
+バインド変数とGroovyTemplate書式を利用して動的にメッセージを生成。
+<2> 宛先を設定。
+送信元の設定も可能（省略時はテナント情報から設定）
+<3> メールを送信。
+メールサーバ情報や認証情報はserver-config.xmlで設定。
+
+[[to]]
+==== 宛先
+作成したMail（org.iplass.mtp.mail.Mail）に対して宛先を設定します。
+宛先（TO、CC、BCC）に対してアドレスと個人名（省略可）を指定します。
+
+[cols="1,2", options="header"]
+|===
+|項目|メソッド
+.2+|TO送信アドレス|addRecipientTo(String address)
+|addRecipientTo(String address, String personal)
+.2+|CC送信アドレス|addRecipientCc(String address)
+|addRecipientCc(String address, String personal)
+.2+|BCC送信アドレス|addRecipientBcc(String address)
+|addRecipientBcc(String address, String personal)
+|===
+
+[[from]]
+==== 送信元
+送信時の送信者情報を設定します。
+設定内容は以下の優先度で決まります。
+
+. Mail
+. MailTemplate
+. Tenant
+
+.Mailに設定
+作成したMail（org.iplass.mtp.mail.Mail）に対して、以下の項目で設定することができます。
+
+[cols="1,2", options="header"]
+|===
+|項目|メソッド
+.3+|送信元アドレス|setFrom(String address)
+|setFrom(String address, String personal)
+|setFromAddress(javax.mail.internet.InternetAddress address)
+.3+|返信先アドレス|setReplyTo(String address)
+|setReplyTo(String address, String personal)
+|setReplyToAddress(javax.mail.internet.InternetAddress address)
+|ReturnPathアドレス|setReturnPath(String returnPath)
+|===
+
+.MailTemplateに設定
+Mailに設定されていない場合は、MailTemplateに設定されている情報が設定されます。
+
+.Tenantに設定
+MailにもMailTemplateにも設定されていない場合は、テナントに設定されている情報が設定されます。
+
+ただし、ReturnPathアドレスについては、Tenantでは設定できません。
+MailServiceの「mail.smtp.from」が設定されている場合はその値が利用されます。
+
+==== 添付ファイル
+作成したMail（org.iplass.mtp.mail.Mail）に対して、以下のメソッドを利用することで添付ファイル付のメール送信が可能です。
+
+[cols="1,2", options="header"]
+|===
+|項目|メソッド
+|DataHandler形式|addAttachment(javax.activation.DataHandler dataHandler)
+|BinaryReference形式|addAttachment(org.iplass.mtp.entity.BinaryReference bin)
+|===
+

@@ -1,0 +1,35 @@
+[[VueJS_WebAPI_Resources_BeanValidation]]
+=== Bean Validationメッセージ
+* 言語別にプロパティファイルを作成することで多言語利用が可能です。
++
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/resources/ValidationMessages_ja.properties
+|===
++
+[source]
+----
+samples.ec01.bean.validation.Tel.invalidChar    = 「数字」および「-」のみ利用可能です。<1>
+samples.ec01.bean.validation.UserId.invalidChar = 「英数字」および「-」(ハイフン)「@」「_」「.」(ピリオド)のみ利用可能です。
+samples.ec01.bean.validation.UserId.outOfLength = ユーザーIDは{min}文字以上{max}文字以下です <2>
+samples.ec01.bean.validation.isBlank            = 値を入力してください。
+samples.ec01.bean.validation.notKana            = 全角カタカナを入力してください。
+......
+----
++
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/resources/ValidationMessages_en.properties
+|===
++
+[source]
+----
+samples.ec01.bean.validation.Tel.invalidChar    = Please enter alphanumeric characters or "-"(hypen) . <1>
+samples.ec01.bean.validation.UserId.invalidChar = Please enter alphanumeric characters or "-"(hypen), "@", "_"(underscore), "."(dot) .
+samples.ec01.bean.validation.UserId.outOfLength = User ID must be in range between {min} and {max} characters. <2>
+samples.ec01.bean.validation.isBlank            = Please enter value. 
+samples.ec01.bean.validation.notKana            = Please enter Katakana. 
+......
+----
+<1> 多言語を利用するので、英語と日本語のバリデーションエラーメッセージを用意しています。
+<2> メッセージにパラメーターの利用が可能です。

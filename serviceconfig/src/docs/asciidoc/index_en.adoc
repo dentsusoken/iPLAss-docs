@@ -1,0 +1,18 @@
+[[serviceconfigreference]]
+= Configuration（service-config）References
+:_hreflang-path: serviceconfig/index.html
+:base-package: org.iplass.mtp.
+:toclevels: 2
+
+All the settings for the iPLAss are made in an XML-based configuration file.
+This configuration file is named as service-config file.
+This document explains the format of the service-config file and the items that can be configured.
+
+include::servicedefine_en.adoc[]
+
+include::servicelist_en.adoc[]
+
+include::servicedetail_en.adoc[]
+
+//log
+include::logback_en.adoc[]

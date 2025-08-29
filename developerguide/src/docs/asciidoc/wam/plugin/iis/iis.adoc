@@ -1,0 +1,29 @@
+==== 初期設定
+
+. 事前準備/前提 +
+* 有償版のSDKに同梱されている `iplass-ee-wam-iis-[バージョン].zip` をIISサーバーに配置してください。
+* 以降の説明では、IISのインストールディレクトリを `%IIS_HOME%` と表記します。
+* サイトのルートフォルダを `%WWW_ROOT%` と表記します。
+* IISのインストール時の「機能の選択」で `ASP.NET4.5` を選択していることを前提とします。
+
+. WAMプラグインモジュールの配置 +
+* IISサーバーの `%WWW_ROOT%/bin` にWAMプラグインモジュールを配置します。`iplass-wam-iis-[バージョン].zip` 内の以下のファイルが対象です。
+** DynamicJson.dll
+** IplassEEWamIIS.dll
+** log4net.dll
+
+. IISの設定 +
+* `iplass-ee-wam-iis-[バージョン].zip` に格納されている設定ファイルを以下のように配置します。
+** WAMプラグインモジュールの設定ファイル(IplassWamPlugin.xml)を `%WWW_ROOT%/bin` に配置します。設定項目の詳細は<<wamsettingfile, WAMプラグインモジュールの設定>>を参照してください。
+** ログの設定ファイル(log4net.xml)を `%WWW_ROOT%/bin` に配置します。
+** IISの設定ファイル(Web.config)を `%WWW_ROOT%` に配置します。
+** 同梱された設定ファイル(applicationHost.config)を参考に、IISの構成システムのルートファイル(applicationHost.config)へserverRuntimeタグを追記してください。 +
+設定内容を反映すると、キャッシュの抑制が設定されます。 以下、`Default Web Site` を対象サイトとした場合の追加内容です。
+
+----
+<location path="Default Web Site">
+  <system.webServer>
+    <serverRuntime frequentHitTimePeriod="00:00:00" />
+  </system.webServer>
+</location>
+----

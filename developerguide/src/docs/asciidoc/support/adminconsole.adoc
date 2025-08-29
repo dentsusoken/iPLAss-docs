@@ -1,0 +1,458 @@
+[[adminconsole]]
+== AdminConsoleのツール
+AdminConsoleには開発をサポートするための各種ツールが付属しています。
+
+[[tools_eqlworksheet]]
+=== EQLWorksheet
+
+EQLWorksheetではEQLを実行し、結果を一覧で表示できます。
+Functionや条件文、関数やバインド変数（Notes参照）の利用もできます。
+また、EQLWorksheetでは更新や削除はできません。
+AdminConsole上で更新や削除を行う場合は、<<EntityExplorer>>を利用してください。
+
+.EQL実行
+EQLを作成し、 `Execute` ボタンをクリック（もしくはF8押下）することで、実行結果とメッセージログを確認する事ができます。
+また、 `Select Entity` ボタンをクリックすることで、選択したEntityに対するSelect用EQLを自動生成できます。
+尚、EQLの文法については画面上のNotes、および<<../../eqlreference/index.adoc#, EQL Reference>>を参考にして下さい。
+
+.CSV出力
+EQLが入力された状態で `Export CSV` ボタンをクリックすると、EQLの実行結果をCSVで出力できます。
+
+[[tools_entityexplorer]]
+=== EntityExplorer
+EntityExplorerではEntityデータの確認、操作、メンテナンスを行うことができます。
+Entityに対するツール機能は、このEntityExplorerに集約されています。
+
+==== Entity List
+Entity定義の一覧表示、各Entityに対するデータ検索を実行することができます。
+
+.定義のエクスポート
+出力したいEntity定義にチェックを入れ `ConfigExport` をクリックする事で、Entityメタデータの定義を保存します。
+
+- CSV形式 +
+Entityのプロパティ定義またはView定義を一覧形式で出力します。
+
+- XML形式 +
+Entity定義、View定義、MenuItem定義、EntityWebApi定義をXML形式で出力します。
+
+==== Entityデータ操作
+Entity ListからEntityの行をダブルクリックする事で、そのEntityのデータを操作する画面を表示します。
+Entityのメタデータメニュー上で「データを参照する」を実行した場合も、この画面が表示されます。
+
+===== 検索
+Where条件、OrderBy条件を指定した検索やデータ件数取得ができます。
+Select句はEntityに定義されているプロパティで固定となります。
+Select句も含めカスタマイズしたい場合は、<<EQLWorksheet>>を利用してください。
+
+===== Export、Import
+指定されたWhere条件、OrderBy条件をもとにCSVファイルまたはPackageファイル(zip)としてエクスポートすることが可能です。
+エクスポートされたファイルをインポートすることもできます。
+
+[[entity_import_option]]
+.Entityデータのインポートオプション
+CSV形式のEntityデータを取り込む場合は、オプションを設定します。
+
+[cols="1,2",options="header"]
+|===
+|項目|設定内容
+|既存データを全て削除する|対象となるEntityデータを一度全て削除します。データが削除されたタイミングで1度コミットされます。
+|bulkUpdateを利用する|データの更新方法としてbulkUpdateを利用します。
+bulkUpdateの場合、Listener、Validation、forceUpdate、エラースキップ、UniqueKeyの指定が無効になります。
+|Listener処理を実行する|データを更新する際に、EventListenerを実行します。
+Userエンティティをインポートする場合は必ず実行してください。
+|Validation処理を実行する|データを更新する際に、Validationを実行します。更新不可項目を更新する場合は実行できません。
+|更新不可項目を更新する|Updateの場合に、更新不可に設定されているプロパティもCSVの内容で強制的に更新します。
+監査プロパティ（作成日、作成者、更新日、更新者）は対象外です。
+|Insert時に監査プロパティ値を指定する|Insertの場合に監査プロパティをCSVで指定された値で登録します。
+指定しない場合、実行日時と実行ユーザーで登録されます。Updateの場合は対象外です。
+|変更が無い場合も強制的に更新する(force Update)|全ての値が同じ場合も、更新日時を更新します。
+|エラーデータはスキップしてインポートを続ける|データにエラーが発生した場合も、続けて後続のデータの取り込みを続けます。
+|Entity定義に存在しないプロパティデータは無視する|旧データの取り込み時など、既に存在しないプロパティは無視して取り込みます。
+|OID Prefix(英数字)|別サーバや別テナントのデータをインポートする場合に、OIDの衝突を避けるために指定します。
+別環境などから取り込む際は必ず指定してください。また、参照関係のあるEntityデータを分割してインポートする場合、同じPrefixを指定してください。
+|UniqueKey|insertかupdateの判断を行う際に、OIDプロパティ以外でCSV上ユニークなプロパティがある場合は、そのプロパティを利用することが可能です。
+Packageの場合は指定できません。
+|コミット単位|大量データを登録する際は、必ず分割してコミットしてください。
+|File Locale .2+|出力されているEntityデータはロケールやタイムゾーンに依存した形式となっています。ロケールやタイムゾーンが異なる環境間でインポートする場合は、作成元の値を指定してください。
+|File Timezone
+|===
+
+NOTE: EntityExplorerではBinaryプロパティのデータを登録できません。Binaryを登録する場合はPackageを利用してください。
+
+.Userエンティティデータのインポート
+`User` エンティティに対して、CSVファイルで初期パスワードを指定してInsertするには、
+<<../../serviceconfig/index.adoc#EntityCsvImportService, EntityCsvImportService>> の `canCreateUserWithSpecificPassword` を `true` に設定する必要があります。
+有効にした場合、CSVファイルで `password` 列を定義してパスワードを指定します。
+
+インポート時は、Listenerの実行を有効にする必要があります。
+また、登録ユーザーに適用される認証ポリシーの <<../authentication/index.adoc#ref_password_policy, パスワードポリシー>> 設定で、 `create account with specific password` が `true` になっている必要があります。
+
+.インポートCSVファイルの編集
+EntityデータのCSVファイルに対して、ヘッダ行の先頭に"_useCtrl"を追加することで、CSVファイル内の各レコードに対して「追加、更新、削除」を指定できます。
+各レコードの先頭に以下のコードを指定します。
+
+[horizontal]
+I::
+インサート
+U::
+アップデート
+D::
+削除
+M::
+マージ(インサートorアップデート)
+
+_useCtrlを指定する場合のイメージは以下の様になります。
+
+[options="header"]
+|===
+|_useCtrl|oid|name|description
+|U|38620|sample001-Update|sample001-Update
+|D|38621|sample002|sample002
+|I|12345|sample003|sample003
+|M|67890|sample004|sample004
+|===
+
+NOTE: バージョン管理されているEntityに対して削除をする場合、 `version` が指定されていればそのバージョンのみを削除します。
+ `version` が未指定の場合は全バージョンを削除します。
+
+===== updateAll
+画面上からEntityに対して一括更新(UpdateAll)を実行することができます。
+
+[cols="1,2",options="header"]
+|===
+|項目|設定内容
+|enable unupdatable properties|変更不可プロパティを更新対象にするかを指定します。
+|プロパティ| 更新対象のプロパティを選択します。共通プロパティのうち、KEY項目と監査プロパティは更新できません。
+選択したプロパティをダブルクリックして、更新値を設定します。
+|===
+
+===== delete、deleteAll
+画面上から選択データの削除(Delete)や、条件指定による一括削除（DeleteAll）を実行することができます。
+
+[cols="1,2",options="header"]
+|===
+|項目|設定内容
+|Delete Operation|Deleteを実行した場合は、選択データを削除するのか、条件による削除をするかを指定します。
+Delete Allを実行した場合は、条件による削除になります。
+|Delete Condition| 条件による削除の場合の条件を指定します。
+|execute EventListener| Entity定義のEvent Listenerを実行するかを指定します。
+実行を選択した場合は、内部的に１件ずつ削除を実行します。
+|Commit Count| コミット単位を指定します。
+|===
+
+==== Entity Crawl
+<<../datamanagement/index.adoc#ref_fulltext_search, 全文検索>> 機能で必要となるIndexの作成処理（クローリング）を実行します。
+全文検索機能を有効にしている場合にのみ表示されます。
+
+一覧にはEntity定義で全文検索対象として保存されているEntityが表示されます。
+
+.クローリング
+クローリング方法として、選択したEntityのみを対象に実行する方法と、全Entityをクローリングする2種類を提供しています。
+
+- 個別選択 +
+任意のEntityのみを対象としてクローリングしたい場合はリストのEntityにチェックをいれ、 `Start Crawl` ボタンをクリックして下さい。
+
+- 全実行 +
+クローリング対象Entityを全てクローリングしたい場合は `Re Crawl All Entity` ボタンをクリックして下さい。
+この場合、チェックをいれていないEntityも全てが対象となります。
+
+==== Entity Defrag
+Entity定義の変更などにより、不要となった（参照されない）データ、バイナリファイルを削除します。
+この実行によりデータベースの検索対象レコード件数が減るので、レスポンスが向上する場合があります。
+
+対象のEntityを選択し、 `Execute` を実行してください。デフラグ処理はサーバ側で非同期に実行されます。
+
+==== [.eeonly]#Audit Log#
+Entityの操作履歴（参照、追加・更新・削除）を検索、メンテナンス(削除)することができます。
+
+.検索処理
+いくつかの条件で絞込みを行うことができます。
+
+* 対象のEntity、Property
+* 操作日時、操作内容
+* 操作したユーザー
+
+検索した結果はCSVとしてエクスポートすることができます。
+
+.メンテナンス
+不要になった操作履歴を削除することができます。検索処理と同様に条件を指定して絞り込みできます。
+
+[[tools_metadataexplorer]]
+=== MetaDataExplorer
+MetaDataExplorerでは、メタデータの確認、操作、メンテナンスを行うことができます。
+メタデータに対するツール機能は、このMetaDataExplorerに集約されています。
+
+.検索処理
+いくつかの条件で絞込みを行うことができます。
+
+* 更新日時
+* Tagの作成日時
+
+.一覧項目
+一覧には、登録されているメタデータがパス（各メタデータ固有のパス＋名前）ツリーで表示されます。
+
+[cols="1,2",options="header"]
+|===
+|項目|内容
+|Path|メタデータのフルパス（各メタデータ固有のパス＋名前）。
+ツリー構造で表示します。
+|ID|メタデータ固有の一意な識別子。
+|Update Date|メタデータの最終更新日時。
+|SharedType
+a|登録されているリポジトリの場所。
+
+Shared:: 共有テナントまたはResouce（XML）、Annotationで定義されたメタデータ
+Shared Overwrite:: Sharedとして定義されたメタデータを自Tenant内で上書きしたもの。Localの状態。
+Local:: 自Tenant内で定義されたメタデータ。
+
+|Sharable|このテナントが共有テナントとして動作する場合に、共有を許可するかの設定値。
+|Overwritable|このテナントが共有テナントとして動作する場合に、上書を許可するかの設定値。
+|Repository
+a|メタデータの定義形式。
+
+XML:: XML形式
+Annotation:: Annotation形式
+Rdb:: Rdb形式
+|===
+
+一覧上のメタデータをダブルクリックすることでメタデータの編集画面を表示します。
+
+.データのエクスポート、インポート
+指定されたメタデータをXMLファイルとしてエクスポートすることが可能です。
+エクスポートされたXMLファイルをインポートすることもできます。
+
+またメタデータの名前の一覧をCSVファイルとして出力することも出来ます。
+
+.※インポートについて
+インポートファイルをアップロード後、XMLファイルの解析が終わるとインポート可能なメタデータがツリー表示されます。
+既存のメタデータと取り込むメタデータの状態によってはエラーや警告が表示されることがあります。
+その際は一度両メタデータを確認し、インポートしても問題ないか確認してください。 +
+またテナント情報がXMLに含まれる場合、更新対象の項目を選択するダイアログを表示します。
+インポートする項目を選択してください。
+
+.Tag機能
+ローカルのメタデータ（Rdb）をタグとして保存したり、そのタグからメタデータを復元する機能です。
+メタデータを復元する際は、純粋な復元ではなく再インポートとなります。
+
+.Status Check機能
+登録されているメタデータの整合性をチェックします。
+`MetaDataSettings` メニュー上部からも同様のステータスチェックが実行可能です。
+
+`Execute` をクリックするとステータスチェックが始ります。
+エラーが発生した場合は、画面上にエラーが表示されます。
+一覧を選択すると、「エラーメッセージ」にエラー内容が表示されます。
+一覧をダブルクリックすると、エラーが発生しているメタデータの編集画面を表示します。
+
+[[tools_packaging]]
+=== Packaging
+PackagingはメタデータとEntityデータをまとめて、１つのPackage（Zipファイル）として管理する機能です。
+作成したPackageはエクスポート、インポートが可能で、テナント間のデータ移行をサポートします。
+
+.パッケージの作成
+`Create` を実行すると、Packageの作成画面を表示します。
+
+Packageに含めるメタデータ、Entityデータを選択します。
+ダイアログ上下のボタンで画面を切り替えることができます。
+最後に `Execute Pack` でNameを指定して、 `Create Package` を実行します。
+
+対象となるEntityデータの件数が多い場合は非同期で実行してください。
+非同期で実行した場合、進捗状況は一覧画面で確認します。
+
+同期で実行した場合、Packageの作成が完了すると、ダウンロード用のボタンが表示されます。
+
+また非同期で実行した場合や同期で実行した場合でも、
+１度作成したPackageは一覧上からダウンロードしたり、インポートすることが可能です。
+
+.インポート
+別の環境などで作成したPackageを取り込むには、 `Upload` ボタンを実行します。
+アップロード完了後、Packageのインポート画面を表示します。
+また既にアップロード済みのPackageや自身で作成したPackageは一覧をダブルクリックすることでインポート画面を表示します。
+
+Entityデータを取り込む場合は、オプションを設定します。
+オプションについては、 <<entity_import_option,Entityデータのインポートオプション>> を参照してください。
+
+`Import` をクリックするとインポートを開始します。
+インポート対象にテナント情報が含まれる場合、MetaDataExplorerと同様に項目の選択ダイアログが表示されます。
+
+[[tools_permissionexplorer]]
+=== PermissionExplorer
+PermissionExplorerはセキュリティに関連する定義を一括で設定する機能です。
+汎用画面の権限情報で各権限を個別に設定することも出来ますが、PermissionExplorerを利用することで、ロール×権限の表形式で一括管理できます。
+
+==== Role
+Roleエンティティを管理します。
+入力内容は<<../authorization/index.adoc#en_role, ロール>>を参照してください。
+
+==== Entity Permission
+表側にEntity定義、表頭にロールが表示されます。
+権限を削除する場合は右クリックのメニューから行います。
+入力内容は<<../authorization/index.adoc#en_entityperm, Entity権限>>を参照してください。
+
+権限が設定されたセルは緑色、編集したセルはオレンジ、削除したセルは赤の背景色になります。
+また、許可/不許可の設定により以下の表示になります。
+
+[horizontal]
+C|R|U|D::
+参照（R）、追加（C）、更新（U）、削除（D）の内、許可した操作の頭文字を表示。
+条件を指定した場合、「R(*)」のように表示される
+All not allowed::
+参照、追加、更新、削除全てが不許可。
+空欄::
+権限が未設定。
+
+==== Action Permission
+表側にAction定義がツリー構造で、表頭にロールが表示されます。
+Action権限ではフォルダ階層に権限を設定することで、その階層から下のAction定義に対する権限をまとめて設定できます。
+入力内容は<<../authorization/index.adoc#en_actionperm, Action権限>>を参照してください。
+
+権限が設定されたセルは緑色、編集したセルはオレンジ、削除したセルは赤の背景色になります。
+
+==== WebApi Permission
+表側にWebApi定義がツリー構造で、表頭にロールが表示されます。
+WebApi権限ではフォルダ階層に権限を設定することで、その階層から下のWebApi定義に対する権限をまとめて設定できます。
+入力内容は<<../authorization/index.adoc#en_webapiperm, WebApi権限>>を参照してください。
+
+権限が設定されたセルは緑色、編集したセルはオレンジ、削除したセルは赤の背景色になります。
+
+==== [.eeonly]#Workflow Permission#
+表側にWorkflow定義、表頭にロールが表示されます。
+入力内容は<<../authorization/index.adoc#en_workflowperm, Workflow権限>>を参照してください。
+
+権限が設定されたセルは緑色、編集したセルはオレンジ、削除したセルは赤の背景色になります。
+
+==== [.eeonly]#UserTask Permission#
+表側にWorkflow定義とUserTaskActivity、表頭にロールが表示されます。
+入力内容は<<../authorization/index.adoc#en_usertaskperm, UserTask権限>>を参照してください。
+
+権限が設定されたセルは緑色、編集したセルはオレンジ、削除したセルは赤の背景色になります。
+
+==== [.eeonly]#Cube Permission#
+表側にCube定義、表頭にロールが表示されます。
+入力内容は<<../authorization/index.adoc#en_cubeperm, Cube権限>>を参照してください。
+
+権限が設定されたセルは緑色、編集したセルはオレンジ、削除したセルは赤の背景色になります。
+
+[[tools_authuserexplorer]]
+=== AuthUserExplorer
+BuiltinAuthUserExplorerは標準の認証機能に対するユーザーをメンテナンスするための機能です。
+
+Userエンティティに対する条件指定とロック状態やパスワード有効期限などのアカウント状態に対する条件指定が可能です。
+
+.アカウント状態による検索
+- locked user +
+ロックユーザーで検索する。
+ロックの条件は認証ポリシーと認証ポリシーのアカウントロック回数＜エラー回数となる。
+- remaining days to expire password +
+パスワードの有効残日数で検索する。
+最終パスワード変更日と認証ポリシーのパスワード最大有効期限に対してチェックを行う。
+- last login date +
+最終ログイン日時で検索する。
+
+.Userのプロパティによる検索
+Userエンティティの属性（アカウントID、名前（カナも可）、メール、有効期間残日数（EndDate））やEQLのWhere句を直接指定できます。
+
+.ログインエラー回数のリセット
+選択したユーザーのエラー回数をリセットします。
+ログイン時のパスワードエラーが規定回数を超えた場合、アカウントロックとなりログインができなくなります。
+エラー回数のリセットを行うことで、再度ログインができるようになります。
+
+なお、エラー回数については、正しいパスワードによるログインを行うか、管理者ユーザー等でユーザーのパスワードリセットを行うことでもリセットできます。
+
+[[tools_queueexplorer]]
+=== QueueExplorer
+QueueExplorerは非同期Commandやスケジュールタスク等の非同期タスクをメンテナンスするための機能です。
+キュー毎に積まれているタスクの一覧表示や、過去の実行履歴、未完了のタスクのキャンセルといった操作ができます。
+
+なお、非同期Commandやスケジュールタスクは<<../../serviceconfig/index.adoc#RdbQueueService, RdbQueueService>>の「useQueue」をtrueにしないと実行できません。
+QueueExplorerについても非同期タスクが実行できない状態では動作しません。
+
+[cols="1,2a",options="header"]
+|===
+|項目|内容
+|Task ID|Task実行にあたり割り振られたTaskIDです。
+|Grouping Key|実行対象TaskにGrouping Keyを割り当てていた場合に表示されます。
+|Status
+|対象TaskのStatusです。以下のいずれかのStatusが表示されます。
+
+SUBMITTED:: 登録済。まだタスクは開始されていない。
+EXECUTING:: タスク実行中。
+ABORTED:: タスクは中断。
+RETURNED:: タスク実行完了し、結果が取得されるのを待っている。
+COMPLETED:: タスク実行完了（結果取得も完了）。
+UNKNOWN:: 不明
+|Retry Count|何らかの理由でTaskが再実行された場合の実行回数が表示されます。
+|Exception Handling Mode|実行対象Taskに設定したException Handling Modeが表示されます。
+
+Restart:: 処理をロールバックした後に再実行します。
+Abort:: 処理を中断します。
+Abort Log Fatal:: 処理を中断し、FATALとしてログ出力します。
+|===
+
+.キャンセル
+一覧で選択したTaskをキャンセルすることができます。
+完了しているタスクは選択できません。
+
+.削除
+一覧で選択したTask情報を削除します。
+削除したタスク情報は参照したり、元に戻すことができません。
+
+.履歴表示
+実行履歴として過去に実行されたTaskを表示します。
+背景色が濃い青で表示されます。
+
+[[tools_langexplorer]]
+=== LangExplorer
+各Metaデータの多言語情報の確認、更新を行うことが可能です。
+テナントの多言語設定で多言語を利用する設定をしている場合は利用可能言語全てを登録する必要があります。
+例えば、利用可能言語として日本語、英語を設定しており、各多言語設定で英語のみ登録していた場合、汎用画面にてユーザーが日本語を選択すると空表示となります。
+
+.多言語編集機能
+一覧上のメタデータをダブルクリックすることで画面下部に多言語として編集可能な項目が表示されます。
+表をダブルクリックすると行単位で編集状態になります。
+編集後に `Save` ボタンをクリックすることで保存されます。
+
+.エクスポート、インポート
+編集エリアに表示しているメタデータの多言語情報をCSVファイルとしてエクスポート、インポートすることも可能です。
+メタデータ単位でエクスポート、インポートしたい場合は、画面下部の `Export` 、 `Import` ボタンを実行します。
+
+複数のメタデータをまとめてエクスポート、インポートしたい場合は、画面上部のメタデータを選択後、
+`ExportCSV` 、 `ImportCSV` を利用してください。
+
+[[tools_logexplorer]]
+=== LogExplorer
+LogExplorerは、テナントのログ出力設定を行ったり、ログファイルをダウンロードする機能です。
+出力可能なフォルダやファイル名パターンは、service-configの<<../../serviceconfig/index.adoc#AdminConsoleService, AdminConsoleService>>で指定します。
+
+.ログ出力条件の設定
+動的にログ出力条件を変更することが可能です。
+「一時的にある特定ユーザーの操作のみ、DEBUGレベルで出力する。」といったことが可能です。
+動的にログ出力条件を変更するためには、設定ファイル（service-configおよびlogback.xml）の設定が必要となります。詳細は <<../../serviceconfig/index.adoc#LoggingService, LoggingService>> を参照ください。
+
+次の項目を設定可能です。
+
+[cols="1,2a",options="header"]
+|===
+|項目|内容
+|Level|ログレベルを指定します。
+
+設定例: `DEBUG`
+|Expires At|このログ設定の有効期限。
+|Logger Name Pattern|このログ条件を適用するロガー名の正規表現を指定します。
+
+設定例: `^org\.iplass\..*`
+
+未指定の場合は、すべてのロガーに対して適用されます。
+|Condition|このログ設定を適用する条件を指定します。
+条件はGroovyScriptで記述します。
+次のバインド変数を参照可能です。
+
+mdc:: slf4jのMDCに格納されている値を参照可能です。
+request:: RequestContextを参照可能です。
+auth:: AuthContextを参照可能です。
+
+設定例: `mdc.user=='123'`
+
+上記の設定ではユーザーのoidが `123` の場合にこのログ設定が適用されるようになります。
+
+未指定の場合は、すべてのログ出力にこのログ設定が適用されます。
+|===

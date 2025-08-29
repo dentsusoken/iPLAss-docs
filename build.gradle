@@ -1,0 +1,72 @@
+plugins {
+	id "org.asciidoctor.jvm.convert" version "3.3.2" apply false
+}
+apply plugin: 'base'
+
+defaultTasks "clean", "asciidoctor"
+
+allprojects {
+	repositories {
+		mavenCentral()
+	}
+
+	apply plugin: "project-report"
+	apply plugin: "org.asciidoctor.jvm.convert"
+
+	asciidoctorj {
+		version = '2.5.11'
+	}
+
+	asciidoctor {
+		parallelMode false
+		outputOptions {
+			separateOutputDirs = false
+			backends = ["html5"]
+		}
+		logDocuments true
+		baseDirFollowsSourceFile()
+		outputDir = file("${rootDir}/build/asciidoc/${asciidoc_lang}")
+		attributes(
+			"lang": asciidoc_lang
+		)
+	}
+	build {
+		dependsOn asciidoctor
+	}
+}
+
+subprojects {
+	asciidoctor {
+		sources {
+			include "**/index.adoc"
+		}
+		resources {
+			from(sourceDir) {
+				include "**/images/**"
+				include "NOTICE"
+			}
+		}
+		//サブプロジェクトはサブプロジェクトフォルダ配下に生成
+		outputDir = file("${rootDir}/build/asciidoc/${asciidoc_lang}/${project.name}")
+		attributes(
+			"_relative-root-path": "../@"
+		)
+	}
+}
+
+asciidoctor {
+	sources {
+		include "**/index.adoc"
+	}
+	
+	resources {
+		from(sourceDir) {
+			include "**/images/**"
+			include "NOTICE"
+		}
+	}
+	attributes(
+		"_relative-root-path": "./@"
+	)
+}
+

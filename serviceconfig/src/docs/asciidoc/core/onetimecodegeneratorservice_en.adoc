@@ -1,0 +1,144 @@
+[[OnetimeCodeGeneratorService]]
+=== [.eeonly]#OnetimeCodeGeneratorService#
+This is the service about the one-time authentication for two-step verifications.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.auth.authenticate.onetime.OnetimeCodeGeneratorService
+----
+
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.auth.authenticate.onetime.OnetimeCodeGeneratorService
+----
+
+
+==== Settings of OnetimeCodeGeneratorService
+The one time code generator can be configured.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| generator | <<OnetimeCodeGenerator>>, Multiple | Settings of one time authentication code generator.
+|===
+
+[[OnetimeCodeGenerator]]
+.OnetimeCodeGenerator
+Please specify the implementing class of org.iplass.mtp.impl.auth.authenticate.onetime.OnetimeCodeGenerator to the class.
+
+As standard implementation, we provided the class: org.iplass.mtp.impl.auth.authenticate.onetime.outofband.OutOfBandOnetimeCodeGenerator which will generate one time code for transmission.
+There is no configurable items for OutOfBandOnetimeCodeGenerator.
+
+[[OutOfBandOnetimeCodeGenerator]]
+.OutOfBandOnetimeCodeGenerator
+A one-time authentication code generator that generates authentication code to be sent externally.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| name | String | Name of the one time authentication code generator.
+| maxFailureCount | int | The maximum authentication failure count before aborting. the default is 5.
+| lifetimeSeconds | long | The effective period for the code generated. The default is 180(3 minutes).
+| store | <<OnetimeCodeStore>> | Define how to store the generated code.
+| sender | <<OutOfBandSender>> | Define how to send the generated code.
+| strategy | <<GenerateStrategy>> | Define the generation process of the one time code generator.
+|===
+
+[[OnetimeCodeStore]]
+.OnetimeCodeStore
+Please specify the implementing class of org.iplass.mtp.impl.auth.authenticate.onetime.OnetimeCodeStore to the class.
+
+The standard implementation are provided. The class org.iplass.mtp.impl.auth.authenticate.onetime.SessionOntimeCodeStore that can store the generated code is provided.
+SessionOntimeCodeStore does not have configurable items.
+
+[[OutOfBandSender]]
+.OutOfBandSender
+Please specify the implementing class of org.iplass.mtp.impl.auth.authenticate.onetime.outofband.OutOfBandSender to the class.
+
+The standard implementations that can send the code are provided. The class via email is org.iplass.mtp.impl.auth.authenticate.onetime.outofband.MailOutOfBandSender.
+The class via SMS is org.iplass.mtp.impl.auth.authenticate.onetime.outofband.SmsOutOfBandSender.
+
+[[MailOutOfBandSender]]
+.MailOutOfBandSender
+Please specify org.iplass.mtp.impl.auth.authenticate.onetime.outofband.MailOutOfBandSender to the class.
+
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| mailTemplate | String | Specify the template of the mails for sending the one time code.
+| fromAddress | String | The send from address.
+Set when using an different email address from the address set in the tenant email settings.
+|====================
+
+[[SmsOutOfBandSender]]
+.SmsOutOfBandSender
+Please specify org.iplass.mtp.impl.auth.authenticate.onetime.outofband.SmsOutOfBandSender to the class.
+
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| smsTemplate | String | Specify the template of the SMS for sending the one time code.
+| fromPhoneNumber | String | The send from phone number. Use this items when it is required to specify a different number from what you have configured in <<SmsService, SmsService>>.
+|====================
+
+[[GenerateStrategy]]
+.GenerateStrategy
+Please specify the implementing class of org.iplass.mtp.impl.auth.authenticate.onetime.outofband.GenerateStrategy to the class.
+
+As standard implementation, the class that can generated onetime code in int numbers are provided: org.iplass.mtp.impl.auth.authenticate.onetime.outofband.NumberGenerateStrategy.
+For NumberGenerateStrategy, the following item can be configured.
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| numberOfDigits | int | Define how many digits for the code. The default is 6.
+|====================
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.auth.authenticate.onetime.OnetimeCodeGeneratorService</interface>
+	<property name="generator"
+	   class="org.iplass.mtp.impl.auth.authenticate.onetime.outofband.OutOfBandOnetimeCodeGenerator">
+		<property name="name" value="outOfBandByMail" />
+		<property name="maxFailureCount" value="5" />
+		<property name="lifetimeSeconds" value="180" />
+		<property name="store"
+		    class="org.iplass.mtp.impl.auth.authenticate.onetime.SessionOntimeCodeStore" />
+		<property name="sender"
+		    class="org.iplass.mtp.impl.auth.authenticate.onetime.outofband.MailOutOfBandSender">
+			<property name="mailTemplate" value="mtp/auth/onetime/SendCode" />
+			<!-- if use another "from address" instead of tenant default "from address".
+			<property name="fromAddress" value="noreply@xxx.dentsusoken.com" />
+			 -->
+		</property>
+		<property name="strategy"
+		    class="org.iplass.mtp.impl.auth.authenticate.onetime.outofband.NumberGenerateStrategy">
+			<property name="numberOfDigits" value="6" />
+		</property>
+	</property>
+	<property name="generator"
+	    class="org.iplass.mtp.impl.auth.authenticate.onetime.outofband.OutOfBandOnetimeCodeGenerator">
+		<property name="name" value="outOfBandBySms" />
+		<property name="maxFailureCount" value="5" />
+		<property name="lifetimeSeconds" value="180" />
+		<property name="store"
+		    class="org.iplass.mtp.impl.auth.authenticate.onetime.SessionOntimeCodeStore" />
+		<property name="sender"
+		    class="org.iplass.mtp.impl.auth.authenticate.onetime.outofband.SmsOutOfBandSender">
+			<property name="smsTemplate" value="mtp/auth/onetime/SendCodeSms" />
+			<!-- if use another "from phone number" instead of SMSService's defaultFrom.
+			<property name="fromPhoneNumber" value="+1234..." />
+			 -->
+		</property>
+		<property name="strategy"
+		    class="org.iplass.mtp.impl.auth.authenticate.onetime.outofband.NumberGenerateStrategy">
+			<property name="numberOfDigits" value="6" />
+		</property>
+	</property>
+</service>
+----

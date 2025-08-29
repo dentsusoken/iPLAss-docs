@@ -1,0 +1,75 @@
+[[WamService]]
+=== [.eeonly]#WamService#
+This is the service to manage the members Web account.
+
+==== Interface Name
+----
+org.iplass.wam.impl.WamService
+----
+
+
+==== Implementing Class
+----
+org.iplass.wam.impl.WamService
+----
+
+
+==== The settings of WamService
+Wam can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| tokenManager | <<TokenManager>> | The settings of TokenManager. By default the EntityTokenManager can be utilized.
+| httpClientConfig | <<HttpClientConfig_wm,HttpClientConfig_wm>> | The configs about HTTP clients.
+| stickySessionCookieName | String | Sticky session's cookie names.
+|===
+
+[[TokenManager]]
+.TokenManager
+Please specify the implementing class of org.iplass.wam.api.siteauth.TokenManager to the class.
+
+As standard implementation, the manager that issue the tokens managed in the cache: org.iplass.wam.impl.siteauth.CacheTokenManager; and the manager that issue the token managed by entity: org.iplass.wam.impl.siteauth.EntityTokenManager are provided.
+CacheTokenManager and EntityTokenManager do not have configurable items.
+
+[[HttpClientConfig_wm]]
+.HttpClientConfig
+Please specify org.iplass.mtp.impl.http.HttpClientConfig to the class.
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| proxyHost | String | Host name when using proxy.
+| proxyPort | int | port when using proxy.
+| connectionTimeout | int | Specify the timeout threshold in milliseconds when establishing an HTTP connection.
+The default value is 30000 (30 seconds).
+| soTimeout | int | socket timeout (SO_TIMEOUT) (milliseconds) during HTTP communication.
+The default value is 30000 (30 seconds).
+| poolingMaxTotal | int | Maximum pool size for http connections. The default value is 20.
+| poolingDefaultMaxPerRoute | int | Maximum number of http connections per domain. The default value is 2.
+| poolingTimeToLive | int | Lifetime of pooled http connections (milliseconds). The default is "unlimited".
+| httpClientBuilderFactory | <<HttpClientBuilderFactory, HttpClientBuilderFactory>> | Specify this if you want to create a custom HttpClientBuilder.
+|====================
+
+[[HttpClientBuilderFactory_wm]]
+.HttpClientBuilderFactory
+Please specify the implementation class of org.iplass.mtp.impl.http.HttpClientBuilderFactory to the class.
+
+The following HttpClientBuilderFactory is provided as standard.
+
+* <<MicrometerHttpClientBuilderFactory>>
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.wam.impl.WamService</interface>
+	<property name="tokenManager" class="org.iplass.wam.impl.siteauth.EntityTokenManager" />
+	<property name="httpClientConfig" class="org.iplass.mtp.impl.http.HttpClientConfig">
+		<property name="proxyHost" value="proxyhost.dentsusoken.com"/>
+		<property name="proxyPort" value="8080"/>
+	</property>
+	<property name="stickySessionCookieName" value="AWSELB"/>
+</service>
+----

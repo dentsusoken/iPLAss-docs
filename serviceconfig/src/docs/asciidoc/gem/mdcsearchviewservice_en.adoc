@@ -1,0 +1,158 @@
+[[MdcSearchViewService]]
+=== [.eeonly]#MdcSearchViewService#
+This service for settings for the mobile version of the Search pages.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.mdc.view.entityview.search.MdcSearchViewService
+----
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.mdc.view.entityview.search.MdcSearchViewService
+----
+
+==== The Settings of MdcSearchViewService
+MdcSearchViewService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| searchViewGenerator | <<MdcSearchViewHandlerGenerator>> | Automatic generation setting of screen definition of search screen.
+| searchController | <<SearchController>> | Search process.
+| searchSelectListController | <<SearchSelectListController>> | Selection process Search process.
+| deleteListController | <<DeleteListController>> | Entity batch deletion process.
+| trashController | <<TrashController>> | Trash operation.
+|===
+
+[[MdcSearchViewHandlerGenerator]]
+.MdcSearchViewHandlerGenerator
+Please specify the implementing class of org.iplass.mtp.mdc.view.entityview.search.definition.MdcSearchViewHandlerGenerator.
+
+As standard implementation, we provided the class:org.iplass.mtp.impl.mdc.view.entityview.search.MdcSearchViewHandlerGeneratorImpl.
+The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| showSystemProperty | boolean | Output System property when auto-generated.
+| systemProperties | <<searchSectionProperty>>,Multiple | System property. The basic item name and version control items (startDate, endDate) are excluded.
+| systemPropertyDisplayPosition | SectionDisplayPosition a| Display position of the system property.
+Specify enum value of SystemPropertyDisplayPosition.
+Specify one of the following:
+
+TOP:: Displayed at the top of the search condition.
+
+BOTTOM:: Displayed at the end of the search condition.
+
+The default value is `TOP`.
+| excludeOidWhenCustomOid | boolean | Hide OIDs if you have customized them.
+| useUserPropertyEditor | boolean | cUse UserPropertyEditor for createBy, updateBy, lockedBy.
+When using the UserPropertyEditor, the User's name is displayed instead of the OID.
+
+|====================
+
+[[searchSectionProperty]]
+.SectionProperty
+This is a setting related to whether or not to display each system property.
+The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| propertyName | String | Property name.
+| displayCondition | boolean | Whether to display with search conditions.
+| displayResult | boolean | Whether to display in search results.
+|====================
+
+[[SearchController]]
+.SearchController
+Please specify the implementing class of org.iplass.mtp.mdc.view.entityview.search.search.SearchController.
+
+As standard implementation, we provided the class:org.iplass.mtp.impl.mdc.view.entityview.search.SearchControllerImpl.
+There are no items that can be set.
+
+[[SearchSelectListController]]
+.SearchSelectListController
+Please specify the implementing class of org.iplass.mtp.mdc.view.entityview.search.select.SearchSelectListController.
+
+As standard implementation, we provided the class:org.iplass.mtp.impl.mdc.view.entityview.search.SearchSelectListControllerImpl.
+There are no items that can be set.
+
+[[DeleteListController]]
+.DeleteListController
+Please specify the implementing class of org.iplass.mtp.mdc.view.entityview.search.delete.DeleteListController.
+
+As standard implementation, we provided the class:org.iplass.mtp.impl.mdc.view.entityview.search.DeleteListControllerImpl.
+There are no items that can be set.
+
+[[TrashController]]
+.TrashController
+Please specify the implementing class of org.iplass.mtp.mdc.view.entityview.trash.TrashController.
+
+As standard implementation, we provided the class:org.iplass.mtp.impl.mdc.view.entityview.search.TrashControllerImpl.
+There are no items that can be set.
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.mdc.view.entityview.search.MdcSearchViewService</interface>
+	<!-- Auto Generator -->
+	<property name="searchViewGenerator" class="org.iplass.mtp.impl.mdc.view.entityview.search.MdcSearchViewHandlerGeneratorImpl">
+		<!-- Output System Properties -->
+		<property name="showSystemProperty" value="false" />
+		<!-- System Properties to Output -->
+		<property name="systemProperties" class="org.iplass.mtp.mdc.view.entityview.search.definition.SectionProperty">
+			<property name="propertyName" value="oid" />
+			<property name="displayCondition" value="false" />
+			<property name="displayResult" value="false" />
+		</property>
+		<property name="systemProperties" class="org.iplass.mtp.mdc.view.entityview.search.definition.SectionProperty">
+			<property name="propertyName" value="state" />
+			<property name="displayCondition" value="false" />
+			<property name="displayResult" value="false" />
+		</property>
+		<property name="systemProperties" class="org.iplass.mtp.mdc.view.entityview.search.definition.SectionProperty">
+			<property name="propertyName" value="createDate" />
+			<property name="displayCondition" value="false" />
+			<property name="displayResult" value="false" />
+		</property>
+		<property name="systemProperties" class="org.iplass.mtp.mdc.view.entityview.search.definition.SectionProperty">
+			<property name="propertyName" value="createBy" />
+			<property name="displayCondition" value="false" />
+			<property name="displayResult" value="false" />
+		</property>
+		<property name="systemProperties" class="org.iplass.mtp.mdc.view.entityview.search.definition.SectionProperty">
+			<property name="propertyName" value="updateDate" />
+			<property name="displayCondition" value="false" />
+			<property name="displayResult" value="false" />
+		</property>
+		<property name="systemProperties" class="org.iplass.mtp.mdc.view.entityview.search.definition.SectionProperty">
+			<property name="propertyName" value="updateBy" />
+			<property name="displayCondition" value="false" />
+			<property name="displayResult" value="false" />
+		</property>
+		<property name="systemProperties" class="org.iplass.mtp.mdc.view.entityview.search.definition.SectionProperty">
+			<property name="propertyName" value="lockedBy" />
+			<property name="displayCondition" value="false" />
+			<property name="displayResult" value="false" />
+		</property>
+		<!-- Display position of System Properties TOP or BOTTOM-->
+		<property name="systemPropertyDisplayPosition" value="BOTTOM" />
+		<!-- Hide OIDs if you have customized OIDs -->
+		<property name="excludeOidWhenCustomOid" value="true" />
+		<!-- Use UserPropertyEditor for createBy, updateBy, lockedBy -->
+		<property name="useUserPropertyEditor" value="true" />
+	</property>
+	<!-- Search Controller -->
+	<property name="searchController" class="org.iplass.mtp.impl.mdc.view.entityview.search.SearchControllerImpl" />
+	<!-- Search Select List Controller -->
+	<property name="searchSelectListController" class="org.iplass.mtp.impl.mdc.view.entityview.search.SearchSelectListControllerImpl" />
+	<!-- Delete List Controller -->
+	<property name="deleteListController" class="org.iplass.mtp.impl.mdc.view.entityview.search.DeleteListControllerImpl" />
+	<!-- Trash Controller -->
+	<property name="trashController" class="org.iplass.mtp.impl.mdc.view.entityview.search.TrashControllerImpl" />
+</service>
+----

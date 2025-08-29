@@ -1,0 +1,151 @@
+[[ClusterService]]
+=== ClusterService
+This is the service to manage how the clusters communicate with each others.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.cluster.ClusterService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.cluster.ClusterService
+----
+
+==== Settings of ClusterService
+ClusterService is configurable.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| messageChannel | <<MessageChannel>> | Settings of the message channel of the communication between clusters.
+|===
+
+[[MessageChannel]]
+.MessageChannel
+Please specify the implementing class of org.iplass.mtp.impl.cluster.channel.MessageChannel.
+
+As standard, the following MessageChannel are provided.
+
+- <<HttpMessageChannel>>
+- <<JGroupsMessageChannel>>
+- <<InfinispanMessageChannel>>
+
+[[HttpMessageChannel]]
+.HttpMessageChannel
+Please specify org.iplass.mtp.impl.cluster.channel.http.HttpMessageChannel to the class.
+
+A message channel that sends and receives messages via Http. The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| serverUrl | String, Multiple a| URL for communication with other cluster members. +
+The URL to be specified should be in the following format.
+
+http://[server]:[port]/[applicationContext]/cmcs
+
+
+You can also include your own server url.
+If you include url of your own server in serverUrl, resolve your url in the following methods and send message to other servers.
+
+. If the followings are set in the system properties, the value is perceived as its own server name and port. +
+mtp.cluster.http.myservername = [serverName] +
+mtp.cluster.http.myportno = [portNo] +
+※If there are multiple URLs with the same server name in serverUrl in the cluster settings, It is mandatory to specify ports.
+
+. Automatically resolve your server name from the operating environment +
+.. Identify the network interface using one of the following methods +
+.. When specifying network interface explicitly. +
+Specify network interface in system properties +
+mtp.cluster.http.myinterfacename = [networkInterfaceName]
+
+.. Use the first defined network interface (currently available, not LoopBack) +
+The server name (FQDN/server name)/IPAddress defined for the specified network interface is determined as its own server name. +
+If it is still not found, LoopBack is determined to be its own server name. +
+As in ※1., if there are multiple URLs with the same server name in serverUrl in the cluster settings, the port must be specified in the mtp.cluster.http.myportno system property.
+| certKey | String | Key for authentication during communication. Define the same cluster member.
+| connectionTimeout | int | ConnectionTimeout value (milliseconds) when establishing http communication. The default value is 30000 (30 seconds).
+| soTimeout | int | SoTimeout value (milliseconds) when establishing http communication. The default value is 30000 (30 seconds).
+| proxyHost | String | proxyHost for http communication.
+| proxyPort | int | proxyPort for http communication.
+| poolingMaxTotal | int | Maximum number of pools for http connections. The default value is 20.
+| poolingDefaultMaxPerRoute | int | Maximum number of http connections per domain. The default value is 2.
+| poolingTimeToLive | int | Lifespan of pooled http connections (milliseconds). The default is unlimited.
+| retryCount | int | Number of retries when message transmission fails. The default value is 3.
+| retryDelay | int | Retry interval (ms) when message transmission fails. The default value is 10000 (10 seconds).
+|===
+
+[[JGroupsMessageChannel]]
+.JGroupsMessageChannel
+Please specify org.iplass.mtp.impl.cluster.channel.jgroups.JGroupsMessageChannel to the class.
+Message channel for sending and receiving messages via JGroups. The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| configFilePath | String a| Specify the file path to JGroups files.
+Based on the specified path, the system will search the files in the following order.
+
+. Resource Path (Under classpath)
+. File Path(As a file in OS)
+| clusterName | String | Specify the JGroups cluster name. The node specifying same cluster will be the member of the corresponding cluster.
+|===
+
+[[InfinispanMessageChannel]]
+.InfinispanMessageChannel
+Please specify org.iplass.mtp.impl.infinispan.cluster.channel.InfinispanMessageChannel to the class.
+
+This is a message channel using Infinispan to transmit messages.
+When using InfinispanMessageChannel, the Settings of <<InfinispanService,InfinispanService>> Is required.
+
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| sync | boolean | Set whether to send messages synchronously.
+|===
+
+
+===== Example
+.HttpMessageChannel
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.cluster.ClusterService</interface>
+	<property name="messageChannel"
+	    class="org.iplass.mtp.impl.cluster.channel.http.HttpMessageChannel">
+		<property name="serverUrl" value="http://xxx1.xxx.xxx/app/cmcs" />
+		<property name="serverUrl" value="http://xxx2.xxx.xxx/app/cmcs" />
+		<property name="certKey" value="yourOwnClusterCertKey" />
+		<property name="connectionTimeout" value="30000" />
+		<property name="soTimeout" value="30000" />
+		<property name="proxyHost" value="proxy.xxx.xxx" />
+		<property name="proxyPort" value="8080" />
+	</property>
+</service>
+----
+
+.JGroupsMessageChannel
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.cluster.ClusterService</interface>
+	<property name="messageChannel" class="org.iplass.mtp.impl.cluster.channel.jgroups.JGroupsMessageChannel">
+		<property name="configFilePath" value="/jgroups-config-udp.xml" />
+		<property name="clusterName" value="yourOwnClusterName" />
+	</property>
+</service>
+----
+
+.InfinispanMessageChannel
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.cluster.ClusterService</interface>
+	<depend>org.iplass.mtp.impl.infinispan.InfinispanService</depend>
+	<property name="messageChannel" class="org.iplass.mtp.impl.infinispan.cluster.channel.InfinispanMessageChannel">
+		<property name="sync" value="false" />
+	</property>
+</service>
+----

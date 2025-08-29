@@ -1,0 +1,5 @@
+[[ref_entity]]
+== Entity
+
+include::entity_setting.adoc[]
+

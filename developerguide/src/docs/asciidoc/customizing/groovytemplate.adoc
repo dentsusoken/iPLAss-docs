@@ -1,0 +1,1003 @@
+[[groovyscript]]
+== Groovy Script
+
+GroovyはApache Software Foundationが提供するJavaVM上で動作する動的言語です。
+Java言語と同様の構文で記述することも可能で、Javaで作成されたクラスを呼び出すことも可能です。
+
+Groovy言語の仕様については次のサイトを参照ください。
+
+http://groovy-lang.org/
+
+
+Groovyは、Java言語と異なり、クラスを定義せずともコードをScript形式で記述することが可能です。 +
+iPLAssではメタデータ上に定義するカスタムコードをGroovy Script形式で記述可能な箇所があります。
+
+=== Groovy Scriptにおける拡張
+
+次のクラスについて、Groovy上でのコードの記述が簡便になるようにプロパティ、メソッドの拡張を行っています。
+
+==== org.iplass.mtp.entity.GenericEntity
+Entityのプロパティ操作を簡便化しています。 +
+Entityにプロパティ `propA` を定義した場合
+（GenericEntityを継承するクラスを作成し、getter/setter定義せずとも）、次のように記述可能です。
+
+プロパティの取得::
+`def value = entity.propA`
+
+プロパティの設定::
+`entity.propA = 'val'`
+
+と記述可能です。
+
+==== org.iplass.mtp.entity.EntityEventContext
+`EntityEventContext#getAttribute(String)` 呼び出しを簡便化しています。
+
+`context.getAttribute('updateOption')` +
+を、 +
+`context.updateOption` +
+と記述可能です。 +
+
+==== org.iplass.mtp.command.RequestContext
+attributeの取得、設定を簡便化しています。
+
+attributeの取得::
+`request.getAttribute('beanX')` +
+を、 +
+`request.beanX` +
+と記述可能です。
+
+attributeの設定::
+`request.setAttribute('beanX', bean)` +
+を、 +
+`request.beanX = bean` +
+と記述可能です。
+
+==== org.iplass.mtp.command.SessionContext
+attributeの取得、設定を簡便化しています。
+
+attributeの取得::
+`session.getAttribute('beanX')` +
+を、 +
+`session.beanX` +
+と記述可能です。
+
+attributeの設定::
+`session.setAttribute('beanX', bean)` +
+を、 +
+`session.beanX = bean` +
+と記述可能です。
+
+==== UserBinding
+ログインユーザーへの参照を表すクラスです。
+UserエンティティのプロパティもしくはAuthenticationProviderが提供するログインユーザーの属性を透過的にアクセス可能です。
+
+ユーザー属性へのアクセス::
+`user.name` +
+`user.accountId` +
+の形式で取得可能です。
+
+ユーティリティメソッドの提供::
+次のメソッドを提供します。
++
+[cols="2,1,3a",options="header"]
+|===
+|メソッド|戻り値|説明
+|isAnonymous() |boolean | ユーザーか無名ユーザー（未ログイン）か否かを返却します。
+|isAdmin() |boolean | adminユーザーか否かを返却します。
+|isLocalAdmin() |boolean | 共有テナント上で、当該ユーザーが個別のテナントのadminユーザーか否かを返却します。
+|isOtherTenant() |boolean | 共有テナント上で、当該ユーザーが個別のテナント所属か否かを返却します。
+|getTenantId() |int | テナントIDを返却します。
+|getGroupCodeWithChildren() |String[] | ユーザーが所属するGroup以下すべての階層のグループコードを返却します。
+|getGroupCodeWithParents() |String[] | ユーザーが所属するGroup以上の階層のグループコードを返却します。
+|getGroupOidWithChildren() |String[] | ユーザーが所属するGroup以下すべての階層のグループのoidを返却します。
+|getGroupOidWithParents() |String[] | ユーザーが所属するGroup以上の階層のグループのoidを返却します。
+|getGroupOid() |String[] | ユーザーが所属するGroupのoidを返却します。
+|memberOf(String groupCode) |boolean | ユーザーが指定のグループに所属しているか否かを返却します。サブグループに所属している場合もtrueが返却されます。
+|===
+
+==== RequestContextBinding
+参照専用のアクセスに限定したRequestContextのWrapperクラスです。
+attribute、HTTPパラメータへのアクセスが可能です。
+
+attributeの取得::
+`request.attrX` +
+のように、インスタンスのプロパティとして取得可能です。
+
+paramの取得::
+`request.param.paramA` +
+のように、paramで取得されるMapインスタンス経由で取得可能です。
+
+==== SessionBinding
+参照専用のアクセスに限定したSessionContextのWrapperクラスです。
+attributeへのアクセスが可能です。
+
+`session.attrX` +
+のように、インスタンスのプロパティとして取得可能です。
+
+==== ActionParameterBinding
+参照専用のアクセスに限定したActionParameterのWrapperクラスです。
+
+`parameter.getValue('paramA')` +
+を、 +
+`parameter.paramA` +
+と記述可能です。
+
+また、次のユーティリティメソッドを提供します。
+
+[cols="2,1,3a",options="header"]
+|===
+|メソッド|戻り値|説明
+|in(String name, Object... value) |boolean | nameで指定したActionParameterのvalueが、可変引数で指定した値のいずれかと一致した場合trueを返します。
+|===
+
+==== WebApiParameterBinding
+参照専用のアクセスに限定したWebApiParameterのWrapperクラスです。
+
+`parameter.getValue('paramA')` +
+を、 +
+`parameter.paramA` +
+と記述可能です。
+
+また、次のユーティリティメソッドを提供します。
+
+[cols="2,1,3a",options="header"]
+|===
+|メソッド|戻り値|説明
+|in(String name, Object... value) |boolean | nameで指定したWebApiParameterのvalueが、可変引数で指定した値のいずれかと一致した場合trueを返します。
+|===
+
+==== WorkflowParameterBinding
+参照専用のアクセスに限定したWorkflowParameterのWrapperクラスです。
+
+`parameter.getValue('paramA')` +
+を、 +
+`parameter.paramA` +
+と記述可能です。
+
+また、次のユーティリティメソッドを提供します。
+
+[cols="2,1,3a",options="header"]
+|===
+|メソッド|戻り値|説明
+|in(String name, Object... value) |boolean | nameで指定したWorkflowParameterのvalueが、可変引数で指定した値のいずれかと一致した場合trueを返します。
+|===
+
+=== バインド変数
+Groovy Scriptにおいて、暗黙変数（バインド変数）があり、それらは変数宣言せずとも利用可能です。
+バインドされている値については、各メタデータの説明、AdminConsoleのnoteを参照ください。
+
+
+[[groovytemplate]]
+== GroovyTemplate
+GroovyベースのJSPライクなテンプレート言語です。 +
+GroovyのGStringTemplateEngineをベースに、iPLAssにて独自の機能を拡張しています。
+
+GroovyTemplate形式は、Webページのレスポンス（Template）に利用されるだけではなく、
+メールテンプレートやEQL文のテンプレートなど、メタデータ上に定義される文字列のテンプレートとして汎用的に利用されます。
+
+.GroovyTemplateの例
+[source,groovytemplate]
+----
+<%@page import="java.util.Date"%>
+<%@page import="org.iplass.mtp.ApplicationException"%>
+:
+
+<!DOCTYPE html>
+<html>
+:
+
+<%
+if (session.info != null) {
+    session.info.doSomething();
+
+}
+%>
+
+<div>
+    <nav>
+        <a href="${tcPath()}/samples/home">$h{msg("samples/general", "breadcrumb.home")}</a>
+        <span>$h{msg("samples/general", "samples.title")}</span>
+    </nav>
+</div>
+<div>
+    <h4>$h{msg("samples/general", "samples.title")}</h4>
+    <form action="${tcPath()}/samples/doSubmit" method="post">
+        <input type="hidden" name="_t" value="${token()}">
+        <% bind("bean" : formBean) { %>
+            <div>
+                <% bind("prop" : "familyName") { %>
+                <label for="${name}">Family Name</label>
+                <input type="text" name="${name}" value="${value}" placeholder="Family name">
+                <small class="form-text text-danger"><% errors() %></small>
+                <% } %>
+            </div>
+            <div>
+                <% bind("prop" : "firstName") { %>
+                <label for="${name}">First Name</label>
+                <input type="text" name="${name}" value="${value}" placeholder="First Name">
+                <small class="form-text text-danger"><% errors() %></small>
+                <% } %>
+            </div>
+            :
+
+        <%}%>
+    </form>
+</div>
+:
+
+<script src="${tcPath()}/samples/resource/scripts/custom.js" type="text/javascript"></script>
+:
+
+</html>
+----
+
+次の書式をサポートします。
+
+=== import宣言
+`<%@import [import target]%>` +
+もしくは、 +
+`<%@page import="[import target]"%>`
+
+指定の[import target]をインポートします。
+
+.記述例
+[source,groovytemplate]
+----
+<%@import java.sql.Timestamp%>
+<%@page import="java.sql.Timestamp"%>
+----
+
+=== Scriptlet
+`<% [groovy script] %>` +
+JSPと同様、<% ... %>内にGroovy Scriptを記述可能です。
+
+.記述例
+[source,groovytemplate]
+----
+<%
+  if (a == 'OK') {
+    out.println('a is OK.');
+    includeTemplate('path/to/Tmpl');
+  }
+%>
+----
+
+=== Expression
+`<%= [groovy expression] %>` +
+もしくは +
+`${ [groovy expression] }`
+
+JSPと同様、<%= ... %>内、${ ... }内に値を返却する式を記述可能です。
+
+.記述例
+[source,groovytemplate]
+----
+<%=escXml('val=' + val)%>
+${bean.propABC}
+----
+[[escapse_expression]]
+=== エスケープ処理付Expression
+以下の形式でExpressionを記述することにより、出力する文字列にエスケープ処理を行うことが可能です。
+
+[cols="1,4",format="dsv",options="header"]
+|===
+Expression表現:エスケープ内容
+$x{ ... }:出力する文字はXML1.0ベースのエスケープ処理が行われます
+$h{ ... }:出力する文字はHTML4.0ベースのエスケープ処理が行われます
+$j{ ... }:出力する文字はJavaScript文字列としてのエスケープ処理が行われます
+$s{ ... }:出力する文字はEQL文字列としてのエスケープ処理（'を''にエスケープ）が行われます
+$sl{ ... }:出力する文字はEQLにおけるLIKE文のワイルドカードのエスケープ処理（`'` 、 `%` 、 `\_` 、`\` を `''` 、 `\%` 、 `\_` 、 `\\` にエスケープ）が行われます
+|===
+
+=== バインド変数
+各メタデータに定義するGroovyTemplateにおいて、暗黙変数（バインド変数）があり、それらは変数宣言せずとも利用可能です。 +
+バインドされている値については、各メタデータの説明、AdminConsoleのnoteを参照ください。
+
+== GroovyTemplateの関数
+GroovyTemplateにおいて、記述を簡便化するための関数を定義しています。
+Scriptlet、Expressionにて利用可能です。
+[[groovy_template_esc_func]]
+=== escEql()
+引数の文字列をEQL出力用にエスケープします。 +
+`'` を `''` にエスケープします。また、引数がnullの場合は空文字を出力します。
+
+.利用例
+[source, groovytemplate]
+----
+user.accountId='${escEql(bean.aid)}'
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|Object | エスケープ対象を指定します。 +
+引数がClosureの場合は、Closureの実行結果をエスケープ対象とします。 +
+エスケープ対象がString以外の場合は、toString()された値をエスケープします。
+|===
+
+==== 戻り値
+エスケープ処理されたString。
+
+=== escEqlLike()
+引数の文字列をEQLのLikeのパターン文字列用にエスケープします。 +
+`'` 、 `%` 、 `\_` 、 `\` をそれぞれ、 `''` 、 `\%` 、 `\_` 、 `\\` とエスケープします。
+また、引数がnullの場合は空文字を出力します。
+
+
+.利用例
+[source, groovytemplate]
+----
+user.name like '${escEqlLike(bean.userName)}%'
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|Object | エスケープ対象を指定します。 +
+引数がClosureの場合は、Closureの実行結果をエスケープ対象とします。 +
+エスケープ対象がString以外の場合は、toString()された値をエスケープします。
+|===
+
+==== 戻り値
+エスケープ処理されたString。
+
+=== escHtml()
+引数の文字列をHTML出力用にエスケープします。
+
+.利用例
+[source, groovytemplate]
+----
+${escHtml(bean.user.name)}
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|Object | HTMLエスケープしたいObjectを指定します。 +
+引数がClosureの場合は、Closureの実行結果をエスケープ対象とします。 +
+エスケープ対象がString以外の場合は、toString()された値をエスケープします。
+|===
+
+==== 戻り値
+エスケープ処理されたString。
+
+=== escJs()
+引数の文字列をJavaScript出力用にエスケープします。 +
+引数がClosureの場合は、Closureの実行結果をエスケープ対象とします。 +
+エスケープ対象がString以外の場合は、toString()された値をエスケープします。
+
+.利用例
+[source, groovytemplate]
+----
+${escJs(bean.user.name)}
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|Object | JavaScriptエスケープしたいObjectを指定します。 +
+引数がClosureの場合は、Closureの実行結果をエスケープ対象とします。 +
+エスケープ対象がString以外の場合は、toString()された値をエスケープします。
+|===
+
+==== 戻り値
+エスケープ処理されたString。
+
+=== escXml()
+引数の文字列をXML出力用にエスケープします。
+
+.利用例
+[source, groovytemplate]
+----
+<sample val='${escXml(bean.user.name)}' />
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|Object | XMLエスケープしたいObjectを指定します。 +
+引数がClosureの場合は、Closureの実行結果をエスケープ対象とします。 +
+エスケープ対象がString以外の場合は、toString()された値をエスケープします。
+|===
+
+==== 戻り値
+エスケープ処理されたString。
+
+=== rs()
+指定された基底名、キーからResourceBundleに定義された文字列を返します。
+第三引数（可変引数）には、文字列に埋め込むパラメータを指定可能です。
+
+
+.利用例
+[source, groovytemplate]
+----
+${rs('resource-bundle-name', 'key1')}
+----
+[source, groovytemplate]
+----
+${rs('resource-bundle-name', 'key2', bean.param1, bean.param2)}
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|String | ResourceBundleの基底名（bundle name）を指定します。
+|String | ResourceBundleのキー名を指定します。
+|Object... | メッセージに埋め込むパラメータ（単一のオブジェクト、可変引数、もしくは配列、もしくはCollectionのインスタンス）を指定可能です。 
+|===
+
+
+==== 戻り値
+ResourceBundleに定義された文字列にパラメータ埋め込みした文字列。
+
+=== fmt()
+指定の第一引数の値を第二引数で指定されるパターンでフォーマット出力します。
+
+.利用例
+[source, groovytemplate]
+----
+<input type="text" name="endDate" value="${fmt(dateVal, 'yyyy/MM/dd')}">
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|Object | フォーマット対象の値には、Dateのインスタンスもしくは、Numberのインスタンスを指定可能です。 
+|String | 値がDate型の場合は、SimpleDateFormatにて定義されるpattern、 Number型の場合は、DecimalFormatにて定義されるpatternを指定可能です。
+|===
+
+==== 戻り値
+フォーマットされたString。
+
+=== msg()
+Message定義（メタデータ）として登録されているメッセージを、指定のパラメータを埋め込み出力します。
+
+.利用例
+[source, groovytemplate]
+----
+${msg('path/to/MessageCategory', 'M101')}
+----
+[source, groovytemplate]
+----
+${msg('path/to/MessageCategory', 'M102', bean.messageParams)}
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|String | Message定義の名前（カテゴリ名）を指定します。
+|String | Message定義のメッセージのID指定します。
+|Object... | メッセージに埋め込むパラメータ（単一のオブジェクト、可変引数、もしくは配列、もしくはCollectionのインスタンス）を指定可能です。 
+|===
+
+==== 戻り値
+当該カテゴリ、IDで特定されるメッセージ文言パラメータ埋め込みした文字列。
+
+=== nte()
+引数がnullの場合は、空文字列をそれ以外の場合は、引数をそのまま返却します。
+
+.利用例
+[source, groovytemplate]
+----
+${'propX: ' + nte(bean.propX)}
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|Object | 変換対象のObjectを指定します。 +
+引数がClosureの場合は、Closureの実行結果を変換対象とします。
+|===
+
+==== 戻り値
+引数がnullならから文字列。それ以外なら引数を返却。
+
+=== prefs()
+Preference定義の値を取得します。
+
+.利用例
+[source, JSP]
+----
+${prefs('path/to/preferenceName')}
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|String | Preferenceを特定する名前を指定します。
+|===
+
+==== 戻り値
+PreferenceにruntimeClassが指定されている場合は、そのクラスのインスタンスが取得されます。 +
+runtimeClass指定がない場合、かつPreferenceSetの場合は、Mapが取得されます。 +
+Preferenceの場合は、valueに定義されているStringが取得されます。
+
+=== auth()
+認可情報に従って制御を行うための関数です。
+特定ロールの場合のみコンテンツを表示したり、コンテンツの処理を特権実行するなどの制御が可能です。 +
+Scriptletにて利用可能です。 +
+コンテンツはClosureにて定義します。
+
+.利用例
+[source, groovytemplate]
+----
+
+<%auth(role:'roleA,roleB') {%> <1>
+  this content only show with role:"roleA" or "roleB".
+  :
+  :
+<%}%>
+
+
+<%auth(permission: new ActionPermission('some/actionX', [defName:'Hoge'])) {%> <2>
+  this content only show with action permission:"some/actionX?defName=Hoge".
+  :
+  :
+<%}%>
+
+
+<%auth(privileged: true) {%> <3>
+  privileged contents.
+
+  <%
+    //some privileged execution
+    :
+    :
+
+  %>
+
+</m:auth>
+----
+<1> roleAまたはroleBの場合のみコンテンツを表示（Closureの実行）します
+<2> some/actionXアクションのAction権限を保持する場合コンテンツを表示（Closureの実行）します
+<3> コンテンツの処理（Closureの実行）を特権実行します
+
+==== 引数（名前付き）
+[cols="2,1,1,3a",options="header"]
+|===
+|名前 |型 |デフォルト値 |説明
+|role |String | |ロール名指定します。 +
+当該ロールを保持する場合、コンテンツが出力（Closureが実行）されます。 複数のロール名をカンマ区切りで指定することが可能です。 複数指定された場合、いずれかのロールを保持する場合にコンテンツが出力されます。
+|permission |Permission | |Permissionのインスタンスを指定します。 +
+当該権限を保持する場合、コンテンツが出力（Closureが実行）されます。
+|privileged |Boolean |false |trueが指定された場合、コンテンツの出力処理（Closureの実行）を特権実行します。
+|===
+
+
+=== esc()
+引数のStringをHTML出力用にエスケープします。
+
+NOTE: Template定義でのみ利用可能な関数です。
+
+
+.利用例
+[source, groovytemplate]
+----
+${esc(bean.user.name)}
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|String | HTMLエスケープしたいStringを指定します。
+|===
+
+==== 戻り値
+エスケープ処理されたString。
+
+=== bind()
+Commandの処理結果（Beanに格納されている値、関連するエラー）を画面に表示するためにGroovyTemplateの実行コンテキストにバインドする関数です。
+errors関数をbind関数と組み合わせて利用することにより、紐付くプロパティ単位にエラーメッセージの出力制御が可能です。
+
+NOTE: Template定義でのみ利用可能な関数です。
+
+.利用例
+[source, groovytemplate]
+----
+
+<form>
+  <%bind(bean: formBean) {%> <1>
+
+    <%bind(prop: 'userName') {%> <2>
+      user name : <input type="text" value="${value}" name="${name}"> <3>
+      <%errors()%> <4>
+    <%}%>
+
+    :
+
+    <%bind(prop: 'mailAddress') {%>
+      mail address : <input type="text" value="${value}" name="${name}"> <%errors()%>
+    <%}%>
+ 
+  :
+
+  <%}%>
+</form>
+----
+<1> formBeanという名前で参照（RequestやSessionから）されるBeanをバインドします。
+<2> formBeanのプロパティuserNameをバインドします。
+<3> bind関数のClosure内では${value}、${name}でformに指定すべきvalue、nameが取得できます。
+<4> BeanParamMapperでの当該プロパティのマッピングエラー、バリデーションエラーを表示可能です。
+
+==== 引数（名前付き）
+[cols="2,1,1,3a",options="header"]
+|===
+|名前 |型 |デフォルト値 |説明
+|bean |任意 | |バインドするBeanのインスタンスを指定します。
+
+バインドされたBeanは、 `bean` という変数名でClosure内に公開されます。
+公開する際の変数名を変更したい場合は、beanVariableNameにて変数名を変更可能です。
+
+|beanVariableName |String |bean  |バインドされたBeanをClosure内に公開する際の変数名を指定可能です。
+|mappingResult |MappingResult | |BeanParamMapperでのバインド結果である `org.iplass.mtp.command.beanmapper.MappingResult` のインスタンスを指定可能です。
+
+mappingResultが指定された場合、当該Bean、プロパティに紐付くエラーがバインドされます。
+当該属性が未指定の場合、かつautoDetectErrorsがtrueの場合、mappingResultは自動解決されます。
+バインドされたMappingResultは `mappingResult` という変数名でpageContextに公開されます。 公開する際の変数名を変更したい場合は、mappingResultVariableNameにて変数名を変更可能です。
+
+|autoDetectErrors |Boolean |true  |エラー（mappingResult）を自動解決するか否かを指定可能です。
+
+trueが指定された場合、requestから定数： `org.iplass.mtp.web.WebRequestConstants.EXCEPTION` をキーに `org.iplass.mtp.command.beanmapper.MappingException` のインスタンスを取得します。
+インスタンスが存在した場合、その例外からMappingResultのインスタンスを取得します。
+
+|mappingResultVariableName |String |mappingResult  |バインドされたMappingResultをpageContextに公開する際の変数名を指定可能です。
+
+|prop |String | |バインドされているBeanのプロパティのパスを指定します。
+EL式の記法によって、ネストされたプロパティを指定可能です。
+
+.EL式での指定例
+ userName
+ accout.mail
+ details[0].id
+
+当該パスが指定されたbind関数のClosureの内側ではプロパティ名、値、当該プロパティに関連するエラーがバインドされます。
+Closure内に公開される際の変数名は、デフォルトでは以下の名前で公開されます。
+
+name::
+HTTPのパラメータ名として利用可能な形のプロパティのパスです。BeanParamMapperのパラメータ名と同様の形式です。
+value::
+プロパティの値の文字列表現です。文字列表現はhtmlEscape、formatter設定にて制御可能です。
+rawValue::
+生のプロパティの値です。
+errorValue::
+エラーが発生場合の生のプロパティの値です。
+errors::
+当該プロパティに関するエラーが存在する場合、エラーメッセージの `List<String>` のインスタンスです。
+
+公開する際の変数名を変更したい場合はそれぞれ、propertyNameVariableName、propertyValueVariableName、 propertyRawValueVariableName、errorsVariableNameにて変数名を変更可能です。
+
+また、Bean内にネストされたリストをバインドしたい場合、例えば次のような記述が可能です。
+
+.ネストされたリストを出力する例
+[source, groovytemplate]
+----
+<%bind(bean: fb) {%>
+
+  :
+
+  <%for (int i =0; i < fb.children.size(); i++) {%>
+    ${i}.
+    <%bind(prop: "children[${i}].name") {%>
+      child name : <input type="text" value="${value}" name="${name}">
+      <%errors()%>
+    <%}%>
+  <%}%>
+
+<%}%>
+----
+
+prop指定と同時にbeanが指定された場合は、そのbeanのプロパティをバインドします。
+beanが未指定の場合は、親タグに指定されるbeanのプロパティをバインドします。
+
+|htmlEscape |Boolean |true |value（プロパティの値の文字列表現）を出力する際にhtmlエスケープ処理をするか否かを指定可能です。
+
+CAUTION: このフラグによってエスケープ処理されるのはvalueのみです。name、rawValue、errorValue、errorsの値はエスケープされません。
+
+|formatter |ValueFormatter |DEFAULT_FORMATTER 
+|value（プロパティの値の文字列表現）を出力する際のフォーマット処理を行う `org.iplass.mtp.web.template.ValueFormatter` のインスタンスを指定します。
+
+未指定の場合は、 `ValueFormatter.DEFAULT_FORMATTER` で指定されるデフォルトの処理が適用されます。
+デフォルト処理では値が文字列以外の場合に次のようにフォーマットします。
+
+Integer、Double、BiｇDecimalなどの数値型:: 数値を10進数表現で文字列に変換します。
+SelectValue型:: SelectValueのvalueを出力します。
+BinaryReference型:: BinaryReferenceのlobIdを出力します。
+Date型:: yyyy-MM-dd形式で出力します。
+Time型:: HH:mm:ss形式で出力します。
+Timestamp型もしくは、java.sql.Date、java.sql.Time以外のjava.utilDate型:: yyyy-MM-dd'T'HH:mm:ss.SSSXXX形式で出力します。
+
+beanが指定されているbindタグに指定した場合、配下のプロパティの値に一律適用されます。
+
+formatterを利用せず個別にrawValueからフォーマットすることも可能です。 
+
+.rawValueから直接出力する例
+[source, groovytemplate]
+----
+<%bind(prop:'dateProp') {%>
+  <input type="text" value="${errorValue ?: fmt(rawValue, 'yyyy/MM/dd')}" name="${name}">
+<%}%>
+----
+
+|propertyNameVariableName |String |name  |バインドされたプロパティのHTTPパラメータ名をClosure内に公開する際の変数名を指定可能です。
+
+|propertyValueVariableName|String |value  |バインドされたプロパティの値の文字列表現をClosure内に公開する際の変数名を指定可能です。
+
+|propertyRawValueVariableName |String |rawValue  |バインドされたプロパティの生の値をClosure内に公開する際の変数名を指定可能です。
+
+|propertyErrorValueVariableName |String |errorValue  |バインドされたプロパティがエラーの場合、そのエラー値が格納される変数名を指定可能です。
+
+|errorsVariableName |String |errors  |バインドされたプロパティに関連するエラーメッセージの `List<String>` をClosure内に公開する際の変数名を指定可能です。
+
+|prefix |String | |name（HTTPパラメータ名）を出力する際のprefixを指定します。 
+
+NOTE: HTTPリクエストをBeanParamMapperでマッピングする場合、BeanParamMapperのparamPrefixの値と一致させる必要があります。
+
+|propertyDelimiter |String |.  |name（HTTPパラメータ名）を出力する際のネストされたプロパティのデリミタを指定します。
+
+NOTE: HTTPリクエストをBeanParamMapperでマッピングする場合、BeanParamMapperのpropertyDelimiterの値と一致させる必要があります。
+
+|indexPrefix |String |[ |name（HTTPパラメータ名）を出力する際のインデックス指定のプレフィックス文字を指定します。
+
+NOTE: HTTPリクエストをBeanParamMapperでマッピングする場合、BeanParamMapperのindexPrefixの値と一致させる必要があります。
+
+|indexPostfix |String |] |name（HTTPパラメータ名）を出力する際のインデックス指定のポストフィックス文字を指定します。
+
+NOTE: HTTPリクエストをBeanParamMapperでマッピングする場合、BeanParamMapperのindexPostfixの値と一致させる必要があります。
+|===
+
+
+=== errors()
+エラーが存在する場合、エラー内容をフォーマットしてhtml出力する関数です。
+
+NOTE: Template定義でのみ利用可能な関数です。
+
+errors関数が記述される場所、設定される属性値により、出力される内容が異なります。
+
+* bind関数配下、かつprop指定がある場合
++
+当該プロパティに紐付くエラーがある場合、エラーを出力します。
++
+.利用例
+[source, groovytemplate]
+----
+<%bind(bean: formBean) {%>
+  :
+  
+  <%bind(prop: 'userName') {%>
+    user name : <input type="text" value="${value}" name="${name}">
+    <%errors()%> <1>
+  <%}%>
+  :
+  
+<%}%>
+----
+<1> formBeanのuserNameに紐付くエラーがある場合にエラー内容が出力されます。
+
+
+* bind関数配下、かつprop指定がない場合
++
+当該Beanに紐付くエラーがある場合、そのすべてのエラーを出力します。
++
+.利用例
+[source, groovytemplate]
+----
+<%bind(bean: formBean) {%>
+  <%errors()%> <1>
+  :
+
+  <%bind(prop: 'userName') {%>
+    user name : <input type="text" value="${value}" name="${name}">
+  <%}%>
+  :
+
+<%}%>
+----
+<1> formBeanに紐付くすべてのエラー内容が出力されます。
+
+* bind関数配下ではない場合
++
+requestから定数： `org.iplass.mtp.web.WebRequestConstants.EXCEPTION` をキーに例外を取得しそのメッセージを出力します。 
++
+当該Exceptionが `org.iplass.mtp.command.beanmapper.MappingException` の場合::
+その例外に保持されるMappingResultのメッセージを出力します。
++
+当該Exceptionが `org.iplass.mtp.ApplicationException` の場合::
+その例外のメッセージを出力します。
++
+当該Exceptionがそれ以外の場合::
+固定のシステム例外メッセージを出力します。
+
+* 引数にて明示的にerrorsを指定した場合
++
+指定されたインスタンスにより適切にメッセージ出力します。 出力内容については引数の説明：errorsを参照してください。
+
+==== 引数（名前付き）
+[cols="2,1,1,3a",options="header"]
+|===
+|名前 |型 |デフォルト値 |説明
+|errors |Object | |出力するエラー対象を指定します。
+指定されたエラー対象により適切にエラーメッセージ出力します。
+
+`String` の場合:: 指定されたStringを出力します。
+`org.iplass.mtp.command.beanmapper.MappingError` の場合:: 指定されたMappingErrorのerrorMessagesを出力します。
+`org.iplass.mtp.command.beanmapper.MappingResult` の場合:: 指定されたMappingResultが保持するMappingErrorのerrorMessagesを出力します。
+`org.iplass.mtp.command.beanmapper.MappingException` の場合::
+指定されたMappingExceptionのMappingResultの内容を出力します。
+`org.iplass.mtp.ApplicationException` の場合
+指定されたApplicationExceptionのmessageを出力します。
+`Throwable` の場合::
+固定のシステム例外メッセージを出力します。
+`List<String>`、配列の場合::
+指定されたリスト、配列の内容を1件ずつ出力します。
+それ以外の場合::
+指定されたインスタンスのtoString()を出力します。
+
+|delimiter |String |<br> |エラーメッセージが複数ある場合のデリミタを指定可能です。
+
+|header |String |<span class=\"error\">  |エラーメッセージを出力する際、先頭に出力する内容を指定可能です。
+
+|footer |String |</span> |エラーメッセージを出力する際、最後に出力する内容を指定可能です。
+
+|htmlEscape |Boolean |true |エラーメッセージを出力する際にhtmlエスケープ処理をするか否かを指定可能です。
+
+|errorsVariableName | |errors  |エラーをClosure内に公開する際の変数名を指定可能です。
+また、この変数名は親のbind関数でClosure内に公開されたエラーを探す場合の変数名としても利用されます。
+|===
+
+==== メッセージ出力内容をカスタムする
+
+Closure内にGroovyTemplateコードを記述することにより、エラーメッセージ出力内容をカスタマイズすることが可能です。
+
+.カスタマイズ例
+[source, groovytemplate]
+----
+<%errors() {%>
+  <span>
+  <b>エラーが発生しました</b><br>
+  エラー内容：${errors}
+  </span>
+<%}%>
+----
+
+カスタマイズ出力する場合は、delimiter、header、footer、htmlEscapeの設定は利用されません。 
+
+
+=== token()
+トランザクショントークンの値を出力します。
+
+NOTE: Template定義でのみ利用可能な関数です。
+
+.利用例
+[source, groovytemplate]
+----
+<input type="hidden" name="_t" value="${token()}">
+----
+
+==== 引数
+なし
+
+==== 戻り値
+新規に発行されたトークン文字列。
+
+
+=== fixToken()
+固定トークン（セッション単位の固定値）の値を出力します。
+CSRF(XSRF)対策用に利用可能です。
+
+NOTE: Template定義でのみ利用可能な関数です。
+
+.利用例
+[source, groovytemplate]
+----
+<input type="hidden" name="_t" value="${fixToken()}">
+----
+
+==== 引数
+なし
+
+==== 戻り値
+セッション単位に固定のトークン文字列。
+
+=== tcPath()
+テナントコンテキストパスを出力します。
+テナントコンテキストパスは `ServletContextPath + tenantURL` で定義される、
+APサーバ上でテナントまでを特定するルート相対パスです。
+
+NOTE: Template定義でのみ利用可能な関数です。
+
+.利用例
+[source, groovytemplate]
+----
+<a href="${tcPath()}/path/to/action">link</a>
+----
+
+==== 引数
+なし
+
+==== 戻り値
+テナントコンテキストパス
+
+
+=== include()
+GroovyTemplate内に別Actionの出力を取り込むための関数です。
+
+NOTE: Template定義でのみ利用可能な関数です。
+
+.利用例
+[source, groovytemplate]
+----
+
+<%include('your/action/path')%>
+ 
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|String | includeするActionの名前を指定します。
+|===
+
+==== 戻り値
+なし
+
+
+=== includeTemplate()
+GroovyTemplate内に別Templateの出力を取り込むための関数です。
+
+NOTE: Template定義でのみ利用可能な関数です。
+
+.利用例
+[source, groovytemplate]
+----
+
+<%includeTemplate('your/template/path')%>
+ 
+----
+
+==== 引数
+[cols="1,3",options="header"]
+|===
+|型 |説明
+|String | includeするTemplateの名前を指定します。
+|===
+
+==== 戻り値
+なし
+
+
+=== renderContent()
+Layoutアクションのgroovy templateにおいて、実際のコンテンツを表示する箇所を指定する関数です。
+
+NOTE: Template定義でのみ利用可能な関数です。
+
+.利用例
+[source, groovytemplate]
+----
+
+:
+
+<div id="main">
+  <!-- ここにメインコンテンツが出力される -->
+  <%renderContent()%>
+</div>
+
+:
+----
+
+==== 引数
+なし
+
+==== 戻り値
+なし

@@ -1,0 +1,40 @@
+[[SyntaxService]]
+=== SyntaxService
+構文解析のためのサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.parser.SyntaxService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.parser.SyntaxService
+----
+
+==== SyntaxServiceの設定
+SyntaxServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| syntaxRegister | <<SyntaxRegister>>、複数指定可| SyntaxRegisterの実装クラス名。
+|===
+
+[[SyntaxRegister]]
+.SyntaxRegister
+classはorg.iplass.mtp.impl.parser.SyntaxRegisterの実装クラスを指定します。
+
+標準でorg.iplass.mtp.impl.query.QuerySyntaxRegisterを提供しています。
+設定可能な項目はありません。
+
+===== 設定例
+[source, xml]
+----
+<service final="true">
+	<interface>org.iplass.mtp.impl.parser.SyntaxService</interface>
+	<class>org.iplass.mtp.impl.parser.SyntaxService</class>
+	<property name="syntaxRegister" value="org.iplass.mtp.impl.query.QuerySyntaxRegister" />
+ </service>
+----

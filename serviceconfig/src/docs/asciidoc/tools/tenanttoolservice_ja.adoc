@@ -1,0 +1,154 @@
+[[TenantToolService]]
+=== TenantToolService
+テナント管理ツールに関するサービスです。
+
+==== インタフェース名
+----
+org.iplass.adminconsole.server.base.service.TenantToolService
+----
+
+==== 実装クラス名
+----
+org.iplass.adminconsole.server.base.service.TenantToolService
+----
+
+==== TenantToolServiceの設定
+TenantToolServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| createProcesses | <<TenantCreateProcess>>、複数指定可 | テナント作成時に実行するプロセスを設定。
+| tenantRdbManagerParameter | <<TenantRdbManagerParameter>> | RDB別テナント管理機能のパラメータを設定。
+|===
+
+[[TenantCreateProcess]]
+.TenantCreateProcess
+classはorg.iplass.mtp.impl.tools.tenant.create.TenantCreateProcessの実装クラスを指定します。
+
+標準で以下のTenantCreateProcessを提供しています。
+
+* <<CreateAdminUserProcess>>
+* <<BlankSkipProcess>>
+* <<CreateMenuProcess>>
+* <<CreateTopViewProcess>>
+* <<CreateAppAdminRoleProcess>>
+* <<CreateGemUserRoleProcess>>
+* <<CreateAppAdminRoleEEProcess>>
+* <<CreateGemUserRoleEEProcess>>
+* <<CreateAppConsolePermissionProcess>>
+* <<CreateCompleteProcess>>
+
+[[CreateAdminUserProcess]]
+.CreateAdminUserProcess
+管理者ユーザーを作成します。
+
+classにorg.iplass.mtp.impl.tools.tenant.create.CreateAdminUserProcessを指定します。
+設定可能な項目はありません。
+
+[[BlankSkipProcess]]
+.BlankSkipProcess
+空のテナントを作成します。
+
+classにorg.iplass.mtp.impl.tools.tenant.create.BlankSkipProcessを指定します。
+設定可能な項目はありません。
+
+[[CreateMenuProcess]]
+.CreateMenuProcess
+初期メニュー定義を作成します。
+
+classはorg.iplass.mtp.impl.tools.tenant.create.CreateMenuProcessを指定します。
+設定可能な項目はありません。
+
+[[CreateTopViewProcess]]
+.CreateTopViewProcess
+初期TopView定義を作成します。
+
+classはorg.iplass.mtp.impl.tools.tenant.create.CreateTopViewProcessを指定します。
+設定可能な項目はありません。
+
+[[CreateAppAdminRoleProcess]]
+.CreateAppAdminRoleProcess
+管理者ロールと権限データを作成します。
+
+classはorg.iplass.mtp.impl.tools.tenant.create.CreateAppAdminRoleProcessを指定します。
+設定可能な項目はありません。
+
+[[CreateGemUserRoleProcess]]
+.CreateGemUserRoleProcess
+Gemユーザー用ロールと権限データを作成します。
+
+classはorg.iplass.mtp.impl.tools.tenant.create.CreateGemUserRoleProcessを指定します。
+設定可能な項目はありません。
+
+[[CreateAppAdminRoleEEProcess]]
+.[.eeonly]#CreateAppAdminRoleEEProcess#
+管理者ロール向けのEnterpriseEdition用権限データを作成します。
+
+classはorg.iplass.mtp.impl.tools.tenant.create.CreateAppAdminRoleEEProcessを指定します。
+設定可能な項目はありません。
+
+[[CreateGemUserRoleEEProcess]]
+.[.eeonly]#CreateGemUserRoleEEProcess#
+Gemユーザーロール向けのEnterpriseEdition用権限データを作成します。
+
+classはorg.iplass.mtp.impl.tools.tenant.create.CreateGemUserRoleEEProcessを指定します。
+設定可能な項目はありません。
+
+[[CreateAppConsolePermissionProcess]]
+.[.eeonly]#CreateAppConsolePermissionProcess#
+管理者ロールとGemユーザーロールにAppコンソール用権限データを作成します。
+
+classはorg.iplass.mtp.impl.tools.tenant.create.CreateAppConsolePermissionProcessを指定します。
+設定可能な項目はありません。
+
+[[CreateCompleteProcess]]
+.CreateCompleteProcess
+テナント作成完了処理を行います。
+
+classはorg.iplass.mtp.impl.tools.tenant.create.CreateCompleteProcessを指定します。
+設定可能な項目はありません。
+
+
+[[TenantRdbManagerParameter]]
+.TenantRdbManagerParameter
+classは org.iplass.mtp.impl.tools.tenant.rdb.TenantRdbManagerParameter を指定します。
+以下の項目を設定可能です。
+
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| deleteRows | Integer a| テナント削除時、テーブルレコード削除件数。デフォルト値は `10,000`。
+|====================
+
+===== 設定例
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.tools.tenant.TenantToolService</interface>
+
+	<property name="createProcesses" class="org.iplass.mtp.impl.tools.tenant.create.CreateAdminUserProcess" />
+	<property name="createProcesses" class="org.iplass.mtp.impl.tools.tenant.create.BlankSkipProcess" />
+	<property name="createProcesses" class="org.iplass.mtp.impl.tools.tenant.create.CreateMenuProcess" />
+	<property name="createProcesses" class="org.iplass.mtp.impl.tools.tenant.create.CreateTopViewProcess" />
+	<property name="createProcesses" class="org.iplass.mtp.impl.tools.tenant.create.CreateAppAdminRoleProcess" />
+	<property name="createProcesses" class="org.iplass.mtp.impl.tools.tenant.create.CreateGemUserRoleProcess" />
+
+	<!-- for ee -->
+	<property name="createProcesses" class="org.iplass.mtp.impl.tools.tenant.create.CreateAppAdminRoleEEProcess" />
+	<property name="createProcesses" class="org.iplass.mtp.impl.tools.tenant.create.CreateGemUserRoleEEProcess" />
+	<!-- for appconsole -->
+	<property name="createProcesses" class="org.iplass.mtp.impl.tools.tenant.create.CreateAppConsolePermissionProcess" />
+
+	<property name="createProcesses" class="org.iplass.mtp.impl.tools.tenant.create.CreateCompleteProcess" />
+
+	<!-- TenartRdbManagerパラメータ -->
+	<property name="tenantRdbManagerParameter" class="org.iplass.mtp.impl.tools.tenant.rdb.TenantRdbManagerParameter">
+		<!-- テナント削除時のレコード削除件数。デフォルト値は 10,000 -->
+		<!--
+		<property name="deleteRows" value="10000" />
+		-->
+	</property>
+</service>
+----

@@ -1,0 +1,2253 @@
+= EQL Reference
+
+== About EQL
+EQL (Entity Query Language) is a query language for searching Entity data stored in iPLAss.
+It is similar to SELECT statement in SQL language.
+You could consider Entity and Property as Table and Column in SQL respectively.
+
+The EQL samples is as follow.
+
+[source, EQL]
+----
+SELECT oid, name, mail FROM mtp.auth.User WHERE accountId='scott' ORDER BY name
+----
+
+It is also possible to retrieve value by joining related Entity defined as Reference Property.
+
+[source, EQL]
+----
+SELECT oid, name, groups.name //<1>
+    FROM mtp.auth.User WHERE groups.code='G01'
+----
+<1> You could retrieve and specify values of Referenced Entity by means of separating it by .(dot), like [Reference Property name].[Property name of Referenced Entity].
+
+Aggregate functions can be used as with SQL.
+
+[source, EQL]
+----
+SELECT job, AVG(sal) FROM Employee GROUP BY job
+----
+
+=== Differences from standard SQL
+The grammar of EQL is almost equivalent to SELECT statement in standard SQL, there are some differences as follows.
+
+* About joining between Entities
++
+It is impossible to join Entities between that there is no Reference relationship defined. 
+As for Entity with Reference relationship defined, it is not necessary to describe JOIN clause.
++
+[source, SQL]
+.SQL JOIN Example
+----
+SELECT job, ename, Department.dname FROM Employee
+    LEFT OUTER JOIN Department
+    ON Employee.deptno=Department.deptno
+----
++
+[source, EQL]
+.EQL JOIN Example
+----
+SELECT job, ename, department.dname FROM Employee //<1>
+----
+<1> Referenced Entity must be defined in advance, with a Reference Property named department.
++
+The join(reference) type is always LEFT OUTER JOIN based on the Entity specified in From clause, while it could be specified (OUTER JOIN, INNER JOIN, CROSS JOIN) in SQL.
++
+Also, you should use REFER clause if you want to add item other than the key (oid is the key in Entity) to EQL join condition, while you could specify item other than the key in SQL join condition.
++
+[source, SQL, caption=""]
+.SQL JOIN Example(When specifying item other that the key in join condition)
+----
+SELECT job, ename, Department.dname FROM Employee
+    LEFT OUTER JOIN Department ON Employee.deptno=Department.deptno
+    AND Department.dname = 'SALES'
+----
++
+[source, EQL, caption=""]
+.EQL JOIN Example(When specifying item other that the key in join condition）
+----
+SELECT job, ename, department.dname FROM Employee
+  REFER department ON department.dname = 'SALES'
+----
+
+* Subquery in FROM clause is not supported
++
+In EQL, subquery can not be specified in FROM clause.
+
+* Set operators is not supported
++
+In EQL, set operator (UNION etc.) is not supported.
+
+* Alias is not supported
++
+In EQL, alias name can not be assigned to Entity name, Property name.
+
+* Entity name, Property name are case-sensitive
++
+In EQL, Entity name, Property name are case-sensitive.
+But EQL expression (SELECT, FROM etc.) is case-insensitive.
+
+* {asterisk} (asterisk) expression is not supported
++
+In EQL, wildcard character {asterisk} (asterisk) can not be specified in SELECT clause.
+And also {asterisk} can not be specified in aggregate function, e.g. COUNT.
+In the case of counting the number of rows,
++
+[source, SQL]
+----
+SELECT COUNT(*) FROM Employee
+----
++
+is not correct,
++
+[source, EQL]
+----
+SELECT COUNT() FROM Employee
+----
++
+Do not use {asterisk} in expression.
+
+* Describe join condition with ON clause in correlated subquery
++
+In EQL, in the correlation subquery, the join condition with the outer query is described in the ON clause.
+
+
+=== How to issue EQL
+There are two ways to execute EQL.
+Execute EQL by generating it from String, or using classes that represent EQL.
+
+==== Issue Query from EQL String
+After creating an EQL statement with a String, generate Query instance and issue it via EntityManager.
+Here is sample code.
+
+[source, java]
+----
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.entity.*;
+import org.iplass.mtp.entity.query.*;
+
+:
+:
+
+//Generate Query instance from EQL String
+Query q = new Query("SELECT oid, name, mail FROM mtp.auth.User WHERE accountId='scott' ORDER BY name");
+
+//Issue query via EntityManager
+EntityManager em = ManagerLocator.manager(EntityManager.class);
+SearchResult<Entity> result = em.searchEntity(q);
+
+----
+
+In addition, by using PreparedQuery, it is also possible to generate Query instance by passing variables to an EQL template prepared in advance.
+Here is sample code.
+
+[source, java]
+----
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.entity.*;
+import org.iplass.mtp.entity.query.*;
+
+:
+:
+
+//Generate EQL template in advance
+PreparedQuery queryTemplate = new PreparedQuery("SELECT oid, name, mail FROM mtp.auth.User WHERE accountId='${aid}' and name='$s{inputVal}' ORDER BY name");//<1>
+
+:
+:
+
+//Generate Query instance from PreparedQuery, set a value for parameter aid.
+Map<String, Object> bindings = new HashMap<>();
+bindings.put("aid", "scott");
+bindings.put("inputVal", userInputValue);
+Query q = queryTemplate.query(bindings);
+
+//Issue query by using EntityManager
+EntityManager em = ManagerLocator.manager(EntityManager.class);
+SearchResult<Entity> result = em.searchEntity(q);
+
+----
+<1> You could define parameter like ${parameter name}, replace it with actual value when generating Query. And escape processing can be done by using <<../developerguide/customizing/index.adoc#_エスケープ処理付expression, $s{ …​ } or $sl{ …​ } of GroovyTemplate>>.
+
+==== Issue Query from classes that represent EQL
+Construct Query by using classes that represent EQL, issue query via EntityManager.
+Classes that represent EQL are under the package, org.iplass.mtp.entity.query.
+
+Here is sample code.
+
+[source, java]
+----
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.entity.*;
+import org.iplass.mtp.entity.query.*;
+
+:
+:
+
+Query q = new Query()
+		.select("oid", "name", "mail")
+		.from("mtp.auth.User")
+		.where(new Equals("accountId", "scott"))
+		.order(new SortSpec("name", SortType.ASC));
+
+EntityManager em = ManagerLocator.manager(EntityManager.class);
+SearchResult<Entity> result = em.searchEntity(q);
+
+----
+
+== Component Element
+The component element for constructing EQL are described as follows.
+EQL syntax is described by BNF (Backus-Naur form) together.
+
+[NOTE]
+.Description of expression elements that extend BNF.
+====
+Extend the following expression elements for BNF.
+
+[ ] = Optional element +
+{ } = Grouped element +
+{asterisk} = repeat 0 or more times +
+{plus} = repeat 1 or more times +
+"string" = represent a explicit string(not a BNF formula or Symbol) +
+__""description""__ = description of actual specified value
+
+====
+
+[[query]]
+=== Query
+Element that represents an entire EQL statement.
+Represent the query for Entity.
+Class for constructing Query is under the package, org.iplass.mtp.entity.query.
+
+.EQL Expression Example
+[source, EQL]
+----
+SELECT job, ename, department.dname FROM Employee WHERE ename='john'
+----
+[source, EQL]
+----
+SELECT job, AVG(sal) FROM Employee GROUP BY job
+----
+[source, EQL]
+----
+SELECT job, ename, department.dname FROM Employee
+    REFER department ON department.dname = 'SALES'
+----
+[source, EQL]
+----
+SELECT /*+ no_index(job) native('ORDERED USE_NL_WITH_INDEX(...)') */
+    job, ename, department.dname FROM Employee
+    WHERE job = 'SALESMAN' AND sal > 1000 ORDER BY ename
+    LIMIT 100
+----
+
+.Query Class Usage Example
+[source, java]
+----
+Query q = new Query()
+		.select("job", "ename", "department.dname")
+		.from("Employee")
+		.where(new Equals("ename", "john"));
+----
+[source, java]
+----
+Query q = new Query()
+		.select("job", new Avg("sal"))
+		.from("Employee")
+		.groupBy("job");
+----
+[source, java]
+----
+Query q = new Query()
+		.select(
+        		new EntityField("job"),
+        		new EntityField("ename"),
+        		new EntityField("department.dname"))
+		.from("Employee")
+		.refer("department", new Equals("department.dname", "SALES"));
+----
+[source, java]
+----
+Query q = new Query()
+		.select("job", "ename", "department.dname")
+		.hint(new NoIndexHint("job"))
+		.hint(new NativeHint("ORDERED USE_NL_WITH_INDEX(...)"))
+		.from("Employee")
+		.where(new And().eq("job", "SALESMAN").gt("sal", 1000L))
+		.order(new SortSpec("ename", SortType.ASC))
+		.limit(100);
+----
+
+==== Syntax
+<query> ::=:: <select clause> <from clause> [<refer clause> {,<refer clause>}*] [<where clause>] [<group by clause>] [<having clause>] [<order by clause>] [<limit clause>]
+
+<select clause> ::=:: SELECT <hint comment> [DISTINCT] <<value-expression, "<value expression>">> {,<<value-expression, "<value expression>">>}*
+
+<<hint-comment, "<hint comment>">> ::=:: "/\*\+" <hint expression>+ "*/"
+
+<hint expression> ::=:: __""hint expression""__
+
+<from clause> ::=:: FROM __""Entity definition name""__
+
+<<refer-clause, "<refer clause>">> ::=:: REFER <reference> [ON <<condition, "<condition>">>] [AS OF NOW | "UPDATE TIME" | <<value-expression, "<value expression>">>]
+
+<where clause> ::=:: WHERE <<condition, "<condition>">>
+
+<group by clause> ::=:: GROUP BY <<value-expression, "<value expression>">> {,<<value-expression, "<value expression>">>}* [ROLLUP | CUBE]
+
+<having clause> ::=:: HAVING <<condition, "<condition>">>
+
+<order by clause> ::=:: ORDER BY <sort spec> {,<sort spec>}*
+
+<sort spec> ::=:: <<value-expression, "<value expression>">> [ASC | DESC] [NULLS FIRST | NULLS LAST]
+
+<<limit-clause, "<limit clause>">> ::=:: LIMIT __""number""__ [OFFSET __""start offset""__]
+
+<<subquery, "<subquery>">> ::=:: (<query> [ON <<condition, "<condition>">>])
+
+
+[[hint-comment]]
+==== About Hint Comment
+By specifying <hint comment>, it is possible to tune search process, such as by means of using an index during Entity search, or DB native hint comment, etc..
+Surround <hint comment> with /*+ */, place it immediately after SELECT.
+You can separate multiple hint expressions by spaces.
+
+EQL supports the following hint expressions.
+[cols="1,3a", options="header"]
+|===
+| Hint | Description
+| bind | A hint for EQL to specify that literal values are set using binding parameter(PreparedStatement in JDBC) when query is actually issued to DB.
+[source, EQL]
+----
+SELECT /*+ bind */
+    job, ename, department.dname FROM Employee
+    WHERE job = 'SALESMAN' AND sal > 1000 ORDER BY ename
+    LIMIT 100
+----
+In the above case, 'SALESMAN'、1000、100 are executed as binding parameters.
+
+By assigning no_bind hint to the literal value to be bound, it is possible to exclude the literal value from being bound.
+[source, EQL]
+----
+SELECT /*+ bind */
+    job, ename, department.dname FROM Employee
+    WHERE job = /*+ no_bind */'SALESMAN' AND sal > 1000 ORDER BY ename
+    LIMIT 100
+----
+In the above case, 1000、100 are executed as binding variables.
+
+| cache | A hint for caching EQL execution result.
+Cache Scope and Cache Expiration Time (seconds) can by specified with argument.
+
+Cache scope can be set to one of the following.
+
+TRANSACTION:: Cache is only available in the same transaction.
+
+GLOBAL:: Shared cache. +
+It is possible to specify expiration time (seconds) in GLOBAL.
+If not specified, expiration time is infinite (However, if the expiration time in settings of CacheStore used by backend is set, it will be the limit).
+When using GLOBAL, you need to set EQL hint after enabling queryCache in Entity definition.
+
+GLOBAL_KEEP:: Shared cache. +
+It is possible to specify expiration time (seconds) in GLOBAL.
+If not specified, expiration time is infinite (However, if the expiration time in settings of CacheStore used by backend is set, it will be the limit).
+When using GLOBAL_KEEP, you need to set EQL hint after enabling queryCache in Entity definition. +
+The difference between GLOBAL and GLOBAL_KEEP is as follows: +
+in the case of GLOBAL, the cache is immediately destroyed when the cached Entity data is updated, while in the case of GLOBAL_KEEP, the cache is kept at the value before the update.
+
+GLOBAL_RELOAD:: Shared cache that is automatically reloaded periodically. +
+Reload interval (seconds) must be specified.
+When using GLOBAL_RELOAD, you need to set EQL hint after enabling queryCache in Entity definition. +
+In the case of GLOBAL_RELOAD, the cache is automatically reloaded at regular intervals on the back end. If Entity data is updated while cached, the value will not be reflected in the cache until it is reloaded.
+
+It can be specified as below.
+
+Scope：TRANSACTION,
+[source, EQL]
+----
+ select /*+ cache(transaction) */ ename from Employee
+----
+Scope：GLOBAL、Cache Expiration Time：infinite,
+[source, EQL]
+----
+ select /*+ cache */ ename from Employee
+----
+
+Scope：GLOBAL、Cache Expiration Time：10 minutes,
+[source, EQL]
+----
+ select /*+ cache(600) */ ename from Employee
+----
+
+Scope：GLOBAL_KEEP、Cache Expiration Time：infinite,
+[source, EQL]
+----
+ select /*+ cache(keep) */ ename from Employee
+----
+
+Scope：GLOBAL_KEEP、Cache Expiration Time：10 minutes,
+[source, EQL]
+----
+ select /*+ cache(keep, 600) */ ename from Employee
+----
+
+Scope：GLOBAL_RELOAD、Reload Interval：10 minutes,
+[source, EQL]
+----
+ select /*+ cache(reload, 600) */ ename from Employee
+----
+
+
+| fetch_size | A hint for specifying fetch size（Statement#setFetchSize(int) in JDBC）when issuing query to DB.
+[source, EQL]
+----
+SELECT /*+ fetch_size(100) */ job, ename FROM Employee
+----
+
+| index | Explicitly specify to use the Property that specified in argument as an INDEX.
+The Property specified as INDEX should be set to INDEX, UNIQUE INDEX in Entity definition.
+
+[source, EQL]
+----
+SELECT /*+ index(sal) */
+    job, ename, department.dname FROM Employee
+    WHERE job = 'SALESMAN' AND sal > 1000
+----
+
+It is possible to separate multiple properties by , (comma). (However, it depends on DB to choose which INDEX to use actually.)
+
+[source, EQL]
+----
+SELECT /*+ index(sal, department.loc) */
+    job, ename, department.dname FROM Employee
+    WHERE job = 'SALESMAN' AND sal > 1000
+    AND department.loc in('CHICAGO', 'BOSTON')
+----
+
+It depends on DB to choose which Property INDEX to use when neither index hint nor no_index hint is specified.
+
+| native | It is possible to specify hint to be assigned to DB native SQL statement (if DB is RDB) that converted from EQL.
+Specify native hint as a string argument.
+
+[source, EQL]
+----
+SELECT /*+ native('ORDERED USE_NL_WITH_INDEX(...)') */
+    job, ename, department.dname FROM Employee
+    WHERE job = 'SALESMAN' AND sal > 1000
+    AND department.loc in('CHICAGO', 'BOSTON')
+----
+
+If you want to specify a hint clause for a table (Such as index hint in MySQL etc.), specify the table name as the first argument.
+
+[source, EQL]
+----
+SELECT /*+ native(q0, 'FORCE_INDEX(...)') */
+    job, ename, department.dname FROM Employee
+    WHERE job = 'SALESMAN' AND sal > 1000
+    AND department.loc in('CHICAGO', 'BOSTON')
+----
+
+| no_bind | A hint for EQL to specify that binding variable (PrepareStatement in JDBC) not be used when actually issuing a query to the DB.
+[source, EQL]
+----
+SELECT /*+ no_bind */
+    job, ename, department.dname FROM Employee
+    WHERE job = 'SALESMAN' AND sal > 1000 ORDER BY ename
+    LIMIT 100
+----
+For the sake of specifying a specific EQL to execute without binding when issuing EQL if alwaysBind is set to true, according to the setting of link:../serviceconfig/index.html#RdbAdapterService[RdbAdapterService].
+
+| no_index | Exclude Property specified in argument from using as an INDEX alternatives.
+
+[source, EQL]
+----
+SELECT /*+ no_index(sal) */
+    job, ename, department.dname FROM Employee
+    WHERE job = 'SALESMAN' AND sal > 1000
+----
+
+It is possible to specify multiple properties separated by , (comma).
+
+[source, EQL]
+----
+SELECT /*+ index(job, department.loc) */
+    job, ename, department.dname FROM Employee
+    WHERE job = 'SALESMAN' AND sal > 1000
+    AND department.loc in('CHICAGO', 'BOSTON')
+----
+
+It depends on DB to choose which Property INDEX to use when neither index hint nor no_index hint is specified.
+
+| read_only | If you want to issue the EQL as a read-only transaction, this hint clause can be used.
+
+However, if the resultMode of SearchOption in the search call is `ResultMode.STREAM`, it will not be issued as a read-only transaction, but will be issued within the calling transaction.
+
+[source, EQL]
+----
+SELECT /*+ read_only */
+    job, ename, department.dname FROM Employee
+----
+
+| suppress_warnings | The hint as an annotation to suppress the output of the EQL warning log.
+For instance, when executing EQL, the warning log will complain about the INDEX property in search condition not being used.
+However, this warning is unnecessary when the amount of Entity data is small. For such conditions, the user can suppress these kind of warnings with this hint item.
+
+[source, EQL]
+----
+SELECT /*+ suppress_warnings */
+    job, ename, department.dname FROM Employee
+----
+
+| timeout | specify the timeout of a query (Statement#setQueryTimeout(int) in JDBC).
+It depends on DB exactly how many seconds to disconnect.
+
+[source, EQL]
+----
+SELECT /*+ timeout(60) */
+    job, ename, department.dname FROM Employee
+----
+|===
+
+And also, it is possible to define hint clause in external property file and load it from that file by specifying key name.
+The path of property file is defined in link:../serviceconfig/index.html#QueryService[QueryService].
+
+Especially when you want to use native hint clause directly, or optimal hint clauses may differ depend on different environment. In this situation, it will be able to manager different hint clauses for each environment.
+
+.Property file description example
+[source, EQL]
+----
+ hint1 = native(q0t0, 'FORCE INDEX(obj_store__USER_ISTR_index_3)')
+ hint2 = native(q0, 'FORCE INDEX(obj_store_ISTR_index_1)')
+ :
+----
+
+Specify external hint clause with @hint("key name"). + 
+In the environment that above property file is defined.
+[source, EQL]
+----
+ select /*+ @hint(hint1) */ a, b, c.x, d.x, d.name from SampleEntity where c.x='hoge' and a=1 and b=15
+----
+When above EQL is issued, it will be converted to
+[source, EQL]
+----
+select /*+ native(q0t0, 'FORCE INDEX(obj_store__USER_ISTR_index_3)') */ a, b, c.x, d.x, d.name from SampleEntity where c.x='hoge' and a=1 and b=15
+----
+
+
+It is possible to get hint class instance by Hint.externalHint(String) when using Query class.
+[source, java]
+----
+Query q = new Query()
+		.select("a", "b", "c.x", "d.x", "d.name")
+		.hint(Hint.externalHint("hint1"))
+		.from("SampleEntity")
+		.where(new And().eq("c.x", "hoge").eq("a", 1L));
+----
+
+
+[[refer-clause]]
+==== About REFER Clause
+Basically it is not necessary to describe JOIN clause explicitly in EQL like in SQL. You can specify Reference Property with separating by . (dot), that defined in Entity definition in advance.
+
+For example, Employee Entity and Department Entity are defined, with a Reference Property named department in Employee that referencing Department Entity.
+
+[source, EQL]
+----
+SELECT job, ename, department.dname FROM Employee
+    WHERE job = 'SALESMAN' AND sal > 1000
+    AND department.loc in('CHICAGO', 'BOSTON')
+----
+
+Also, it is possible to specify Property named dname in Department by means of specifying department.dename.
+The oid defined in each Entity are used as join key in join condition in the above case. 
+Use Refer clause if you want to specify other Property in addition to oid in join condition.
+
+[source, EQL]
+----
+SELECT job, ename, department.dname FROM Employee
+    REFER department ON department.deptno < 100
+    WHERE job = 'SALESMAN' AND sal > 1000
+    AND department.loc in('CHICAGO', 'BOSTON')
+----
+
+In the above case,
+in addition to oid,  `department.deptno < 100` is applied as a join condition.
+
+Also, there are some options that could be specified in Refer clause when joining with reference target.
+
+.AS OF clause
+AS OF is used to specify which version is used to join with Referenced Entity, when Versioning is enabled for the Entity.
+
+* AS OF NOW
++
+Get the latest version at the moment.
++
+[source, EQL]
+----
+SELECT job, ename, department.dname FROM Employee
+    REFER department AS OF NOW
+    WHERE job = 'SALESMAN' AND sal > 1000
+----
+
+* AS OF UPDATE TIME
++
+Get version at the time of inserting or updating.
++
+[source, EQL]
+----
+SELECT job, ename, department.dname FROM Employee
+    REFER department AS OF UPDATE TIME
+    WHERE job = 'SALESMAN' AND sal > 1000
+----
+
+* AS OF <value expression>
++
+Specify a value expression that explicitly specifies version.
+Specify version number for Numberbase/Statebase Versioning.
++
+[source, EQL]
+----
+SELECT job, ename, department.dname FROM Employee
+    REFER department AS OF 3
+    WHERE job = 'SALESMAN' AND sal > 1000
+----
++
+For Timebase/SimpleTimebase, specify the date and time to indicate the time.
+For example, if there is a hire date item named hiredate,
++
+[source, EQL]
+----
+SELECT job, ename, department.dname FROM Employee
+    REFER department AS OF hiredate
+    WHERE job = 'SALESMAN' AND sal > 1000
+----
+can be specified like above.
+
+[[limit-clause]]
+==== About Limit Clause
+Specify the number of lines for retrieving search results.
+
+[source, EQL]
+----
+SELECT job, ename, department.dname FROM Employee
+    LIMIT 100
+----
+
+Specify OFFSET for the start position.
+If 0 is specified, it starts from the beginning (same as unspecified).
+
+[source, EQL]
+----
+SELECT job, ename, department.dname FROM Employee
+    LIMIT 100 OFFSET 1000
+----
+
+[[subquery]]
+==== About Subquery
+Subquery is possible to be used in the IN condition. It is not supported in FROM clause.
+
+Also, Subquery returns a single value can be used as Scalar subquery. Scalar subquery could be used as such as SELECT item, comparison item in search condition etc. because it is defined as ValueExpression. 
+Please refer to the description in <<scalar-subquery, "Scalar subquery">>.
+
+[[value-expression]]
+=== Value Expression
+An element that represents a single value.
+Specifically, literal value, Entity Property, function, operation results etc.
+Classes consist of Value Expression are under the package org.iplass.mtp.entity.query.value.
+
+
+.EQL Expression Example
+[source, EQL]
+----
+-123
+----
+[source, EQL]
+----
+name
+----
+[source, EQL]
+----
+(10 + sals) * 0.2
+----
+[source, EQL]
+----
+YEAR(dateTimeValue)
+----
+
+.Query Class Usage Example
+[source, java]
+----
+Literal val = new Literal(-123);
+----
+[source, java]
+----
+EntityField val = new EntityField("name");
+----
+[source, java]
+----
+//(10 + sals) * 0.2
+ValueExpression val = new Term(
+        new ParenValue(
+                new Polynomial(new Literal(10)).add(new EntityField("sals"))))
+        .mul(new Literal(0.2));
+----
+[source, java]
+----
+Function val = new Function("YEAR", new EntityField("dateTimeValue"));
+----
+
+==== Syntax
+<value expression> ::=:: <polynomial> | <term> | <minus sign> | <paren value>
+
+<polynomial> ::=:: <value expression> {"+" | - <value expression>}*
+
+<term> ::=:: <value expression> {"\*" | / <value expression>}*
+
+<minus sign> ::=:: - <paren value>
+
+<paren value> ::=:: <primary value> | ( <value expression> )
+
+<primary value> ::=:: <aggregate> | <array value> | <case> | <entity field> | <function> | <cast> | <literal> | <scalar subquery> | <window function>
+
+<<aggregate, "<aggregate>">> ::=:: {AVG | MAX | MEDIAN | MIN | MODE | STDDEV_POP | STDDEV_SAMP | SUM | VAR_POP | VAR_SAMP ( <value expression> )} | {COUNT( [DISTINCT] [<value expression>] )} | {LISTAGG( [DISTINCT] <value expression> [,<string literal>]) [<within group spec>]}
+
+<within group spec> ::=:: WITHIN GROUP( ORDER BY <sort spec>  {,<sort spec>}*)
+
+<array value> ::=:: "ARRAY[" <value expression> {,<value expression>}* "]"
+
+<<case, "<case>">> ::=:: CASE WHEN <<condition, "<condition>">> THEN <value expression> {WHEN <<condition, "<condition>">> THEN <value expression>}* [ELSE <value expression>] END
+
+<<entity-field, "<entity field>">> ::=:: <property name> | <reference>.<property name> | <correlated entity field>
+
+<reference> ::=:: <reference name>{.<reference name>}*
+
+<correlated entity field> ::=:: .+{THIS | <entity field> | <reference>} +
+※correlated entity field could be used only in ON clause of subquery.
+
+<<function, "<function>">> ::=:: {<function name>()} | {<function name>( <value expression> {,<value expression>}* )}
+
+<function name> ::=:: REPLACE | UPPER | LOWER | CONCAT | SUBSTR | INSTR | CHAR_LENGTH | MOD | SQRT | POWER | ABS | CEIL | FLOOR | ROUND | TRUNCATE | SIN | COS | TAN | ASIN | ACOS | ATAN | ATAN2 | YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | DATE_ADD | DATE_DIFF | CURRENT_DATE | CURRENT_TIME | CURRENT_DATETIME | LOCALTIME
+
+<<cast, "<cast>">> ::=:: CAST( <value expression> AS <data type> )
+
+<data type> ::=:: BOOLEAN | STRING | INTEGER | FLOAT | DECIMAL | DATETIME | DATE | TIME | SELECT
+
+<<scalar-subquery, "<scalar subquery>">> ::=:: <<subquery, "<subquery>">>
+
+<<window-function, "<window function>">> ::=:: <window function type> OVER( [<window partition by clause>] [<window order by clause>] )
+
+<window function type> ::=:: {ROW_NUMBER | RANK | DENSE_RANK | PERCENT_RANK | CUME_DIST ()} | <aggregate>
+
+<window partition by clause> ::=:: PARTITION BY <value expression> {,<value expression>}*
+
+<window order by clause> ::=:: ORDER BY <sort spec> {,<sort spec>}*
+
+<<literal, "<literal>">> ::=:: <boolean literal> | <string literal> | <integer literal> | <float literal> | <decimal literal> | <datetime literal> | <date literal> | <time literal> | <select value literal> | NULL
+
+<boolean literal> ::=:: TRUE | FALSE
+
+<string literal> ::=:: '__""string""__'
+
+<integer literal> ::=:: __""integer value""__[i|I]
+
+<float literal> ::=:: __""value of floating-point number""__[f|F]
+
+<decimal literal> ::=:: __""value of fixed-point number""__{g|G}
+
+<datetime literal> ::=:: '__""datetime format as yyyy-MM-dd HH:mm:ss.SSS""__'{m|M}
+
+<date literal> ::=:: '__""date format as yyyy-MM-dd""__'{d|D}
+
+<time literal> ::=:: '__""time format as HH:mm:ss""__'{t|T}
+
+<select value literal> ::=:: '__""value of SelectValue""__'{s|S}
+
+<entity name> ::=:: __""definition name of Entity""__
+
+<property name> ::=:: __""definition name of Entity Property""__
+
+<reference name> ::=:: __""definition name of Entity Reference Property""__
+
+[[entity-field]]
+==== Entity Field
+<entity field> is an element that represents the property value defined in the Entity.
+Specifies the property name of the Entity definition.
+
+[source, EQL]
+----
+name
+----
+
+In addition, you can obtain and specify the value of the property of the referenced entity by specifying it in the format `__[reference property name]__.__[property name of the referenced entity]__` separated by dots.
+
+[source, EQL]
+----
+groups.name
+----
+
+CAUTION: LongText type and Binary type properties can only be specified as <select clause> items.
+If used as a condition in <where clause> or <having clause>, or if an operation or function is applied, the behavior is undefined.
+
+When using correlated subqueries,
+It is possible to specify the join condition with the outer query in the <correlated entity field> format.
+When specifying the <entity field> of the outer subquery, add a .(dot) to the beginning. <correlated entity field> is only available in ON clause of subquery.
+See <<scalar-subquery, "Scalar Subquery">> for details.
+
+When generating by using classes represent EQL,
+use
+org.iplass.mtp.entity.query.value.primary.EntityField.
+
+[source, java]
+----
+EntityField prop = new EntityField("intProp");
+----
+
+[source, java]
+----
+EntityField referenceEntityProp = new EntityField("refProp.strProp");
+----
+
+[source, java]
+----
+EntityField correlateProp = new EntityField(".this");
+----
+
+[[literal]]
+==== Literal
+<literal> is a element that represents literal value. 
+Literal value can be used in EQL as follows.
+
+[cols="1,1,3a", options="header"]
+|===
+| Type | Java type | Description
+| boolean | java.lang.Boolean
+| Represents bool value.
+true or false in EQL expression. Also, it is case-insensitive.
+[source, EQL]
+.EQL Expression Example
+----
+true
+----
+[source, EQL]
+----
+FALSE
+----
+
+| string | java.lang.String
+| Represents string.
+String is surrounded with ' (single quota) in EQL expression.
+If you want to use ' in string, escape by using two single quotas as ''.
+[source, EQL]
+.EQL Expression Example
+----
+'abc test string'
+----
+[source, EQL]
+----
+'I''m a cat.'
+----
+
+| integer | java.lang.Long
+| Represents value of integer number.
+Treated as Long value in java.
+It is possible to explicitly indicate integer number by specifying I or i as a suffix of value expression in EQL expression.
+[source, EQL]
+.EQL Expression Example
+----
+-54
+----
+[source, EQL]
+----
+1234I
+----
+[source, EQL]
+----
+10i
+----
+
+| float | java.lang.Double
+| Represents value of floating-point number.
+Treated as Double value in java.
+It is possible to explicitly indicate floating-point number by specifying F or f as a suffix of value expression in EQL expression. Also supports exponential expression.
+[source, EQL]
+.EQL Expression Example
+----
+10.5
+----
+[source, EQL]
+----
+1234.123F
+----
+[source, EQL]
+----
+0.12f
+----
+[source, EQL]
+----
+1.5e-5
+----
+
+| decimal | java.math.BigDecimal
+| Represents value of fixed-point number.
+Specify G or g as a suffix of value expression in EQL expression.
+[source, EQL]
+.EQL Expression Example
+----
+1234.123G
+----
+[source, EQL]
+----
+10001g
+----
+
+| datetime | java.sql.Timestamp
+| Represents date and time with millisecond precision.
+Specify a string in the format 'yyyy-MM-dd HH:mm:ss.SSS' or 'yyyy-MM-dd HH:mm:ss.SSSXXX' if timezone is specified, and M or m as a suffix in EQL expression.
+If there is no timezone specified, timezone that set in Tenant will be determined.
+[source, EQL]
+.EQL Expression Example
+----
+'2011-11-15 16:03:01.000'M
+----
+[source, EQL]
+----
+'2010-01-30 01:25:01.200'm
+----
+[source, EQL]
+----
+'2010-01-30 01:25:01.200+09:00'M
+----
+
+| date | java.sql.Date
+| Represents date.
+Specify a string in the format 'yyyy-MM-dd' and D or d as a suffix in EQL expression.
+[source, EQL]
+.EQL Expression Example
+----
+'2012-12-11'D
+----
+[source, EQL]
+----
+'2011-11-15'd
+----
+
+| time | java.sql.Time
+| Represents time.
+Specify a string in the format 'HH:mm:ss' and T or t as a suffix in EQL expression.
+[source, EQL]
+.EQL Expression Example
+----
+'03:01:00'T
+----
+[source, EQL]
+----
+'18:24:15't
+----
+
+| select | org.iplass.mtp. +
+entity.SelectValue
+| Represents SelectValue.
+Specify value of SelectValue as a string and S or s as a suffix in EQL expression.
+[source, EQL]
+.EQL Expression Example
+----
+'A01'S
+----
+[source, EQL]
+----
+'1's
+----
+
+| null | null
+| Represents null value.
+Represents null in EQL expression. Also, it is case-insensitive.
+Depending on backend DB, there may be no distinction between null value and ''(empty string).
+[source, EQL]
+.EQL Expression Example
+----
+null
+----
+[source, EQL]
+----
+NULL
+----
+
+|===
+
+[[function]]
+==== Function
+<function> is a element that represents function targeting a single value (a single line).
+
+When generating by using classes represent EQL,
+use
+org.iplass.mtp.entity.query.value.primary.Function.
+
+[source, java]
+----
+Function val = new Function("YEAR", new EntityField("dateTimeValue"));//<1>
+----
+[source, java]
+----
+//SELECT name, YEAR(dateTimeValue), DATE_ADD(dateTimeValue, 3, 'DAY')
+//    FROM someEntity WHERE ABS(someNumProp) > 3
+Query q = new Query()
+		.select(
+				new EntityField("name"),
+				new Function("YEAR", new EntityField("dateTimeValue")),//<1>
+				new Function("DATE_ADD",
+				        new EntityField("dateTimeValue"),
+				        new Literal(3L),  new Literal("DAY")))//<1>
+		.from("someEntity")
+		.where(new Greater(new Function("ABS",
+		        new EntityField("someNumProp")), new Literal(3L)));//<1>
+----
+<1> Specify function name with the first argument, arguments after the first one with the arguments of the function.
+
+Description of functions and arguments can be represent in EQL are as follows.
+
+.String Manipulation Function
+[cols="1,1,3a", options="header"]
+|===
+| Function | Type of return value | Description
+| REPLACE | string
+| REPLACE(__target__, __from__, __to__)
+
+Replace string represented by __from__ with the string represented by __to__ within the string of __target__.
+[source, EQL]
+.EQL Expression Example
+----
+REPLACE(strProperty, '-', '_')
+----
+
+| UPPER | string
+| UPPER(__target__)
+
+Convert string represented by __target__ to upper case.
+[source, EQL]
+.EQL Expression Example
+----
+UPPER(strProperty)
+----
+
+| LOWER | string
+| LOWER(__target__)
+
+Convert string represented by __target__ to lower case.
+[source, EQL]
+.EQL Expression Example
+----
+LOWER(strProperty)
+----
+
+| CONCAT | string
+| CONCAT(__target1__, __target2__)
+
+Concatenate string represented by __target__ with the one represented by __target2__.
+[source, EQL]
+.EQL Expression Example
+----
+CONCAT('abc', strProp)
+----
+
+| SUBSTR | string
+| SUBSTR(__target__, __beginIndex__, __length__) +
+SUBSTR(__target__, __beginIndex__)
+
+Returns a string that is a substring of the string represented by __target__. The __beginIndex__ is 1 if you want to start from the beginning. + 
+If __length__ is omitted, it ends at the end of __target__. + 
+Also, __beginIndex__ could be negative number.
+If a negative number is specified, the index from the end is specified.
+[source, EQL]
+.EQL Expression Example
+----
+SUBSTR(strProp, 3, 3)
+----
+[source, EQL]
+----
+SUBSTR(strProp, 3)
+----
+[source, EQL]
+----
+SUBSTR(strProp, -3)//<1>
+----
+<1> The example of returning 3 characters from the end.
+
+
+| INSTR | integer
+| INSTR(__target__, __matchStr__)
+
+Returns the index within the string represented by __target__ of the first occurrence of the string represented by __matchStr__. Return value is 1 if matches from the beginning. 
+[source, EQL]
+.EQL Expression Example
+----
+INSTR('abcdef', 'cd')
+----
+
+| CHAR_LENGTH | integer
+| CHAR_LENGTH(__target__)
+
+Returns the length of the string represented by __target__.
+[source, EQL]
+.EQL Expression Example
+----
+CHAR_LENGTH(strProp)
+----
+
+CAUTION: If the property type is LongText, the correct length may not be returned.
+|===
+
+.Number Function
+[cols="1,1,3a", options="header"]
+|===
+| Function | Return type | Description
+| MOD | integer / float / decimal
+| MOD(__num1__, __num2__)
+
+Computes the remainder (the remainder of dividing __num1__ by __num2__).
+Return type depends on the type of number arguments.
+[source, EQL]
+.EQL Expression Example
+----
+MOD(numProp, 3)
+----
+
+| SQRT | float
+| SQRT(__num__)
+
+Computes the square root。
+[source, EQL]
+.EQL Expression Example
+----
+SQRT(numProp)
+----
+
+| POWER | integer / float / decimal
+| POWER(__base__, __exp__)
+
+Computes the power (exponentiation).
+Return type depends on the type of number arguments.
+[source, EQL]
+.EQL Expression Example
+----
+POWER(numProp, 2)
+----
+
+| ABS | integer / float / decimal
+| ABS(__num__)
+
+Computes the absolute value.
+Return type depends on the type of number arguments.
+[source, EQL]
+.EQL Expression Example
+----
+ABS(numProp)
+----
+
+| CEIL | integer
+| CEIL(__num__)
+
+Rounds up to the nearest integer.
+[source, EQL]
+.EQL Expression Example
+----
+CEIL(12.4)
+----
+
+| FLOOR | integer
+| FLOOR(__num__)
+
+Rounds down the nearest integer. + 
+Be careful if __num__ is negative.
+Different from TRUNCATE(),  return the largest integer less than __num__.
+When FLOOR(-13.5), -14 is returned.
+[source, EQL]
+.EQL Expression Example
+----
+FLOOR(12.4)
+----
+
+| ROUND | integer / decimal
+| ROUND(__num__, __decimalPlace__) +
+ROUND(__num__)
+
+Rounds off __num__ to the decimal places specified with __decimalPlace__.(However, if __num__ is a float type, banker's rounding is performed). + 
+__decimalPlace__ can be a negative number. For example, if -1 is specified, it will be rounded off to the nearest 10. + 
+If __decimalPlace__ is omitted, it is rounded off as an integer.
+The return type differs depending on the value specified with __decimalPlace__. If __decimalPlace__ is 0 or less, it is returned as integer type. Otherwise it will be returned as decimal type.
+
+[source, EQL]
+.EQL Expression Example
+----
+ROUND(numProp, 3)
+----
+[source, EQL]
+----
+ROUND(25.123)
+----
+[source, EQL]
+----
+ROUND(125, -1)//<1>
+----
+<1> Rounded off to the nearest 10, 130 is returned.
+
+| TRUNCATE | integer / decimal
+| TRUNCATE(__num__, __decimalPlace__) +
+TRUNCATE(__num__)
+
+Rounds down __num__ to the decimal places specified with __decimalPlace__.
+__decimalPlace__ can be a negative number. For example, if -1 is specified, it will be rounded down to the nearest 10. + 
+If __decimalPlace__ is omitted, it is rounded as an integer.
+The return type differs depending on the value specified with __decimalPlace__. If __decimalPlace__ is 0 or less, it is returned as integer type. Otherwise it will be returned as decimal type.
+Unlike FLOOR(), __num__ is rounded down toward 0.
+When TRUNCATE (-13.5) is computed, -13 is returned.
+
+[source, EQL]
+.EQL Expression Example
+----
+TRUNCATE(numProp, 3)
+----
+[source, EQL]
+----
+TRUNCATE(25.123)
+----
+[source, EQL]
+----
+TRUNCATE(125, -1)//<1>
+----
+<1> Truncated to the nearest 10, 120 is returned.
+
+| SIN | float
+| SIN(__num__)
+
+Computes the sine.
+
+[source, EQL]
+.EQL Expression Example
+----
+SIN(numProp)
+----
+
+| COS | float
+| COS(__num__)
+
+Computes the cosine.
+
+[source, EQL]
+.EQL Expression Example
+----
+COS(numProp)
+----
+
+| TAN | float
+| TAN(__num__)
+
+Computes the tangent.
+
+[source, EQL]
+.EQL Expression Example
+----
+TAN(numProp)
+----
+
+| ASIN | float
+| ASIN(__num__)
+
+Computes the arcsine.
+
+[source, EQL]
+.EQL Expression Example
+----
+ASIN(numProp)
+----
+
+| ACOS | float
+| ACOS(__num__)
+
+Computes the arccosine.
+
+[source, EQL]
+.EQL Expression Example
+----
+ACOS(numProp)
+----
+
+| ATAN | float
+| ATAN(__num__)
+
+Computes the arctangent.
+
+[source, EQL]
+.EQL Expression Example
+----
+ATAN(numProp)
+----
+
+| ATAN2 | float
+| ATAN2(__num1__, __num2__)
+
+Computes the arctangent of `num1 / num2`.
+
+[source, EQL]
+.EQL Expression Example
+----
+ATAN2(num1Prop, num2Prop)
+----
+|===
+
+.Datetime Function
+[cols="1,1,3a", options="header"]
+|===
+| Function | Return type | Description
+| YEAR | integer
+| YEAR(__datetime__)
+
+Gets the year of the date type or datetime type specified with __datatime__.
+
+[source, EQL]
+.EQL Expression Example
+----
+YEAR(dateProp)
+----
+
+| MONTH | integer
+| MONTH(__datetime__)
+
+Gets the month (1~12) of the date type or datetime type specified with __datetime__.
+
+[source, EQL]
+.EQL Expression Example
+----
+MONTH('2013-12-29'D)
+----
+
+| DAY | integer
+| DAY(__datetime__)
+
+Gets the day (1~31) of the date type or datetime type specified with __datetime__.
+
+[source, EQL]
+.EQL Expression Example
+----
+DAY('1975-11-15 16:03:01.000'M)
+----
+
+| HOUR | integer
+| HOUR(__datetime__)
+
+Gets the hour (0~23) of time type, date type or datetime type specified with __datetime__.
+
+[source, EQL]
+.EQL Expression Example
+----
+HOUR(timeProp)
+----
+
+| MINUTE | integer
+| MINUTE(__datetime__)
+
+Gets the minute (0~59) of time type, date type or datetime type specified with __datetime__.
+
+[source, EQL]
+.EQL Expression Example
+----
+MINUTE('23:41:00'T)
+----
+
+| SECOND | integer
+| SECOND(__datetime__)
+
+Gets the second (0~59) of time type, date type or datetime type specified with __datetime__.
+
+[source, EQL]
+.EQL Expression Example
+----
+SECOND('1975-11-15 16:03:01.000'M)
+----
+
+| DATE_ADD | datetime
+| DATE_ADD(__datetime__, __addVal__, __unit__)
+
+Adds the value specified with __addVal__ to data type, datetime type, time type specified with __datetime__. The unit to add is specified by __unit__.
+__unit__ can be 'YEAR','MONTH','DAY','HOUR','MINUTE','SECOND'.
+
+[source, EQL]
+.EQL Expression Example
+----
+DATE_ADD(dateProp, 3, 'DAY')
+----
+
+| DATE_DIFF | integer
+| DATE_DIFF(__unit__, __datetime1__, __datetime2__)
+Gets the difference between __datetime1__ and __datetime2__ in units of __unit__.
+If __datetime1__ is larger, the result is a negative value.
+__unit__ can be 'YEAR', 'MONTH', 'DAY', 'HOUR', 'MINUTE', 'SECOND'.
+
+[source, EQL]
+.EQL Expression Example
+----
+DATE_DIFF('YEAR', '2012-01-01'D, dateProp)
+----
+
+| CURRENT_DATE | date
+| CURRENT_DATE()
+
+Gets current date (year / month / day).
+
+[source, EQL]
+.EQL Expression Example
+----
+CURRENT_DATE()
+----
+
+| CURRENT_TIME | time
+| CURRENT_TIME()
+
+Gets the current time.
+
+[source, EQL]
+.EQL Expression Example
+----
+CURRENT_TIME()
+----
+
+| CURRENT_DATETIME | datetime
+| CURRENT_DATETIME()
+
+Gets the current date and time.
+
+[source, EQL]
+.EQL Expression Example
+----
+CURRENT_DATETIME()
+----
+
+| LOCALTIME | datetime
+| LOCALTIME(__datetime__)
+
+Converts __datetime__ of the argument to the datetime specified in locale time set in Tenant.
+
+[source, EQL]
+.EQL Expression Example
+----
+LOCALTIME(CURRENT_DATETIME())
+----
+
+CAUTION: For SQL Server, this is supported since version 2016.
+
+|===
+
+[[cast]]
+==== Cast
+<cast> is a function that casts a value.
+
+CAST( __value__ AS __dataType__ )
+
+Convert the value of __value__ to the type specified with __dateType__.
+<literal> value could be converted to are listed as follows.
+
+* BOOLEAN
+* STRING
+* INTEGER
+* FLOAT
+* DECIMAL
+* DATETIME
+* DATE
+* TIME
+* SELECT
+
+[source, EQL]
+.EQL Expression Example
+----
+CAST(10.5 AS STRING)
+----
+
+When generating by using classes represent EQL,
+use
+org.iplass.mtp.entity.query.value.primary.Cast.
+
+[source, java]
+----
+Cast castVal = new Cast(new EntityField("intProp"), PropertyDefinitionType.STRING);
+----
+
+[[aggregate]]
+==== Aggregate Function
+<aggregate> is a element that represents aggregate function to aggregate multiple rows.
+Aggregate functions can also control aggregation units by using <group by clause> in query.
+
+When generating by using classes represent EQL,
+use classes under the package
+org.iplass.mtp.entity.query.value.aggregate.
+
+[source, java]
+----
+Avg avg = new Avg("propValue");
+----
+[source, java]
+----
+//SELECT category, COUNT(), AVG(amount) FROM someEntity GROUP BY category
+Query q = new Query()
+		.select(
+				"category",
+				new Count(),
+				new Avg("amount"))
+		.from("someEntity")
+		.groupBy("category");
+----
+
+Description of aggregation functions can be represented and those arguments in EQL are as follows.
+
+[cols="1,1,3a", options="header"]
+|===
+| Function | Return type | Description
+| AVG | float
+| AVG(__num__)
+
+Calculates the average by aggregating the numbers represented with __num__.
+[source, EQL]
+.EQL Expression Example
+----
+AVG(numProperty)
+----
+
+| COUNT | integer
+| COUNT(__target__) +
+COUNT(DISTINCT __target__) +
+COUNT()
+
+Counts the number of the rows where value of __target__ is not null. + 
+When distinct is specified before __target__, count without duplicated rows. + 
+Also, if __target__ is not specified, count the number of the rows including null values.
+[source, EQL]
+.EQL Expression Example
+----
+COUNT(someProp)
+----
+[source, EQL]
+----
+COUNT(DISTINCT someProp)
+----
+[source, EQL]
+----
+COUNT()
+----
+
+| LISTAGG | string
+| LISTAGG(__target__) +
+LISTAGG(__target__, '__separatorChar__') +
+LISTAGG(DISTINCT __target__) +
+LISTAGG(DISTINCT __target__, '__separatorChar__') +
+LISTAGG(DISTINCT __target__, '__separatorChar__') WITHIN GROUP(ORDER BY __sortSpec__)
+
+
+Concatenate the __target__ values as a string. +
+When distinct is specified before target, it will be concatenated without duplicates. +
+If __separatorChar__ is specified, the string will be concatenated with its separator. If not specified, the string is concatenated with `,` . +
+The order of concatenation can be specified with the WITHIN GROUP clause.
+
+CAUTION: The DISTINCT specification and the WITHIN GROUP clause can be omitted in Oracle 19c and later.  +
+In SQL Server, it is available in SQL Server 2017 or later. However, DISTINCT is not supported. Also, there is a restriction on specifying with the WITHIN GROUP clause.
+
+[source, EQL]
+.EQL Expression Example
+----
+LISTAGG(someProp)
+----
+[source, EQL]
+----
+LISTAGG(someProp, ':')
+----
+[source, EQL]
+----
+LISTAGG(DISTINCT someProp)
+----
+[source, EQL]
+----
+LISTAGG(someProp) WITHIN GROUP(ORDER BY someProp)
+----
+[source, EQL]
+----
+LISTAGG(someProp, ':') WITHIN GROUP(ORDER BY sortProp DESC NULLS LAST)
+----
+
+| MAX | integer / float / decimal
+| MAX(__num__)
+
+Aggregates values specified with __num__ and get the maximum one.
+Return type depends on the type of number argument.
+
+[source, EQL]
+.EQL Expression Example
+----
+MAX(numProperty)
+----
+
+| MEDIAN | integer / float / decimal
+| MEDIAN(__num__)
+
+Aggregates values specified with __num__ and get the median.
+Return type depends on the type of number argument.
+
+CAUTION: This is not supported by MYSQL.
+
+[source, EQL]
+.EQL Expression Example
+----
+MEDIAN(numProperty)
+----
+
+| MIN | integer / float / decimal
+| MIN(__num__)
+
+Aggregates values specified with __num__ and get the minimum one.
+Return type depends on the type of number argument.
+
+[source, EQL]
+.EQL Expression Example
+----
+MIN(numProperty)
+----
+
+| MODE | integer / float / decimal
+| MODE(__num__)
+
+Aggregates values specified with __num__ and get the mode.
+Return type depends on the type of number argument.
+
+CAUTION: This is not supported by MYSQL.
+
+[source, EQL]
+.EQL Expression Example
+----
+MODE(numProperty)
+----
+
+| STDDEV_POP | float
+| STDDEV_POP(__num__)
+
+Aggregates values specified with __num__ and calculates the population standard deviation.
+[source, EQL]
+.EQL Expression Example
+----
+STDDEV_POP(numProperty)
+----
+
+| STDDEV_SAMP | float
+| STDDEV_SAMP(__num__)
+
+Aggregates values specified with __num__ and calculates the sample standard deviation.
+[source, EQL]
+.EQL Expression Example
+----
+STDDEV_SAMP(numProperty)
+----
+
+| SUM | integer / float / decimal
+| SUM(__num__)
+
+Aggregates values specified with __num__ and gets the sum of values.
+Return type depends on the type of number argument.
+
+[source, EQL]
+.EQL Expression Example
+----
+SUM(numProperty)
+----
+
+| VAR_POP | float
+| VAR_POP(__num__)
+
+Aggregates values specified with __num__ and calculates the population variance.
+[source, EQL]
+.EQL Expression Example
+----
+VAR_POP(numProperty)
+----
+
+| VAR_SAMP | float
+| VAR_SAMP(__num__)
+
+Aggregates values specified with __num__ and calculates the sample variance.
+[source, EQL]
+.EQL Expression Example
+----
+VAR_SAMP(numProperty)
+----
+
+|===
+
+[[window-function]]
+==== Window Function
+<window function> is an element that represents a function that can apply an aggregate function to the fields that cut from the result set, similar to the Window function in SQL.
+
+When specifying the aggregation range and order, use the OVER clause (PARTITION BY and ORDER BY).
+
+Here are Entity data as follows,
+
+[width=50%, cols="1,1,1", options="header"]
+|===
+| empNo | dept | amount
+| 1 | A | 10
+| 2 | A | 20
+| 3 | B | 50
+| 4 | B | 10
+| 5 | C | 30
+|===
+
+The following EQL example outputs the sum of amount in units of deptNo for each row.
+[source, EQL]
+----
+SELECT dept, SUM(amount) OVER(PARTITION BY dept) FROM sample
+----
+
+Output are as follows.
+[width=50%, cols="1,2", options="header"]
+|===
+| dept | SUM(amount) OVER( ... )
+| A | 30
+| A | 30
+| B | 60
+| B | 60
+| C | 30
+|===
+
+The following EQL sample output the sum of amount in units of deptNo in order of empNo for each row. 
+[source, EQL]
+----
+SELECT dept, empNo, SUM(amount) OVER(PARTITION BY dept ORDER BY empNo) FROM sample
+----
+
+Output are as follows.
+[width=75%, cols="1,1,2", options="header"]
+|===
+| dept | empNo | SUM(amount) OVER( ... )
+| A | 1 | 10
+| A | 2 | 30
+| B | 3 | 50
+| B | 4 | 60
+| C | 5 | 30
+|===
+
+CAUTION: Window function is not supported natively before MySQL5.7.
+If you want to use window function in the DB before MySQL5.7, it is possible by using [.eeonly]#Function Emulation. However, with the emulated function, all search results are temporarily expanded in memory, so you should be careful with it.
+Settings of link:../serviceconfig/index.html#StoreService[StoreService] is required if you want to enable the Windows function emulation.
+
+When generating by using classes represent EQL,
+use classes under the package
+org.iplass.mtp.entity.query.value.window.
+
+[source, java]
+----
+WindowAggregate cumulativeSum = new WindowAggregate(new Sum("amount"))
+		.partitionBy("category")
+		.orderBy(new WindowSortSpec("month", SortType.ASC));
+----
+[source, java]
+----
+//SELECT category, month,
+//    SUM(amount) OVER(PARTITION BY category ORDER BY month ASC),
+//    RANK() OVER(ORDER BY amount DESC) FROM someEntity
+Query q = new Query().select(
+		"category",
+		"month",
+		new WindowAggregate(new Sum("amount")).partitionBy("category")
+		        .orderBy(new WindowSortSpec("month", SortType.ASC)),
+		new Rank().orderBy(new WindowSortSpec("amount", SortType.DESC)))
+		.from("someEntity");
+----
+
+Description of Window functions that can be represent in EQL and those arguments are as follows.
+
+[cols="1,1,3a", options="header"]
+|===
+| Function | Return type | Description
+| AVG | float
+| AVG(__num__) OVER( ... )
+
+Calculates the average of the values specified with __num__. + 
+PARTITION BY and ORDER BY can be specified optionally in OVER (...).
+When ORDER BY is specified, the cumulative average (moving average) is calculated.
+
+[source, EQL]
+.EQL Expression Example
+----
+AVG(numProperty) OVER(ORDER BY someProp)
+----
+
+| COUNT | integer
+| COUNT(__target__) OVER( ... ) +
+COUNT() OVER( ... )
+
+Counts the number of rows where the value of __target__ is not null. + 
+If __target__ is not specified, count the number of rows including null value.
+PARTITION BY and ORDER BY can be specified optionally in OVER (...).
+If ORDER BY is specified, the cumulative frequency is calculated.
+
+[source, EQL]
+.EQL Expression Example
+----
+COUNT(someProp) OVER(PARTITION BY dept ORDER BY month)
+----
+[source, EQL]
+----
+COUNT() OVER(PARTITION BY dept,year)
+----
+
+| MAX | integer / float / decimal
+| MAX(__num__) OVER( ... )
+
+Gets the maximum value of the values represents by __num__.
+Return type depends on the argument type.
+PARTITION BY and ORDER BY can be specified optionally in OVER ( ... ).
+If ORDER BY is specified, the cumulative maximum is calculated.
+
+
+[source, EQL]
+.EQL Expression Example
+----
+MAX(numProperty) OVER(PARTITION BY dept)
+----
+
+| MEDIAN | integer / float / decimal
+| MEDIAN(__num__) OVER( ... )
+
+Get the median of values represented by __num__.
+PARTITION BY can be specified optionally in OVER ( ... ).
+Return type depends on the type of argument value.
+
+
+[source, EQL]
+.EQL Expression Example
+----
+MEDIAN(numProperty) OVER(PARTITION BY dept)
+----
+
+| MIN | integer / float / decimal
+| MIN(__num__) OVER( ... )
+
+Gets the minimum value of the values specified with __num__.
+Return type depends on the type of argument value.
+PARTITION BY, ORDER BY can be specified optionally in OVER (...).
+If ORDER BY is specified, the cumulative minimum is calculated.
+
+[source, EQL]
+.EQL Expression Example
+----
+MIN(numProperty) OVER(ORDER BY year)
+----
+
+| STDDEV_POP | float
+| STDDEV_POP(__num__) OVER( ... )
+
+Aggregates values specified with __num__ and calculates the population standard deviation.
+PARTITION BY, ORDER BY can be specified optionally in OVER ( ... ).
+If ORDER BY is specified, the cumulative population standard deviation is calculated.
+
+[source, EQL]
+.EQL Expression Example
+----
+STDDEV_POP(numProperty) OVER(PARTITION BY year)
+----
+
+| STDDEV_SAMP | float
+| STDDEV_SAMP(__num__) OVER( ... )
+
+Aggregates values specified with __num__ and calculates the sample standard deviation.
+PARTITION BY, ORDER BY can be specified optionally in OVER ( ... ).
+If ORDER BY is specified, the cumulative sample standard deviation is calculated.
+
+[source, EQL]
+.EQL Expression Example
+----
+STDDEV_SAMP(numProperty)
+----
+
+| SUM | integer / float / decimal
+| SUM(__num__) OVER( ... )
+
+Aggregates values specified with __num__ and calculates the sum of values.
+Return type depends on the type of argument value.
+PARTITION BY, ORDER BY can be specified optionally in OVER ( ... ).
+If ORDER BY is specified, cumulative value is calculated.
+
+[source, EQL]
+.EQL Expression Example
+----
+SUM(numProperty) OVER(PARTITION BY year ORDER BY month)
+----
+
+| VAR_POP | float
+| VAR_POP(__num__) OVER( ... )
+
+Aggregates values specified with __num__ and calculates the population variance.
+PARTITION BY, ORDER BY can be specified optionally in OVER ( ... ).
+If ORDER BY is specified, the cumulative population variance is calculated.
+
+[source, EQL]
+.EQL Expression Example
+----
+VAR_POP(numProperty) OVER(PARTITION BY dept)
+----
+
+| VAR_SAMP | float
+| VAR_SAMP(__num__) OVER( ... )
+
+Aggregates values specified with __num__ and calculates the sample variance.
+PARTITION BY, ORDER BY can be specified optionally in ORDER ( ... ).
+If ORDER BY is specified, the cumulative sample variance is calculated.
+
+[source, EQL]
+.EQL Expression Example
+----
+VAR_SAMP(numProperty) OVER(PARTITION BY dept)
+----
+
+| RANK | integer
+| RANK() OVER( ... )
+
+Assigns rank values according to values specified by ORDER BY.
+If there are two rows with the same rank value, rank values are not consecutive.
+For example, there are two rows with rank value 1, the next rank value will be 3.
+ORDER BY must be specified in OVER ( ... ). PARTITION BY is optional.
+
+[source, EQL]
+.EQL Expression Example
+----
+RANK() OVER(ORDER BY numProp)
+----
+
+| DENSE_RANK | integer
+| DENSE_RANK() OVER( ... )
+
+Assigns rank values according to values specified by ORDER BY.
+If there are two rows with the same rank value, whether rank values are consecutive or not  depends on RANK() function.
+For example, there are two rows with rank value 1, the next rank value will be 2.
+ORDER BY must be specified in ORDER ( ... ). PARTITION BY is optional.
+
+[source, EQL]
+.EQL Expression Example
+----
+DENSE_RANK() OVER(ORDER BY numProp)
+----
+
+| PERCENT_RANK | float
+| PERCENT_RANK() OVER( ... )
+
+Assigns percent rank values according to values specified by ORDER BY.
+The return value of PERCENT_RANK is range from 0 to 1. The first line must be 0.
+ORDER BY must be specified in OVER ( ... ). PARTITION BY is optional.
+
+[source, EQL]
+.EQL Expression Example
+----
+PERCENT_RANK() OVER(ORDER BY numProp)
+----
+
+| CUME_DIST | float
+| CUME_DIST() OVER( ... )
+
+Gets the cumulative distribution according to values specified by ORDER BY.
+The return value of CUME_DIST is range from 0 to 1. However, 0 is not included.
+ORDER BY is must be specified in OVER ( ... ). PARTITION BY is optional.
+
+[source, EQL]
+.EQL Expression Example
+----
+CUME_DIST() OVER(ORDER BY numProp)
+----
+
+| ROW_NUMBER | integer
+| ROW_NUMBER() OVER( ... )
+
+Gets line numbers according to values specified by ORDER BY.
+The value of the first line is 1.
+ORDER BY must be specified in OVER ( ... ). PARTITION BY is optional.
+
+[source, EQL]
+.EQL Expression Example
+----
+ROW_NUMBER() OVER(ORDER BY dateProp)
+----
+
+|===
+
+[[case]]
+==== CASE Expression
+<case> is a ValueExpression that can describe conditional branch. 
+
+CASE WHEN __condition1__ THEN __value1__ +
+  WHEN __condition2__ THEN __value2__ ... +
+  ELSE __valueDefault__ END
+
+If __condition1__ matches, return __value1__.
+If __condition2__ matches, return __value2__.
+If all conditions do not match, return __valueDefault__.
+
+[source, EQL]
+.EQL Expression Example
+----
+CASE WHEN prop=1 THEN 'ONE' WHEN prop=2 THEN 'TWO' ELSE 'THREE OR MORE' END
+----
+[source, EQL]
+----
+CASE WHEN prop IS NULL THEN 0 ELSE prop END
+----
+
+
+Generate by using classes represent EQL.
+Use classes under the package org.iplass.mtp.entity.query.value.controlflow.
+
+[source, java]
+----
+Case caseStatement = new Case().when(new Equals("prop", 1L), new Literal("ONE"))
+		.when(new Equals("prop", 2L), new Literal("TWO"))
+		.elseClause(new Literal("THREE OR MORE"));
+----
+
+[[scalar-subquery]]
+==== Scalar Subquery
+<scalar subquery> is a subquery that returns a single value. ScalarSubQuery can be used as ValueExpression, conditional expression, SELECT item.
+Also, ScalarSubQuery can be used with ON clause as correlated subquery. Correlated subquery executes for each row of outer Query with join condition in ON clause.
+
+( SELECT __value__ FROM __entityName__ WHERE __condition__ ... ON .__outerJoinItem
+__=__innerJoinItem__ )
+
+ScalarSubQuery is recognized by surrounding Query with ( ).
+When executing correlated subquery, assign .(dot) to the start of the outer join item in ON clause.
+It is possible to specify Reference Property in ON clause. Also, "THIS" can be used to represent a reference to itself.
+
+[source, EQL]
+.EQL Expression Example
+----
+SELECT propA, (SELECT MAX(propX) FROM SomeEntity) FROM SomeEntity
+----
+[source, EQL]
+----
+SELECT propA, (SELECT SUM(propX) FROM CorrelatedEntity
+    ON .refToCorrelatedEntity.oid=oid)//<1>
+    FROM SomeEntity
+----
+<1> In this example, the join condition is the Reference Property refToCorrelatedEntity defined in SomeEntity in outer Query and the oid of CorrelatedEntity itself in the inner Query.
+
+[source, EQL]
+----
+SELECT propA, (SELECT SUM(propX) FROM CorrelatedEntity
+    ON .refToCorrelatedEntity=THIS)//<1>
+    FROM SomeEntity
+----
+<1> Joining by Reference Property. In this example, the join condition is refToCorrelatedEntity defined in SomeEntity in outer Query and the oid of CorrelatedEntity itself in the inner Query.
+
+When generating by using classes represent EQL,
+use classes under the package org.iplass.mtp.entity.query.value.subquery.
+
+[source, java]
+----
+Query q = new Query().select("propA", new ScalarSubQuery(
+        new Query().select(new Sum("propX")).from("CorrelatedEntity"),
+				new On(".refToCorrelatedEntity.oid", "oid")))
+		.from("SomeEntity");
+----
+
+[[condition]]
+=== Condition
+Elements represent condition statement.
+Specifically, elements that represent =(equal) operator, IN clause, and conditions like AND, OR, NOT represent combination of them.
+Use classes under the package org.iplass.mtp.entity.query.condition to construct Condition.
+
+
+.EQL Expression Example
+[source, EQL]
+----
+propA=123
+----
+[source, EQL]
+----
+name LIKE 'abc%' CI
+----
+[source, EQL]
+----
+propX > 30 AND (propY IN ('1', '2', '3') OR propY IS NULL)
+----
+
+.Query Class Usage Example
+[source, java]
+----
+Equals eq = new Equals("propA", 123);
+----
+[source, java]
+----
+Like like = new Like("name", "abc", MatchPattern.PREFIX, CaseType.CI);
+----
+[source, java]
+----
+//propX > 30 AND (propY IN ('1', '2', '3') OR propY IS NULL)
+Condition condition = new And().gt("propX", 30).and(
+        new Paren(new Or().in("propY", "1", "2", "3").isNull("propY")));
+----
+
+==== Syntax
+<condition> ::=:: <and> | <or> | <not> | <paren>
+
+<and> ::=:: <condition> {AND <condition>}*
+
+<or> ::=:: <condition> {OR <condition>}*
+
+<not> ::=:: NOT <paren>
+
+<paren> ::=:: <predicate> | ( <condition> )
+
+<predicate> ::=:: <comparison predicate> | <between> | <contains> | <in> | <is not null> | <is null> | <like>
+
+<comparison predicate> ::=:: <<value-expression, "<value expression>">> <comparison operator> <<value-expression, "<value expression>">>
+
+<comparison operator> ::=:: = | > | >= | < | <= | !=
+
+<between> ::=:: <<value-expression, "<value expression>">> BETWEEN <<value-expression, "<value expression>">> AND <<value-expression, "<value expression>">>
+
+<<contains, "<contains>">> ::=:: CONTAINS('""full text search search condition expression""')
+
+<<in, "<in>">> ::=:: <simple in> | <row value list in> | <subquery in>
+
+<simple in> ::=:: <<value-expression, "<value expression>">> IN ( <<value-expression, "<value expression>">> {,<<value-expression, "<value expression>">>}* )
+
+<row value list in> ::=:: ( <<value-expression, "<value expression>">> {,<<value-expression, "<value expression>">>}\* ) IN ( <row value list> {,<row value list>}* )
+
+<row value list> ::=:: ( <<value-expression, "<value expression>">> {,<<value-expression, "<value expression>">>}* )
+
+<subquery in> ::=:: (<<value-expression, "<value expression>">> {,<<value-expression, "<value expression>">>}* ) IN <<subquery, "<subquery>">> 
+<is not null> ::=:: <<value-expression, "<value expression>">> IS NOT NULL
+
+<is null> ::=:: <<value-expression, "<value expression>">> IS NULL
+
+<<like, "<like>">> ::=:: <<value-expression, "<value expression>">> LIKE '__""match pattern string""__' [CS | CI]
+
+[[contains]]
+==== Contains Conditional Statement
+<contains> is a conditional statement for executing full-text search to Entity.
+Lucene query string could be specified as argument of Contains conditional statement.
+
+NOTE: Because full-text search is performed by using Lucene, when using Contains clause, it is necessary to prepare the operating environment for Lucene with settings of link:../serviceconfig/index.html#FulltextSearchService[FulltextSearchService].
+
+
+CONTAINS('__LuceneQueryExpression__')
+
+If CONTAINS clause is included in EQL, works as follows.
+
+. __LuceneQueryExpression__ specified in CONTAINS clause is issued for Lucene, matching oid are returned by Lucene.
+. CONTAINS is converted to IN clause that specifies oid. + 
+Eg. CONTAINS('abc') -> oid IN ('12942', '1115', '32107' ... ) +
+※At this time, the maximum number specified in oid depends on the setting of FulltextSearchService.
+
+. Converted EQL is issued to RDB.
+
+[source, EQL]
+.EQL Expression Example
+----
+CONTAINS('abc')
+----
+[source, EQL]
+----
+CONTAINS('abc*')
+----
+[source, EQL]
+----
+CONTAINS('"abc" AND "apache"')
+----
+
+When generating by using classes represent EQL,
+use classes under the package org.iplass.mtp.entity.query.condition.predicate.Contains.
+
+[source, java]
+----
+Contains cnt = new Contains("abc*");
+----
+
+[[in]]
+==== In Conditional Statement
+<in> is a statement that determines whether matches subquery or the multiple values specified directly.
+
+__valueExp__ IN (__val1__, __val2__, ... )
+
+__valueExp__ IN (SELECT __field__ FROM __entityName__)
+
+NOTE: In Oracle, when specifying values directly in IN clause, the maximum number can be specified is 1000 by default. To relax restriction, you can enable enableInPartitioning of link:../serviceconfig/index.html#RdbAdapterService[RdbAdapterService].
+
+
+It is possible to construct IN conditions for multiple items using <row value list> expression.
+
+(__valueExp1__, __valueExp2__)  IN ((__val11__, __val21__), (__val21__, __val22__), ... )
+
+(__valueExp1__, __valueExp2__)  IN (SELECT __field1__,  __field2__ FROM __entityName__)
+
+[source, EQL]
+.EQL Expression Example
+----
+propA IN('a', 'b', 'c')
+----
+[source, EQL]
+----
+propA IN(SELECT propX FROM EntityA)
+----
+[source, EQL]
+----
+(propA, propB) IN(('a', 1),('a',2),('b',2))
+----
+[source, EQL]
+----
+(propA, propB) IN(SELECT propX, propY FROM EntityA)
+----
+
+When generating by using classes represent EQL,
+use class org.iplass.mtp.entity.query.condition.predicate.In.
+
+[source, java]
+----
+In in = new In("propA", "a", "b", "c");
+----
+[source, java]
+----
+In in = new In("propA", new Query().select("propX").from("EntityA"));
+----
+
+[[like]]
+==== Like Conditional Statement
+<like> is a conditional statement that determines whether pattern string matches.
+% or _ can be specified as wildcard.
+Escapes with \ when treating % or _ as a normal character. \ is escaped by using \\.
+CS and CI clauses specify whether matches in Case Sensitive and Case Insensitive.
+
+__valueExp__ LIKE '__patternExpression__' [CS | CI]
+
+[source, EQL]
+.EQL Expression Example
+----
+propA LIKE 'abc%'
+----
+[source, EQL]
+----
+propA LIKE 'let''s go%' CI
+----
+[source, EQL]
+----
+propA LIKE '\\100\_000%'
+----
+
+When generating by using classes represent EQL,
+use class org.iplass.mtp.entity.query.condition.predicate.Like.
+
+IMPORTANT: When specifying pattern string directly, be careful with %, _, \, as they are not escaped automatically. Using the constructor with MatchPattern specified is recommended.
+
+[source, java]
+----
+Like like = new Like("name", "abc%");
+----
+[source, java]
+----
+//When specifying pattern string directly from user input value, escaping is required.
+Like like = new Like("name", StringUtil.escapeEqlForLike(userInputValue) + "%");
+----
+[source, java]
+----
+//When using the constructor with MatchPattern specified, escaping is done in the constructor.
+Like like3 = new Like("name", userInputValue, MatchPattern.PREFIX, CaseType.CI);
+----

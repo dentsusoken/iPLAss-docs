@@ -1,0 +1,9 @@
+== サポートツールについて
+iPLAssでは以下のツールを提供しています。
+
+* <<tenant, テナント管理ツール>>
+* <<adminconsole, AdminConsoleのツール>>
+* <<batch, バッチやシェル形式のツール>>
+* <<check_server_status>>
+* <<micrometer, [.eeonly]#メトリクス収集#>>
+* <<appflow, [.eeonly]#Amazon AppFlowのカスタムコネクタ#>>

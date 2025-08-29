@@ -1,0 +1,34 @@
+[[AggregationService]]
+=== [.eeonly]#AggregationService#
+This is the service to manage the definition(Metadata) of the aggregations.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.aggregation.unit.AggregationService
+----
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.aggregation.unit.AggregationService
+----
+
+==== The Settings of AggregationService
+AggregationService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| useSubQueryIfPossible | boolean | Whether to use subqueries as much as possible when using filter on a saved lists. The default value is false.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.aggregation.unit.AggregationService</interface>
+	<class>org.iplass.mtp.impl.aggregation.unit.AggregationService</class>
+	<!-- Whether to use subqueries as much as possible when using filter on a saved lists.  -->
+	<property name="useSubQueryIfPossible" value="false" />
+</service>
+----

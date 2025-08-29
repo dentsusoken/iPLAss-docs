@@ -1,0 +1,151 @@
+[[ClusterService]]
+=== ClusterService
+クラスタ間通信を行うためのサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.cluster.ClusterService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.cluster.ClusterService
+----
+
+==== ClusterServiceの設定
+ClusterServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| messageChannel | <<MessageChannel>> | クラスタ間の通信に利用するメッセージチャネルの設定。
+|===
+
+[[MessageChannel]]
+.MessageChannel
+classはorg.iplass.mtp.impl.cluster.channel.MessageChannelの実装クラスを指定します。
+
+標準で、以下のMessageChannelを提供します。
+
+- <<HttpMessageChannel>>
+- <<JGroupsMessageChannel>>
+- <<InfinispanMessageChannel>>
+
+[[HttpMessageChannel]]
+.HttpMessageChannel
+classはorg.iplass.mtp.impl.cluster.channel.http.HttpMessageChannelを指定します。
+
+Httpを介してメッセージ送受信するメッセージチャネルです。以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| serverUrl | String、複数指定可 a| 他のクラスタメンバの通信用URL。 +
+指定するURLは次の形式となります。
+
+http://[server]:[port]/[applicationContext]/cmcs
+
+
+自身のサーバのurlも含めることも可能です。
+serverUrlに自身のサーバのurlを含めた場合、次の形で自身のurlを解決して、それ以外のサーバにメッセージ送信します。
+
+. システムプロパティに以下が設定されていた場合、その値を自身のサーバ名、ポートと判断する +
+mtp.cluster.http.myservername = [server名] +
+mtp.cluster.http.myportno = [portNo] +
+※クラスタ設定のserverUrlで同一サーバ名のURLが複数ある場合、ポート指定が必要です
+
+. 動作環境から自身のサーバ名を自動解決する +
+以下のいずれかの方法でネットワークインタフェースを特定 +
+.. 明示的にネットワークインタフェースを指定する場合 +
+システムプロパティでネットワークインタフェースを指定する +
+mtp.cluster.http.myinterfacename = [networkInterface名]
+
+.. 最初に定義されている（LoopBackでなく現在利用可能な）ネットワークインタフェースを利用 +
+特定されたネットワークインタフェースに定義されているサーバ名（FQDN/サーバ名）/IPAdressを自身のサーバ名と判断する。 +
+もしそれでも見つからない場合は、LoopBackを自身のサーバ名と判断する。 +
+※1.と同様、クラスタ設定のserverUrlで同一サーバ名のURLが複数ある場合、mtp.cluster.http.myportnoシステムプロパティにてポート指定が必要
+| certKey | String | 通信時の認証用のキー。クラスタメンバで同一のものを定義します。
+| connectionTimeout | int | http通信確立時のConnectionTimeout値（ミリ秒）。デフォルト値は30000（30秒）です。
+| soTimeout | int | http通信確立時のSoTimeout値（ミリ秒）。デフォルト値は30000（30秒）です。
+| proxyHost | String | http通信する際のproxyHost。
+| proxyPort | int | http通信する際のproxyPort。
+| poolingMaxTotal | int | httpコネクションのプールの最大数。デフォルト値は20です。
+| poolingDefaultMaxPerRoute | int | ドメイン単位のhttpコネクションの最大数。デフォルト値は2です。
+| poolingTimeToLive | int | プールされているhttpコネクションの生存期間（ミリ秒）。デフォルトは無制限です。
+| retryCount | int | メッセージ送信失敗時のリトライ回数。デフォルト値は3です。
+| retryDelay | int | メッセージ送信失敗時のリトライ間隔（ms）。デフォルト値は10000（10秒）です。
+|===
+
+[[JGroupsMessageChannel]]
+.JGroupsMessageChannel
+classはorg.iplass.mtp.impl.cluster.channel.jgroups.JGroupsMessageChannelを指定します。
+JGroupsを介してメッセージ送受信するメッセージチャネルです。以下の項目を設定可能です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| configFilePath | String a| JGroupsの設定ファイルへのパスを指定します。
+指定されたパスを元に、次の順にファイルを検索します。
+
+. リソースパス（classpath配下）
+. ファイルパス（OS上のファイルとして）
+| clusterName | String | JGroupsのクラスタ名を指定します。同一のクラスタ名が指定されたノードがクラスタメンバとなります。
+|===
+
+[[InfinispanMessageChannel]]
+.InfinispanMessageChannel
+classはorg.iplass.mtp.impl.infinispan.cluster.channel.InfinispanMessageChannelを指定します。
+
+Infinispanを利用してメッセージの送受信を行うメッセージチャネルです。
+InfinispanMessageChannelを利用する場合は、別途 <<InfinispanService,InfinispanService>> の設定が必要です。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| sync | boolean | メッセージの送信を同期して行うかを設定します。
+|===
+
+
+===== 設定例
+.HttpMessageChannel
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.cluster.ClusterService</interface>
+	<property name="messageChannel"
+	    class="org.iplass.mtp.impl.cluster.channel.http.HttpMessageChannel">
+		<property name="serverUrl" value="http://xxx1.xxx.xxx/app/cmcs" />
+		<property name="serverUrl" value="http://xxx2.xxx.xxx/app/cmcs" />
+		<property name="certKey" value="yourOwnClusterCertKey" />
+		<property name="connectionTimeout" value="30000" />
+		<property name="soTimeout" value="30000" />
+		<property name="proxyHost" value="proxy.xxx.xxx" />
+		<property name="proxyPort" value="8080" />
+	</property>
+</service>
+----
+
+.JGroupsMessageChannel
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.cluster.ClusterService</interface>
+	<property name="messageChannel" class="org.iplass.mtp.impl.cluster.channel.jgroups.JGroupsMessageChannel">
+		<property name="configFilePath" value="/jgroups-config-udp.xml" />
+		<property name="clusterName" value="yourOwnClusterName" />
+	</property>
+</service>
+----
+
+.InfinispanMessageChannel
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.cluster.ClusterService</interface>
+	<depend>org.iplass.mtp.impl.infinispan.InfinispanService</depend>
+	<property name="messageChannel" class="org.iplass.mtp.impl.infinispan.cluster.channel.InfinispanMessageChannel">
+		<property name="sync" value="false" />
+	</property>
+</service>
+----

@@ -1,0 +1,392 @@
+[[OAuthAuthorizationService]]
+=== OAuthAuthorizationService
+OAuth2.0 Authorization ServerおよびOpenID Connect Providerの機能を管理するためのサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.auth.oauth.OAuthAuthorizationService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.auth.oauth.OAuthAuthorizationService
+----
+
+==== OAuthAuthorizationServiceの設定
+OAuthAuthorizationServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| paramStateRequired | boolean | Authorization Request時にstateパラメータを必須とするか否かを設定します。 +
+デフォルト値はtrueです。
+| paramNonceRequired | boolean | Authorization Request時にnonceパラメータを必須とするか否かを設定します。 +
+デフォルト値はfalseです。
+| forcePKCE | boolean | Public Clientに対してPKCE (Proof Key for Code Exchange by OAuth Public Clients) を必須とするか否かを設定します。 +
+デフォルト値はtrueです。
+| forceS256ForCodeChallengeMethod | boolean | PKCEのCodeChallengeMethodにS256を強制するか否かを設定します。 +
+デフォルト値はtrueです。
+| defaultConsentTemplateName | String | OAuthのscopeのデフォルトの承認画面のテンプレート名を指定します。
+| authorizationCodeStore | <<AuthorizationCodeStore>> | AuthorizationCodeStoreの設定。
+| accessTokenStore | <<OAuthAccessTokenStore>> | OAuthAccessTokenStoreの設定。
+| jwtProcessor | <<JwtProcessor>> | JwtProcessorの設定。
+| jwtKeyStore | <<JwtKeyStore>> | JwtKeyStoreの設定。
+| subjectIdHashAlgorithm | String | 
+resource ownerのsubject idをClientへ公開する際に、ハッシュする場合のアルゴリズムを指定します。
+| subjectIdHashAlgorithm | String | 
+subject idをハッシュする際のソルト値を指定します。
+| idTokenLifetimeSeconds | long | ID Tokenを発行する場合の有効期限（秒）を指定します。 +
+未指定の場合のデフォルト値は3600です。
+|===
+
+[[AuthorizationCodeStore]]
+.AuthorizationCodeStore
+classはorg.iplass.mtp.impl.auth.oauth.code.AuthorizationCodeStoreの実装クラスを指定します。
+
+標準で、以下のAuthorizationCodeStoreを提供します。
+
+- <<CacheAuthorizationCodeStore>>
+
+[[CacheAuthorizationCodeStore]]
+.CacheAuthorizationCodeStore
+classはorg.iplass.mtp.impl.auth.oauth.code.CacheAuthorizationCodeStoreを指定します。
+
+CacheStoreで認証コードを管理します。
+以下の項目を設定可能です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| secureRandomGeneratorName | String | <<SecureRandomService, SecureRandomService>> に定義される認証コード文字列の生成器を指定します。
+未設定の場合、 `oauthAuthorizationCodeGenerator`  のSecureRandomGeneratorが利用されます。
+| cacheStoreName | String a| 
+<<CacheService, CacheService>> に定義されるCacheStore（CacheStoreFactory）の名前を指定します。
+未指定の場合のデフォルト値は `mtp.oauth.codeStore` です。
+
+CAUTION: クラスタ環境においては、CacheStoreFactoryはRedisCacheStoreFactoryなど複数のAPサーバから同一のキャッシュを参照可能なCacheStoreFactoryを利用してください。
+
+| timeToLive | long | 
+認証コードの有効期限（ミリ秒）を指定します。
+未指定の場合のデフォルト値は `180000` （3分）です。
+|===
+
+[[OAuthAccessTokenStore]]
+.OAuthAccessTokenStore
+classはorg.iplass.mtp.impl.auth.oauth.token.OAuthAccessTokenStoreの実装クラスを指定します。
+
+標準で、以下のOAuthAccessTokenStoreを提供します。
+
+- <<OpaqueOAuthAccessTokenStore>>
+- <<RemoteOAuthAccessTokenStore>>
+
+[[OpaqueOAuthAccessTokenStore]]
+.OpaqueOAuthAccessTokenStore
+classはorg.iplass.mtp.impl.auth.oauth.token.opaque.OpaqueOAuthAccessTokenStoreを指定します。
+AcessTokenの形式としてはOpaque（Handle）形式となります。
+AcessTokenはAuthTokenStoreを利用して保存されます。
+
+OpaqueOAuthAccessTokenStoreの場合、
+AcessTokenはClient × ResourceOwner単位に一つ発行されます。
+
+以下の項目を設定可能です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| authTokenType | String | 
+AccessTokenHandlerに定義されるtypeを指定します。
+未指定の場合のデフォルト値は `OAT` です。
+AccessTokenHandlerについては、 <<AuthTokenService, AuthTokenService>> の説明を参照ください。
+| seriesHashAlgorithm | String | 
+AccessTokenを一意に特定する際に利用するキーを生成する際のハッシュアルゴリズムを設定します。
+未指定の場合のデフォルト値は `SHA-256` です。
+| seriesHashSalt | String | 
+AccessTokenを一意に特定する際に利用するキーを生成する際のハッシュに利用するSaltです。
+環境毎に異なるランダムな文字列を指定することを推奨します。
+| tokenCreationStrategy | <<TokenCreationStrategy>> | 
+AccessTokenの生成方法を示すTokenCreationStrategyを設定します。
+|===
+
+[[RemoteOAuthAccessTokenStore]]
+.RemoteOAuthAccessTokenStore
+classはorg.iplass.mtp.impl.auth.oauth.token.remote.RemoteOAuthAccessTokenStoreを指定します。
+
+バックエンドでOAuth 2.0 Token Introspection (RFC7662)を呼び出すTokenStoreの実装です。
+当該設定が適用されたiPLAssのインスタンスはResource Serverとして動作します。
+リモートに起動しているAuthorization ServerからAccessTokenを取得し検証します。
+
+NOTE: RemoteOAuthAccessTokenStoreは読み取り専用です。
+Authorization Serverの機能は実装されませんので、AccessTokenを更新するメソッドを呼び出した場合、ランタイム例外がスローされます。
+
+以下の項目を設定可能です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| introspectionEndpointUrl | String | 
+Introspection EndpointのURLを指定します。
+Authorization ServerもiPLAssである場合で、マルチテナントアプリケーションの場合、テナント単位にEndpointが異なります。
+その場合、 `${tenantName}` の変数名でtenant名をURLへ埋め込むことが可能です。
+
+例:
+https://localhost:8080/mtp/${tenantName}/api/oauth/introspect
+
+| authenticationMethod | ClientAuthenticationMethod a| 
+Introspection EndpointのClient（Resource Server）認証方式を指定します。
+次のいずれかを指定します。
+
+CLIENT_SECRET_BASIC:: BASIC認証によりClient認証します
+
+CLIENT_SECRET_POST:: POSTパラメータ（client_id, client_secret）にてClinent認証します
+NONE:: Client認証用のパラメータを付与しません
+
+未指定の場合のデフォルト値は `CLIENT_SECRET_BASIC` です。
+| resourceServerId | String | 
+Authorization Serverから発行されるResource ServerのIDを指定します。
+| resourceServerSecret | String | 
+Authorization Serverから発行されるResource ServerのSecretを指定します。
+| tenantValidationType | TenantValidationType a| 
+テナントの検証方式を指定します。
+次のいずれかを指定します。
+
+NONE:: Authorization ServerがiPLAssではない場合、もしくはテナントの検証が必要ない場合
+
+ID:: Authorization ServerもiPLAssである場合、Introspection EndpointのレスポンスからテナントIDを取得し、ResourceServerのテナントと一致しているかを検証します。Authorization ServerとResource Serverで同一のDB、テナント情報を共有する場合の利用を想定しています。 +
+テナントIDはレスポンスに `tenant_id` というパラメータ名で格納されている必要があります。
+
+NAME:: Authorization ServerもiPLAssである場合、Introspection Endpointのレスポンスからテナント名を取得し、ResourceServerのテナント名と一致しているかを検証します。Authorization ServerとResource ServerでDB、テナント情報を分離する場合（別マイクロサービスとして一式分離する場合）、テナントIDの一致は難しいため、テナント名の一致で同一テナントとみなします。 +
+テナント名はレスポンスに `tenant_name` というパラメータ名で格納されている必要があります。
+
+未指定の場合のデフォルト値は `NAME` です。
+| reloadUser | boolean a| 
+AccessTokenに紐づくユーザー情報の取得方法を制御します。
+
+trueの場合:: レスポンスの `sub` の値をoidとみなし、Resource Server上からUserエンティティを検索します。Userが存在しない場合、許可しません。
+
+falseの場合:: レスポンスからユーザー情報を取得します。 +
+レスポンスに `resource_owner` でUserエンティティのJSON表現が格納されていた場合、それを利用します。 +
+`resource_owner` に格納されていなかった場合、 `sub` の値をoid、accountIdとし、 `username` の値をnameとしてユーザー情報とします。
+
+未指定の場合のデフォルト値は `false` です。
+| httpClientConfig | <<HttpClientConfig_oa, HttpClientConfig>>  | WebApi呼び出し時のHTTPコネクションに関する設定。
+| exponentialBackoff | <<ExponentialBackoff_oa, ExponentialBackoff>>  | ExponentialBackoffクラスのプロパティにてリトライ処理する際の link:https://developers.google.com/api-client-library/java/google-http-java-client/backoff[指数バックオフ^] の設定。
+|===
+
+[[HttpClientConfig_oa]]
+.HttpClientConfig
+classはorg.iplass.mtp.impl.http.HttpClientConfigを指定します。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| proxyHost | String | proxyを利用する場合のHost名。
+| proxyPort | int | proxyを利用する場合のport。
+| connectionTimeout | int | HTTPコネクションを確立する際のタイムアウト（ミリ秒）。デフォルト値は30000（30秒）です。
+| soTimeout | int | HTTP通信時のsocket timeout (SO_TIMEOUT)をミリ秒で指定します。デフォルト値は30000（30秒）です。
+| poolingMaxTotal | int | httpコネクションのプールの最大数。デフォルト値は20です。
+| poolingDefaultMaxPerRoute | int | ドメイン単位のhttpコネクションの最大数。デフォルト値は2です。
+| poolingTimeToLive | int | プールされているhttpコネクションの生存期間（ミリ秒）。デフォルトは無制限です。
+| httpClientBuilderFactory | <<HttpClientBuilderFactory_oa, HttpClientBuilderFactory>> |
+カスタムのHttpClientBuilderを生成したい場合に指定します。
+|====================
+
+[[HttpClientBuilderFactory_oa]]
+.HttpClientBuilderFactory
+classはorg.iplass.mtp.impl.http.HttpClientBuilderFactoryを実装するクラスを指定します。
+
+標準で以下のHttpClientBuilderFactoryを提供します。
+
+* <<MicrometerHttpClientBuilderFactory, [.eeonly]#MicrometerHttpClientBuilderFactory#>>
+
+[[ExponentialBackoff_oa]]
+.ExponentialBackoff
+classはorg.iplass.mtp.impl.http.ExponentialBackoffを指定します。
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| retryIntervalMillis | int | リトライ間隔をミリ秒で指定します。デフォルト値は500です。
+| randomizationFactor | double | リトライ時のランダム要素。
+0.5の場合、retryIntervalMillisに指定した値が上下25%の範囲で変動します。デフォルト値は0.5です。
+| multiplier | double | リトライ時のリトライ間隔の指数要素。
+1.5の、retryIntervalMillisが500の場合、2回目のリトライは750ms、3回目のリトライは1125msのリトライ間隔で行われます。デフォルト値は1.5です。
+| maxIntervalMillis | int | 最大リトライ間隔です。 デフォルト値は60000（1分）です。
+| maxElapsedTimeMillis | int | 最大のリトライ実行時間。
+この時間の間にリトライ処理が成功しなかった場合は、リトライ処理を完了し、アプリケーション側にその時点までの結果を返却します。 デフォルト値は300000（5分）です。
+|====================
+
+[[TokenCreationStrategy]]
+.TokenCreationStrategy
+classはorg.iplass.mtp.impl.auth.oauth.token.opaque.TokenCreationStrategyの実装クラスを指定します。
+
+標準で、以下のTokenCreationStrategyを提供します。
+
+- <<NewTokenCreationStrategy>>
+- <<SameTokenCreationStrategy>>
+
+[[NewTokenCreationStrategy]]
+.NewTokenCreationStrategy
+classはorg.iplass.mtp.impl.auth.oauth.token.opaque.NewTokenCreationStrategyを指定します。
+
+AccessToken取得要求の都度新しいAccessTokenを生成します。
+新しいAccessTokenが生成された場合、当該Client、ResourceOwner向けに以前に発行されたAccessTokenは無効となります。
+
+[[SameTokenCreationStrategy]]
+.SameTokenCreationStrategy
+classはorg.iplass.mtp.impl.auth.oauth.token.opaque.SameTokenCreationStrategyを指定します。
+
+AccessToken取得要求された場合、当該Client、ResourceOwner向けに発行された既存の有効なAccessTokenがある場合、同一のものを返却します。
+既存のAccessTokenを返却するため、そのAccessTokenの有効期間は取得時点においては短い場合もあります。
+
+例えば、ユーザーが複数の端末を所持しており、且つそれらが同一Clientとして定義されている場合などにおいて、有効なAccessTokenを奪い合う状況を回避できます。
+
+以下の項目を設定可能です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| retryCount | int | 
+AccessTokenの発行処理に失敗した場合のリトライ回数を設定可能です。
+未指定の場合のデフォルト値は0（リトライしない）です。
+| retryIntervalMillis | long | 
+リトライする際のリトライ間隔（ミリ秒）を指定します。
+未指定の場合のデフォルト値は0です。
+|===
+
+[[JwtProcessor]]
+.JwtProcessor
+classはorg.iplass.mtp.impl.auth.oauth.jwt.JwtProcessorの実装クラスを指定します。
+
+JWT（Json Web Token）の生成処理の設定を行います。
+標準で、以下のJwtProcessorを提供します。
+
+- <<JjwtProcesor>>
+
+[[JjwtProcesor]]
+.JjwtProcesor
+classはorg.iplass.mtp.impl.auth.oauth.jwt.JjwtProcesorを指定します。
+
+JWTの生成処理にライブラリJJWT（Java JWT）を利用します。
+以下の項目を設定可能です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| useRsaSsaPss | boolean | RSAベースの署名アルゴリズムに、RSASSA-PKCS1-v1_5ではなくRSASSA-PSSを利用する場合にtrueを指定します。
+未指定の場合のデフォルト値はfalseです。
+|===
+
+署名に利用する暗号鍵のアルゴリズムにより、次のようにJWTの署名方式が決定されます。
+
+[cols="1,1,1,1", options="header"]
+|===
+| 鍵アルゴリズム | 鍵長 | useRsaSsaPss | JWT署名方式
+| RSA | 4096以上 | false | RS512
+| RSA | 3072以上且つ4096未満 | false | RS384
+| RSA | 2048以上且つ3072未満 | false | RS256
+| EC | 521以上 | * | ES512
+| EC | 384以上且つ521未満 | * | ES384
+| EC | 256以上且つ384未満 | * | ES256
+| RSA | 4096以上 | true | PS512
+| RSA | 3072以上且つ4096未満 | true | PS384
+| RSA | 2048以上且つ3072未満 | true | PS256
+|===
+
+[[JwtKeyStore]]
+.JwtKeyStore
+classはorg.iplass.mtp.impl.auth.oauth.jwt.JwtKeyStoreの実装クラスを指定します。
+
+JWTへの署名は、iPLAssでは公開鍵暗号方式ベースの署名をサポートします。
+その際に利用する鍵ペア（公開鍵/秘密鍵）を管理します。
+標準で、以下のJwtKeyStoreを提供します。
+
+- <<SimpleJwtKeyStore>>
+
+[[SimpleJwtKeyStore]]
+.SimpleJwtKeyStore
+classはorg.iplass.mtp.impl.auth.oauth.jwt.SimpleJwtKeyStoreを指定します。
+
+Java Key StoreベースのJwtKeyStoreの実装です。
+次の特徴を持ちます。
+
+- KeyStoreのaliasがkid（Key ID）となる
+- KeyStoreに格納される公開鍵証明書の有効期間を用いて鍵の有効期間を管理する
+
+以下の項目を設定可能です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| keyStoreType | String | KeyStoreのタイプ。デフォルト値は `PKCS12` です
+。
+| keyStoreProvider | String | KeyStoreのプロバイダ。未指定の場合は、標準のプロバイダが利用されます。
+| keyStoreFilePath | String | KeyStoreのリソースパス（classpath配下）もしくはファイルパス（OS上のファイルとして）。
+| keyStorePassword | String | KeyStoreのパスワード。
+| keyPasswordMap | Map形式 | keyPasswordを個別のKey毎に異なるものを付与する場合、nameにalias名、valueにパスワードを指定する形で定義します。
+keyPasswordMapを指定しない場合、keyPasswordにはkeyStorePasswordの値が利用されます。
+| keyStoreReloadIntervalMinutes | int | KeyStoreをリロードする間隔（分）を設定します。
+未設定の場合、リロードしません。
+| rollOverType | <<JwtKeyRolloverType>> | 鍵のロールオーバー方式を設定します。
+デフォルト値は `OLDER` です。
+| rollOverDaysBeforeExpire | long | rollOverTypeが `BEFORE_N_DAYS` の場合に、切り替える日数。
+|===
+
+
+[[JwtKeyRolloverType]]
+.JwtKeyRolloverType
+鍵の有効期間が迫った場合のロールオーバー方式を指定します。
+複数の（新旧の）鍵がKeyStore内にある場合、どちらを利用するかを判断する方式です。
+鍵の有効期間は公開鍵証明書の有効期間で判断します。
+
+OLDER:: 有効期間が切れるまで、有効期間が短い（NotAfterが古い）証明書の鍵を利用
+NEWER:: 有効期間内である証明書のうち、より有効期間が長い（NotAfterが新しい）証明書の鍵を利用
+BEFORE_N_DAYS:: 有効期間が切れるrollOverDaysBeforeExpire日前に切り替える
+
+===== 設定例 (Authorization ServerとResource Serverが同一インスタンス)
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.auth.oauth.OAuthAuthorizationService</interface>
+	<property name="defaultConsentTemplateName" value="oauth/Consent" />
+	<property name="authorizationCodeStore" class="org.iplass.mtp.impl.auth.oauth.code.CacheAuthorizationCodeStore">
+		<property name="timeToLive" value="180000" />
+	</property>
+	<property name="accessTokenStore" class="org.iplass.mtp.impl.auth.oauth.token.opaque.OpaqueOAuthAccessTokenStore">
+		<property name="seriesHashAlgorithm" value="SHA-256" />
+		<property name="seriesHashSalt" value="[salt for each environment]" />
+		<property name="tokenCreationStrategy" class="org.iplass.mtp.impl.auth.oauth.token.opaque.NewTokenCreationStrategy" />
+	</property>
+	<property name="jwtProcessor" class="org.iplass.mtp.impl.auth.oauth.jwt.JjwtProcesor" />
+	<property name="jwtKeyStore" class="org.iplass.mtp.impl.auth.oauth.jwt.SimpleJwtKeyStore">
+		<property name="keyStoreFilePath" value="/conf/jwtKeyStore.jks" />
+		<property name="keyStorePassword" value="[your jks store password]" />
+		<property name="keyStoreReloadIntervalMinutes" value="1440" />
+        <property name="rollOverType" value="BEFORE_N_DAYS" />
+        <property name="rollOverDaysBeforeExpire" value="5" />
+	</property>
+	<property name="subjectIdHashAlgorithm" value="SHA-256" />
+	<property name="subjectIdHashSalt" value="[yourOwnSalt]" />
+</service>
+----
+
+===== 設定例 (Resource Server)
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.auth.oauth.OAuthAuthorizationService</interface>
+	<property name="accessTokenStore" class="org.iplass.mtp.impl.auth.oauth.token.remote.RemoteOAuthAccessTokenStore" inherit="false">
+		<property name="introspectionEndpointUrl" value="http://localhost:8080/mtp/${tenantName}/api/oauth/introspect"/>
+		<property name="resourceServerId" value="sampleRS"/>
+		<property name="resourceServerSecret" value="AK08O9RvVzmTWrrSidS..."/>
+		<property name="reloadUser" value="false"/>
+		
+		<property name="httpClientConfig">
+			<property name="poolingMaxTotal" value="30"/>
+		</property>
+		<property name="exponentialBackoff">
+			<property name="maxElapsedTimeMillis" value="60000"/>
+		</property>
+	</property>
+</service>
+----

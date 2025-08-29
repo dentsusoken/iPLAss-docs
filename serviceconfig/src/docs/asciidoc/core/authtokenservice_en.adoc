@@ -1,0 +1,277 @@
+[[AuthTokenService]]
+=== AuthTokenService
+This is a service for managing authentication tokens.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.auth.authenticate.token.AuthTokenService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.auth.authenticate.token.AuthTokenService
+----
+
+==== Settings of AuthTokenService
+The following configurations are available to AuthTokenService.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| storeMap | <<AuthTokenStore>>, in format of Map | This is the setting of AuthTokenStore.
+Specify store name into the key, and define it in the format of Map.
+It is mandatory to have at least one AuthTokenStore definition, named with `default`.
+
+| handler | <<AuthTokenHandler>>, Multiple | The configuration for AuthTokenHandler.
+|===
+
+[[AuthTokenStore]]
+.AuthTokenStore
+Please specify the implementing class of org.iplass.mtp.impl.auth.authenticate.token.AuthTokenStore to the class.
+
+In standard, the following AuthTokenStore are provided.
+
+- <<RdbAuthTokenStore>>
+- <<CachableAuthTokenStore>>
+- <<CacheOnlyAuthTokenStore>>
+
+[[RdbAuthTokenStore]]
+.RdbAuthTokenStore
+Please specify org.iplass.mtp.impl.auth.authenticate.token.RdbAuthTokenStore to the class.
+
+This configuration manages authentication tokens in RDB.
+
+[cols = "1,1,3", options = "header"]
+|===
+| Item | Value | Description
+| saveDetailAsJson | boolean |
+Specify whether to save AuthToken in JSON format.
+When saving in JSON format, the attribute value of AuthToken is saved using Jackson's ObjectMapper (if saving in JSON format, the class that implements the AuthToken to be saved must support it). +
+If false, it is saved as binary data using the Java default serialization mechanism. +
+The default value is false.
+| authTokenStore | <<AuthTokenStore>> |
+The actual AuthTokenStore that stores the authentication token.
+|===
+
+
+
+[[CachableAuthTokenStore]]
+.CachableAuthTokenStore
+Please specify org.iplass.mtp.impl.auth.authenticate.token.CachableAuthTokenStore to the class.
+
+A cache mechanism is added to the included authTokenStore.
+
+[cols = "1,1,3", options = "header"]
+|===
+| Item | Value | Description
+| cacheStoreName | String |
+Specify the name of CacheStore (CacheStoreFactory) defined in <<CacheService, CacheService>>.
+If not specified, the default value is `mtp.auth.cachableAuthTokenStore/DEFAULT`.
+| authTokenStore | <<AuthTokenStore>> |
+The actual AuthTokenStore that stores the authentication token.
+|===
+
+[[CacheOnlyAuthTokenStore]]
+.CacheOnlyAuthTokenStore
+Please specify org.iplass.mtp.impl.auth.authenticate.token.CacheOnlyAuthTokenStore to the class.
+
+Unlike CachableAuthTokenStore, it does not have a permanent destination for the back end, it stores only in CacheStore.
+
+[cols = "1,1,3", options = "header"]
+|===
+| Item | Value | Description
+| cacheStoreName | String a|
+Specify the name of CacheStore (CacheStoreFactory) defined in <<CacheService, CacheService>>.
+If not specified, the default value is `mtp.auth.cacheOnlyAuthTokenStore/DEFAULT`.
+
+CAUTION: In a cluster environment, use CacheStoreFactory that can refer to same cache from multiple AP servers such as RedisCacheStoreFactory.
+
+|===
+
+[[AuthTokenHandler]]
+.AuthTokenHandler
+Please specify the implementing class of org.iplass.mtp.impl.auth.authenticate.token.AuthTokenHandler.
+
+The following AuthTokenHandler is provided in the standard.
+
+- <<RememberMeTokenHandler>>
+- <<SimpleAuthTokenHandler>>
+- <<TimeBasedOneTimePasswordHandler>>
+- <<AccessTokenHandler>>
+- <<OAuthClientCredentialHandler>>
+- <<WebhookAuthTokenHandler>>
+- <<CookieRiskEvaluationTokenHandler>>
+
+[[RememberMeTokenHandler]]
+.RememberMeTokenHandler
+Please specify org.iplass.mtp.impl.auth.authenticate.rememberme.RememberMeTokenHandler to the class.
+
+This handler will handle RememberMeToken. The following items can be configured.
+
+[cols = "1,1,3", options = "header"]
+|===
+| Item | Value | Description
+| store | String | The name of the AuthTokenStore to use. If not specified, `default` AuthTokenStore is used.
+| type | String | Type. If it is not set, it will be `REMME`.
+| hashSettings | <<AuthTokenHandler_HashSetting, HashSetting>>, Multiple | Token hash setting and method setting.
+If not specified, the Token will be save as plain text.
+| secureRandomGeneratorName | String | It specify the token string generator defined in <<SecureRandomService, SecureRandomService>> .
+If not set, `default` SecureRandomGenerator will be used.
+| visible | boolean | Whether it is visible via `AuthTokenInfoList`. The default value is true.
+|===
+
+[[AuthTokenHandler_HashSetting]]
+.HashSetting
+Please specify org.iplass.mtp.impl.auth.authenticate.token.HashSetting to the class.
+
+The following items can be configured.
+[cols = "1,1,3", options = "header"]
+|===
+| Item | Value | Description
+| version | String | Specifies a string that identifies the version.
+| hashAlgorithm | String | Specifies the hash algorithm. `SHA-256` etc.
+| stretchCount | int | Number of stretches. The default is 1.
+|===
+
+[[SimpleAuthTokenHandler]]
+.SimpleAuthTokenHandler
+Please specify org.iplass.mtp.impl.auth.authenticate.simpletoken.SimpleAuthTokenHandler to the class.
+
+It handles SimpleAuthToken.
+SimpleAuthToken allows access as the user associated with the token.
+SimpleAuthToken remains in effect until the user explicitly delete it.
+
+The following items can be configured.
+[cols = "1,1,3", options = "header"]
+|===
+| Item | Value | Description
+| store | String | The name of the AuthTokenStore to use. If not specified, `default` AuthTokenStore is used.
+| type | String | Type. If not set, it will be `SAT`.
+| hashSettings | <<AuthTokenHandler_HashSetting, HashSetting>>, Multiple | Token hash setting and method setting.
+If not specified, the token will be saved as plain text.
+| secureRandomGeneratorName | String | Specify token string generator defined in <<SecureRandomService, SecureRandomService>>.
+If not set, `default` SecureRandomGenerator will be used.
+visible | boolean | Whether it is visible via `AuthTokenInfoList`. The default value is true.
+|===
+
+[[TimeBasedOneTimePasswordHandler]]
+.[.eeonly]#TimeBasedOneTimePasswordHandler#
+Please specify org.iplass.mtp.impl.auth.authenticate.timebased.TimeBasedOneTimePasswordHandler to the class.
+This AuthTokenHandler is used for timebased authentication in the two-step authentication function.
+
+The following items can be configured.
+[cols = "1,1,3", options = "header"]
+|===
+| Item | Value | Description
+| store | String | The name of the AuthTokenStore to use. If not specified, `default` AuthTokenStore is used.
+| type | String | Type. If it is not set, it will be `TSK`.
+| timeStepWindowSize | int | Validity period of the time step. If 1 is set, one step before and after the currently valid one-time password will also be considered valid. Default value is 1. +
+The time for one step is fixed at 30 seconds.
+|===
+
+[[AccessTokenHandler]]
+.AccessTokenHandler
+Please specify org.iplass.mtp.impl.auth.oauth.token.opaque.AccessTokenHandler to the class.
+
+Handles OAuth2.0 AccessToken and RefreshToken.
+
+The following items can be configured.
+[cols = "1,1,3", options = "header"]
+|===
+| Item | Value | Description
+| store | String | The name of the AuthTokenStore to use. If not specified, `default` AuthTokenStore will be used.
+| refreshTokenStore | String | Set the name of the AuthTokenStore used to store the RefreshToken. If not specified, `default` will be used.
+| type | String | Set the type to identify AccessToken. If not set, it will be `OAT`.
+| refreshTokenType | String | RefreshToken type. If not set, it will be `ORT`.
+| hashSettings | <<AuthTokenHandler_HashSetting, HashSetting>>, Multiple | Token hash setting and method setting.
+If not specified, token will be saved as plain text. This setting applies to both AccessToken and RefreshToken.
+| secureRandomGeneratorName | String | Specify the Token string generator of the AccessToken defined in <<SecureRandomService, SecureRandomService>>. 
+If not set, `default` SecureRandomGenerator will be used.
+| refreshTokenSecureRandomGeneratorName | String | <<SecureRandomService, SecureRandomService>> Specify the the Token string generator of RefreshToken defined in.
+If not set, `default` SecureRandomGenerator will be used.
+visible | boolean | Whether it is visible via `AuthTokenInfoList`. The default value is true.
+|===
+
+[[OAuthClientCredentialHandler]]
+.OAuthClientCredentialHandler
+Please specify org.iplass.mtp.impl.auth.oauth.OAuthClientCredentialHandler to the class.
+
+Handles Client and ResourceServer Credentials (client_id, client_secret) in OAuth2.0.
+
+The following items can be configured.
+[cols = "1,1,3", options = "header"]
+|===
+| Item | Value | Description
+| store | String | The name of the AuthTokenStore to use. If not specified, `default` AuthTokenStore is used.
+| type | String | Defines the type. +
+Specify `OC` for Client.
+Specify `ORS` for ResourceServer.
+| hashSettings | <<AuthTokenHandler_HashSetting, HashSetting>>, Multiple | Token hash setting and method setting.
+If not specified, the token will be saved as plain text.
+| secureRandomGeneratorName | String | Specify the token string generator defined in <<SecureRandomService, SecureRandomService>>.
+If not set, `default` SecureRandomGenerator will be used.
+| oldCredentialValidDays | int | Valid period (days) of Credentials generated in the past can be specified.
+If not specified, the past Credential will be destroyed immediately.
+|===
+
+[[WebhookAuthTokenHandler]]
+.WebhookAuthTokenHandler
+Please specify org.iplass.mtp.impl.webhook.WebhookAuthTokenHandler to the class.
+
+This handler will handle the credential information for WebhookEndPoint that will be used in Webhook notifications.
+
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| store | String | The name of the AuthTokenStore to use. If not specified, `default` AuthTokenStore will be used.
+
+| type | String | The type indicator for WebhookAuthToken. The default value is `WEBHOOKATH`.
+|===
+
+[[CookieRiskEvaluationTokenHandler]]
+.[.eeonly]#CookieRiskEvaluationTokenHandler#
+Please specify org.iplass.mtp.impl.auth.authenticate.builtin.policy.riskevals.web.CookieRiskEvaluationTokenHandler to the class.
+
+This AuthTokenHandler is used for risk-based authentication (CookieToken) in the two-step authentication function.
+
+The following items can be configured.
+[cols = "1,1,3", options = "header"]
+|===
+| Item | Value | Description
+| store | String | The name of the AuthTokenStore to use. If not specified, `default` AuthTokenStore will be used.
+| type | String | Type. If not set, it will be `RBA`.
+| hashSettings | << AuthTokenHandler_HashSetting, HashSetting >>, Multiple | Token hash setting and method setting.
+If not specified, save as plain text.
+| secureRandomGeneratorName | String | Specify the token string generator defined in <<SecureRandomService, SecureRandomService>> .
+If not set, `default` SecureRandomGenerator will be used.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.auth.authenticate.token.AuthTokenService</interface>
+	<property name="storeMap">
+		<property name="default" class="org.iplass.mtp.impl.auth.authenticate.token.RdbAuthTokenStore" />
+		<property name="cache" class="org.iplass.mtp.impl.auth.authenticate.token.CachableAuthTokenStore">
+			<property name="authTokenStore" class="org.iplass.mtp.impl.auth.authenticate.token.RdbAuthTokenStore" />
+		</property>
+	</property>
+
+	<property name="handler" class="org.iplass.mtp.impl.auth.authenticate.rememberme.RememberMeTokenHandler">
+		<property name="type" value="REMME" />
+		<property name="store" value="default" />
+	</property>
+	<property name="handler" class="org.iplass.mtp.impl.auth.authenticate.simpletoken.SimpleAuthTokenHandler">
+		<property name="type" value="SAT" />
+		<property name="store" value="cache" />
+		<property name="secureRandomGeneratorName" value="moreSecure" />
+		<property name="hashSettings">
+			<property name="version" value="1" />
+			<property name="hashAlgorithm" value="SHA-256" />
+		</property>
+	</property>
+</service>
+----

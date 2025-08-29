@@ -1,0 +1,116 @@
+[[WebApiObjectMapperService]]
+=== WebApiObjectMapperService
+This is a service that defines the class to be converted in JAXB of WebApi.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.webapi.jaxb.WebApiJaxbService
+----
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.webapi.jaxb.WebApiJaxbService
+----
+
+==== The settings of WebApiObjectMapperService
+WebApiObjectMapperService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| typeMap | <<WebApiParameterType>>, Multiple | The settings of the parameter's type and corresponding class.
+| mixin | <<MixinConfig>>, Multiple | Target to adjust the output contents.
+| writeNullMapValues | boolean | Whether to output a map entry with null value to json.
+| writeNullValues | boolean | Whether to output null items to json.
+| escapeNonAscii | boolean | Whether to escape everything except ascii when returning WebApi results in json.
+|===
+
+[[WebApiParameterType]]
+.WebApiParameterType
+Please specify org.iplass.mtp.impl.webapi.jackson.WebApiParameterType to the class.
+The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| typeName | String | Type name
+| className | String | The class name corresponding to the type.
+|===
+
+[[MixinConfig]]
+.MixinConfig
+Please specify org.iplass.mtp.impl.webapi.jackson.MixinConfig to the class.
+The following items can be configured.
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| target | String | The class to adjust the output contents with jackson.
+| mixinSource | String | Set the Mix-In annotation which will adjust the performance of the class specified in `target`.
+|===
+
+===== Example
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.webapi.jackson.WebApiObjectMapperService</interface>
+	<property name="mixin">
+		<property name="target" value="org.iplass.mtp.entity.GenericEntity" />
+		<property name="mixinSource" value="org.iplass.mtp.impl.webapi.jackson.MixinEntity" />
+	</property>
+	<property name="mixin">
+		<property name="target" value="org.iplass.mtp.entity.Entity" />
+		<property name="mixinSource" value="org.iplass.mtp.impl.webapi.jackson.MixinEntity" />
+	</property>
+	<property name="mixin">
+		<property name="target" value="org.iplass.mtp.definition.binary.BinaryDefinition" />
+		<property name="mixinSource" value="org.iplass.mtp.impl.webapi.jackson.MixinBinaryDefinition" />
+	</property>
+
+	<property name="parameterType">
+		<property name="typeName" value="entity" />
+		<property name="className" value="org.iplass.mtp.entity.GenericEntity" />
+	</property>
+	<property name="parameterType">
+		<property name="typeName" value="decimal" />
+		<property name="className" value="java.math.BigDecimal" />
+	</property>
+	<property name="parameterType">
+		<property name="typeName" value="binary" />
+		<property name="className" value="org.iplass.mtp.entity.BinaryReference" />
+	</property>
+	<property name="parameterType">
+		<property name="typeName" value="select" />
+		<property name="className" value="org.iplass.mtp.entity.SelectValue" />
+	</property>
+	<property name="parameterType">
+		<property name="typeName" value="boolean" />
+		<property name="className" value="java.lang.Boolean" />
+	</property>
+	<property name="parameterType">
+		<property name="typeName" value="date" />
+		<property name="className" value="java.sql.Date" />
+	</property>
+	<property name="parameterType">
+		<property name="typeName" value="dateTime" />
+		<property name="className" value="java.sql.Timestamp" />
+	</property>
+	<property name="parameterType">
+		<property name="typeName" value="float" />
+		<property name="className" value="java.lang.Double" />
+	</property>
+	<property name="parameterType">
+		<property name="typeName" value="integer" />
+		<property name="className" value="java.lang.Long" />
+	</property>
+	<property name="parameterType">
+		<property name="typeName" value="string" />
+		<property name="className" value="java.lang.String" />
+	</property>
+	<property name="parameterType">
+		<property name="typeName" value="time" />
+		<property name="className" value="java.sql.Time" />
+	</property>
+</service>
+----

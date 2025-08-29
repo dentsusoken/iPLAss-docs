@@ -1,0 +1,10 @@
+:_hreflang-path: eqlreference/index.html
+:toclevels: 3
+
+ifeval::["{lang}" == "ja"]
+include::index_ja.adoc[]
+endif::[]
+ifeval::["{lang}" == "en"]
+include::index_en.adoc[]
+endif::[]
+
