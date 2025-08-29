@@ -1,0 +1,14 @@
+= Material Design Components (Calendar)
+:_hreflang-path: developerguide/materialdesigncomponents/calendar/index.html
+:_relative-root-path: ../../../
+:_menu-title-ee-only: true
+
+[[mdc_calendar]]
+== Calendar
+
+MDCモジュールにおけるカレンダー画面の設定です。 +
+単一または複数のエンティティデータを予定としてカレンダー形式で表示することができます。カレンダー上から予定を表すエンティティデータの参照、新規作成、編集、削除が可能です。
+
+include::operationguide.adoc[]
+
+include::setting.adoc[]

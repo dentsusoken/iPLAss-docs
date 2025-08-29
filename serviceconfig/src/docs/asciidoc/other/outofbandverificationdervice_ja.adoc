@@ -124,7 +124,7 @@ classはorg.iplass.wam.impl.outofbandverify.store.SessionVerificationStoreを指
 設定可能な項目はありません。
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.wam.impl.outofbandverify.OutOfBandVerificationService</interface>

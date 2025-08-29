@@ -100,7 +100,9 @@ pathMappingで指定されたメタデータ以外のメタデータを管理す
 
 [[XmlFileMetaDataStore]]
 .XmlFileMetaDataStore
-XMLファイルベースでメタデータを管理します。
+XMLファイルベースでメタデータを管理します。XMLファイルの修正は同一ファイルに上書きされます。 +
+開発時にメタデータの修正差分を git 等で管理することを想定しています。 +
+開発時のみ利用可能で、本番環境での利用は推奨されません。
 
 相対パスを指定する場合、EclipseのTomcat起動構成の引数タブで、作業ディレクトリをプロジェクトのルートディレクトリにしてください。
 ====
@@ -122,8 +124,10 @@ classにorg.iplass.mtp.impl.metadata.xmlfile.XmlFileMetaDataStoreを指定しま
 
 [[VersioningXmlFileMetaDataStore]]
 .VersioningXmlFileMetaDataStore
-XMLファイルベースでメタデータを管理します。
-メタデータはバージョンを付与し、世代管理を行います。
+XMLファイルベースでメタデータを管理します。メタデータはバージョンを付与し、世代管理を行います。 +
+RdbMetaDataStore のファイルベース管理の完全なる代替機能です。 +
+単一のサーバーの場合のみ本番環境で利用可能です。複数台のサーバーの場合は RdbMetaDataStore の利用を推奨します。
+
 
 classにorg.iplass.mtp.impl.metadata.xmlfile.VersioningXmlFileMetaDataStoreを指定します。
 
@@ -251,7 +255,7 @@ classにorg.iplass.mtp.impl.metadata.composite.MetaDataStorePathMappingを指定
 classにorg.iplass.mtp.impl.metadata.typeconversion.TypeConverterの実装クラスを指定してください。
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.metadata.MetaDataRepository</interface>

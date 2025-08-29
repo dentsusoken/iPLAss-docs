@@ -43,7 +43,8 @@ MicrometerServiceを設定します。
 | enableAsyncMetrics | boolean | 非同期処理の成功・失敗回数、処理時間をメトリクスとして記録するかを指定します。デフォルト値はtrueです。 +
 実際にメトリクスを収集するには、RdbQueueServiceの `workerFactory` にMicrometerモジュールの<<MetricsWorkerFactory>>が含まれている必要があります。
 | enableS3Metrics | boolean | AWS S3のリクエスト時間と回数をメトリクスとして記録するかを指定します。デフォルト値はtrueです。 +
-実際にメトリクスを収集するには、LobStoreServiceの `binaryStore` にMicrometerモジュールの<<MetricsS3LobStore>>が含まれている必要があります。
+実際にメトリクスを収集するには、LobStoreServiceの `binaryStore` に <<aws2_S3LobStore>> を設定し、<<aws2_S3Controller>> の設定項目 `requestConfigureList` に Micrometerモジュールの <<aws2_micrometer_S3RequestMetricPublisherConfigure>> が含まれている必要があります。 +
+AWS SDK for Java 1.x 用の機能では、実際にメトリクスを収集するには、LobStoreServiceの `binaryStore` にMicrometerモジュールの<<MetricsS3LobStore>>が含まれている必要があります。
 | enableMailMetrics | boolean | メール送信の成功・失敗回数、処理時間をメトリクスとして記録するかを指定します。デフォルト値はtrueです。 +
 実際にメトリクスを収集するには、MailServiceの `listener` にMicrometerモジュールの<<MetricsSendMailListener>>が含まれている必要があります。
 | enablePushMetrics | boolean | プッシュ送信の成功・失敗回数、処理時間をメトリクスとして記録するかを指定します。デフォルト値はtrueです。 +
@@ -245,6 +246,7 @@ classは、org.iplass.mtp.impl.micrometer.registry.MeterRegistryFactoryの実装
 * <<JmxMeterRegistryFactory>>
 * <<PrometheusMeterRegistryFactory>>
 * <<CloudWatchMeterRegistryFactory>>
+* <<aws2_CloudWatchMeterRegistryFactory>>
 * <<NewRelicMeterRegistryFactory>>
 * <<LoggingMeterRegistryFactory>>
 
@@ -264,22 +266,31 @@ Elasticsearchに対応したio.micrometer.elastic.ElasticMeterRegistryのFactory
 * `step` ： メトリクスの送信間隔（デフォルト値は、"1m"です。）
 
 設定可能な全ての項目の詳細は、link:https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-elastic/src/main/java/io/micrometer/elastic/ElasticConfig.java[ElasticConfig^]のJavaDocを参照してください。
-| httpSender | <<HttpSender, HttpSender>> | Httpリクエストの送信方式を制御するクラスです。
+| httpSender | <<HttpSender>> | Httpリクエストの送信方式を制御するクラスです。
 |====================
 
 [[HttpSender]]
 .HttpSender
 classは、io.micrometer.core.ipc.http.HttpSenderの実装クラスを指定します。
 
-標準では、以下のHttpSenderを提供します。指定しない場合は、<<HttpUrlConnectionSender, HttpUrlConnectionSender>>が使用されます。
+標準では、以下のHttpSenderを提供します。指定しない場合は、<<HttpUrlConnectionSender>>が使用されます。
 
 * <<AWSHttpSender>>
+* <<aws2_AWSHttpSender>>
 
 [[AWSHttpSender]]
-.AWSHttpSender
-classは、org.iplass.mtp.impl.aws.micrometer.AWSHttpSenderを指定します。
+.（非推奨）AWSHttpSender
+classは、org.iplass.mtp.impl.micrometer.aws.AWSHttpSenderを指定します。
 
 Amazon OpenSearch Serviceに対応したHttpSenderの実装クラスです。<<AWSSetting, [.eeonly]#AWSSetting#>>でアクセスキー、シークレットキー、AWSClient側の設定が可能です。以下の項目を設定可能です。
+
+[CAUTION]
+====
+AWS SDK for Java 1.x はメンテナンスモードになっており、2025年12月 にサポートを終了する予定です。 +
+iPLAss では AWS SDK for Java 1.x ベースのライブラリ iplass-ee-aws を非推奨とし、AWS SDK for Java 2.x ベースのライブラリ iplass-ee-aws2 への移行を推奨します。 +
+本機能を利用している場合は、ライブラリ iplass-ee-aws2 の機能を利用した <<aws2_AWSHttpSender>> へ設定を移行してください。 +
+ライブラリ iplass-ee-aws は将来削除される予定です。
+====
 
 [cols="1,1,3", options="header"]
 |====================
@@ -287,6 +298,22 @@ Amazon OpenSearch Serviceに対応したHttpSenderの実装クラスです。<<A
 | serviceName | String | サービス名。デフォルト値は"es"です。 +
 Amazon OpenSearch Serviceを利用する場合は、デフォルト値を変更しないでください。
 | region | String | Amazon OpenSearch Serviceのリージョン。
+|====================
+
+[[aws2_AWSHttpSender]]
+.AWSHttpSender
+classは、org.iplass.mtp.impl.micrometer.awsv2.AWSHttpSenderを指定します。
+
+Amazon OpenSearch Serviceに対応したHttpSenderの実装クラスです。<<aws2_AWSSetting>>でアクセスキー、シークレットキー、デフォルトのクライアント設定が可能です。以下の項目を設定可能です。
+
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| serviceName | String | サービス名。サービス名は AWS サービスクライアントに実装されています。 +
+Amazon OpenSearch Service のマネージドクラスターを利用する場合は、 `es` を指定してください。
+| region | String | AWSサービスのリージョンを設定します。
+| clientConfig | <<aws2_AWSSetting_AWSClientConfig>> | AWS クライアントの設定。AWSリージョンや通信設定を設定します。
+| defaultCharset | String | レスポンス解析時のデフォルトの文字セット。レスポンスに Content-Type が存在しない場合に利用します。デフォルト値は"UTF-8"です。
 |====================
 
 [[HttpUrlConnectionSender]]
@@ -341,11 +368,19 @@ PrometheusMeterRegistryの設定パラメータです。主要な設定項目は
 |====================
 
 [[CloudWatchMeterRegistryFactory]]
-.CloudWatchMeterRegistryFactory
+.（非推奨）CloudWatchMeterRegistryFactory
 classは、org.iplass.mtp.impl.aws.micrometer.registry.cloudwatch.CloudWatchMeterRegistryFactoryを指定します。
 
 Amazon CloudWatchに対応したio.micrometer.cloudwatch.CloudWatchMeterRegistryのFactoryクラスです。AWSモジュールを依存関係に追加した場合に指定可能です。このクラスを指定する場合は、 `io.micrometer:micrometer-registry-cloudwatch` を実行時の依存関係に追加してください。 +
 <<AWSSetting, [.eeonly]#AWSSetting#>>でアクセスキー、シークレットキー、AWSClient側の設定が可能です。以下の項目を設定可能です。
+
+[CAUTION]
+====
+AWS SDK for Java 1.x はメンテナンスモードになっており、2025年12月 にサポートを終了する予定です。 +
+iPLAss では AWS SDK for Java 1.x ベースのライブラリ iplass-ee-aws を非推奨とし、AWS SDK for Java 2.x ベースのライブラリ iplass-ee-aws2 への移行を推奨します。 +
+本機能を利用している場合は、ライブラリ iplass-ee-aws2 の機能を利用した <<aws2_CloudWatchMeterRegistryFactory>> へ設定を移行してください。 +
+ライブラリ iplass-ee-aws は将来削除される予定です。
+====
 
 [cols="1,1,3a", options="header"]
 |====================
@@ -357,7 +392,28 @@ CloudWatchMeterRegistryの設定パラメータです。主要な設定項目は
 * `namespace` ： 送信したカスタムメトリクスを保持する名前空間（デフォルト値は、"micrometer-namespace"です。）
 * `step` ： メトリクスの送信間隔（デフォルト値は、"1m"です。）
 
-設定可能な全ての項目の詳細は、link:https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-cloudwatch/src/main/java/io/micrometer/cloudwatch/CloudWatchConfig.java[CloudWatchConfig^]のJavaDocを参照してください。
+設定可能な全ての項目の詳細は、link:https://github.com/micrometer-metrics/micrometer/blob/1.12.x/implementations/micrometer-registry-cloudwatch/src/main/java/io/micrometer/cloudwatch/CloudWatchConfig.java[CloudWatchConfig^]のJavaDocを参照してください。
+|====================
+
+[[aws2_CloudWatchMeterRegistryFactory]]
+.CloudWatchMeterRegistryFactory
+classは、org.iplass.mtp.impl.aws.micrometer.registry.cloudwatch.awsv2.CloudWatchMeterRegistryFactory を指定します。
+
+Amazon CloudWatch に対応した io.micrometer.cloudwatch2.CloudWatchMeterRegistry のFactoryクラスです。AWS2 モジュールを依存関係に追加した場合に指定可能です。このクラスを指定する場合は、 `io.micrometer:micrometer-registry-cloudwatch2` を実行時の依存関係に追加してください。 +
+<<aws2_AWSSetting>> でアクセスキー、シークレットキー、デフォルトのクライアント設定が可能です。以下の項目を設定可能です。
+
+[cols="1,1,3a", options="header"]
+|====================
+| 項目 | 値 | 説明
+| configMap | String、Map形式 |
+CloudWatchMeterRegistryの設定パラメータです。主要な設定項目は以下の通りです。
+
+* `region` ： CloudWatchのリージョン
+* `namespace` ： 送信したカスタムメトリクスを保持する名前空間（デフォルト値は、"micrometer-namespace"です。）
+* `step` ： メトリクスの送信間隔（デフォルト値は、"1m"です。）
+
+設定可能な全ての項目の詳細は、link:https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-cloudwatch2/src/main/java/io/micrometer/cloudwatch2/CloudWatchConfig.java[CloudWatchConfig^]のJavaDocを参照してください。
+| clientConfig | <<aws2_AWSSetting_AWSClientConfig>> | AWS クライアントの設定。AWSリージョンや通信設定を設定します。
 |====================
 
 [[NewRelicMeterRegistryFactory]]
@@ -398,7 +454,7 @@ classは、org.iplass.mtp.impl.micrometer.registry.logging.LoggingMeterRegistryF
 |====================
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.micrometer.MicrometerService</interface>
@@ -515,9 +571,9 @@ classは、org.iplass.mtp.impl.micrometer.registry.logging.LoggingMeterRegistryF
 		<property name="tagKey2" value="tagValue2" />
 		<property name="tagKey3" value="tagValue3" />
 	</property>
-	 -->
+	-->
 
-	 <!-- ■ PathResolver Settings ■ -->
+	<!-- ■ PathResolver Settings ■ -->
 	<property name="actionPathResolver" class="org.iplass.mtp.impl.micrometer.metrics.web.action.DefaultActionPathResolver" />
 	<property name="webApiPathResolver" class="org.iplass.mtp.impl.micrometer.metrics.web.webapi.DefaultWebApiPathResolver" />
 
@@ -536,10 +592,10 @@ classは、org.iplass.mtp.impl.micrometer.registry.logging.LoggingMeterRegistryF
 	</property>
 	-->
 
-	 <!-- ■ Customizer Settings ■ -->
+	<!-- ■ Customizer Settings ■ -->
 	<!--
 	<property name="customizerClass" value="yourCustomizerClassName" />
-	 -->
+	-->
 
 	<!-- ■ MeterRegistry Settings ■ -->
 	<!--
@@ -549,11 +605,20 @@ classは、org.iplass.mtp.impl.micrometer.registry.logging.LoggingMeterRegistryF
 	<!--
 	<property name="meterRegistryFactory" class="org.iplass.mtp.impl.micrometer.registry.elastic.ElasticMeterRegistryFactory">
 	-->
-		<!-- ■ Amazon OpenSearch Serviceを利用する場合は、コメントアウトを外し、プロパティを変更してください。■ -->
+		<!-- ■ Amazon OpenSearch Serviceを利用する場合は、コメントアウトを外し、httpSender プロパティを変更してください。■ -->
+		<!-- (Deprecated) AWS SDK for Java 1.x を利用する例。 -->
 		<!--
-		<property name="httpSender" class="org.iplass.mtp.impl.aws.micrometer.AWSHttpSender">
+		<property name="httpSender" class="org.iplass.mtp.impl.micrometer.aws.AWSHttpSender">
 			<property name="serviceName" value="es" />
 			<property name="region" value="yourESRegion" />
+		</property>
+		-->
+		<!-- AWS SDK for Java 2.x を利用する例。org.iplass.mtp.impl.awsv2.AWSSetting に依存します。 -->
+		<!--
+		<property name="httpSender" class="org.iplass.mtp.impl.micrometer.awsv2.AWSHttpSender">
+			<property name="serviceName" value="es" />
+			<property name="region" value="yourESRegion" />
+			<property name="defaultCharset" value="UTF-8" />
 		</property>
 		-->
 	<!--
@@ -574,7 +639,7 @@ classは、org.iplass.mtp.impl.micrometer.registry.logging.LoggingMeterRegistryF
 		</property>
 		<property name="tagsAsPrefix" value="prefix1" />
 	</property>
-	 -->
+	-->
 
 	<!-- for Prometheus -->
 	<!--
@@ -584,9 +649,21 @@ classは、org.iplass.mtp.impl.micrometer.registry.logging.LoggingMeterRegistryF
 	</property>
 	-->
 	
-	<!-- for CloudWatch -->
+	<!-- (Deprecated) for CloudWatch -->
+	<!-- AWS SDK for Java 1.x を利用した機能は非推奨となります。AWS SDK for Java 2.x を利用した機能に変更してください。 -->
 	<!--
 	<property name="meterRegistryFactory" class="org.iplass.mtp.impl.aws.micrometer.registry.cloudwatch.CloudWatchMeterRegistryFactory">
+		<property name="configMap" >
+			<property name="step" value="1m" />
+			<property name="region" value="yourRegion" />
+			<property name="namespace" value="micrometer-namespace" />
+		</property>
+	</property>
+	-->
+
+	<!-- for CloudWatch (AWS SDK for Java 2.x). org.iplass.mtp.impl.awsv2.AWSSetting に依存します。 -->
+	<!--
+	<property name="meterRegistryFactory" class="org.iplass.mtp.impl.micrometer.registry.cloudwatch.awsv2.CloudWatchMeterRegistryFactory">
 		<property name="configMap" >
 			<property name="step" value="1m" />
 			<property name="region" value="yourRegion" />

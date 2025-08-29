@@ -1,0 +1,526 @@
+[[webauthn]]
+=== WebAuthn（パスキー）
+WebAuthnは、パスワードレス認証を実現するための標準的な認証プロトコルです。ユーザーは、セキュリティキーやデバイス内蔵の認証器・パスキーを使用して安全に認証を行うことができます。
+
+WebAuthnによる認証機能として次の機能を提供します。
+
+* パスキー（Discoverable credentials）による認証のサポート
+* 認証器・パスキーの登録機能
+* WebAuthnによる認証・登録用のWebAPIの提供
+
+==== 設定
+WebAuthnによる認証機能を有効化するためには、次の設定を行います。
+
+1. WebAuthnServiceの設定
+2. WebAuthn定義の設定
+3. 認証ポリシーの設定
+4. Tenant定義にてWebAuthnによる認証を有効化
+
+[[webauthnservice_setting]]
+===== WebAuthnServiceの設定
+WebAuthn認証に関する共通の設定をWebAuthnServiceに設定します。 サポートする署名アルゴリズム、信頼する認証器のメタデータの登録・設定などを行います。
+詳細は <<../../serviceconfig/index.adoc#WebAuthnService,WebAuthnService>> を参照してください。
+
+===== WebAuthn定義の設定
+WebAuthn定義は、WebAuthnによる認証方法に関する設定です。
+AdminConsoleなどを介して次の項目を設定します。
+
+[cols="1,3a",options="header"]
+|===
+|項目 |内容
+|Display Name |WebAuthn仕様におけるRP（Relying Party）の表示名を指定します。
+|RP ID |RP IDを指定します。未設定の場合、ホスト名が自動的に適用されます。
+|Origin |RPのオリジンを指定します。未設定の場合、HTTPリクエストから自動的に取得されます。
+|Attestation Conveyance Preference |Attestation情報の伝達方法を指定します。 `NONE` （デフォルト）、 `INDIRECT` 、 `DIRECT` 、 `ENTERPRISE` のいずれかを選択します。
+|Authenticator Attachment |認証器のアタッチメントタイプを限定したい場合に指定します。 `PLATFORM` または `CROSS_PLATFORM` を選択します。
+|ResidentKey Requirement |Discoverable Credentialの要件を指定します。 `PREFERRED` （デフォルト）、 `REQUIRED` 、 `DISCOURAGED` のいずれかを選択します。
+|User Verification Requirement |ユーザー検証の要件を指定します。 `PREFERRED` （デフォルト）、 `REQUIRED` 、 `DISCOURAGED` のいずれかを選択します。
+|Self Attestation Allowed |自己認証（Self-Attestation）を許可するかどうかを指定します。デフォルトは `true` です。Attestation Conveyance Preferenceが `NONE` の場合は、構成証明ステートメントの検証は実施されず、この設定は無効です。
+|Allowed Aaguid List |許可される認証器のAAGUIDリストを指定します。改行により複数件の登録が可能です。Attestation Conveyance Preferenceが `NONE` の場合は、構成証明ステートメントの検証は実施されず、この設定は無効です。
+|===
+
+===== 認証ポリシーの設定
+WebAuthnによる認証を有効化するアカウントに紐づく認証ポリシーにWebAuthn定義を設定します。
+詳細は <<authpolicy,認証ポリシーの設定>> を参照してください。
+
+===== Tenant定義の設定
+テナントの設定にて、WebAuthnによる認証を有効化します。
+詳細は <<../multitenant/index.adoc#tenant_definition_setting,テナントの設定項目>> を参照してください。
+
+==== 機能
+iPLAssの標準画面（GEM、MDC）にて次の機能を提供します。
+
+===== パスキーによる認証
+WebAuthnによる認証を有効化した場合、ログイン画面において、パスキー（Discoverable credentials）による認証が可能になります。
+ただし、利用するブラウザがWebAuthnによる認証に対応している必要があります。
+
+===== 認証器・パスキーの登録機能
+パスキー認証を行うためには、事前にユーザと認証器・パスキーの紐づけを行う必要があります。
+認証器・パスキーの登録は、ユーザメニューのユーザー情報変更画面にて行うことが可能です。
+
+==== Web API
+カスタム画面などにおいてWebAuthnによる認証や登録機能の実装を容易にするため、WebAuthnによる認証・登録用のWebAPIを提供します。
+
+各WebAPIのエンドポイントを以下に示します。
+
+===== 登録オプション取得API
+WebAuthnによる認証において、認証用の鍵生成を行うメソッド `navigator.credentials.create` のパラメータである `PublicKeyCredentialCreationOptions` インスタンスのJSON表現を返却します。
+`PublicKeyCredential.parseCreationOptionsFromJSON` メソッドによりJSON表現をパースし、  `navigator.credentials.create` のpublicKeyパラメータとして利用可能です。
+
+----
+POST
+http(s)://[server]/[appContext]/[tenantName]/api/webauthn/registrationopt/[WebAuthn definitionName]
+----
+
+====== リクエストパラメータ
+[cols="1,3a",options="header"]
+|===
+|項目 |内容
+|[WebAuthn definitionName] |パスパラメータにてWebAuthn定義名を指定可能です。未指定の場合は `DEFAULT` 定義が利用されます。
+|リクエストヘッダー |content-type: application/json もしくは application/x-www-form-urlencoded +
+x-requested-with: XMLHttpRequest +
+を指定します。
+|リクエストボディ |content-typeがapplication/jsonの場合、ブランクのJSON（ `{}` ）を指定します。content-typeがapplication/x-www-form-urlencodedの場合、空文字を指定します。
+|===
+
+====== レスポンス
+[cols="1,3a",options="header"]
+|===
+|項目 |内容
+|レスポンスボディ |`PublicKeyCredentialCreationOptions` インスタンスのJSON表現。
+|===
+
+
+.リクエスト例
+[source,text]
+----
+POST
+https://localhost/app/tenant1/api/webauthn/registrationopt
+content-type: application/json
+x-requested-with: XMLHttpRequest
+ :
+
+{}
+----
+
+.レスポンス例
+[source,text]
+----
+HTTP/1.1 200 OK
+content-type: application/json
+ :
+
+{
+  "rp": {
+    "id": "localhost",
+    "name": "ローカルホスト"
+  },
+  "user": {
+    "id": "diidsdirlkgjea",
+    "name": "admin",
+    "displayName": "User Admin"
+  },
+  "challenge": "dsgfserEt_9cAFerwew",
+  "pubKeyCredParams": [
+    {
+      "type": "public-key",
+      "alg": -8
+    },
+    :
+    :
+  ],
+  "timeout": 300000,
+  "authenticatorSelection": {
+    "requireResidentKey": false,
+    "residentKey": "preferred",
+    "userVerification": "preferred"
+  },
+  "attestation": "none",
+  "extensions": {
+    "credProps": true
+  }
+}
+----
+
+===== 登録API
+WebAuthnによる認証において、生成した認証用の鍵の登録を行うAPIです。
+メソッド `navigator.credentials.create` 呼び出しのレスポンス `PublicKeyCredential` インスタンスのJSON表現を送信します。
+`PublicKeyCredential` の `toJSON` メソッドによりJSON表現に変換したものをそのままリクエストボディに利用可能です。
+
+----
+POST
+http(s)://[server]/[appContext]/[tenantName]/api/webauthn/registration/[WebAuthn definitionName]
+----
+
+====== リクエストパラメータ
+[cols="1,3a",options="header"]
+|===
+|項目 |内容
+|[WebAuthn definitionName] |パスパラメータにてWebAuthn定義名を指定可能です。未指定の場合は `DEFAULT` 定義が利用されます。
+|リクエストヘッダー |content-type: application/json +
+x-requested-with: XMLHttpRequest +
+を指定します。
+|リクエストボディ |PublicKeyCredentialのJSON表現を指定します。
+|===
+
+====== レスポンス
+[cols="1,3a",options="header"]
+|===
+|項目 |内容
+|status |リクエスト結果。成功時はokが返却されます。
+|===
+
+
+.リクエスト例
+[source,text]
+----
+POST
+https://localhost/app/tenant1/api/webauthn/registration
+content-type: application/json
+x-requested-with: XMLHttpRequest
+ :
+
+{
+  "authenticatorAttachment": "platform",
+  "clientExtensionResults": {
+    "credProps": {
+      "rk": true
+    }
+  },
+  "id": "Btb......",
+  "rawId": "Btb......",
+  "response": {
+    "attestationObject": "o2NmbX...................",
+    "authenticatorData": "SZYN5Y...................",
+    "clientDataJSON": "eyJ0eX...................",
+    "publicKey": "MCowBQ...............",
+    "publicKeyAlgorithm": -8,
+    "transports": [
+      "internal"
+    ]
+  },
+  "type": "public-key"
+}
+----
+
+.レスポンス例
+[source,text]
+----
+HTTP/1.1 200 OK
+content-type: application/json
+ :
+
+{
+  "status":"ok"
+}
+----
+
+===== 認証オプション取得API
+WebAuthnによる認証において、認証用の鍵取得を行うメソッド `navigator.credentials.get` のパラメータである `PublicKeyCredentialRequestOptions` インスタンスのJSON表現を返却します。
+`PublicKeyCredential.parseRequestOptionsFromJSON` メソッドによりJSON表現をパースし、  `navigator.credentials.get` のpublicKeyパラメータとして利用可能です。
+
+----
+POST
+http(s)://[server]/[appContext]/[tenantName]/api/webauthn/authopt/[WebAuthn definitionName]
+----
+
+====== リクエストパラメータ
+[cols="1,3a",options="header"]
+|===
+|項目 |内容
+|[WebAuthn definitionName] |パスパラメータにてWebAuthn定義名を指定可能です。未指定の場合は `DEFAULT` 定義が利用されます。
+|リクエストヘッダー |content-type: application/json もしくは application/x-www-form-urlencoded +
+x-requested-with: XMLHttpRequest +
+を指定します。
+|リクエストボディ |content-typeがapplication/jsonの場合、ブランクのJSON（ `{}` ）を指定します。content-typeがapplication/x-www-form-urlencodedの場合、空文字を指定します。
+|===
+
+====== レスポンス
+[cols="1,3a",options="header"]
+|===
+|項目 |内容
+|レスポンスボディ |`PublicKeyCredentialRequestOptions` インスタンスのJSON表現。
+|===
+
+
+.リクエスト例
+[source,text]
+----
+POST
+https://localhost/app/tenant1/api/webauthn/authopt
+content-type: application/json
+x-requested-with: XMLHttpRequest
+ :
+
+{}
+----
+
+.レスポンス例
+[source,text]
+----
+HTTP/1.1 200 OK
+content-type: application/json
+ :
+
+{
+  "challenge": "PUvTVodYL2r_0Dc_la",
+  "timeout": 300000,
+  "rpId": "localhost",
+  "userVerification": "required"
+}
+----
+
+===== 認証API
+WebAuthnによる認証において、認証用のAPIです。
+メソッド `navigator.credentials.get` 呼び出しのレスポンス `PublicKeyCredential` インスタンスのJSON表現を送信します。
+`PublicKeyCredential` の `toJSON` メソッドによりJSON表現に変換したものをそのままリクエストボディに利用可能です。
+
+----
+POST
+http(s)://[server]/[appContext]/[tenantName]/api/webauthn/auth/[WebAuthn definitionName]
+----
+
+====== リクエストパラメータ
+[cols="1,3a",options="header"]
+|===
+|項目 |内容
+|[WebAuthn definitionName] |パスパラメータにてWebAuthn定義名を指定可能です。未指定の場合は `DEFAULT` 定義が利用されます。
+|リクエストヘッダー |content-type: application/json +
+x-requested-with: XMLHttpRequest +
+を指定します。
+|rememberMe |クエリーパラメータにてrememberMeフラグを送信可能です。trueを指定した場合、ブラウザを閉じても一定期間ログイン状態を維持します。
+
+|リクエストボディ |PublicKeyCredentialのJSON表現を指定します。
+|===
+
+====== レスポンス
+[cols="1,3a",options="header"]
+|===
+|項目 |内容
+|status |リクエスト結果。成功時はokが返却されます。
+|===
+
+
+.リクエスト例
+[source,text]
+----
+POST
+https://localhost/app/tenant1/api/webauthn/auth
+content-type: application/json
+x-requested-with: XMLHttpRequest
+ :
+
+{
+  "authenticatorAttachment": "platform",
+  "clientExtensionResults": {},
+  "id": "Tb67..........",
+  "rawId": "Tb67..........",
+  "response": {
+    "authenticatorData": "SZYN5d.............................",
+    "clientDataJSON": "eyJ0eX.............................",
+    "signature": "_bNGDV.............................",
+    "userHandle": "Xvsr2-............................."
+  },
+  "type": "public-key"
+}
+----
+
+.レスポンス例
+[source,text]
+----
+HTTP/1.1 200 OK
+content-type: application/json
+ :
+
+{
+  "status":"ok"
+}
+----
+
+
+===== 再認証API
+WebAuthnによる認証において、再認証用のAPIです。
+既にログイン済みのアカウントと認証情報が一致することを確認します。
+メソッド `navigator.credentials.get` 呼び出しのレスポンス `PublicKeyCredential` インスタンスのJSON表現を送信します。
+`PublicKeyCredential` の `toJSON` メソッドによりJSON表現に変換したものをそのままリクエストボディに利用可能です。
+
+
+----
+POST
+http(s)://[server]/[appContext]/[tenantName]/api/webauthn/reauth/[WebAuthn definitionName]
+----
+
+====== リクエストパラメータ
+[cols="1,3a",options="header"]
+|===
+|項目 |内容
+|[WebAuthn definitionName] |パスパラメータにてWebAuthn定義名を指定可能です。未指定の場合は `DEFAULT` 定義が利用されます。
+|リクエストヘッダー |content-type: application/json +
+x-requested-with: XMLHttpRequest +
+を指定します。
+|rememberMe |クエリーパラメータにてrememberMeフラグを送信可能です。trueを指定した場合、ブラウザを閉じても一定期間ログイン状態を維持します。
+
+|リクエストボディ |PublicKeyCredentialのJSON表現を指定します。
+|===
+
+====== レスポンス
+[cols="1,3a",options="header"]
+|===
+|項目 |内容
+|status |リクエスト結果。成功時はokが返却されます。
+|===
+
+
+.リクエスト例
+[source,text]
+----
+POST
+https://localhost/app/tenant1/api/webauthn/reauth
+content-type: application/json
+x-requested-with: XMLHttpRequest
+ :
+
+{
+  "authenticatorAttachment": "platform",
+  "clientExtensionResults": {},
+  "id": "Tb67..........",
+  "rawId": "Tb67..........",
+  "response": {
+    "authenticatorData": "SZYN5d.............................",
+    "clientDataJSON": "eyJ0eX.............................",
+    "signature": "_bNGDV.............................",
+    "userHandle": "Xvsr2-............................."
+  },
+  "type": "public-key"
+}
+----
+
+.レスポンス例
+[source,text]
+----
+HTTP/1.1 200 OK
+content-type: application/json
+ :
+
+{
+  "status":"ok"
+}
+----
+
+===== リストAPI
+WebAuthnによる認証において、既に登録済みの認証器・パスキーのリストを取得するためのAPIです。
+
+----
+GET
+http(s)://[server]/[appContext]/[tenantName]/api/webauthn/keys
+----
+
+====== リクエストパラメータ
+[cols="1,3a",options="header"]
+|===
+|項目 |内容
+|リクエストヘッダー |
+x-requested-with: XMLHttpRequest +
+を指定します。
+|===
+
+====== レスポンス
+[cols="1,3a",options="header"]
+|===
+|項目 |内容
+|status |リクエスト結果。成功時はokが返却されます。
+|list |認証器・パスキーのリスト。
+|registrationLimit |認証器・パスキーの登録上限数。
+|===
+
+
+.リクエスト例
+[source,text]
+----
+GET
+https://localhost/app/tenant1/api/webauthn/keys
+x-requested-with: XMLHttpRequest
+ :
+----
+
+.レスポンス例
+[source,text]
+----
+HTTP/1.1 200 OK
+content-type: application/json
+ :
+
+{
+  "status": "ok",
+  "list": [
+    {
+      "key": "8fdxX....................",
+      "type": "WAC",
+      "description": "WebAuthn Authenticator:Test Passkey registered at 2025/04/22 12:25",
+      "startDate": 1745292330283,
+      "authenticatorDisplayName": "Test Passkey"
+    },
+    {
+      "key": "Tb67o..................",
+      "type": "WAC",
+      "description": "WebAuthn Authenticator:Another Passkey registered at 2025/04/22 11:46, last login at 2025/04/22 12:05",
+      "startDate": 1745289969674,
+      "lastLoginDate": 1745291101633,
+      "authenticatorDisplayName": "Another Passkey"
+    }
+  ],
+  "registrationLimit": 3
+}
+----
+
+===== 登録解除API
+WebAuthnによる認証において、既に登録済みの認証器・パスキーを登録解除するAPIです。
+
+----
+POST
+http(s)://[server]/[appContext]/[tenantName]/api/webauthn/deregistration
+----
+
+====== リクエストパラメータ
+[cols="1,3a",options="header"]
+|===
+|項目 |内容
+|リクエストヘッダー |content-type: application/json +
+x-requested-with: XMLHttpRequest +
+を指定します。
+|keyId |リクエストボディにてJSON形式にて削除対象の認証器・パスキーのkeyIdを指定します。
+|===
+
+====== レスポンス
+[cols="1,3a",options="header"]
+|===
+|項目 |内容
+|status |リクエスト結果。成功時はokが返却されます。
+|===
+
+
+.リクエスト例
+[source,text]
+----
+POST
+https://localhost/app/tenant1/api/webauthn/deregistration
+content-type: application/json
+x-requested-with: XMLHttpRequest
+ :
+
+{
+  "keyId": "Tb67o.................."
+}
+----
+
+.レスポンス例
+[source,text]
+----
+HTTP/1.1 200 OK
+content-type: application/json
+ :
+
+{
+  "status": "ok"
+}
+----

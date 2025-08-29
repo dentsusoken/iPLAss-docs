@@ -40,6 +40,7 @@ Action経由でStreamやStaticResourceを利用する場合は、Action名を設
 `tenantContextPath + "/" + 指定パス`
 
 
+[[tenant_definition_setting]]
 === テナントの設定項目
 
 ==== 基本設定
@@ -67,6 +68,10 @@ Action経由でStreamやStaticResourceを利用する場合は、Action名を設
 | RememberMe機能を利用する |
 ログイン状態を一定期間保持する機能を利用するかを指定します。 +
 利用する場合は、認証ポリシーの<<../authentication/index.adoc#ref_rememberme_policy, Remember Me>>を設定してください。
+| WebAuthn機能を利用する |
+WebAuthn（パスキー）による認証機能を利用するかを指定します。 +
+WebAuthn機能については<<../authentication/index.adoc#webauthn, WebAuthn（パスキー）>>を参照してください。
+| WebAuthn定義名 | ログイン画面で利用するWebAuthnの定義名を指定します。
 | ユーザー管理者ロール | ユーザー管理者ロールに指定されたロールを保持するユーザーは
 ユーザーのパスワードリセット、ユーザーのアカウントポリシーの変更など、ユーザーの管理をすることが可能となります。 +
 GEMのユーザー編集機能は、この設定をもとにリセットボタンの表示制御を行っています。
@@ -140,7 +145,7 @@ GEMで提供している標準レイアウト(gem/layout/defaultLayout)、ポッ
 
 ===== [.eeonly]#MDCモジュールの画面表示設定#
 
-モバイルファーストなMDCモジュールの汎用画面表示に関する設定です。
+マテリアルデザインに準拠したMDCモジュールの汎用画面表示に関する設定です。
 [cols="3,10a",options="header"]
 |===
 | 項目 | 設定内容
@@ -162,9 +167,46 @@ MDCで提供している標準レイアウトに組み込むカスタムのCSS�
 標準レイアウトを利用した画面で、ヘッダ上に「画面タイトル」を表示するかを設定します。
 テナントロゴを指定している場合に、画面タイトルを出力したくない時に「表示しない」に設定することを想定しています。
 | 画面タイトル | 画面タイトルを返却するGroovyTemplateを指定します。未指定の場合は、表示名（テナント名）が利用されます。また、指定したGroovyTemplateでエラーが発生した場合も表示名（テナント名）が利用されます。
-| テーマ名 | MDCで提供している画面テーマカラーを指定します。 <<../../serviceconfig/index.adoc#MdcConfigService,MdcConfigService>> で独自のテーマ、テーマ配色を設定可能です。
-未指定の場合は、デフォルト設定が利用されます。
+| テーマ切り替えの有効化 | ユーザーメニューにライト/ダークテーマの切り替え機能を表示するかを設定します。
+| カラースキーム | 画面の<<ColorScheme, カラースキーム>>を指定します。カラースキームは https://m3.material.io/styles/color/roles[Google Material Designの配色] に準拠しています。
+| ダークカラースキーム | 画面の<<DarkColorScheme, ダークカラースキーム>>を指定します。ダークカラースキームは https://m3.material.io/styles/color/roles[Google Material Designの配色] に準拠しています。
 |===
+
+[[ColorScheme]]
+.カラースキーム
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| Primary | String | プライマリカラー。デフォルト値は `#00696F` です。
+| Secondary | String | セカンダリカラー。デフォルト値は `#4A6365` です。
+| Tertiary | String | ターシャリカラー。デフォルト値は `#4F5F7D` です。
+| Surface | String | サーフェスカラー。デフォルト値は `#F4FAFB` です。
+| Surface Container | String | サーフェスコンテナカラー。デフォルト値は `#E9EFEF` です。
+| Success | String | 成功カラー。デフォルト値は `#4CAF50` です。
+| Info | String | 情報カラー。デフォルト値は `#2196F3` です。
+| Caution | String | 注意カラー。デフォルト値は `#BA1A1A` です。
+| Warning | String | 警告カラー。デフォルト値は `#FF7D07` です。
+| Error | String | エラーカラー。デフォルト値は `#BA1A1A` です。
+|====================
+
+[[DarkColorScheme]]
+.ダークカラースキーム
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| Primary Dark | String | プライマリカラーダーク。デフォルト値は `#80D4DA` です。
+| Secondary Dark | String | セカンダリカラーダーク。デフォルト値は `#B1CBCE` です。
+| Tertiary Dark | String | ターシャリカラーダーク。デフォルト値は `#B6C7EA` です。
+| Surface Dark | String | サーフェスカラーダーク。デフォルト値は `#0E1415` です。
+| Surface Container Dark | String | サーフェスコンテナカラーダーク。デフォルト値は `#1A2121` です。
+| Success Dark | String | 成功カラーダーク。デフォルト値は `#4CAF50` です。
+| Info Dark | String | 情報カラーダーク。デフォルト値は `#2196F3` です。
+| Caution Dark | String | 注意カラーダーク。デフォルト値は `#FFB4AB` です。
+| Warning Dark | String | 警告カラーダーク。デフォルト値は `#FF7D07` です。
+| Error Dark | String | エラーカラーダーク。デフォルト値は `#FFB4AB` です。
+|====================
 
 ==== 画面遷移設定
 画面遷移に関する設定です。

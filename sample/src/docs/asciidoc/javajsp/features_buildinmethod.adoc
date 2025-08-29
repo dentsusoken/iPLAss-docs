@@ -1,7 +1,7 @@
 [[Java_JSP_BuildinMethod]]
 === Buildin EL関数
 
-* iPLAssのJSPタグライブラリに定義されているBuildin EL関数を利用しています。
+* iPLAssのJSPタグライブラリに定義されているビルトインのEL関数を利用しています。
 +
 [source]
 ----
@@ -37,8 +37,8 @@
 ----------------------------------------以下略----------------------------------------
 ----
 <1> iPLAssのJSPタグライブラリ
-<2> tcPath()：	tenant名まで含むコンテキストパスを取得します。
-<3> rs()：	指定された基底名、キーからResourceBundleに定義された文字列を返します。<<index#Java_JSP_ResourceFiles_Message,多言語メッセージ>>を併せて利用できます。
+<2> tcPath()：	テナント名まで含むコンテキストパスを取得します。
+<3> rs()：	指定された基底名とキーからResourceBundleに定義された文字列を返します。<<index#Java_JSP_ResourceFiles_Message,多言語メッセージ>>を併せて利用できます。
 <4> token()：	トランザクショントークンを出力します。
 +
-※ 他のEL関数の使い方について、`org.iplass.mtp.web.template.ELFunctions` のJavaDocを参照してください。
+※ 他のEL関数の使い方については、`org.iplass.mtp.web.template.ELFunctions` のJavaDocを参照してください。

@@ -39,7 +39,7 @@ Layout Actionを設定します。 +
 Layout Actionについては、 <<Template-Componentization, Templateの部品化>> を参照してください。
 |Path|（TypeがJSPの場合） +
 JSPのパスを指定します。
-|Source |（TypeがGroovyTemplateもしくはHtml(Text Resource)の場合） +
+|Source |（TypeがGroovyTemplate、Html(Text Resource)もしくは[.eeonly]#Vue.js SFC#の場合） +
 ソースコードを直接記述します。
 |File |（TypeがBinaryの場合） +
 ファイルを指定します。
@@ -73,6 +73,11 @@ GroovyTemplateの記法は <<groovytemplate,GroovyTemplate>> を参照してく�
 Htmlなどの静的なテキストを出力します。 +
 適切なContent Typeを指定した上で、Sourceに直接記述します。
 
+==== [.eeonly]#Vue.js SFC#
+Templateの実装にVue.jsのSingle File Componentを利用します。 +
+[.eeonly]#MDCモジュール# でのみ利用可能です。 +
+詳細については link:../../storybook/index.html?path=/docs/開発者ドキュメント-オリジナルテンプレート[オリジナルテンプレート^] を参照してください。
+
 ==== Binary
 テキスト以外の静的なバイナリデータを出力します。 +
 適切なContent Typeを指定した上で、ファイルをアップロードします。
@@ -96,7 +101,7 @@ Actionをincludeした場合は、そのActionに紐付けされているCommand
 JSPでincludeを行う場合、iPLAssが提供するカスタムタグを呼び出します。
 
 .JSPにおけるincludeのサンプル
-[source, JSP]
+[source,jsp]
 ----
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@taglib prefix="m" uri="http://iplass.org/tags/mtp"%> <1>
@@ -129,7 +134,7 @@ JSPでincludeを行う場合、iPLAssが提供するカスタムタグを呼び�
 GroovyTemplateでincludeする場合はinclude/includeTemplate関数を呼び出します。
 
 .GroovyTemplateにおけるincludeのサンプル
-[source, groovytemplate]
+[source,html]
 ----
 <!DOCTYPE html>
 <html>
@@ -164,7 +169,7 @@ includeは、Template内にパーツを組み込むための手法ですが、La
 次にJSPでLayoutActionを作成し、適用する例を示します。 +
 
 .レイアウト用Templateを作成する
-[source, JSP]
+[source,jsp]
 ----
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@taglib prefix="m" uri="http://iplass.org/tags/mtp"%> <1>
@@ -195,7 +200,7 @@ includeは、Template内にパーツを組み込むための手法ですが、La
 Actionの定義の方法は <<Action,Action>> を参照してください。
 
 .コンテンツを表現するTemplateを作成する
-[source, JSP]
+[source,jsp]
 ----
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -207,7 +212,7 @@ Actionの定義の方法は <<Action,Action>> を参照してください。
 上記、TemplateにLayoutActionを適用した場合、次のように出力されます。
 
 .html出力結果
-[source, HTML]
+[source,html]
 ----
 <!DOCTYPE html>
 <html>
@@ -236,7 +241,7 @@ Actionの定義の方法は <<Action,Action>> を参照してください。
 GroovyTemplateでLayoutActionを作成する場合は、renderContent関数を利用します。
 
 .GroovyTemplateにおけるrenderContentのサンプル
-[source, groovytemplate]
+[source,html]
 ----
 <!DOCTYPE html>
 <html>

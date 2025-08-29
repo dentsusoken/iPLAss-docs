@@ -8,38 +8,34 @@
 
 [cols="1,4"]
 |===
-|Java|Java 8（OracleJDK Only）、Java 11、Java 17
-|AP Server|Tomcat 9.0 (the webServer with Servlet 4.0, JSP 2.3 or higher)
-|DB Server|Any of the following: Oracle above version 11gR2 ※1, MySQL 5.7/ 8.0, PostgreSQL above version 9.6, SQL Server 2012 or later ※2, and Amazon Aurora ※3
+|Java|Java 21 or higher
+|AP Server|Tomcat 10.1 (web container implementing Servlet 6.0 and JSP 3.1 or higher)
+|DB Server|Oracle 19c or higher, MySQL 8.0 or higher, PostgreSQL 12 or higher, SQL Server 2016 or higher (*1), Amazon Aurora (*2)
 |===
 
-※１::
-It is recommended to use the version above 11.2.0.3.0.
-※２::
+※1::
 SQL Server has the following limitation.
 +
 ====
 - Cannot use LOCALTIME variable for EQL.
 ====
-※３::
+※2::
 For Aurora, please make sure to use the original JDBC Driver for MySQL.
 
 ==== Supported Browsers
 
-Google Chrome, Safari, Mozilla Firefox, Microsoft Edge +
+Google Chrome, Safari, Mozilla Firefox, Microsoft Edge
 
 === Web Account Manager Plugin Module
 
 [cols="1,4"]
 |===
-|Apache Module|Apache HTTP Server 2.4 +
-Windows, RHEL, Amazon Linux
+|Apache Module|Apache HTTP Server 2.4
 |IIS Module|IIS 8.5 or higher +
 .Above NET 4.5.1 +
 Windows Server 2012R2 or later
-|JavaEE Module|Tomcat 8.5 or higher (the webServer with Servlet 3.1, JSP 2.3 or higher) +
-Java 8 (Oracle JDK), Java 11 (Oracle JDK, Open JDK) +
-Windows, RHEL, Amazon Linux
+|JavaEE Module|Java 21 or higher +
+Tomcat 10.1 (web container implementing Servlet 6.0 and JSP 3.1 or higher)
 |Serverless(JavaScript) Module|A serverless environment that provides a JavaScript runtime that supports the Fetch API (edge ​​environment that operates in front of a CDN, etc.)
 |===
 
@@ -525,12 +521,13 @@ In iPLAss, with each thread able to handle up to 2 connections under normal oper
 ----
 +
 .Example Configuration for HikariCP
-[source, xml]
+[source,xml]
 +
 ----
 <service>
 	<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>
 	<class>org.iplass.mtp.impl.rdb.connection.DataSourceConnectionFactory</class>
+
 	<property name="dataSource" class="com.zaxxer.hikari.HikariDataSource">
 		<property name="jdbcUrl" value="jdbc:mysql://server:3306/mtdb" />
 		<property name="username" value="user" />
@@ -592,7 +589,7 @@ The place to store the temporary objects when uploading files can be specified.
 </service>
 ----
 +
-Please beware that Without above setting items, the system will use the directory specified by "javax.servlet.context.tempdir" from Servlet settings, this may cause the system to store data in unwanted directory.
+Please beware that Without above setting items, the system will use the directory specified by "jakarta.servlet.context.tempdir" from Servlet settings, this may cause the system to store data in unwanted directory.
 
 * Size limit for upload files +
 It is possible to restrict the size limit for the files to be uploaded.
@@ -955,7 +952,7 @@ Assuming the created setting file is ``my-install.properties``, and we will spec
 . Create ``setenv.bat`` at ``%CATALINA_HOME%/bin`` directory
 . In the created ``setenv.bat`` write the followings:
 +
-[source, bat]
+[source,bat]
 ----
 set JAVA_OPTS=%JAVA_OPTS% -Dmtp.install="＜install setting file path＞/my-install.properties"
 ----
@@ -1107,7 +1104,7 @@ Example: Assuming we want to configure about the default mail service for the te
 Custom service-config can be specified by JVM system property :``mtp.config.custom``.
 
 Example：Assuming the Custom service-config is named``custom-service-config.xml``
-[source, bat]
+[source,bat]
 ----
 -Dmtp.config.custom="＜custom service-config file directory＞/custom-service-config.xml"
 ----

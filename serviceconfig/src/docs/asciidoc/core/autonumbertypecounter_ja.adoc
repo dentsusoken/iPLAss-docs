@@ -48,7 +48,7 @@ CachableRdbTableCounterServiceを設定します。
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service name="AutoNumberTypeCounterAcceptSkip">
 	<interface>org.iplass.mtp.impl.counter.CounterService</interface>

@@ -62,7 +62,7 @@ classはorg.iplass.mtp.impl.http.HttpClientBuilderFactoryを実装するクラ�
 * <<MicrometerHttpClientBuilderFactory>>
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.wam.impl.WamService</interface>

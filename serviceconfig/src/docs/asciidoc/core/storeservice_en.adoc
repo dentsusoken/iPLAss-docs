@@ -39,10 +39,18 @@ Please specify org.iplass.mtp.impl.datastore.grdb.GRdbDataStore to the class.
 This is the DataStore for community edition.
 
 The following items can be configured.
-[cols="1,1,3", options="header"]
+[cols="1,1,3a", options="header"]
 |===
 | Item | Value | Description
 | storageSpace | <<StorageSpaceMap>>, Multiple | Settings of StorageSpace.
+| overwriteTableNamePostfixMap | String, in format of Map | If you want to directly change the storageSpace of a specific Entity, specify it in Map format. Specify the Entity definition name in name, and the StorageSpace postfix (tableNamePostfix) in value.
+
+The following scenarios are anticipated for use:
+
+- When you want to change the StorageSpace of an entity defined by default in iPLAss
+- When you want to change the storage space of a custom entity managed based on an XML file for each operating environment without changing the metadata XML
+
+NOTE: Only the postfix of the storageSpace (tableNamePostfix) can be changed. The number of columns defined will be the same as the number of columns defined in the storageSpace set in the Entity definition.
 |===
 
 [[EnterpriseGRdbDataStore]]
@@ -51,11 +59,19 @@ Please specify org.iplass.mtp.impl.datastore.grdb.EnterpriseGRdbDataStore to the
 This is the DataStore for enterprise edition.
 
 The following items can be configured.
-[cols="1,1,3", options="header"]
+[cols="1,1,3a", options="header"]
 |===
 | Item | Value | Description
 | enableWindowFunctionEmulation | boolean | Whether to enable Windows function emulation. The default value is false
 | storageSpace | <<StorageSpaceMap>>, Multiple | Settings of StorageSpace
+| overwriteTableNamePostfixMap | String, in format of Map | If you want to directly change the storageSpace of a specific Entity, specify it in Map format. Specify the Entity definition name in name, and the StorageSpace postfix (tableNamePostfix) in value.
+
+The following scenarios are anticipated for use:
+
+- When you want to change the StorageSpace of an entity defined by default in iPLAss
+- When you want to change the storage space of a custom entity managed based on an XML file for each operating environment without changing the metadata XML
+
+NOTE: Only the postfix of the storageSpace (tableNamePostfix) can be changed. The number of columns defined will be the same as the number of columns defined in the storageSpace set in the Entity definition.
 |===
 
 [[StorageSpaceMap]]
@@ -120,7 +136,7 @@ Allocate the physical table that has the least number of Entity definitions used
 There are no configurable items.
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.datastore.StoreService</interface>
@@ -144,6 +160,9 @@ There are no configurable items.
 			<property name="uniqueIndexedTimestampColumns" value="2" />
 			<property name="uniqueIndexedDoubleColumns" value="2" />
 			<property name="customPartition" value="false" />
+		</property>
+		<property name="overwriteTableNamePostfixMap">
+			<property name="mtp.auth.Rank" value="MCS" />
 		</property>
 	</property>
 </service>

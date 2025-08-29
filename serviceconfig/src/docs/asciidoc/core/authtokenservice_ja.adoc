@@ -250,7 +250,7 @@ classはorg.iplass.mtp.impl.auth.authenticate.builtin.policy.riskevals.web.Cooki
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.auth.authenticate.token.AuthTokenService</interface>

@@ -49,7 +49,7 @@ classはorg.iplass.mtp.view.relativerange.LocalizedDisplayLabelを指定しま�
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.view.relativerange.RelativeRangeService</interface>

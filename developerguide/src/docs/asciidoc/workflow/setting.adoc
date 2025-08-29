@@ -689,13 +689,13 @@ UserTaskが起動されると、 `mtp.workflow.UserTask` エンティティが�
 |===
 
 .（例）userTaskName
-[source,GroovyTemplate]
+[source,groovy]
 ----
 sample01/ProductFlow1-${workflowInstanceId}_${product.code}_${updateStatus}
 ----
 
 .（例）priority
-[source,GroovyTemplate]
+[source,groovy]
 ----
 <%@import java.util.Date%>
 <%@import org.iplass.mtp.web.template.TemplateUtil%>
@@ -722,7 +722,7 @@ long diffDays = (startDate.getTime() - systemDate.getTime()) / (1000 * 60 * 60 *
 ----
 
 .（例）limit
-[source,GroovyScript]
+[source,groovy]
 ----
 /*
  * 販売開始日の２日前をWorkflowの期限に設定
@@ -896,7 +896,7 @@ Where条件のみ指定可能なので注意してください。
 VariableItemがバインドされます。 +
 +
 .（例）EQLで定義した割当ルール
-[source,EQL]
+[source,sql]
 ----
 groups.code = 'product_approval_group1'
 ----
@@ -908,7 +908,7 @@ VariableItemがバインドされます。
 (GroovyTemplate書式のため、シングルクォーテーション、ダブルクォーテーションなし) +
 +
 .（例）Stringで定義した割当ルール
-[source,GroovyTemplate]
+[source,groovy]
 ----
 user2-1@approval1,user2-2@approval1
 ----
@@ -1219,7 +1219,7 @@ new String[] {"user2-1@approval1", "user2-2@approval1"};
 EQLの結果としてメールアドレスを返すQueryを定義する方法です。 +
 +
 .（例）EQLの例
-[source,EQL]
+[source,sql]
 ----
 select mail
 from mtp.auth.User
@@ -1232,15 +1232,14 @@ where oid = ${product.updateBy}
 (GroovyTemplate書式のため、シングルクォーテーション、ダブルクォーテーションなし) +
 +
 .（例）STRINGの例
-[source,GroovyTemplate]
+[source,groovy]
 ----
 user2-1@approval1,user2-2@approval1
 ----
 
 ===== SubProcessTask
 メタデータとして定義されたWorkflowをサブプロセスとして実行するタスク定義。
-フローを分割したり、共通のフローなどを別途Workflowとして定義しておくことで利用できます。 +
-サブプロセスとして実行されるWorkflowが状態(ステータス) `CANCELED` で終了した場合は、SubProcessTaskを実行するWorkflowも `CANCELED` で終了します。
+フローを分割したり、共通のフローなどを別途Workflowとして定義しておくことで利用できます。
 
 ====== プロパティ
 [cols="2,1,2,8a" options="header"]
@@ -1261,6 +1260,13 @@ user2-1@approval1,user2-2@approval1
 |サブプロセスで定義したWorkflowの変数(VariableItem)に自身の変数を引き渡す際、変数名が異なる場合にMappingを定義します。
 変数名が同じ場合は指定する必要はありません。 +
 link:#ref_subprocesstask_variableMapping[変数の連携]
+
+|cascadeSubProcessCancel
+|×
+|true
+|サブプロセスが `CANCELED` で終了した際に、連動してこのNodeを実行するWorkflowも終了するかを指定します。 +
+`true` にした場合は、Workflowは状態(ステータス) `CANCELED` で終了します。 +
+`false` にした場合は、このNodeの実行結果に `CANCELED` を設定し、Workflow自体の実行は継続します。
 |===
 
 その他は link:#ref_node_property[共通プロパティ] を参照してください。

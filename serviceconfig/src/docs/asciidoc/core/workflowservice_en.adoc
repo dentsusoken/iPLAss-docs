@@ -56,7 +56,7 @@ Please specify org.iplass.mtp.impl.workflow.store.EntityHistoryLogStore to the c
 There is no configurable items for this configuration options.
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service final="true">
 	<interface>org.iplass.mtp.impl.workflow.WorkflowService</interface>

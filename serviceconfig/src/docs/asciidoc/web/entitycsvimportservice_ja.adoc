@@ -4,12 +4,12 @@ EntityのCSVインポートに関するサービスです。
 
 ==== インタフェース名
 ----
-org.iplass.mtp.impl.csv.EntityCsvImportService
+org.iplass.mtp.impl.fileport.EntityCsvImportService
 ----
 
 ==== 実装クラス名
 ----
-org.iplass.mtp.impl.csv.EntityCsvImportService
+org.iplass.mtp.impl.fileport.EntityCsvImportService
 ----
 
 ==== EntityCsvImportServiceの設定
@@ -23,10 +23,10 @@ EntityCsvImportServiceを設定します。
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
-	<interface>org.iplass.mtp.impl.csv.EntityCsvImportService</interface>
+	<interface>org.iplass.mtp.impl.fileport.EntityCsvImportService</interface>
 
 	<property name="canCreateUserWithSpecificPassword" value="true" />
 </service>

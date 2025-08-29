@@ -1,16 +1,15 @@
 [[EEPackage_Workflow]]
 == [.eeonly]#Workflow#
 
-このサンプルでは、「お問合せ処理」と「注文処理」ワークフローが用意されています。
+サンプルアプリでは、「お問合せ処理」と「注文処理」ワークフローが設定されています。
 
 image::images/sample-ec_workflow-filetree.png[align=left]
 
 . お問合せ処理ワークフロー
 . 注文処理ワークフロー
 
-NOTE: 実際にワークフローを実行する場合は、「オペレーター」グループと「マネージャー」グループそれぞれに属する
-ユーザーの登録が必要です。 +
-ユーザー登録の詳細については、<<../index#GlobalSettings_About_User, ユーザーについて>>を参照してください。
+NOTE: 実際にワークフローを実行する場合は、「オペレーター」グループと「マネージャー」グループそれぞれに属するユーザーの登録が必要です。 +
+ユーザー登録方法については、<<../index#GlobalSettings_About_User, ユーザーについて>>を参照してください。
 
 [[EEPackage_Inquriy_Processing_Workflow]]
 === お問合せ処理
@@ -19,7 +18,7 @@ NOTE: 実際にワークフローを実行する場合は、「オペレータ�
 
 image::images/sample-ec_workflow-inquiry-processing.png[align=left]
 
-. エンティティが格納されている変数名を指定します。
+. 対象エンティティデータが格納されている変数名を指定します。
 +
 image::images/sample-ec_workflow-inquiry-processing-variable.png[align=left]
 
@@ -31,25 +30,25 @@ image::images/sample-ec_workflow-inquiry-processing-inquiry-deal.png[align=left]
 
 . 対応完了ユーザータスク +
 +
-当該お問合せエンティティのお問合せステータスを対応完了（「３」）に設定します。
+当該お問合せエンティティのお問合せステータスを対応完了（「3」）に設定します。
 +
 image::images/sample-ec_workflow-inquiry-processing-updateEntityTask2.png[align=left]
 
 . お問合せ終了承認 +
-マネージャーに属するユーザーにタスクを割り当てるように設定しています。 + 
+マネージャーに属するユーザーにタスクを割り当てるように設定しています。 +
 当該タスクに対して「承認」または「差し戻し」を選択することができます。実行結果によって、ワークフローの遷移先が変わります。
 +
 image::images/sample-ec_workflow-inquiry-processing-inquiry-approve.png[align=left]
 
-. 対応完了ユーザータスク +
+. 差し戻しユーザータスク +
 +
-当該お問合せエンティティのお問合せステータスを処理中（「２」）に戻します。
+当該お問合せエンティティのお問合せステータスを処理中（「2」）に戻します。
 
-. 対応完了ユーザータスク +
+. 対応終了ユーザータスク +
 +
-当該お問合せエンティティのお問合せステータスを終了（「４」）に設定します。
+当該お問合せエンティティのお問合せステータスを終了（「4」）に設定します。
 
-※　ワークフローの設定項目について、開発者ガイド<<../../developerguide/workflow/index#, Workflow>>の章を参照してください。
+※ ワークフローの設定詳細については、開発者ガイドの<<../../developerguide/workflow/index#, Workflow>>の章を参照してください。
 
 ==== ワークフローの起動
 
@@ -71,7 +70,7 @@ parameters.put("inquiry", entity); <1>
 
 wm.startProcess("samples/ec01/inquiry_processing", parameters); <2>
 ----
-<1> 登録されたお問合せエンティティを"inquiry"という変数名として格納します。
+<1> 登録されたお問合せエンティティデータを `inquiry` というキーで格納します。
 <2> お問合せ処理ワークフローを起動します。
 
 [[EEPackage_Inquiry_Processing_Operation]]
@@ -79,29 +78,27 @@ wm.startProcess("samples/ec01/inquiry_processing", parameters); <2>
 
 * 事前設定
 +
-このサンプルではワークフローの詳細表示の項目は事前に設定されています。ワークフローの詳細表示を調整したい時は、対象ロールのメニュー（このサンプルでは、オペレーター用のメニューは "Ope001Role"）に「UserTask List」の編集画面を開き、 + 
-[.red]#「UserTaskView Settings」タブのワークフロー履歴項目に表示したい項目にチェックをいれてください。マネージャー用のメニューに同じような操作を実施してください。# + 
-+
-※ 設定項目の説明は開発者ガイド<<../../developerguide/workflow/index#_利用方法, 利用方法>>の章を参照してください。
+サンプルアプリでは、ワークフローの詳細表示の項目は事前に設定されています。 +
+※ 各設定項目の詳細については、開発者ガイドの<<../../developerguide/workflow/index#_利用方法, 利用方法>>の章を参照してください。
 +
 image::images/sample-ec_workflow-inquiry-processing-presettings.png[align=left]
 
-* サンプルアプリの画面でお問合せ登録します。
+* サンプルアプリの画面でお問合せを登録します。
 +
 image::images/sample-ec_workflow-inquiry-processing-inquiry-register.png[align=left]
 
-* オペレーターに属するユーザーのアカウントを利用して管理用画面にログインすると、ユーザータスク一覧に割り当てられたタスクを確認することが出来ます。 +
-鉛筆マークの編集ボタンをクリックすると、編集画面が開きます。
+* オペレーターに属するユーザーで管理画面にログインすると、ユーザータスク一覧に割り当てられたタスクを確認することができます。 +
+鉛筆マークの「編集」ボタンをクリックすると、編集画面が開きます。
 +
 image::images/sample-ec_workflow-inquiry-processing-usertasklist-operator.png[align=left]
 +
-コメントを入れて、「完了」ボタンを押します。 + 
+コメントを入れて、「完了」ボタンを押します。 +
 ワークフロー履歴一覧に対応処理完了の操作履歴が確認できます。
 +
 image::images/sample-ec_workflow-inquiry-processing-usertasklist-operator-inquiry-deal.png[align=left]
 
-* マネージャーに属するユーザーのアカウントを利用して管理用画面にログインすると、ユーザータスク一覧に割り当てられたタスクを確認することが出来ます。 +
-鉛筆マークの編集ボタンをクリックすると、編集画面が開きます。
+* マネージャーに属するユーザーで管理画面にログインすると、ユーザータスク一覧に割り当てられたタスクを確認することができます。 +
+鉛筆マークの「編集」ボタンをクリックすると、編集画面が開きます。
 +
 image::images/sample-ec_workflow-inquiry-processing-usertasklist-manager.png[align=left]
 +
@@ -125,18 +122,18 @@ image::images/sample-ec_workflow-order-processing-variable.png[align=left]
 
 . 注文完了メールタスク + 
 +
-Scriptの方式でmail変数名に格納されている文字列をTOメールアドレスに設定します。
+Scriptの方式でmailキーに格納されている文字列をTOメールアドレスに設定します。
 +
-※　設定方法は開発者ガイド<<../../developerguide/workflow/index#_mailtask,MailTask>>の章を参照してください。
+※ 設定方法については、開発者ガイドの<<../../developerguide/workflow/index#_mailtask,MailTask>>の章を参照してください。
 +
 image::images/sample-ec_workflow-order-processing-mailtask1.png[align=left]
 
-. 配送処理を定義します + 
-割当ルールの種類をToQueueに設定します。 ※ +
-エンティティが"settlement"という変数に格納されているので、taskTargetEntityを"settlement" に指定します。 + 
+. 配送処理を定義します +
+割当ルールの種類を `TOQUEUE` に設定します。 +
+エンティティが `settlement` という変数に格納されているので、taskTargetEntityを `settlement` に指定します。 +
 当該タスクに対して「配送完了」または「配送不可」を選択することができます。実行結果によって、ワークフローの遷移先が変わります。
 +
-※　割当ルールの設定項目の説明は開発者ガイド <<../../developerguide/workflow/index#ref_usertask_assign_rule, 割当ルールの設定>>の章を参照してください。
+※ 割当ルールの設定項目の説明については、開発者ガイド <<../../developerguide/workflow/index#ref_usertask_assign_rule, 割当ルールの設定>>の章を参照してください。
 +
 image::images/sample-ec_workflow-order-processing-userTask1.png[align=left]
 
@@ -165,11 +162,11 @@ UpdateOption option = new UpdateOption(false);
 option.setUpdateProperties("settlementStatus", "deliverGoodsDate");
 em.update(settlement, option);
 ----
-<1> 請求エンティティの請求状況を納品済み（「２」）に設定します。
+<1> 請求エンティティの請求状況を納品済み（「2」）に設定します。
 <2> 請求エンティティの納品予定日を今日の日付に設定します。
 
 . ステータス更新処理（キャンセル）
-請求エンティティの請求状況をキャンセル（「３」）に設定します。
+請求エンティティの請求状況をキャンセル（「3」）に設定します。
 
 . 配送完了メールタスク + 
 配送完了メールを送信します。
@@ -194,8 +191,8 @@ parameters.put("settlement", entity); <1>
 parameters.put("mail", entity.order.mail); <2>
 wm.startProcess("samples/ec01/order_processing", parameters); <3>
 ----
-<1> 登録された請求エンティティを"settlement"という変数名に格納します。
-<2> 登録された請求エンティティに紐づくオーダーエンティティの顧客メールアドレスを"mail"という変数名に格納します。
+<1> 登録された請求エンティティデータを `settlement` というキーに格納します。
+<2> 登録された請求エンティティに紐づく注文エンティティの顧客メールアドレスを `mail` というキーに格納します。
 <3> 注文処理ワークフローを起動します。
 
 ==== 画面表示
@@ -204,7 +201,7 @@ wm.startProcess("samples/ec01/order_processing", parameters); <3>
 
 ** このサンプルではワークフロー履歴が見えるように、まずお問合せ処理ワークフローでの画面表示の<<index#EEPackage_Inquiry_Processing_Operation,事前設定>>を実施してください。
 
-** それに、ログ出力に送信メールを確認できるようにsrc/main/resouces/mtp-service-config.xmlファイルに以下の定義を追加してください。
+** ログ出力で送信メールを確認できるように `src/main/resouces/mtp-service-config.xml` 以下の定義を追加してください。
 +
 [source,xml]
 ----
@@ -218,7 +215,7 @@ wm.startProcess("samples/ec01/order_processing", parameters); <3>
 	</service>
 ----
 
-* サンプルアプリの画面でオーダーを注文します。
+* サンプルアプリの画面で商品を注文します。
 +
 image::images/sample-ec_workflow-order-processing-order-register.png[align=left]
 
@@ -237,17 +234,17 @@ image::images/sample-ec_workflow-order-processing-order-register.png[align=left]
 
 * タスクの割当
 +
-オペレーターまたはマネージャーに属するユーザーのアカウントを利用して管理用画面にログインすると、(タスクの割当ルールが `ToQueue` に設定されているので)「タスクリスト」画面の「全てのタスク」タブに配送処理タスクが登録されていることが確認できます。
+オペレーターまたはマネージャーに属するユーザーで管理画面にログインすると、タスクの割当ルールが `ToQueue` に設定されているため、「タスクリスト」画面の「全てのタスク」タブに配送処理タスクが登録されていることが確認できます。
 +
-割当ボタンをクリックすると、自分にこのタスクを割り当てます。
+「割当」ボタンをクリックすると、自分にこのタスクを割り当てます。
 +
 image:images/sample-ec_workflow-order-processing-userTasklist.png[align=left]
 
 * 配送処理
 +
-Myタスクのタスクに鉛筆マークの編集ボタンをクリックすると、編集画面が開きます。 +
+MYタスクのタスクに表示されている鉛筆マークの「編集」ボタンをクリックすると、編集画面が開きます。 +
 コメントを入力して、「配送完了」または「配送不可」処理が実行できます。今回は「配送完了」処理を実行します。 +
-配送完了ボタンを押しましたら、ワークフロー履歴一覧に配送完了の操作履歴が確認できます。
+「配送完了」ボタンをクリックすると、ワークフロー履歴一覧に配送完了の操作履歴が確認できます。
 +
 image:images/sample-ec_workflow-order-processing-userTasklist-delivery-ok.png[align=left]
 

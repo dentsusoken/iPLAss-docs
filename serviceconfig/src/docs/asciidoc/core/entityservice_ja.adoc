@@ -37,7 +37,7 @@ classはorg.iplass.mtp.entity.interceptor.EntityInterceptorの実装クラスを
 classはorg.iplass.mtp.impl.entity.AdditionalStoreMaintainerの実装クラスを指定します。
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.entity.EntityService</interface>

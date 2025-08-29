@@ -297,6 +297,12 @@ AdminConsoleから、過去のClient Secretを明示的に削除することも�
 
 各エンドポイントを以下に示します。
 
+[NOTE]
+====
+OAuth/OpenID Connectを利用する場合、セッションID（JSESSIONID）CookieのSameSite属性が `None` に設定されている必要があります。これを設定しない場合、クロスサイトリクエストでCookieが欠落し、認証が正常に動作しないことがあります。 +
+設定方法については、利用しているアプリケーションサーバのドキュメントを参照してください。
+====
+
 ==== OAuth2.0 Authorization Endpoint
 ----
 http(s)://[server]/[appContext]/[tenantName]/oauth/authorize
@@ -414,6 +420,12 @@ OpenID Providerで発行されたClient SecretをAdminConsoleのOpenIDConnect定
 === Endpoint
 
 各エンドポイントを以下に示します。
+
+[NOTE]
+====
+OAuth/OpenID Connectを利用する場合、セッションID（JSESSIONID）CookieのSameSite属性が `None` に設定されている必要があります。これを設定しない場合、クロスサイトリクエストでCookieが欠落し、認証が正常に動作しないことがあります。 +
+設定方法については、利用しているアプリケーションサーバのドキュメントを参照してください。
+====
 
 ==== Relying Partyとしての認証を起動する
 Relying Partyとしての認証を起動するURLは以下です。

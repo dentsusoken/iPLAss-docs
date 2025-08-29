@@ -122,7 +122,7 @@ local/demo/test
 
 Action権限の許可条件の設定において、 `parameter` には管理対象サイトのコンテンツ閲覧時のURLのクエリパラメータがバインドされます。 +
 
-[source, groovy]
+[source,groovy]
 ----
 def value = parameter.クエリパラメータのキー
 
@@ -133,7 +133,7 @@ def value = parameter.getValue("クエリパラメータのキー")
 JSON形式の `requestInfo` をパラメータに含めてWAMの権限チェックWebApiを呼び出すことで、以下のような許可条件を設定することができます。 +
 また、許可条件で `request.externalResourceParameter.responseStatus` に任意の戻り値を指定することで、条件に沿った戻り値が返却されます。
 
-[source, groovy]
+[source,groovy]
 ----
 if(request.externalResourceParameter.requestInfo.get("clientIp").equals("xxx.xxx.xxx.xxx")){ request.externalResourceParameter.responseStatus = "IP_ALLOW"; true;}
 ----

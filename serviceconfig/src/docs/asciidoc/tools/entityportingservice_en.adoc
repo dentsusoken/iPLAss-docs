@@ -26,7 +26,7 @@ CAUTION: This setting item will be removed in future versions.Please use `canCre
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.tools.entityport.EntityPortingService</interface>

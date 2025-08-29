@@ -81,7 +81,7 @@ Please specify org.iplass.mtp.impl.aggregation.cube.engine.inmemory.fact.load.Sa
 This is a method of loading data while minimizing memory consumption when swapping data to a file. There is no configurable items.
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.aggregation.cube.CubeService</interface>

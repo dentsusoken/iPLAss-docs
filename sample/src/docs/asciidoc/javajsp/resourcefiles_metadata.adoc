@@ -1,10 +1,7 @@
 [[Java_JSP_ResourceFiles_Metadata]]
 === メタデータ定義
 
-* コマンドのメタデータ定義。 + 
-ここではJava/JSPを利用して<<../../gettingstarted/introductioncustomize/index#_java_jsp,カスタマイズ>>を行っています。
-+
-コマンドのメタデータ定義ファイル
+* コマンドのメタデータ定義 +
 +
 [cols="1,2"]
 |===
@@ -18,14 +15,14 @@ h|ファイル名|/src/main/java/samples/ec01/command/metadata/CommandList.java
 h|ファイル名|/src/main/resources/samples-ec01-ce-metadata.xml
 |===
 +
-ここでは二種類のメタデータが用意されています。
+ここでは2種類のメタデータが用意されています。
 +
 [source]
 ----
 metaDataList
 	┣ contextPath (name=/entity) <1>
 	┣ contextPath (name=/property/select) <1>
-	┣ contextPath (name=/template)　※　帳票出力機能と管理トップ画面 <1>
+	┣ contextPath (name=/template) ※ 帳票出力機能と管理トップ画面 <1>
 	┣ contextPath (name=/view/calendar)	<1>
 	┣ contextPath (name=/view/generic) <1>
 	┣ contextPath (name=/view/menu/item) <1>
@@ -36,10 +33,10 @@ metaDataList
 	┗ contextPath (name=/template)　<2>	
 ----
 <1> Admin Consoleで作成したメタデータ定義です。Packaging機能もしくはMetaDataExplorer機能を利用することでエクスポートしたものです。
-<2> Templateのメタデータ定義は手で作成しています。 + 
-※ 帳票出力機能と管理トップ画面のTemplate定義はAdmin Consoleで作成し、エクスポートしてます。
+<2> Templateのメタデータ定義は手動で作成しています。 +
+※ 帳票出力機能と管理トップ画面のTemplate定義はAdmin Consoleで作成し、エクスポートしています。
 +
-手で作成したTemplate定義の例。
+手動で作成したTemplate定義の例。
 +
 [source]
 ----

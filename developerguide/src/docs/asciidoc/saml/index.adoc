@@ -215,6 +215,12 @@ https://example.dentsusoken.com/app/tenantA/saml/ssoar/DEF1
 
 当該URLを呼び出すことにより、SSO処理が開始されます。
 
+[NOTE]
+====
+メッセージ送信方式としてPOST Bindingを利用する場合、セッションID（JSESSIONID）CookieのSameSite属性が `None` に設定されている必要があります。これを設定しない場合、クロスサイトリクエストでCookieが欠落し、認証が正常に動作しないことがあります。 +
+設定方法については、利用しているアプリケーションサーバのドキュメントを参照してください。
+====
+
 ==== iPLAssをIdPとして動作させる
 SAML2.0のIdP Initiated SSOを起動するURLは以下です。
 ----
@@ -228,4 +234,10 @@ https://example.dentsusoken.com/app/tenantA/saml/sso/idpi/DEF2?entityId=http%3A%
 定義名を"DEFAULT"として定義したSAML定義の場合、SAML definitionNameは未指定で取得できます。
 
 当該URLを呼び出すことにより、SSO処理が開始されます。
+
+[NOTE]
+====
+メッセージ送信方式としてPOST Bindingを利用する場合、セッションID（JSESSIONID）CookieのSameSite属性が `None` に設定されている必要があります。これを設定しない場合、クロスサイトリクエストでCookieが欠落し、認証が正常に動作しないことがあります。 +
+設定方法については、利用しているアプリケーションサーバのドキュメントを参照してください。
+====
 

@@ -1,4 +1,3 @@
 [[Groovy_GTmpl_Overview]]
 == 概要
-Groovy／GroovyTemplateを利用して実装されたサンプルアプリケーションです。 + 
-Groovy／GroovyTemplateのカスタマイズする方法は<<../../gettingstarted/introductioncustomize/index#_groovy_groovytemplate,チュートリアル（カスタマイズ）Groovy/GroovyTemplate>>をご参照ください。
+Groovy／GroovyTemplateを利用して実装されたサンプルアプリケーションです。

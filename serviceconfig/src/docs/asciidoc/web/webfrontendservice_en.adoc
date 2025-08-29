@@ -74,7 +74,7 @@ In iPLAss, the resource paths starting with the string specified in restPath are
 | logoutUrl | String | URL to kick when logging out.
 | contentDispositionPolicy | <<ContentDispositionPolicy>>, Multiple | ContentDisposition output settings.
 | tempFileDir | String | Temporary file storage path.
-When not specified, "javax.servlet.context.tempdir" is used.
+When not specified, "jakarta.servlet.context.tempdir" is used.
 | maxUploadFileSize | long a|
 WARNING: This config item is not recommended. Please use the requestRestriction instead.
 
@@ -228,7 +228,8 @@ For TikaFileTypeDetector, the following items can be configured.
 [cols="1,1,3", options="header"]
 |====================
 | Item | Value | Description
-| fileUploadTikaAdapter | <<FileUploadTikaAdapter>> | An adapter that resolves the Tika dependency used by the file upload function.
+| fileUploadTikaAdapter | <<FileUploadTikaAdapter>>, Required | An adapter that resolves the Tika dependency used by the file upload function.
+| substitutionMediaType | in format of Map | This setting substitution certain MIME types with other MIME types when file types are detected. Set the MIME type to be substituted in the name attribute and the MIME type to be substituted with in the value attribute.
 |====================
 
 [[FileUploadTikaAdapter]]
@@ -326,6 +327,7 @@ The following MdcValueResolver is provided as standard.
 - <<HttpHeaderMdcValueResolver>>
 - <<SessionIdMdcValueResolver>>
 - <<AmznTraceIdMdcValueResolver>>
+- <<aws2_AmznTraceIdMdcValueResolver>>
 
 
 [[UuidMdcValueResolver]]
@@ -386,8 +388,27 @@ In the setting of WebFrontendService to mdc, in String,
 SessionIdMdcValueResolver is set by specifying `sessionId`.
 
 [[AmznTraceIdMdcValueResolver]]
-.[.eeonly]#AmznTraceIdMdcValueResolver#
+.[.eeonly]#(Deprecated) AmznTraceIdMdcValueResolver#
 Please specify org.iplass.mtp.impl.aws.web.mdc.AmznTraceIdMdcValueResolver for class.
+
+[CAUTION]
+====
+AWS SDK for Java 1.x is in maintenance mode and will be discontinued in December 2025. +
+iPLAss recommends deprecating the AWS SDK for Java 1.x-based library iplass-ee-aws and moving to the AWS SDK for Java 2.x-based library iplass-ee-aws2. +
+If you are using this function, please migrate your settings to <<aws2_AmznTraceIdMdcValueResolver>> in the library iplass-ee-aws2. +
+The library iplass-ee-aws will be removed in the future.
+====
+
+Gets the specific field value of the X-Amzn-Trace-Id value set in the HTTP header. The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| field | String | The field name to get. Specify Root or Self.
+|===
+
+[[aws2_AmznTraceIdMdcValueResolver]]
+.[.eeonly]#AmznTraceIdMdcValueResolver#
+Please specify org.iplass.mtp.impl.web.mdc.awsv2.AmznTraceIdMdcValueResolver for class.
 
 Gets the specific field value of the X-Amzn-Trace-Id value set in the HTTP header. The following items can be configured.
 [cols="1,1,3", options="header"]
@@ -397,7 +418,7 @@ Gets the specific field value of the X-Amzn-Trace-Id value set in the HTTP heade
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.web.WebFrontendService</interface>
@@ -448,7 +469,7 @@ Gets the specific field value of the X-Amzn-Trace-Id value set in the HTTP heade
 	<property name="errorUrlSelector" class="org.iplass.gem.GemErrorUrlSelector" />
 	<!-- The settings of the login pages -->
 	<property name="loginUrlSelector" class="org.iplass.gem.GemLoginUrlSelector" />
-	<!-- Set the temporary file storage path. If not specified, "javax.servlet.context.tempdir" will be used. -->
+	<!-- Set the temporary file storage path. If not specified, "jakarta.servlet.context.tempdir" will be used. -->
 	<!--
 	<property name="tempFileDir" value="/tmp" />
 	-->
@@ -623,7 +644,7 @@ Gets the specific field value of the X-Amzn-Trace-Id value set in the HTTP heade
 
 	<!-- Configurations about MDC -->
 	<property name="mdc">
-		<property name="traceId" class="org.iplass.mtp.impl.aws.web.mdc.AmznTraceIdMdcValueResolver">
+		<property name="traceId" class="org.iplass.mtp.impl.web.mdc.awsv2.AmznTraceIdMdcValueResolver">
 			<property name="field" value="Root" />
 		</property>
 		<property name="ipaddress" value="remoteAddr" />

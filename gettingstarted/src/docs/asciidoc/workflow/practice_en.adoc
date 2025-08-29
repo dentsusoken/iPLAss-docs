@@ -66,7 +66,7 @@ image::images/inquiry_listener_en.png[]
 | Script | See below | afterInsert
 |===
 
-[source, groovy]
+[source,groovy]
 ----
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -378,7 +378,7 @@ image::images/delivery_listener_en.png[]
 |Script|See below|afterInsert
 |===
 
-[source, groovy]
+[source,groovy]
 ----
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -472,7 +472,7 @@ image::images/delivery_edit-command_en.png[]
 |practice/PracticeWorkflowCommand002|PracticeWorkflowCommand002|Command to update the request|Script|See below
 |===
 
-[source, groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.UpdateOption;
 import org.iplass.mtp.entity.SelectValue;
@@ -803,7 +803,7 @@ Prepare the following command.
 It is a process to automatically setting the target registered in the to "approve" even if "not approved" for a certain period (timer setting).
 This command is executed when the period set by the timer has passed.
 
-[source, groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.query.Query;
 import org.iplass.mtp.entity.query.condition.predicate.Equals;
@@ -858,7 +858,7 @@ for (Assignment e : assignment) {
 Acquire only "Approved" users (including automatic approval) and then create a CSV file.
 It is also the process of registering the created file in the minutes workflow entity.
 
-[source, groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.query.Query;
 import org.iplass.mtp.entity.query.condition.predicate.Equals;
@@ -934,7 +934,7 @@ em.update(entity, option);
 * practice/PracticeWorkflowCommand003_003(Freeze) +
 This process locks the registered minutes, circulation user, and approver list so that they cannot be updated.
 
-[source, groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.query.Query;
 import org.iplass.mtp.entity.query.condition.predicate.Equals;
@@ -1136,7 +1136,7 @@ image::images/approval_setting-task6_en.png[]
 +
 Obtaining account ID set in members of the target Entity.
 +
-[source, groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.query.Query;
 import org.iplass.mtp.entity.query.condition.predicate.Equals;

@@ -33,7 +33,7 @@ org.iplass.mtp.impl.metadata.binary.BinaryMetaDataService
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.metadata.binary.BinaryMetaDataService</interface>

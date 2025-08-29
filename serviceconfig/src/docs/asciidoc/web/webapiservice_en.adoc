@@ -23,6 +23,8 @@ WebApi can be configured with the following items.
 | Item | Value | Description
 | enableDefinitionApi | boolean | Set whether to publish the DefinitionWebApi.
 | enableBinaryApi | boolean | Set whether to publish the BinaryWebApi.
+| enableStubResponse | boolean | Set whether to enable the link:../developerguide/webapi/index.html#webapi_openapi_configuration_stub[stub response feature for WebAPI]. If enabled, set to true. The default value is false. +
+This setting is intended for use during development. Set it to false in a production environment.
 | writeEncodedFilenameInBinaryApi | boolean | Specifies whether to output the `filename*` attribute in the `Content-Disposition` response header during BinaryWebApi download operations. false means output the `filename` attribute. The default value is false.
 | unescapeFilenameCharacterInBinaryApi | String | Specifies the characters not to escape when outputting the `filename*` attribute in the `Content-Disposition` response header during a BinaryWebApi download operation (Alphabet and numbers are unconditionally excluded from escaping).
 | acceptMimeTypesPatternInBinaryApi | String a| Specifies the MIME Type pattern for files that can be uploaded during BinaryWebApi upload operations. The setting value specifies a regular expression pattern. +
@@ -65,12 +67,14 @@ The following items are configurable.
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.webapi.WebApiService</interface>
 	<property name="enableDefinitionApi" value="false" />
 	<property name="enableBinaryApi" value="false" />
+	<!-- To enable stub response, set the enableStubResponse property to true. -->
+	<property name="enableStubResponse" value="false" />
 	<property name="writeEncodedFilenameInBinaryApi" value="false" />
 	<property name="unescapeFilenameCharacterInBinaryApi" value="-._~" />
 

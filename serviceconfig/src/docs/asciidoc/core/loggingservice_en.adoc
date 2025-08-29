@@ -30,7 +30,7 @@ The default is -1 (unlimited).
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.logging.LoggingService</interface>

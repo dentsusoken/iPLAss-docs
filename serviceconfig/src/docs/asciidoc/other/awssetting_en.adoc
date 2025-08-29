@@ -1,6 +1,14 @@
 [[AWSSetting]]
-=== [.eeonly]#AWSSetting#
+=== [.eeonly]#(Deprecated)AWSSetting#
 This is the service to manage the settings of AWS.
+
+[CAUTION]
+====
+AWS SDK for Java 1.x is in maintenance mode and will be discontinued in December 2025. +
+iPLAss recommends deprecating the AWS SDK for Java 1.x-based library iplass-ee-aws and moving to the AWS SDK for Java 2.x-based library iplass-ee-aws2. +
+If you are using this function, please migrate your settings to <<aws2_AWSSetting>> in the library iplass-ee-aws2. +
+The library iplass-ee-aws will be removed in the future.
+====
 
 ==== Interface Name
 ----
@@ -33,7 +41,7 @@ Please specify com.amazonaws.ClientConfiguration to the class.
 So to configure the settings when connecting to various kind of service provided by AWS.
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.aws.AWSSetting</interface>

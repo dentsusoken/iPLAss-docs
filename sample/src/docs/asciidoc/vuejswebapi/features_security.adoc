@@ -3,21 +3,18 @@
 === セキュリティ対策
 ここでは会員登録を例としてサンプルアプリで利用されているセキュリティ対策について説明します。
 
-. エスケープ機能 ※　　XSS対策 ： ユーザーの入力内容を正常に画面表示させる
+. XSS対策となるエスケープ機能 ： ユーザーの入力内容を正常に画面表示させる
 
-. TokenCheck機能　　CSRF対策/トランザクション重複起動対策
+. CSRF対策/トランザクション重複起動対策となるトークンチェック機能 ： 画面表示時に正常な画面遷移が行われているかをチェックする
 
-. Navigation Guards ※　　画面表示時に正常な画面遷移が行われているかをチェックする
+. Navigation Guards ： 画面表示時に正常な画面遷移が行われているかをチェックする
 
-. check X-Requested-With Header　　JSONハイジャックによる攻撃を防ぎます
+. X-Requested-Withヘッダーのチェック ： JSONハイジャックによる攻撃を防ぎます
 
-会員登録処理の中でそれぞれの機能は下記のように利用されます。 + 
-※ Vue.jsの機能でiPLAssの機能ではありません。
+会員登録処理の中でそれぞれの機能は下記のように利用されます。
 
-* エスケープの導入 ※ +
-画面の作成 +
-入力された値を出力する会員情報確認画面にて、該当箇所にVue.jsの `{{変数名}}` エスケープ処理を導入する。 +
-Vuew.jsの公式サイトを参照してください。
+* エスケープの導入 +
+入力された値を出力する会員情報確認画面にて、該当箇所にVue.jsの `{{ 変数名 }}` エスケープ処理を導入する。
 +
 [cols="1,2"]
 |===
@@ -27,79 +24,95 @@ h|ファイル名|/src/main/vue/components/member/RegistConfirm.vue
 [source,html]
 ----
 ----------------------------------------以上略----------------------------------------
-    <div class="card col-12 bg-light">
-        <div class="card-body">
-            <div class="row mt-3 border-bottom">
-                <div class="col-12 col-md-4">
-                    <span class="text-muted font-weight-bold">{{$t("samples.ec01.member.regist.userId")}}</span>
+            <div class="card col-12 bg-light">
+              <div class="card-body">
+                <div class="row mt-3 border-bottom">
+                  <div class="col-12 col-md-4">
+                    <span class="text-muted fw-bold">
+                      {{ $t('samples.ec01.member.regist.userId') }}
+                    </span>
+                  </div>
+                  <div class="col-12 col-md-8">{{ localUserBean.userId }}</div> <1>
                 </div>
-                <div class="col-12 col-md-8">{{userBean.userId}}</div> <1>
+                <div class="row mt-3 border-bottom">
+                  <div class="col-12 col-md-4">
+                    <span class="text-muted fw-bold">
+                      {{ $t('samples.ec01.member.registConfirm.fullName') }}
+                    </span>
+                  </div>
+                  <div class="col-12 col-md-3">
+                    <span class="text-muted fw-bold">
+                      {{ $t('samples.ec01.member.regist.familyName') }}
+                    </span>
+                    &nbsp;{{ localUserBean.familyName }} <1>
+                  </div>
+                  <div class="col-12 col-md-3">
+                    <span class="text-muted fw-bold">
+                      {{ $t('samples.ec01.member.regist.firstName') }}
+                    </span>
+                    &nbsp;{{ localUserBean.firstName }} <1>
+                  </div>
+                </div>
+                <div v-if="locale == 'ja' || locale === undefined" class="row mt-3 border-bottom">
+                  <div class="col-12 col-md-4">
+                    <span class="text-muted fw-bold">
+                      {{ $t('samples.ec01.member.registConfirm.fullNameKana') }}
+                    </span>
+                  </div>
+                  <div class="col-12 col-md-3">
+                    <span class="text-muted fw-bold">
+                      {{ $t('samples.ec01.member.regist.familyNameKana') }}
+                    </span>
+                    &nbsp;{{ localUserBean.familyNameKana }} <1>
+                  </div>
+                  <div class="col-12 col-md-3">
+                    <span class="text-muted fw-bold">
+                      {{ $t('samples.ec01.member.regist.firstNameKana') }}
+                    </span>
+                    &nbsp;{{ localUserBean.firstNameKana }} <1>
+                  </div>
+                </div>
+                <div class="row mt-3 border-bottom">
+                  <div class="col-12 col-md-4">
+                    <span class="text-muted fw-bold">
+                      {{ $t('samples.ec01.member.regist.mail') }}
+                    </span>
+                  </div>
+                  <div class="col-12 col-md-8">{{ localUserBean.mail }}</div> <1>
+                </div>
+              </div>
             </div>
-            <div class="row mt-3 border-bottom">
-                <div class="col-12 col-md-4">
-                    <span class="text-muted  font-weight-bold">{{$t("samples.ec01.member.registConfirm.fullName")}}</span>
-                </div>
-                <div class="col-12 col-md-3">
-                    <span class="text-muted  font-weight-bold">{{$t("samples.ec01.member.regist.familyName")}}</span>
-                    &nbsp;{{userBean.familyName}} <1>
-                </div>
-                <div class="col-12 col-md-3">
-                    <span class="text-muted  font-weight-bold">{{$t("samples.ec01.member.regist.firstName")}}</span>
-                    &nbsp;{{userBean.firstName}} <1>
-                </div>
-            </div>
-            <div class="row mt-3 border-bottom" v-if="locale == 'ja' || locale === undefined">
-                <div class="col-12 col-md-4">
-                    <span class="text-muted  font-weight-bold">{{$t("samples.ec01.member.registConfirm.fullNameKana")}}</span>
-                </div>
-                <div class="col-12 col-md-3">
-                    <span class="text-muted  font-weight-bold">{{$t("samples.ec01.member.regist.familyNameKana")}}</span>
-                    &nbsp;{{userBean.familyNameKana}} <1>
-                </div>
-                <div class="col-12 col-md-3">
-                    <span class="text-muted  font-weight-bold">{{$t("samples.ec01.member.regist.firstNameKana")}}</span>
-                    &nbsp;{{userBean.firstNameKana}} <1>
-                </div>
-            </div>
-            <div class="row mt-3 border-bottom">
-                <div class="col-12 col-md-4">
-                    <span class="text-muted  font-weight-bold">{{$t("samples.ec01.member.regist.mail")}}</span>
-                </div>
-                <div class="col-12 col-md-8">{{userBean.mail}}</div> <1>
-            </div>
-        </div>
-    </div>
 ----------------------------------------以下略----------------------------------------
 ----
-<1> 今回は出力先がHTML形式であるため全てVue.jsの{{変数名}}という形式でエスケープを行っている。
+<1> 今回は出力先がHTML形式であるためすべてVue.jsの{{ 変数名 }}という形式でエスケープを行っています。
 
-* TokenCheckの導入 +
-この機能では、ワンタイムトークン方式を利用することでCSRFとトランザクションの重複実行（ダブルサブミット）を防ぐことができます。
-開発者ガイド<<../../developerguide/webapi/index#WebAPI-Settings-TokenCheck-CallingWebAPI, Token Check>>の章を参照してください。
+* トークンチェックの導入 +
+この機能では、ワンタイムトークン方式を利用することでCSRFとトランザクションの重複実行（ダブルサブミット）を防ぐことができます。 +
+詳細は、開発者ガイドの<<../../developerguide/webapi/index#WebAPI-Settings-TokenCheck-CallingWebAPI, Token Check>>の章を参照してください。
 
 ** WebApiの設定 +
-不正な画面遷移を禁止するWebApiでTokenをチェックする設定を行います。 +
+不正な画面遷移を禁止するWebApiでトークンをチェックする設定を行います。 +
  +
-会員情報確認画面アクション（WebApiのsamples/ec01/member/confirmMemberInfoを参照）
+会員情報確認画面アクション（WebApiの `samples/ec01/member/confirmMemberInfo` を参照）
 +
 [source,java]
 ----
 @WebApi(
-		name = "samples/ec01/member/confirmMemberInfo", 
-		displayName = "会員情報確認アクション", 
+		name = "samples/ec01/member/confirmMemberInfo",
+		displayName = "会員情報確認アクション",
 		accepts = RequestType.REST_JSON,
 		restJson = @RestJson(parameterName = "param"),
-		methods = MethodType.POST, 
-		privileged = true, 
+		methods = MethodType.POST,
+		privileged = true,
 		tokenCheck = @WebApiTokenCheck( <1>
-				executeCheck = true, 
-				consume = true, 
-				exceptionRollback = true),  
+				executeCheck = true,
+				consume = true,
+				exceptionRollback = true),
 		results = {
-				ConfirmMemberInfoCommand.RESULT_MAPPING_RESULT, 
+				ConfirmMemberInfoCommand.RESULT_MAPPING_RESULT,
 				ConfirmMemberInfoCommand.RESULT_MEMBER_AGREE })
 @CommandClass(
-		name = "samples/ec01/member/ConfirmMemberInfoCommand", 
+		name = "samples/ec01/member/ConfirmMemberInfoCommand",
 		displayName = "会員情報確認コマンド")
 public class ConfirmMemberInfoCommand implements Command {
 ----
@@ -109,23 +122,23 @@ public class ConfirmMemberInfoCommand implements Command {
 以下の設定が可能です。
 +
 |===
-h|executeCheck|false チェックを行わない　true チェックを行う
-h|useFixedToken|チェック→セッション単位に固定に払いだされるTokenをチェックする
-h|consume|true→Tokenは再利用されません。
-h|exceptionRollback|チェック→現在のTokenを再設定
+h|executeCheck|トークンチェックを行うかどうか
+h|useFixedToken|セッション単位に固定に払いだされるトークンを利用するか
+h|consume|トークンを消費するか
+h|exceptionRollback|Exception発生時にトークンをロールバックするか
 |===
 +
 この設定によりトークンチェックに失敗した場合、以下のJSON形式のエラーメッセージが返却されます。
 +
 返却の例
 +
-[source,JSON]
+[source,json]
 ----
 {"status":"FAILURE","exceptionType":"org.iplass.mtp.web.actionmapping.TokenValidationException","exceptionMessage":"不正な画面遷移が発生しました(一連の登録処理中にブラウザの戻るボタン等を押下してしまいますと正常に処理を継続できない場合があります)。"}
 ----
 
 
-** Java／JSP版サンプルのように、iPLAss既存のトークン出力JSPタブを利用することができないので、似たような機能を実現するために、以下の対応を行っています。
+** Java／JSP版サンプルのように、iPLAss既存のトークン出力用JSPタグを利用することができないので、似たような機能を実現するために以下の対応を行っています。
 +
 . トークン出力用WebApiの作成
 +
@@ -137,17 +150,17 @@ h|Command名|samples.ec01.command.token.OutputToken
 [source,java]
 ----
 @WebApi(
-		name = "samples/ec01/token/outputToken", 
-		displayName = "", 
-		accepts = RequestType.REST_JSON, 
-		methods = MethodType.POST, 
-		privileged = true, 
+		name = "samples/ec01/token/outputToken",
+		displayName = "",
+		accepts = RequestType.REST_JSON,
+		methods = MethodType.POST,
+		privileged = true,
 		synchronizeOnSession = true,
-		results = { 
+		results = {
 				OutputToken.RESULT_TOKEN_NAME,
 				OutputToken.RESULT_TOKEN_VALUE })
 @CommandClass(
-		name = "samples/ec01/token/outputToken", 
+		name = "samples/ec01/token/outputToken",
 		displayName = "トークン出力コマンド")
 public class OutputToken implements Command {
 
@@ -165,13 +178,13 @@ public class OutputToken implements Command {
 }
 ----
 <1> トークンを生成します。
-<2> トークンパラメータ名をrequestスコープにセットして返却します。
-<3> トークンの値をrequestスコープにセットして返却します。
+<2> トークンパラメータ名をRequestスコープにセットして返却します。
+<3> トークンの値をRequestスコープにセットして返却します。
 
 
 . トークン取得用Vueコンポーネント
 +
-トークン取得用Vueコンポーネントを作成しています。それをトークンチェックに必要な画面にインポートする形で利用してます。
+トークン取得用Vueコンポーネントを作成しています。それをトークンチェックに必要な画面にインポートする形で利用しています。
 +
 [cols="1,2"]
 |===
@@ -181,51 +194,51 @@ h|ファイル名|/src/main/vue/components/token/OutputToken.vue
 [source,javascript]
 ----
 <script>
-import {Consts} from '../../mixins/Consts'
+import { Consts } from '../../mixins/Consts'
 
 export default {
-    name: 'OutputToken',
-    mixins: [Consts],
-    data: function() {
-        return {
-            token: {
-                name: "",
-                value: ""
-            }
-        }
-    },
-    methods: {
-        // トークンを取得する
-        get: function() {
-            return this.token;
-        },
-        // トークンをリロードする
-        reload: function() {
-            var url = this.apiOutputToken(); 
-            var data = {};
-            this.$http.post(url, data) <1>
-            .then((response) => {
-                var commandResult = response.data;
-                if (commandResult.status == 'SUCCESS'){
-                    this.token.name = commandResult.tokenName; <2>
-                    this.token.value = commandResult.tokenValue; <3>
-                } 
-            });
-        }
-    },
-    created: function() {
-        this.reload();
+  name: 'OutputToken',
+  mixins: [Consts],
+  data() {
+    return {
+      token: {
+        name: '',
+        value: ''
+      }
     }
+  },
+  created() {
+    this.reload()
+  },
+  methods: {
+    // トークンを取得する
+    get() {
+      return this.token
+    },
+    // トークンをリロードする
+    reload() {
+      const url = this.apiOutputToken()
+      const data = {}
+      this.$http.post(url, data) <1>
+      .then((response) => {
+        const commandResult = response.data
+        if (commandResult.status == 'SUCCESS') {
+          this.token.name = commandResult.tokenName <2>
+          this.token.value = commandResult.tokenValue <3>
+        }
+      })
+    }
+  }
 }
 </script>
 ----
-<1> VueコンポーネントでWebApiを経由してトークンを取得してます。
+<1> VueコンポーネントでWebApiを経由してトークンを取得しています。
 <2> トークンのパラメーター名を取得します。
 <3> トークンの値を取得します。
 
-* Navigation Guards ※
+* Navigation Guardsの導入
 +
-※ Navigation Guardsの利用方法について、Vue Routerの公式サイトを参照してください。
+※ Navigation Guardsの利用方法については、Vue Routerの公式サイトを参照してください。
 +
 [cols="1,2",options="header"]
 |===
@@ -240,20 +253,20 @@ export default {
 h|ファイル名|src/main/vue/components/member/RegistConfirm.vue
 |===
 +
-[source,Javascript]
+[source,javascript]
 ----
-  beforeRouteEnter: function(to, from, next) { <1>
+  beforeRouteUpdate(to, from, next) { <1>
     // 不正な画面遷移が発生したと判断
-    if(['regist'].indexOf(from.name) == -1 || to.params.userBean === undefined) {
-      next(new Error('samples.ec01.exception.invalidTransition'));
+    if (['regist'].indexOf(from.name) == -1 || to.params.userBean === undefined) {
+      next(new Error('samples.ec01.exception.invalidTransition'))
     } else {
-      next();
+      next()
     }
   }
 ----
-<1> Vueコンポーネントに `beforeRouteEnter` メソッドを利用することで、正常な画面遷移であるか判断する事が出来ます。
+<1> Vueコンポーネントに `beforeRouteEnter` メソッドを利用することで、正常な画面遷移であるか判断することができます。
 
-* check X-Requested-With Header
+* X-Requested-Withヘッダーのチェック
 +
 [cols="1,2", options="header"]
 |===
@@ -268,20 +281,20 @@ h|ファイル名|src/main/vue/components/member/RegistConfirm.vue
 h|ファイル名|/src/main/vue/main.js
 |===
 +
-[source,Javascript]
+[source,javascript]
 ----
 ----------------------------------------以上略----------------------------------------
 // Axiosの設定
-Vue.prototype.$http = axios.create({
-    headers: {'X-Requested-With': 'XMLHttpRequest'}　<1>
-});
+app.config.globalProperties.$http = axios.create({
+  headers: { 'X-Requested-With': 'XMLHttpRequest' }　<1>
+})
 ----------------------------------------以下略----------------------------------------
 ----
-<1> 詳しい説明は開発者ガイド<<../../developerguide/webapi/index#WebAPI-Settings,設定>>の章を参照してください。
+<1> 詳しい説明は、開発者ガイドの<<../../developerguide/webapi/index#WebAPI-Settings,WebApiの設定項目>>の章を参照してください。
 
 ** エラー発生の例
 +
-ブラウザーのURL欄にWebApiのsamples/ec01/topをアクセスすると、WebApi側で不正なアクセスとして検知され、以下のエラーが発生します。
+ブラウザーのURLでWebApiの `samples/ec01/top` にアクセスすると、WebApi側で不正なアクセスとして検知され、以下のエラーが発生します。
 +
 [source]
 ----

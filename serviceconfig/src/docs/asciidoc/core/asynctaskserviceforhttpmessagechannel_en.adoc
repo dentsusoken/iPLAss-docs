@@ -36,7 +36,7 @@ The default value is 60000 (1 minute).
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service name="AsyncTaskServiceForHttpMessageChannel">
 

@@ -98,13 +98,17 @@ iPLAssでは以下の情報が診断コンテキスト(MDC)によりログ出力
 | traceId | %X{traceId} | [.eeonly]#iplass-ee-awsモジュール# 適用の場合、X-Amzn-Trace-IdのRootを出力 +
 また、WebFrontendServiceにて出力値を設定可能
 | [.eeonly]#impersonatedUser# | %X{impersonatedUser} | 代理ログインユーザー
+| infinispanRequestId | %X{infinispanRequestId} | iplass-infinispan, [.eeonly]#iplass-ee-infinispan# モジュール適用の場合に利用可能。 +
+Infinispan を利用したクラスターノードへの非同期処理を送信した際のID。送信単位で一意なIDを付与する。
+| scimDistributeId | %X{scimDistributeId} | [.eeonly]#iplass-ee-web# モジュール適用の場合に利用可能。 +
+SCIM Service Provider 機能のスケジューラのタスクで利用可能。サービスプロバイダへ SCIM リクエストを配信する際のID。メッセージ単位で一意なIDが付与されている。
 |===
 
 === フィルター
 iPLAssでは `org.iplass.mtp.impl.logging.logback.LogConditionTurboFilter` を提供します。このTurboFilterを適用することにより、テナント単位にて動的にログ出力する条件を変更可能となります。
 
 .LogConditionTurboFilter設定例
-[source, xml]
+[source,xml]
 ----
 <configuration>
     <turboFilter class="org.iplass.mtp.impl.logging.logback.LogConditionTurboFilter" />
@@ -136,7 +140,7 @@ Logstash Logback Encoderを利用してログをJSON形式で出力可能です�
 Action/WebAPIの実行時間、クエリー発行回数などに関しては属性としても出力しています。
 
 .Logstash Logback Encoder設定例
-[source, xml]
+[source,xml]
 ----
 <configuration>
 

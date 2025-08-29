@@ -142,24 +142,24 @@ classはorg.iplass.mtp.impl.auth.authorize.builtin.workflow.WorkflowAuthContextH
 .AuthenticationProvider
 classはorg.iplass.mtp.impl.auth.authenticate.AuthenticationProviderの実装クラスを指定します。
 
-.実装クラス名
-----
-org.iplass.mtp.impl.auth.authenticate.builtin.BuiltinAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.simpletoken.SimpleAuthTokenAuthenticationProvider
-org.iplass.mtp.impl.auth.oauth.AccessTokenAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.configfile.ConfigFileAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.jaas.JaasAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.jee.JeeContainerManagedAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.ldap.LdapAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.preexternal.PreExternalAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.x509.X509AuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.saml.SamlAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.twostep.TwoStepAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.onetime.OnetimeCodeAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.knowledgebased.KnowledgeBasedAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.timebased.TimeBasedAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.rememberme.RememberMeTokenAuthenticationProvider
-----
+標準で、以下のAuthenticationProviderを提供します。
+
+* <<BuiltinAuthenticationProvider>>
+* <<SimpleAuthTokenAuthenticationProvider>>
+* <<AccessTokenAuthenticationProvider>>
+* <<ConfigFileAuthenticationProvider>>
+* <<JaasAuthenticationProvider>>
+* <<JeeContainerManagedAuthenticationProvider>>
+* <<LdapAuthenticationProvider>>
+* <<PreExternalAuthenticationProvider>>
+* <<X509AuthenticationProvider>>
+* <<SamlAuthenticationProvider>>
+* <<TwoStepAuthenticationProvider>>
+* <<OnetimeCodeAuthenticationProvider>>
+* <<KnowledgeBasedAuthenticationProvider>>
+* <<TimeBasedAuthenticationProvider>>
+* <<RememberMeTokenAuthenticationProvider>>
+* <<WebAuthnAuthenticationProvider>>
 
 [[BuiltinAuthenticationProvider]]
 .BuiltinAuthenticationProvider
@@ -207,8 +207,8 @@ classはorg.iplass.mtp.impl.auth.authenticate.builtin.PasswordHashSettingクラ�
 
 標準で、以下のPasswordHashSettingを提供します。
 
-- <<PasswordHashSetting>>（デフォルト）
-- <<Argon2PasswordHashSetting>>
+- <<PasswordHashSetting>>
+- <<Argon2PasswordHashSetting>>（デフォルト）
 
 PasswordHashSettingクラスを利用する場合は、
 以下の項目を設定可能です。
@@ -432,7 +432,7 @@ org.iplass.mtp.impl.auth.authenticate.UserEntityResolverの実装クラスにて
 以下に設定例を示します。
 なお、管理者権限のユーザーを設定ファイルに記述することになるので、ConfigFileAuthenticationProviderを使用する際は<<obfuscation, 設定値の難読化>>も併せて使用してください。
 
-[source, xml]
+[source,xml]
 ----
 <service>
   <interface>org.iplass.mtp.impl.auth.AuthService</interface>
@@ -643,7 +643,7 @@ userBaseDnが指定されない場合、java.naming.provider.urlで指定され�
 userDn指定がされていない場合は、userFilterの設定は必須です。
 | uniqueKeyAttribute | String | LDAPから取得するユーザー属性のうち、ユーザーを一意に特定するための属性名。
 未指定の場合は、認証要求時のユーザーIDの値がユニークキーとして設定されます。
-userAttributeLDAPから取得するユーザー属性名。複数の設定が可能です。
+| userAttribute | String、複数指定可 | LDAPから取得するユーザー属性名。複数の設定が可能です。
 未指定の場合は、すべての属性をLDAPより取得します。
 | getGroup | boolean | ユーザー認証成功後、ユーザーが所属するLDAP上のグループ情報を取得するか否か。
 取得したグループ情報はiPLAssでのロール定義にて利用可能となります。
@@ -758,7 +758,7 @@ Active Directoryに対してLdapAuthenticationProviderを利用する場合、�
 
 以下にActive Directoryを利用する際の設定例を示します。
 
-[source, xml]
+[source,xml]
 ----
 <service>
   <interface>org.iplass.mtp.impl.auth.AuthService</interface>
@@ -994,7 +994,7 @@ org.iplass.mtp.impl.auth.authenticate.UserEntityResolverの実装クラスにて
 
 TwoStepAuthenticationProviderの設定では、以下の例のようにプライマリ、セカンダリのAuthenticationProviderを内包する形で定義します。
 
-[source, xml]
+[source,xml]
 ----
 <service>
   <interface>org.iplass.mtp.impl.auth.AuthService</interface>
@@ -1130,7 +1130,7 @@ RememberMeTokenAuthenticationProviderは、実際の各種AuthenticationProvider
 
 設定例を以下に示します。
 
-[source, xml]
+[source,xml]
 ----
 <service>
   <interface>org.iplass.mtp.impl.auth.AuthService</interface>
@@ -1182,7 +1182,7 @@ classはorg.iplass.mtp.impl.auth.authenticate.token.web.AuthTokenCookieStoreを�
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.auth.AuthService</interface>
@@ -1248,3 +1248,38 @@ classはorg.iplass.mtp.impl.auth.authenticate.token.web.AuthTokenCookieStoreを�
 	</property>
 </service>
 ----
+
+[[WebAuthnAuthenticationProvider]]
+.WebAuthnAuthenticationProvider
+WebAuthn仕様のDiscoverable Credential（パスキー）を用いたパスワードレス、ネームレス認証を提供する認証プロバイダです。
+WebAuthnAuthenticationProviderを利用する際は、別途
+<<../developerguide/authentication/index.adoc#webauthn,WebAuthn定義>>の設定、および
+<<../developerguide/authentication/index.adoc#authpolicy,AuthenticationPolicy>>でのWebAuthnの有効化の設定が必要です。
+
+classはorg.iplass.mtp.impl.auth.authenticate.webauthn.WebAuthnAuthenticationProviderを指定します。
+
+以下の項目を設定可能です。
+
+[cols="1,1,3a", options="header"]
+|===
+| 項目 | 値 | 説明
+| providerName | String | <<BuiltinAuthenticationProvider>>参照
+| userEntityResolver | UserEntityResolver | 認証成功後のユーザーEntityの取得方法。
+次のいずれかを指定可能です。
+実際に指定するclassはリンク先を参照してください。
+
+<<DefaultUserEntityResolver_webauthn,DefaultUserEntityResolver>> （デフォルト） +
+<<UserEntityResolver_webauthn,UserEntityResolverを実装する独自クラス>>
+|===
+
+[[DefaultUserEntityResolver_webauthn]]
+.DefaultUserEntityResolver
+classはorg.iplass.mtp.impl.auth.authenticate.DefaultUserEntityResolverを指定します。
+
+詳細は <<DefaultUserEntityResolver_builtin,DefaultUserEntityResolver>> を参照してください。
+
+[[UserEntityResolver_webauthn]]
+.UserEntityResolverを実装する独自クラス
+classはorg.iplass.mtp.impl.auth.authenticate.UserEntityResolverを実装する独自クラスを指定します。
+
+org.iplass.mtp.impl.auth.authenticate.UserEntityResolverの実装クラスにてUserエンティティを取得するロジックを記述します。

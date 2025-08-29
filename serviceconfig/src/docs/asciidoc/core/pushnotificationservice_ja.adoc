@@ -128,7 +128,7 @@ Micrometerによるメトリクス収集機能を追加したPushNotificationLis
 設定変更可能な項目はありません。
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
     <interface>org.iplass.mtp.impl.pushnotification.PushNotificationService</interface>

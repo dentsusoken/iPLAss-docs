@@ -26,6 +26,7 @@ NOTE: Web APIのパラメータにて `tabular=ture` を指定した場合、も
 | csvDateTimeFormat | String | EntityWebApiのQuery検索でCSV形式の結果を返す場合のDateTime型の出力形式。未指定の場合は、実行時のLocaleFormatを利用します。
 | csvDateFormat | String | EntityWebApiのQuery検索でCSV形式の結果を返す場合のDate型の出力形式。未指定の場合は、実行時のLocaleFormatを利用します。
 | csvTimeFormat | String | EntityWebApiのQuery検索でCSV形式の結果を返す場合のTime型の出力形式。未指定の場合は、実行時のLocaleFormatを利用します。
+| csvDownloadFooter | String | Entity CRUD APIのCSVダウンロードのフッター文言。
 | loadWithMappedByReference | boolean | EntityWebApiのLoad処理で被参照プロパティを取得するか否かのデフォルト値です。デフォルト値はfalseです。
 | listWithMappedByReference | boolean | EntityWebApiのQuery検索で被参照プロパティを取得するか否かのデフォルト値です。デフォルト値はfalseです。
 | csvListWithMappedByReference | boolean | EntityWebApiのQuery検索のCSV形式の場合、被参照プロパティを取得するか否かのデフォルト値です。
@@ -37,7 +38,7 @@ CAUTION: 後方互換性のための設定フラグです。将来のバージ�
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.webapi.EntityWebApiService</interface>
@@ -45,6 +46,7 @@ CAUTION: 後方互換性のための設定フラグです。将来のバージ�
 	<property name="csvDateTimeFormat" value="yyyy/MM/dd HH:mm:ss" />
 	<property name="csvDateFormat" value="yyyy/MM/dd" />
 	<property name="csvTimeFormat" value="HH:mm:ss" />
+	<property name="csvDownloadFooter" value=""/>
 
 	<property name="loadWithMappedByReference" value="true" />
 

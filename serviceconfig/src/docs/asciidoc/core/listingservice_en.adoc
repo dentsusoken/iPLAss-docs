@@ -42,7 +42,7 @@ Please specify the implementing class of org.iplass.mtp.impl.listing.SerializedC
 In a class that implements SerializedClassResolver, implement the `Class<?> resolveClass(String serializedClassName)` method to return the Class instance resolved from the class name.
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.listing.ListingService</interface>

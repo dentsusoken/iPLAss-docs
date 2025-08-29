@@ -3,7 +3,7 @@
 
 [[GemCustomize_Search]]
 === カスタム検索処理
-検索一覧や選択画面で、検索処理、CSVダウンロード処理の実行前後に独自の処理を組み込むことができます。
+検索一覧や選択画面で、検索処理、ダウンロード処理の実行前後に独自の処理を組み込むことができます。
 
 以下のインターフェースを実装したJavaクラスまたはUtilityClassを作成してください。
 作成したクラスを検索一覧のEQLカスタム処理クラスに指定します。
@@ -67,7 +67,7 @@ public class SampleSearchQueryInterrupter implements SearchQueryInterrupter {
 
 		} else if (type == SearchQueryType.CSV) {
 			//CSVダウンロード時のカスタマイズ
-			if (Boolean.valueOf(request.getParam(Constants.CSV_IS_FOR_UPLOAD)) {
+			if (Boolean.valueOf(request.getParam(Constants.FILE_IS_FOR_UPLOAD)) {
 				// Upload形式
 			} else {
 				// Upload形式以外
@@ -157,12 +157,12 @@ private void encriptName(ComparisonPredicate predicate) {
 }
 ----
 
-[[GemCustomize_CsvUpload]]
-=== カスタムCSVアップロード処理
-検索画面でのCSVアップロード時に独自の処理を組み込むことができます。
+[[GemCustomize_Upload]]
+=== カスタムアップロード処理
+検索画面でのアップロード時に独自の処理を組み込むことができます。
 
 以下のインターフェースを実装したJavaクラスまたはUtilityClassを作成してください。
-作成したクラスを検索条件設定の `カスタムCSVアップロード処理クラス名` に指定します。
+作成したクラスを検索条件設定の `カスタムアップロード処理クラス名` に指定します。
 
 ====
 org.iplass.mtp.view.generic.SearchFormCsvUploadInterrupter
@@ -179,7 +179,7 @@ org.iplass.mtp.view.generic.SearchFormCsvUploadInterrupter
 .4+|dataMapping
 |row(int)
 .4+|なし
-.4+|CSVデータから登録用のデータをマッピングします。
+.4+|アップロードファイルから登録用のデータをマッピングします。
 
 CsvRegistrationType で登録の種類を判断できます。
 
@@ -212,13 +212,13 @@ DELETE:: 削除。
 |InsertOption
 |新規登録時のInsertOptionを制御します。
 
-標準の登録対象プロパティの判定は、CSVのヘッダ情報または検索条件設定の `CSVアップロード登録項目` により制御されます。登録対象以外のプロパティは null 値が設定されます。
+標準の登録対象プロパティの判定は、アップロードファイルのヘッダ情報または検索条件設定の `アップロード登録項目` により制御されます。登録対象以外のプロパティは null 値が設定されます。
 
 |updateOption
 |UpdateOption
 |UpdateOption
 |更新時のUpdateOptionを制御します。
-標準の更新対象プロパティの判定は、CSVのヘッダ情報または検索条件設定の `CSVアップロード更新項目` により制御されます。
+標準の更新対象プロパティの判定は、アップロードファイルのヘッダ情報または検索条件設定の `アップロード更新項目` により制御されます。
 
 |deleteOption
 |DeleteOption
@@ -228,20 +228,20 @@ DELETE:: 削除。
 |columnNameMap
 |EntityDefinition
 |Map<String, String>
-|CSVのヘッダ名をカスタマイズしたい場合に指定します。keyをプロパティ名、valueを出力列名としてマッピングを定義します。
+|ヘッダ名をカスタマイズしたい場合に指定します。keyをプロパティ名、valueを出力列名としてマッピングを定義します。
 nullを返す場合、またはMapに該当がない場合は、標準の形式で出力します。
 
 .2+|sampleCsvData
 |EntityDefinition
 .2+|List<Entity>
-.2+|サンプルCSVとして出力したいEntityデータを返します。引数で出力対象のプロパティが渡されます。nullを返す場合、プロパティ型に応じてランダムな値を出力します。
+.2+|サンプルファイルとして出力したいEntityデータを返します。引数で出力対象のプロパティが渡されます。nullを返す場合、プロパティ型に応じてランダムな値を出力します。
 |List<PropertyDefinition>
 
 |===
 
-カスタムCSVアップロード処理の各メソッドは以下のように呼ばれます。
+カスタムアップロード処理の各メソッドは以下のように呼ばれます。
 
-. CSVデータの1行分を読み込みます。
+. ファイルデータの1行分を読み込みます。
 . `_useCtrl` フラグの有無、ユニークキー値と既存データの有無により、新規、更新、削除を判断します。
 . `dataMapping` が実行され、処理対象のEntityが作成されます。
 . `beforeRegister` が実行されます。
@@ -256,9 +256,9 @@ nullを返す場合、またはMapに該当がない場合は、標準の形式�
 `beforeRegister` でValidateErrorを返した場合にも登録処理は実行しませんが、
  `afterRegister` 処理は呼び出します。
 
-.CSVヘッダのカスタマイズ
-`columnNameMap` を実装することで、CSVヘッダを変更することが可能です。
-Upload形式のCSVダウンロード、サンプルCSVダウンロード、CSVアップロード処理時に参照します。
+.ヘッダのカスタマイズ
+`columnNameMap` を実装することで、ヘッダを変更することが可能です。
+Upload形式のダウンロード、サンプルダウンロード、アップロード処理時に参照します。
 
 [source,java]
 ----
@@ -283,7 +283,7 @@ public class SampleSearchFormCsvUploadInterrupter implements SearchFormCsvUpload
 }
 ----
 
-NOTE: ヘッダをカスタマイズする場合は、<<searchcondition_setting, 検索条件の設定>> の `CSVダウンロード時表示名を出力しない` をONにすることを検討してください。
+NOTE: ヘッダをカスタマイズする場合は、<<searchcondition_setting, 検索条件の設定>> の `ダウンロード時表示名を出力しない` をONにすることを検討してください。
 
 [[GemCustomize_Registration]]
 === カスタム登録処理

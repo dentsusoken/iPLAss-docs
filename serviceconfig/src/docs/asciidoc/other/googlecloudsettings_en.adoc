@@ -53,7 +53,7 @@ ServiceAccountSecretKeyGoogleCredentialsFactory can be configured with the follo
 
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <!-- GoogleCloudSettings -->
 <service>

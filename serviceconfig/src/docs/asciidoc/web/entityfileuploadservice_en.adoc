@@ -1,0 +1,54 @@
+[[EntityFileUploadService]]
+=== EntityFileUploadService
+This service manages Excel or CSV uploads
+
+==== Interface Name
+----
+org.iplass.mtp.impl.fileport.EntityFileUploadService
+----
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.fileport.EntityFileUploadService
+----
+
+==== The settings of EntityFileUploadService
+EntityFileUploadService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| showErrorLimitCount | int | Maximum number of fike upload errors to be displayed. If `-1` is specified, there is no limit.(all error message will be printed)
+| defaultUpdateTargetVersionForNoneVersionedEntity | TargetVersion | Default TargetVersion when updating a non-version controlled Entity, default value is `CURRENT_VALID`.
+| mustOrderByWithLimit | boolean | Sets whether OrderBy is always specified when downloading file in upload format, if a maximum number limit is specified. Default value is `false`.
+
+If you are using SQLServer, specify `true`.
+In the case of SQLServer, the following conditions will result in a situation where data cannot be retrieved, but setting this value to `true` will retrieve the data.
+
+* Limiting the number of downloads.
+* The specified search condition contains conditions for multiple References.
+|===
+
+===== Example
+[source,xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.fileport.EntityFileUploadService</interface>
+	<class>org.iplass.mtp.impl.fileport.EntityFileUploadService</class>
+	<!-- Maximum number of file upload errors to be displayed(-1 means unlimited)  -->
+	<property name="showErrorLimitCount" value="100"/>
+
+	<!--
+	 Default TargetVersion when updating a non-version controlled Entity,
+	 default value is CURRENT_VALID.
+	-->
+	<property name="defaultUpdateTargetVersionForNoneVersionedEntity" value="SPECIFIC"/>
+
+	<!--
+		When Limit is specified when downloading file, is OrderBy always specified?
+		For SQLServer, specify true.
+	-->
+	<property name="mustOrderByWithLimit" value="false"/>
+</service>
+----

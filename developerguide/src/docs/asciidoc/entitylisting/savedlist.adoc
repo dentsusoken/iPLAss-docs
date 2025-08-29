@@ -30,7 +30,7 @@ image::images/savedlist_parts-own.png[]
 === 設定
 TopViewのSavedListパーツでは以下の設定が可能です。
 
-[cols="1,3", options="header"]
+[cols="1,3a", options="header"]
 |===
 |設定項目
 |設定値
@@ -65,19 +65,33 @@ Top画面に保存リストPartsを表示したくない場合で、保存リス
 |スナップショットとして保存可能かを設定します（デフォルト：可） +
 OFFにした場合は、条件として保存されます。
 
-|can csv download
-|CSV Downloadが可能かを設定します（デフォルト：可）
+|can file download
+|File Downloadが可能かを設定します（デフォルト：可）
 
-|can direct csv download
-a|保存リストの一覧画面から直接CSV Downloadを許可するかを設定します（デフォルト：不可） +
-可能とした場合は、ポップアップに `CSV Download` が表示されます。 +
+|can direct file download
+a|保存リストの一覧画面から直接File Downloadを許可するかを設定します（デフォルト：不可） +
+可能とした場合は、ポップアップに `Download` が表示されます。 +
 またCSV Download時に文字コードを指定する場合は、TopViewの
 <<../genericentitymanager/topview/index.adoc#csvdownload, CsvDownload Settings>> で設定します。
 
-CAUTION: 保存リストの詳細画面では、対象となるAggregationやEntityListing定義のCSV Download可否設定をチェックして
-CSV Downloadボタンの表示を制御していますが、保存リスト一覧上ではこのチェックは行いません
+CAUTION: 保存リストの詳細画面では、対象となるAggregationやEntityListing定義のDownload可否設定をチェックして
+Downloadボタンの表示を制御していますが、保存リスト一覧上ではこのチェックは行いません
 (それぞれの保存データをロードする必要があるためパフォーマンスを考慮してチェックしていません)。
-許可されていない保存リストについてはWARNログを出力後、空のCSVファイルが出力されます。
+許可されていない保存リストについてはWARNログを出力後、空のファイルが出力されます。
+
+|File type
+|ダウンロードで利用するファイル形式を指定します。
+
+CSV::
+CSVファイルを利用します。
+
+EXCEL::
+EXCELファイルを利用します。
+
+SPECIFY::
+CSVファイルかEXCELファイルのどちらを利用するかを画面で選択します。
+
+未指定の場合は、<<../../serviceconfig/index.adoc#EnterpriseGemConfigService,EnterpriseGemConfigService>> の `savedListFileSupportType` によって動作します。
 
 |run a search when loading detailed data
 |保存リストを表示する際に、初期検索を行うかのデフォルト値を設定します。
@@ -118,11 +132,6 @@ image::images/savedlist_view.png[]
 
 |listingTitle
 |画面タイトルをカスタマイズする場合に設定します。
-
-|canDelete
-|他のユーザーが保存したデータを削除可能かを設定します（デフォルト：false） +
-削除可能とした場合は、 `保存リスト` のタブに `削除` ボタンが表示されます。 +
-削除不可とした場合は、 `所有するリスト` タブ側のみ `削除` ボタンが表示されます。
 
 |canCreateFolder
 |フォルダを作成可能かを設定します（デフォルト：true） +

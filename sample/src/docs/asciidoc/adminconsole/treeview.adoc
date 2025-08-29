@@ -1,6 +1,6 @@
 [[AdminConsole_TreeView]]
 === TreeView
-このサンプルではTreeViewの機能を利用しています。マネージャーまたはオペレーターに属するユーザーが管理用Top画面の左側のウェジェットエリアに商品情報のツリーが見えます。
-TreeViewの作成方法は開発者ガイド<<../../developerguide/genericentitymanager/treeview/index#, TreeView>>の章を参照してください。
+サンプルアプリでは、TreeView機能を利用しています。マネージャーまたはオペレーターに属するユーザーは、運営者向け管理画面のメニューのウィジェットエリアでツリー表示された商品情報を確認できます。 +
+TreeViewを作成する方法の詳細は、開発者ガイドの<<../../developerguide/genericentitymanager/treeview/index#, TreeView>>の章を参照してください。
 
 image:images/sample-ec_adminconsole-treeview-product.png[align=left]

@@ -1517,41 +1517,7 @@ SILENT:: サイレント形式で実行します。
 本機能の利用にあたり、service-config の service `org.iplass.mtp.impl.metadata.MetaDataRepository` を以下のように設定する必要があります。 +
 以下の設定例では、RDB 管理されているメタデータは `/entity/`, `/staticresource/` 配下のパスとなります。
 
-.設定例
-[source,xml]
-----
-<!-- MetaDataRepository Settings -->
-<service>
-  <interface>org.iplass.mtp.impl.metadata.MetaDataRepository</interface>
-
-  <property name="tenantLocalStore" class="org.iplass.mtp.impl.metadata.composite.CompositeMetaDataStore" > <1>
-    <property name="pathMapping" class="org.iplass.mtp.impl.metadata.composite.MetaDataStorePathMapping">
-        <property name="pathPrefix" value="/entity/"/>
-        <property name="store" value="org.iplass.mtp.impl.metadata.rdb.RdbMetaDataStore"/>
-    </property>
-    <property name="pathMapping" class="org.iplass.mtp.impl.metadata.composite.MetaDataStorePathMapping">
-        <property name="pathPrefix" value="/staticresource/"/>
-        <property name="store" value="org.iplass.mtp.impl.metadata.rdb.RdbMetaDataStore"/>
-    </property>
-
-    <property name="store" class="org.iplass.mtp.impl.metadata.rdb.RdbMetaDataStore" />
-    <property name="store" class="org.iplass.mtp.impl.metadata.xmlfile.XmlFileMetaDataStore" > <2>
-      <property name="fileStorePath" value="src/main/tenantLocalStore/" /> <3>
-      <property name="groovySourceStorePath" value="src/main/groovy/" />
-      <property name="localTenantId" value="CHANGE_YOUR_TENANT_ID"/> <4>
-    </property>
-    <property name="defaultStoreClass" value="org.iplass.mtp.impl.metadata.xmlfile.XmlFileMetaDataStore"/>
-  </property>
-</service>
-
-----
-<1> tenantLocalStore プロパティは、 `org.iplass.mtp.impl.metadata.composite.CompositeMetaDataStore` を設定する。
-<2> `org.iplass.mtp.impl.metadata.composite.CompositeMetaDataStore` のプロパティ store に以下のいずれかを設定する。 +
-{nbsp}{nbsp} `org.iplass.mtp.impl.metadata.xmlfile.XmlFileMetaDataStore` +
-{nbsp}{nbsp} `org.iplass.mtp.impl.metadata.xmlfile.VersioningXmlFileMetaDataStore`
-<3> XMLファイルは fileStorePath プロパティのパスに出力される。
-<4> バッチ実行時に指定することができるテナントIDは、localTenantId に設定されているテナントIDと同一であること。 +
-※当該行の value 属性は利用対象のテナントIDを設定する。
+include::../_share/metadatarepository_xmlfilemetadatastore_config_example.adoc[]
 
 ===== ウィザード形式
 ウィザード形式の場合、実行に必要な情報を質問形式で設定していきます。

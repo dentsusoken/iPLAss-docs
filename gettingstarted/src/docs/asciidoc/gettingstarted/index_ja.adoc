@@ -6,7 +6,7 @@
 == はじめに
 
 ここでは、Windows環境のPCで iPLAss を動作させる手順を紹介します。 +
-手順中では、アプリケーションサーバとしてApache Tomcat、DBMSとしてMySQLを使用します。 +
+手順中では、アプリケーションサーバとして「Apache Tomcat」、DBMSとして「MySQL」を使用します。 +
 
 [NOTE]
 ====
@@ -18,22 +18,22 @@ iPLAssのインストーラ（war）自体は、Apache Tomcatに最適化され�
 
 本手順は以下を前提条件としています。
 
-・Windows環境であること。 +
+- Windows環境であること
 
 == 環境構築
 . OpenJDKのインストール
-.. Amazon Correttoの https://aws.amazon.com/corretto/[ダウンロードサイト] からAmazon Corretto 11のインストーラをダウンロードします。
+.. Amazon Correttoの https://aws.amazon.com/corretto/[ダウンロードサイト] からAmazon Corretto 21のインストーラをダウンロードします。
 +
 [source]
 ----
-"amazon-corretto-11-x86-windows-jdk.msi"をダウンロード
+"amazon-corretto-21-x64-windows-jdk.msi"をダウンロード
 ----
 
 .. ダウンロードしたインストーラを実行し任意の場所にインストールします。
 
 
 . Apache Tomcat(以下、Tomcat)のインストール
-.. Tomcatの https://tomcat.apache.org/download-90.cgi[ダウンロードサイト] からTomcat 9のインストーラをダウンロードします。
+.. Tomcatの https://tomcat.apache.org/download-10.cgi[ダウンロードサイト] からTomcat 10.1のインストーラをダウンロードします。
 +
 [source]
 ----
@@ -43,14 +43,14 @@ Coreの"32-bit/64-bit Windows Service Installer"をダウンロード
 .. ダウンロードしたインストーラを実行し任意の場所にインストールします。
 
 . MySQLのインストール
-.. MySQLの https://dev.mysql.com/downloads/mysql/[ダウンロードサイト] からMySQL Community Server(5.7以上)のインストーラをダウンロードします。
+.. MySQLの https://dev.mysql.com/downloads/mysql/[ダウンロードサイト] からMySQL Community Server(8.0以上)のインストーラをダウンロードします。
 +
 [source]
 ----
 "Windows (x86, 32 & 64-bit), MySQL Installer MSI"をダウンロード
 ----
-TIP: 本手順は、バージョン8.0.33をインストールして作成した手順となっています。 +
-他のバージョンを使用した場合、一部手順や項目名が異なる場合がありますので、使用したい環境に合わせて適宜設定してください。 +
+TIP: 本手順は、バージョン「8.0.33」をインストールして作成した手順となっています。 +
+他のバージョンを使用した場合、一部手順や項目名が異なる場合がありますので、使用したい環境に合わせて適宜設定してください。
 
 .. ダウンロードしたインストーラを実行し任意の場所にインストールします。 +
 インストールの際は以下を設定してください。
@@ -61,7 +61,7 @@ Setup Type = Server only
 Type and Networking:ConfigType = Dedicated Computer
 ----
 
-.. MySQL(my.ini及びmy.cnf)を設定します。
+.. MySQL(my.iniおよびmy.cnf)を設定します。
 +
 以下の例の通り、設定を変更または追加してください。
 +
@@ -99,18 +99,17 @@ TIP: データベースに紐づくmy.ini（Windowsの場合、デフォルトC:
 <5> タイムゾーンのインポートが難しい場合は、こちらを利用してタイムゾーンを設定してください。 
 
 +
-1～5以外の項目については、my.iniを確認し設定されていない場合は追加してください。 +
+1-5以外の項目については、my.iniを確認し設定されていない場合は追加してください。 +
 ファイルの修正が完了したら、MySQLを再起動してください。
 
 +
 IMPORTANT: iPLAss 3.2.14 以前では `mysqld` セクションに `lower_case_table_names=1` の設定が必要です。
 
 +
- 
+
 
 +
-TIP: 注意事項 +
-MySQLのバイナリログを有効にしている場合、ファンクション作成にてエラーが発生します。 +
+TIP: MySQLのバイナリログを有効にしている場合、ファンクション作成にてエラーが発生します。 +
 対応として、log_bin_trust_function_creatorsを有効にしてください。
 
 . MySQL JDBCドライバのインストール
@@ -134,7 +133,7 @@ MySQLのバイナリログを有効にしている場合、ファンクション
 TIP: 現時点でTomcatが起動している場合は、JDBCドライバファイルをコピー後にTomcatを再起動してください。
 
 . データベースの準備 +
-iPLAssインストーラがデータベース及びユーザーの作成を行うため準備は不要です。
+iPLAssインストーラがデータベースおよびユーザーの作成を行うため準備は不要です。
 
 . iPLAssホームディレクトリ（任意） +
 ホームディレクトリにはインストーラの設定情報が格納されます。 +
@@ -159,7 +158,7 @@ TIP: Windows環境で、Tomcatをサービスから起動した場合のホー�
 以下に、ログをコンソール出力するための設定内容を示します。
 こちらを参考にlogback.xmlファイルをホームディレクトリに作成し、適宜カスタマイズしてください。
 +
-[source, xml]
+[source,xml]
 ----
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE configuration>
@@ -191,7 +190,7 @@ logbackのログ設定ファイルを配置します。ログ設定ファイル�
 
 .. https://iplass.org/downloads/[ダウンロードサイト]からiPLAss Installerをダウンロードします。
 
-.. （Enterprise Editionの場合）Enterprise Edition版のダウンロードサイトからiplass.warを取得します。
+.. （Enterprise Editionの場合）Enterprise Edition版のダウンロードサイトから「iplass.war」を取得します。
 
 . Tomcatへのiplass.warのデプロイ
 .. 取得した「iplass.war」をTomcatの次の場所へコピーします。
@@ -233,7 +232,7 @@ iPLAssセットアップ画面から、以下の要領で環境情報を入力�
 |DBAユーザー名|MySQLのDBA権限を持つユーザーのユーザー名(MySQLインストール時に作成したRootユーザー名)
 |DBAパスワード|MySQLのDBA権限を持つユーザーのパスワード(MySQLインストール時に作成したRootユーザーパスワード)
 |バイナリデータファイル保存場所|バイナリデータファイルの保存先ルートディレクトリ +
-MySQL及びPostgreSQLの場合、Binary型のデータは標準でファイル形式により外部保存されます。Oracle及びSQLServerの場合は保存場所を設定した場合のみ外部保存されます。
+MySQLおよびPostgreSQLの場合、Binary型のデータは標準でファイル形式により外部保存されます。OracleおよびSQLServerの場合は保存場所を設定した場合のみ外部保存されます。
 |テーブル自動作成|[red]#*新規にセットアップを行う場合は必ずチェックしてください。*# +
 チェックをするとiPLAssで利用するテーブルを作成します。 +
 既にテーブルが存在する場合、テーブルは再作成されデータは初期化されます。 +
@@ -259,8 +258,7 @@ TIP: セットアップに失敗してしまった場合は、iPLAssの再イン
 |テナント名|任意のテナント名 （半角推奨）
 |管理者ユーザーID|任意の管理者ユーザーID
 |管理者パスワード|任意の管理者パスワード +
-※パスワードを表示する場合は「パスワード表示」をチェックします。 +
-ブラウザがIEの場合は「パスワード表示」のチェックボックスは表示されません。
+※パスワードを表示する場合は「パスワード表示」をチェックします。
 |===
 +
 .管理者のユーザーIDおよびパスワードについて

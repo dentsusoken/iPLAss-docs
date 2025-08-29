@@ -1,14 +1,14 @@
 [[VueJS_WebAPI_Resources_Message]]
 === 多言語メッセージファイル
 
-* `vue-i18n` に利用する多言語メッセージファイルを定義しています。vue-i18nの公式サイトを参照してください。
+* `vue-i18n` に利用する多言語メッセージファイルを定義しています。詳細は、vue-i18nの公式サイトを参照してください。
 +
 [cols="1,2"]
 |===
 h|ファイル名|/src/main/vue/scripts/iplass-wtp-messages.json
 |===
 +
-[source,JSON]
+[source,json]
 ----
 {
     "en": {
@@ -51,20 +51,22 @@ h|ファイル名|/src/main/vue/scripts/iplass-wtp-messages.json
 
 * 利用例
 +
-[source,HTML]
+[source,html]
 ----
 <template>
 <div class="col-sm-12 col-md-9">
     <div class="row">
-        <div class="col-12">
-            <div class="border-top"></div>
-            <nav class="breadcrumb all-breadcrumb">
-                <router-link class="breadcrumb-item text-primary" v-bind:to="{name: 'top'}">{{$t("samples.ec01.all.breadcrumb.home")}}</router-link> <1>
-                <span class="breadcrumb-item active">{{categoryNameLocale}}</span>
-            </nav>
-        </div>
+      <div class="col-12">
+        <div class="border-top"></div>
+        <nav class="breadcrumb all-breadcrumb">
+          <router-link class="breadcrumb-item text-primary" :to="{ name: 'top' }">
+            {{ $t('samples.ec01.all.breadcrumb.home') }} <1>
+          </router-link>
+          <span :id="categoryId" class="breadcrumb-item active">{{ categoryNameLocale }}</span>
+        </nav>
+      </div>
     </div>
     ......
 </template>
 ----
-<1> `{{$t(変数名)}}` の形式で多言語メッセージファイルからメッセージを取得できます。
+<1> Vue.jsのテンプレートで、 `{{ $t(変数名) }}` の形式で多言語メッセージファイルからメッセージを取得できます。

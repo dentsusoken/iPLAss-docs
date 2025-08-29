@@ -65,7 +65,7 @@ image::images/inquiry_listener.png[]
 |Script|下記を参照|afterInsert
 |===
 
-[source, groovy]
+[source,groovy]
 ----
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -374,7 +374,7 @@ image::images/delivery_listener.png[]
 |Script|下記を参照|afterInsert
 |===
 
-[source, groovy]
+[source,groovy]
 ----
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -468,7 +468,7 @@ image::images/delivery_edit-command.png[]
 |practice/PracticeWorkflowCommand002|PracticeWorkflowCommand002|請求更新コマンド|Script|下記を参照
 |===
 
-[source, groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.UpdateOption;
 import org.iplass.mtp.entity.SelectValue;
@@ -796,7 +796,7 @@ image::images/approval_property.png[]
 回覧先セットで登録された承認対象者が一定期間（タイマー設定）「承認しなかった場合」も自動的に「承認」とする為の処理です。
 タイマーで設定された期間が過ぎた場合に本コマンドが実行されます。
 
-[source, groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.query.Query;
 import org.iplass.mtp.entity.query.condition.predicate.Equals;
@@ -851,7 +851,7 @@ for (Assignment e : assignment) {
 「承認」したユーザー（自動承認含む）のみを取得し、CSVファイルを作成します。
 また、作成したファイルを議事録ワークフロー用エンティティに登録する処理です。
 
-[source, groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.query.Query;
 import org.iplass.mtp.entity.query.condition.predicate.Equals;
@@ -927,7 +927,7 @@ em.update(entity, option);
 * practice/PracticeWorkflowCommand003_003(凍結処理) +
 登録した議事録、回覧先ユーザー、承認者リストを更新できないようにロックする処理です。
 
-[source, groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.query.Query;
 import org.iplass.mtp.entity.query.condition.predicate.Equals;
@@ -1129,7 +1129,7 @@ image::images/approval_setting-task6.png[]
 +
 対象EntityのmembersにセットされたアカウントIDを取得しています。
 +
-[source, groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.query.Query;
 import org.iplass.mtp.entity.query.condition.predicate.Equals;

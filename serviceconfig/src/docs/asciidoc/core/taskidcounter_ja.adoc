@@ -46,7 +46,7 @@ CachableRdbTableCounterServiceを設定します。
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service name="TaskIdCounter">
 	<interface>org.iplass.mtp.impl.counter.CounterService</interface>

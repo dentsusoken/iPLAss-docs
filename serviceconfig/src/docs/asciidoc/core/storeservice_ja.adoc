@@ -39,10 +39,18 @@ classはorg.iplass.mtp.impl.datastore.grdb.GRdbDataStoreを指定します。
 コミュニティエディション用のDataStoreです。
 
 以下の項目を設定可能です。
-[cols="1,1,3", options="header"]
+[cols="1,1,3a", options="header"]
 |===
 | 項目 | 値 | 説明
 | storageSpace | <<StorageSpaceMap>>、複数指定可 | StorageSpaceの設定。
+| overwriteTableNamePostfixMap | String、Map形式 | 特定のEntityのstorageSpaceへの格納先を直接変更したい場合にMap形式で指定します。nameにはEntity定義名、valueにはStorageSpaceの接尾辞（tableNamePostfix）を指定します。
+
+利用用途としては次のような場面を想定しています。
+
+- iPLAssデフォルトで定義されているエンティティのStorageSpaceを変更したい
+- XMLファイルベースで管理しているカスタムEntityの格納先StorageSpaceをメタデータXMLを変更しないまま、稼働環境毎に変更したい
+
+NOTE: storageSpaceの接尾辞（tableNamePostfix）のみが変更可能です。カラムの定義数はEntity定義に設定されているstorageSpaceの設定が利用されます。変更先のstorageSpaceのカラム定義数は変更前のものと同等である必要があります。
 |===
 
 [[EnterpriseGRdbDataStore]]
@@ -51,11 +59,19 @@ classはorg.iplass.mtp.impl.datastore.grdb.EnterpriseGRdbDataStoreを指定し�
 エンタープライズエディション用のDataStoreです。
 
 以下の項目を設定可能です。
-[cols="1,1,3", options="header"]
+[cols="1,1,3a", options="header"]
 |===
 | 項目 | 値 | 説明
 | enableWindowFunctionEmulation | boolean | Window関数のエミュレートを有効にするか。デフォルト値はfalseです。
 | storageSpace | <<StorageSpaceMap>>、複数指定可 | StorageSpaceの設定。
+| overwriteTableNamePostfixMap | String、Map形式 | 特定のEntityのstorageSpaceへの格納先を直接変更したい場合にMap形式で指定します。nameにはEntity定義名、valueにはStorageSpaceの接尾辞（tableNamePostfix）を指定します。
+
+利用用途としては次のような場面を想定しています。
+
+- iPLAssデフォルトで定義されているエンティティのStorageSpaceを変更したい
+- XMLファイルベースで管理しているカスタムEntityの格納先StorageSpaceをメタデータXMLを変更しないまま、稼働環境毎に変更したい
+
+NOTE: storageSpaceの接尾辞（tableNamePostfix）のみが変更可能です。カラムの定義数はEntity定義に設定されているstorageSpaceの設定が利用されます。変更先のstorageSpaceのカラム定義数は変更前のものと同等である必要があります。
 |===
 
 [[StorageSpaceMap]]
@@ -120,7 +136,7 @@ classはorg.iplass.mtp.impl.datastore.grdb.tableallocators.RoundRobinTableAlloca
 設定可能な項目はありません。
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.datastore.StoreService</interface>
@@ -144,6 +160,9 @@ classはorg.iplass.mtp.impl.datastore.grdb.tableallocators.RoundRobinTableAlloca
 			<property name="uniqueIndexedTimestampColumns" value="2" />
 			<property name="uniqueIndexedDoubleColumns" value="2" />
 			<property name="customPartition" value="false" />
+		</property>
+		<property name="overwriteTableNamePostfixMap">
+			<property name="mtp.auth.Rank" value="MCS" />
 		</property>
 	</property>
 </service>

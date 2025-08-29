@@ -1,6 +1,6 @@
 [[MdcSearchViewService]]
 === [.eeonly]#MdcSearchViewService#
-モバイル版の詳細画面の設定を行うサービスです。
+MDC版の検索画面の設定を行うサービスです。
 
 ==== インタフェース名
 ----
@@ -19,18 +19,12 @@ MdcSearchViewServiceを設定します。
 [cols="1,1,3", options="header"]
 |===
 | 項目 | 値 | 説明
-| searchViewGenerator | <<MdcSearchViewHandlerGenerator>> | 検索画面の画面定義の自動生成設定。
-| searchController | <<SearchController>> | 検索処理。
-| searchSelectListController | <<SearchSelectListController>> | 選択処理検索処理。
-| deleteListController | <<DeleteListController>> | Entityの一括削除処理。
-| trashController | <<TrashController>> | ごみ箱操作。
+| autoGenerateConfig | <<AutoGenerateSearchViewConfig>> | 検索画面の画面定義の自動生成設定。
 |===
 
-[[MdcSearchViewHandlerGenerator]]
-.MdcSearchViewHandlerGenerator
-classはorg.iplass.mtp.mdc.view.entityview.search.definition.MdcSearchViewHandlerGeneratorを指定します。
-
-標準でorg.iplass.mtp.impl.mdc.view.entityview.search.MdcSearchViewHandlerGeneratorImplを提供しています。
+[[AutoGenerateSearchViewConfig]]
+.AutoGenerateSearchViewConfig
+classはorg.iplass.mtp.mdc.view.entityview.search.definition.AutoGenerateSearchViewConfigを指定します。
 以下の項目を指定可能です。
 
 [cols="1,1,3", options="header"]
@@ -65,94 +59,58 @@ UserPropertyEditorを利用する場合、OIDではなくUserのnameが表示さ
 | displayResult | boolean | 検索結果で表示するか。
 |====================
 
-[[SearchController]]
-.SearchController
-classはorg.iplass.mtp.mdc.view.entityview.search.search.SearchControllerの実装クラスを指定します。
-
-標準でorg.iplass.mtp.impl.mdc.view.entityview.search.SearchControllerImplを提供しています。
-設定可能な項目はありません。
-
-[[SearchSelectListController]]
-.SearchSelectListController
-classはorg.iplass.mtp.mdc.view.entityview.search.select.SearchSelectListControllerの実装クラスを指定します。
-
-標準でorg.iplass.mtp.impl.mdc.view.entityview.search.SearchSelectListControllerImplを提供しています。
-設定可能な項目はありません。
-
-[[DeleteListController]]
-.DeleteListController
-classはorg.iplass.mtp.mdc.view.entityview.search.delete.DeleteListControllerの実装クラスを指定します。
-
-標準でorg.iplass.mtp.impl.mdc.view.entityview.search.DeleteListControllerImplを提供しています。
-設定可能な項目はありません。
-
-[[TrashController]]
-.TrashController
-classはorg.iplass.mtp.mdc.view.entityview.trash.TrashControllerの実装クラスを指定します。
-
-標準でorg.iplass.mtp.impl.mdc.view.entityview.search.TrashControllerImplを提供しています。
-設定可能な項目はありません。
-
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.mdc.view.entityview.search.MdcSearchViewService</interface>
-	<!-- Auto Generator -->
-	<property name="searchViewGenerator" class="org.iplass.mtp.impl.mdc.view.entityview.search.MdcSearchViewHandlerGeneratorImpl">
-		<!-- システムプロパティを出力 -->
-		<property name="showSystemProperty" value="false" />
-		<!-- 出力するシステムプロパティ -->
-		<property name="systemProperties" class="org.iplass.mtp.mdc.view.entityview.search.definition.SectionProperty">
-			<property name="propertyName" value="oid" />
-			<property name="displayCondition" value="false" />
-			<property name="displayResult" value="false" />
+		<!-- Auto Generate Config -->
+		<property name="autoGenerateConfig" class="org.iplass.mtp.mdc.view.entityview.search.definition.AutoGenerateSearchViewConfig">
+			<!-- システムプロパティを出力 -->
+			<property name="showSystemProperty" value="false" />
+			<!-- 出力するシステムプロパティ -->
+			<property name="systemProperties" class="org.iplass.mtp.mdc.view.entityview.search.definition.SectionProperty">
+				<property name="propertyName" value="oid" />
+				<property name="displayCondition" value="false" />
+				<property name="displayResult" value="false" />
+			</property>
+			<property name="systemProperties" class="org.iplass.mtp.mdc.view.entityview.search.definition.SectionProperty">
+				<property name="propertyName" value="state" />
+				<property name="displayCondition" value="false" />
+				<property name="displayResult" value="false" />
+			</property>
+			<property name="systemProperties" class="org.iplass.mtp.mdc.view.entityview.search.definition.SectionProperty">
+				<property name="propertyName" value="createDate" />
+				<property name="displayCondition" value="false" />
+				<property name="displayResult" value="false" />
+			</property>
+			<property name="systemProperties" class="org.iplass.mtp.mdc.view.entityview.search.definition.SectionProperty">
+				<property name="propertyName" value="createBy" />
+				<property name="displayCondition" value="false" />
+				<property name="displayResult" value="false" />
+			</property>
+			<property name="systemProperties" class="org.iplass.mtp.mdc.view.entityview.search.definition.SectionProperty">
+				<property name="propertyName" value="updateDate" />
+				<property name="displayCondition" value="false" />
+				<property name="displayResult" value="false" />
+			</property>
+			<property name="systemProperties" class="org.iplass.mtp.mdc.view.entityview.search.definition.SectionProperty">
+				<property name="propertyName" value="updateBy" />
+				<property name="displayCondition" value="false" />
+				<property name="displayResult" value="false" />
+			</property>
+			<property name="systemProperties" class="org.iplass.mtp.mdc.view.entityview.search.definition.SectionProperty">
+				<property name="propertyName" value="lockedBy" />
+				<property name="displayCondition" value="false" />
+				<property name="displayResult" value="false" />
+			</property>
+			<!-- システムプロパティの表示位置 TOP or BOTTOM -->
+			<property name="systemPropertyDisplayPosition" value="BOTTOM" />
+			<!-- OIDをカスタマイズしている場合にOIDを非表示 -->
+			<property name="excludeOidWhenCustomOid" value="true" />
+			<!-- createBy、updateBy、lockedByにUserPropertyEditorを利用 -->
+			<property name="useUserPropertyEditor" value="true" />
 		</property>
-		<property name="systemProperties" class="org.iplass.mtp.mdc.view.entityview.search.definition.SectionProperty">
-			<property name="propertyName" value="state" />
-			<property name="displayCondition" value="false" />
-			<property name="displayResult" value="false" />
-		</property>
-		<property name="systemProperties" class="org.iplass.mtp.mdc.view.entityview.search.definition.SectionProperty">
-			<property name="propertyName" value="createDate" />
-			<property name="displayCondition" value="false" />
-			<property name="displayResult" value="false" />
-		</property>
-		<property name="systemProperties" class="org.iplass.mtp.mdc.view.entityview.search.definition.SectionProperty">
-			<property name="propertyName" value="createBy" />
-			<property name="displayCondition" value="false" />
-			<property name="displayResult" value="false" />
-		</property>
-		<property name="systemProperties" class="org.iplass.mtp.mdc.view.entityview.search.definition.SectionProperty">
-			<property name="propertyName" value="updateDate" />
-			<property name="displayCondition" value="false" />
-			<property name="displayResult" value="false" />
-		</property>
-		<property name="systemProperties" class="org.iplass.mtp.mdc.view.entityview.search.definition.SectionProperty">
-			<property name="propertyName" value="updateBy" />
-			<property name="displayCondition" value="false" />
-			<property name="displayResult" value="false" />
-		</property>
-		<property name="systemProperties" class="org.iplass.mtp.mdc.view.entityview.search.definition.SectionProperty">
-			<property name="propertyName" value="lockedBy" />
-			<property name="displayCondition" value="false" />
-			<property name="displayResult" value="false" />
-		</property>
-		<!-- システムプロパティの表示位置 TOP or BOTTOM -->
-		<property name="systemPropertyDisplayPosition" value="BOTTOM" />
-		<!-- OIDをカスタマイズしている場合にOIDを非表示 -->
-		<property name="excludeOidWhenCustomOid" value="true" />
-		<!-- createBy、updateBy、lockedByにUserPropertyEditorを利用 -->
-		<property name="useUserPropertyEditor" value="true" />
-	</property>
-	<!-- Search Controller -->
-	<property name="searchController" class="org.iplass.mtp.impl.mdc.view.entityview.search.SearchControllerImpl" />
-	<!-- Search Select List Controller -->
-	<property name="searchSelectListController" class="org.iplass.mtp.impl.mdc.view.entityview.search.SearchSelectListControllerImpl" />
-	<!-- Delete List Controller -->
-	<property name="deleteListController" class="org.iplass.mtp.impl.mdc.view.entityview.search.DeleteListControllerImpl" />
-	<!-- Trash Controller -->
-	<property name="trashController" class="org.iplass.mtp.impl.mdc.view.entityview.search.TrashControllerImpl" />
 </service>
 ----

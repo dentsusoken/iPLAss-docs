@@ -26,19 +26,25 @@ The performance of the community edition can be configured with the following it
 [cols="1,1,3", options="header"]
 |===
 | Item | Value | Description
-| loadWithReference | boolean | This option defines whether to load the referenced property, when loading the data depending on the parameter of the requests. The default value is false.
+| mustLoadWithReference | boolean a| Specifies whether to load reference property data if the target contains reference data when updating.
+If false, only `oid` and `version` property values are retained. The default value is true.
+
+CAUTION: Setting it to false improves performance when updating, but should be set to true if the reference is assumed to be loaded by an existing Interrupter or other process.
+ In future versions, this setting will be removed and the behavior will be the same as false.
+| loadWithReference | boolean | If mustLoadWithReference is true, specifies whether to load the reference property along with the referenced data when loading the referenced data. Default value is false.
 | formatNumberWithComma | boolean | Whether to format numeric property values ​​with commas in the detail display screen. The default value is true.
-| csvDownloadMaxCount | int | Maximum number of CSV downloads. The default value is 65535.
-| uploadableCsvDownloadLoadSize | int | Size of Entity batch loads containing multiplicity multiple references when downloading CSV in Upload format. The default value is 1.
+| fileSupportType | FileSupportType | File format to be used for download and upload. Specify from `CSV` `EXCEL` `SPECIFY`. The default value is `CSV`.
+| csvDownloadMaxCount | int | Maximum number of file downloads. The default value is 65535.
+| uploadableCsvDownloadLoadSize | int | Size of Entity batch loads containing multiplicity multiple references when downloading file in Upload format. The default value is 1.
 | csvDownloadCharacterCode | String, Multiple | CSV download character code. The default value is `UTF-8`.
 | csvDownloadQuoteAll | boolean | Set whether to output double quotes when downloading CSV file. The default value is true.
-| csvDownloadReferenceVersion | boolean | Whether to output the reference items' version in CSV downloads. The default value is true.
-| uploadableCsvDownloadWithMappedByReference | boolean | Whether to output mapped by reference properties when downloading CSV in Upload format. Default value is false.
-| csvUploadCommitCount | int | Set the CSV upload commit batch size. The default value is 1000.
-| csvUploadAsync | boolean | Whether to upload CSV asynchronously. The default value is false.
-When asynchronous is selected, please set <<useQueue>> property of <<RdbQueueService>> to true.
-| csvUploadStatusPollingInterval | int | Status polling interval for CSV upload. The default value is 10000 (10 seconds).
-| searchResultCacheLimit | int | Search internal cache size for obtaining User name when downloading CSV. The default value is 300.
+| csvDownloadReferenceVersion | boolean | Whether to output the reference items' version in file downloads. The default value is true.
+| uploadableCsvDownloadWithMappedByReference | boolean | Whether to output mapped by reference properties when downloading file in Upload format. Default value is false.
+| csvUploadCommitCount | int | Set the file upload commit batch size. The default value is 1000.
+| csvUploadAsync | boolean | Whether to upload file asynchronously. The default value is false.
+When asynchronous is selected, please set `useQueue` of <<RdbQueueService>> to true.
+| csvUploadStatusPollingInterval | int | Status polling interval for file upload. The default value is 10000 (10 seconds).
+| searchResultCacheLimit | int | Search internal cache size for obtaining User name when downloading file. The default value is 300.
 | confirmEditSave | boolean | Whether to display a confirmation dialog when saving on the edit screen and bulk update screen. The default value is false.In the case of bulk update that does not use the BulkLayout, a confirmation dialog will be displayed unconditionally.
 | confirmEditCancel | boolean | Whether to display a confirmation dialog when canceling on the edit screen. The default value is true.
 | topViewEditCancelBackToTop | boolean a| Whether to back to TopView when canceling when transitioning from detail screen to edit screen. The default value is false.(back to the details screen)
@@ -49,13 +55,13 @@ NOTE: Compatible setting up to 3.0.20. In the future, we plan to unify the opera
 It can be overwritten by <<../developerguide/genericentitymanager/entityview/index#searchresult_setting, search results The settings of>> of individual EntityView definitions.
 | maxOfDetailSearchItems | int | Maximum number of search items in detail search screen. The default value is 100.
 | searchInterval | int | Set the search interval to prevent redundant requests. If 0 is set, it will be infinite.(cannot click the search button until the result was retrieved and presented) The default value is 60000 (1 minute).
-| csvDownloadInterval | int | Set the CSV download interval to prevent redundant requests. If 0 is set, it will be infinite.(cannot click the download button until the result was retrieved and presented) The default value is 60000 (1 minute).
-| csvDownloadWithFooter | boolean | Whether to output a footer in CSV of general search. The default value is false.
+| csvDownloadInterval | int | Set the file download interval to prevent redundant requests. If 0 is set, it will be infinite.(cannot click the download button until the result was retrieved and presented) The default value is 60000 (1 minute).
+| csvDownloadWithFooter | boolean | Whether to output a footer in s of general search. The default value is false.
 | csvDownloadFooter | String | Set CSV download footer wording for general search.
 | useDisplayLabelItemInSearch | boolean a| Whether to use a display label item in search. Use the item that specified as `Property used as display label` in `ReferencePropertyEditor Setting` as a search condition in common search or detail search when useDisplayLabelItemInSearch is true.
 
 CAUTION: Setting flag for backward compatibility. This setting flag will be deleted in a future version.
-| useDisplayLabelItemInCsvDownload | boolean a| Whether to use a display label item in CSV download. Use the item that specified as `Property used as display label` in `ReferencePropertyEditor Setting` as a csv item when useDisplayLabelItemInCsvDownload is true.
+| useDisplayLabelItemInCsvDownload | boolean a| Whether to use a display label item in file download. Use the item that specified as `Property used as display label` in `ReferencePropertyEditor Setting` as a file item when useDisplayLabelItemInCsvDownload is true.
 
 CAUTION: Setting flag for backward compatibility. This setting flag will be deleted in a future version.
 | showPulldownPleaseSelectLabel | boolean | Whether to display the label "Please select" when the pull-down menu is not selected. The default value is true.
@@ -76,6 +82,7 @@ Configuration example
 
 See <<WebFrontendService, WebFrontendService uploadFileTypeDetector>>, <<FileTypeDetector, FileTypeDetector>> for information on how to determine the MIME Type to be validated.
 
+| richTextLibrary | String | Default rich text library to be used with StringPropertyEditor's `RichText` type. Specifies `QUILL` or `CKEDITOR`. The default value is `QUILL`.
 | ImageColors | <<ImageColorSetting>>, Multiple | Change the image colors on the search screen, detail screen, menu, etc.
 | skins | <<Skin>>, Multiple | Skins.
 | themes | <<Theme>>, Multiple | Themes.
@@ -98,6 +105,7 @@ The default value is `GemUser` and `AppAdmin` .
 The default value is `AppAdmin` .
 |===
 
+[[EnterpriseGemConfigService]]
 ==== [.eeonly]#The settings of EnterpriseGemConfigService#
 The performance of the enterprise edition can be configured with the following items.
 Please configure these items along with the settings from community editions.
@@ -106,22 +114,26 @@ Please configure these items along with the settings from community editions.
 [cols="1,1,3", options="header"]
 |===
 | Item | Value | Description
-| savedListCsvDownloadInterval | int | Set the CSV download interval of the SavedList list overviews to prevent redundant download requests. If 0 is set, the interval will be infinite. The default value is 60000 (1 minute).
+| savedListFileDownloadInterval | int | Set the file download interval of the SavedList list overviews to prevent redundant download requests. If 0 is set, the interval will be infinite. The default value is 60000 (1 minute).
+| savedListFileSupportType | SavedListFileSupportType | The file format for downloading SavedList can be specified as CSV, EXCEL, or SPECIFY. The default value is CSV.
 | entitylistingSearchInterval | int | EntityListing search  interval to prevent redundant search requests. If 0 is set, it will be infinite. The default value is 60000 (1 minute).
-| entitylistingCsvDownloadInterval | int | EntityListing CSV download interval to prevent redundant download requests. If 0 is set, it will be infinite. The default value is 60000 (1 minute).
-| aggregationCsvDownloadInterval | int | Aggregation CSV download interval. If 0 is set, it will be indefinite. The default value is 60000 (1 minute).
-| aggregationRawdataCsvDownloadInterval | int | Aggregation raw data CSV download interval. If 0 is set, it will be infinite. The default value is 60000 (1 minute).
-| showBothAggregationCsvDownloadButton | boolean | Whether to display the Aggregation CSV download button both above and below the summary table. The default value is false.
-| dividingTableSideAtCrosstabCsvDownload | boolean | Whether to divide and output the table side by CSV download of Aggregation (Crosstab). The default value is false.
-| dividingTableHeadAtCrosstabCsvDownload | boolean | Whether to output by dividing the header of the table with CSV download of Aggregation (Crosstab). The default value is false.
-| outputItemLabelCrosstabCsvDownload | boolean | Whether to display header/table-side item names in CSV download of Aggregation (Crosstab). The default value is false.
+| entitylistingFileDownloadInterval | int | EntityListing file download interval to prevent redundant download requests. If 0 is set, it will be infinite. The default value is 60000 (1 minute).
+| entityListingFileSupportType | EntityListingFileSupportType | The file format for downloading EntityListing can be specified as CSV, EXCEL, or SPECIFY. The default value is CSV.
+| aggregationFileDownloadInterval | int | Aggregation file download interval. If 0 is set, it will be indefinite. The default value is 60000 (1 minute).
+| aggregationRawdataFileDownloadInterval | int | Aggregation raw data file download interval. If 0 is set, it will be infinite. The default value is 60000 (1 minute).
+| aggregationFileSupportType | AggregationFileSupportType | The file format for downloading aggregation can be specified as CSV, EXCEL, or SPECIFY. The default value is CSV.
+| aggregationRawdataFileSupportType | AggregationFileSupportType | The file format for downloading raw data for aggregation can be specified as CSV, EXCEL, or SPECIFY. The default value is CSV.
+| showBothAggregationFileDownloadButton | boolean | Whether to display the Aggregation file download button both above and below the summary table. The default value is false.
+| dividingTableSideAtCrosstabFileDownload | boolean | Whether to divide and output the table side by file download of Aggregation (Crosstab). The default value is false.
+| dividingTableHeadAtCrosstabFileDownload | boolean | Whether to output by dividing the header of the table with file download of Aggregation (Crosstab). The default value is false.
+| outputItemLabelCrosstabFileDownload | boolean | Whether to display header/table-side item names in file download of Aggregation (Crosstab). The default value is false.
 | entitylistingSearchLimit | int | EntityListing's search limit. The default value is 10.
-| entitylistingCsvDownloadWithFooter | boolean | Set whether to output footer in CSV download of EntityListing. The default value is false.
-| entitylistingCsvDownloadFooter | String | Footer wording for CSV of EntityListing.
-| aggregationCsvDownloadWithFooter | boolean | Whether to output a footer for aggregate CSV downloads. The default value is false.
-| aggregationCsvDownloadFooter | String | footer wording of the aggregate CSV downloads.
-| aggregationRawdataCsvDownloadWithFooter | boolean | Whether to output a footer when downloading raw CSV data for aggregation. The default value is false.
-| aggregationRawdataCsvDownloadFooter | String | Footer wording of raw data aggregate CSV downloads.
+| entitylistingFileDownloadWithFooter | boolean | Set whether to output footer in file download of EntityListing. The default value is false.
+| entitylistingFileDownloadFooter | String | Footer wording for file of EntityListing.
+| aggregationFileDownloadWithFooter | boolean | Whether to output a footer for aggregate file downloads. The default value is false.
+| aggregationFileDownloadFooter | String | footer wording of the aggregate file downloads.
+| aggregationRawdataFileDownloadWithFooter | boolean | Whether to output a footer when downloading raw file data for aggregation. The default value is false.
+| aggregationRawdataFileDownloadFooter | String | Footer wording of raw data aggregate file downloads.
 | confirmUserTaskSubmit | boolean | Whether to display the task confirmation dialog on the workflow task edit screen. The default value is true.
 | confirmUserTaskCancel | boolean | Whether to display a cancellation confirmation dialog on the workflow task edit screen. The default value is true.
 |===
@@ -213,13 +225,16 @@ Please specify org.iplass.gem.EnterpriseEntityViewHelperImpl to the class.
 There is no configurable items.
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.gem.GemConfigService</interface>
 	<class>org.iplass.gem.EnterpriseGemConfigService</class>
 
-	<!-- Maximum number of CSV downloads -->
+	<!-- File format to be used for download and upload. Specify from `CSV` `EXCEL` `SPECIFY` -->
+	<property name="fileSupportType" value="CSV" />
+
+	<!-- Maximum number of file downloads -->
 	<property name="csvDownloadMaxCount" value="65535" />
 
 	<!-- CSV download character code -->
@@ -238,13 +253,13 @@ There is no configurable items.
 	 -->
 	<property name="csvDownloadQuoteAll" value="true"/>
 
-	<!-- CSV download reference item version output -->
+	<!-- File download reference item version output -->
 	<property name="csvDownloadReferenceVersion" value="true"/>
 
-	<!-- CSV upload batch commit size -->
+	<!-- File upload batch commit size -->
 	<property name="csvUploadCommitCount" value="1000"/>
 
-	<!-- Internal cache size of searches for user name acquisition when downloading CSV -->
+	<!-- Internal cache size of searches for user name acquisition when downloading file -->
 	<property name="searchResultCacheLimit" value="300" />
 
 	<!-- Whether to display a confirmation dialog when saving the edit on edit page
@@ -271,32 +286,44 @@ There is no configurable items.
 	<!-- Search processing interval, infinite (0) / specified milliseconds (1 or more) -->
 	<property name="searchInterval" value="60000"/>
 
-	<!-- CSV download interval, infinite (0) / specified milliseconds (1 or more) -->
+	<!-- File download interval, infinite (0) / specified milliseconds (1 or more) -->
 	<property name="csvDownloadInterval" value="60000"/>
+	
+	<!-- Supported file types for SavedList: CSV, EXCEL, SPECIFY. -->
+	<property name="savedListFileSupportType" value="CSV" />
 
 	<!-- EntityListing search processing interval, indefinite (0) / specified milliseconds (1 or more) -->
 	<property name="entitylistingSearchInterval" value="60000"/>
 
-	<!-- EntityListing CSV download interval, infinite (0) / specified milliseconds (1 or more) -->
-	<property name="entitylistingCsvDownloadInterval" value="60000"/>
+	<!-- Supported file types for EntityListing: CSV, EXCEL, SPECIFY. -->
+	<property name="entityListingFileSupportType" value="CSV" />
+	
+	<!-- EntityListing file download interval, infinite (0) / specified milliseconds (1 or more) -->
+	<property name="entitylistingFileDownloadInterval" value="60000"/>
 
-	<!-- Aggregation CSV download interval, infinite (0) / specified milliseconds (1 or more) -->
-	<property name="aggregationCsvDownloadInterval" value="60000"/>
+	<!-- Aggregation file download interval, infinite (0) / specified milliseconds (1 or more) -->
+	<property name="aggregationFileDownloadInterval" value="60000"/>
 
-	<!-- Aggregation raw data CSV download interval, infinite (0) / specified milliseconds (1 or more) -->
-	<property name="aggregationRawdataCsvDownloadInterval" value="60000"/>
+	<!-- Aggregation raw data file download interval, infinite (0) / specified milliseconds (1 or more) -->
+	<property name="aggregationRawdataFileDownloadInterval" value="60000"/>
+	
+	<!-- Supported file types for Aggregation: CSV, EXCEL, SPECIFY. -->
+	<property name="aggregationFileSupportType" value="CSV" />
+		
+	<!-- Supported file types for Aggregation raw data: CSV, EXCEL, SPECIFY. -->
+	<property name="aggregationRawdataFileSupportType" value="CSV" />
 
-	<!-- Whether to display the Aggregation CSV download above and below the summary table -->
-	<property name="showBothAggregationCsvDownloadButton" value="false"/>
+	<!-- Whether to display the Aggregation file download above and below the summary table -->
+	<property name="showBothAggregationFileDownloadButton" value="false"/>
 
-	<!-- Whether the table side is divided for the outputs by CSV download of Aggregation (Crosstab) -->
-	<property name="dividingTableSideAtCrosstabCsvDownload" value="false"/>
+	<!-- Whether the table side is divided for the outputs by file download of Aggregation (Crosstab) -->
+	<property name="dividingTableSideAtCrosstabFileDownload" value="false"/>
 
-	<!-- Whether the header side is divided for the outputs by CSV download of Aggregation (Crosstab) -->
-	<property name="dividingTableHeadAtCrosstabCsvDownload" value="false"/>
+	<!-- Whether the header side is divided for the outputs by file download of Aggregation (Crosstab) -->
+	<property name="dividingTableHeadAtCrosstabFileDownload" value="false"/>
 
-	<!-- Whether to display table side / header side item names in CSV download of Aggregation (Crosstab) -->
-	<property name="outputItemLabelCrosstabCsvDownload" value="false"/>
+	<!-- Whether to display table side / header side item names in file download of Aggregation (Crosstab) -->
+	<property name="outputItemLabelCrosstabFileDownload" value="false"/>
 
 	<!-- Whether to output footer in CSV download for general search -->
 	<property name="csvDownloadWithFooter" value="false"/>
@@ -307,29 +334,29 @@ There is no configurable items.
 	<!-- Whether to use a display label item in search -->
 	<property name="useDisplayLabelItemInSearch" value="true"/>
 
-	<!-- Whether to use a display label item in CSV download -->
+	<!-- Whether to use a display label item in file download -->
 	<property name="useDisplayLabelItemInCsvDownload" value="true"/>
 
 	<!-- EntityListing's search limit -->
 	<property name="entitylistingSearchLimit" value="10"/>
 
-	<!-- Whether to output footer in CSV download of EntityListing -->
-	<property name="entitylistingCsvDownloadWithFooter" value="false"/>
+	<!-- Whether to output footer in file download of EntityListing -->
+	<property name="entitylistingFileDownloadWithFooter" value="false"/>
 
-	<!-- Wording for the footer of the CSV of EntityListing -->
-	<property name="entitylistingCsvDownloadFooter" value=""/>
+	<!-- Wording for the footer of the file of EntityListing -->
+	<property name="entitylistingFileDownloadFooter" value=""/>
 
-	<!-- Whether to output footer in aggregation CSV downloads-->
-	<property name="aggregationCsvDownloadWithFooter" value="false"/>
+	<!-- Whether to output footer in aggregation file downloads-->
+	<property name="aggregationFileDownloadWithFooter" value="false"/>
 
-	<!-- Wording for the footer of the CSV of aggregation -->
-	<property name="aggregationCsvDownloadFooter" value=""/>
+	<!-- Wording for the footer of the file of aggregation -->
+	<property name="aggregationFileDownloadFooter" value=""/>
 
-	<!-- Whether to output footer in aggregation's raw data CSV downloads -->
-	<property name="aggregationRawdataCsvDownloadWithFooter" value="false"/>
+	<!-- Whether to output footer in aggregation's raw data file downloads -->
+	<property name="aggregationRawdataFileDownloadWithFooter" value="false"/>
 
-	<!-- Wording for the footer of the CSV of aggregation's raw data -->
-	<property name="aggregationRawdataCsvDownloadFooter" value=""/>
+	<!-- Wording for the footer of the file of aggregation's raw data -->
+	<property name="aggregationRawdataFileDownloadFooter" value=""/>
 
 	<!-- Whether to display the task confirmation dialog on the workflow task edit screen
 	It is set to display by default. Set to false if you want to hide it.
@@ -341,11 +368,11 @@ There is no configurable items.
 	-->
 	<property name="confirmUserTaskCancel" value="true"/>
 
-	<!-- Settings on asynchronous CSV upload  -->
+	<!-- Settings on asynchronous file upload  -->
 	<!-- If true(asynchronous) was selected, please also set the useQueue property in RdbQueueService to true. -->
 	<property name="csvUploadAsync" value="false"/>
 
-	<!-- CSV upload status polling interval, specified in milliseconds -->
+	<!-- File upload status polling interval, specified in milliseconds -->
 	<property name="csvUploadStatusPollingInterval" value="10000"/>
 
 	<!-- Whether to display the "Please select" pull-down box-->

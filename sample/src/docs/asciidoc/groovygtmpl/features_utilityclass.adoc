@@ -1,6 +1,6 @@
 [[Groovy_GTmpl_UtilityClass]]
 === Utility Class
-ここではAdminConsoleで作成できるUtilityClassの利用方法を解説します。 + 
+ここでは、Admin Consoleで作成できる `UtilityClass` の利用方法を解説します。 +
 image:images/sample-ec_groovy-gtmpl-utilityclass-filetree.png[align=left]
 
 * `CartBean` クラスを例として説明していきます。 `CartBean` はオレンジ色の部分で利用されています。
@@ -9,7 +9,7 @@ image:images/sample-ec_groovy-gtmpl-utilityclass-cartbean-usage.png[align=left]
 +
 [red]*※ワークフロー起動はEnterprise Editionの機能です。*
 
-** UtilityClass作成の際には以下を実装するようにしてください。
+** UtilityClassを作成する際には以下を実装するようにしてください。
 +
 [cols="1,2"]
 |===
@@ -24,9 +24,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import org.hibernate.validator.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import samples.ec01.utils.Consts;
 
 class CartBean implements Serializable {
@@ -72,13 +72,13 @@ class CartBean implements Serializable {
 	}
 ----------------------------------------以下略----------------------------------------
 ----
-<1> package階層はUtilityClassを作成した階層と同一を指定します。
-<2> Serializableの実装（作成したクラスをSessionに格納する場合）serialVersionUIDを忘れずに定義してください。不整合を起こす原因となる可能性があります。
+<1> package階層はUtilityClassを作成した階層と同一にします。
+<2> Serializableを実装する場合（作成したクラスをSessionに格納する場合）、serialVersionUIDを忘れずに定義してください。
 
-** UtilityClassの利用
-新たに商品をカートに追加するコマンドを例に、UtilityClassの利用法を説明します。
+** UtilityClassの利用 +
+新たに商品をカートに追加するコマンドを例に、UtilityClassの利用方法を説明します。
 +
-カートに入れるコマンド
+.カートに入れるコマンド
 +
 image:images/sample-ec_groovy-gtmpl-utilityclass-inputcartinfocommand.png[align=left]
 +
@@ -119,8 +119,8 @@ request.totalAmount = cartBean.getTotalAmount();
 <1> UtilityClassで作成したクラスも他のクラスと同じように利用できます。
 <2> このようにSessionに格納して利用する場合には、Serializableを実装しないと不整合を起こす原因となる可能性があります。
 
-** 補足 WebApiでの設定
+** 補足: WebApiでの設定
 +
-Cartオブジェクトは同期をとって利用したいため"Synchronize on Session"を使用しています。
+Cartオブジェクトは同期をとって利用したいため、 `Synchronize on Session` を使用しています。
 +
 image:images/sample-ec_groovy-gtmpl-utilityclass-cartbean-webapi.png[align=left]

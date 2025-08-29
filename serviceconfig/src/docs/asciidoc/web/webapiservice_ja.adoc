@@ -23,6 +23,8 @@ WebApiを設定します。
 | 項目 | 値 | 説明
 | enableDefinitionApi | boolean | DefinitionWebApiを公開するか。
 | enableBinaryApi | boolean | BinaryWebApiを公開するか。
+| enableStubResponse | boolean | link:../developerguide/webapi/index.html#webapi_openapi_configuration_stub[WebAPI のスタブレスポンス返却機能^]を有効にするか。有効にする場合は true を指定します。デフォルト値は false です。 +
+本設定は開発時の利用を想定しています。本番環境では false を設定してください。
 | writeEncodedFilenameInBinaryApi | boolean | BinaryWebApiのダウンロード操作時、 `Content-Disposition` レスポンスヘッダーに `filename*` 属性を出力するかを指定します。falseの場合は `filename` 属性を出力します。デフォルト値はfalseです。
 | unescapeFilenameCharacterInBinaryApi | String | BinaryWebApiのダウンロード操作時、`Content-Disposition` レスポンスヘッダーに `filename*` 属性を出力する際にエスケープしない文字を指定します(Alphabet、数値は無条件でエスケープ除外)。
 | acceptMimeTypesPatternInBinaryApi | String a| BinaryWebApi のアップロード操作時、アップロード可能なファイルのMIME Typeパターンを指定します。設定値は正規表現パターンを指定します。 +
@@ -65,12 +67,14 @@ XHR2(CORS)する際の許可ドメイン設定。
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.webapi.WebApiService</interface>
 	<property name="enableDefinitionApi" value="false" />
 	<property name="enableBinaryApi" value="false" />
+	<!-- スタブレスポンスを有効にする場合は enableStubResponse プロパティに true を設定する -->
+	<property name="enableStubResponse" value="false" />
 	<property name="writeEncodedFilenameInBinaryApi" value="false" />
 	<property name="unescapeFilenameCharacterInBinaryApi" value="-._~" />
 

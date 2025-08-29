@@ -1,5 +1,5 @@
 [[Vuejs_WebAPI]]
-= Vue.js／WebApi版
+= Vue.js／WebAPI版
 :_hreflang-path: sample/vuejswebapi/index.html
 :_relative-root-path: ../../
 :example-caption!:

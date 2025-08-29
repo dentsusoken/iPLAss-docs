@@ -1,39 +1,39 @@
 [[EEPackage_EntityListing]]
 == [.eeonly]#Entity Listing#
 
-このサンプルではマネージャーに属するユーザーが注文明細のエンティティデータに対して、以下の操作が可能です。
+サンプルアプリでは、マネージャーに属するユーザーが注文明細のエンティティデータに対して以下の操作を行うことができます。
 
-. 抽出条件を指定すること
-. その作成した条件や検索結果を保存・共有
+. 抽出条件を指定する
+. 作成した条件や検索結果を保存・共有する
 
-※　Entity Listingの作成方法は開発者ガイド<<../../developerguide/entitylisting/index#, EntityListing>>の章を参照してください。
+※ Entity Listingの作成方法については、開発者ガイドの<<../../developerguide/entitylisting/index#, EntityListing>>の章を参照してください。
 
-=== AdminConsoleでの設定
+=== Admin Consoleでの設定
 
 image::images/sample-ec_entitylisting-filetree.png[align=left]
 
-. 注文明細カスタム検索EntityListing
+. 注文明細カスタム検索用EntityListing
 
 image::images/sample-ec_entitylisting-settings.png[align=left]
 
-. Default Setting　設定を変更すると、「Save」ボタンをクリックして変更を保存します。
-. Custom Setting　設定を変更すると、「OK」ボタンをクリックして変更を保存します。 ※
+. Default Settingでは、Custom Settingを設定していないエンティティに対してデフォルトで適用される設定を行います。「Save」ボタンをクリックして設定を保存します。
+. Custom Settingでは、エンティティ個別に設定を行うことができます。「OK」ボタンをクリックして変更を保存します。 
 
-※　Custom Settingでの設定がDefault Settingより優先されます。設定項目の説明は開発者ガイド<<../../developerguide/entitylisting/index#entitylisting_management, EntityListingの管理>>の章を参照してください。
+※ 各設定項目の詳細は、開発者ガイドの<<../../developerguide/entitylisting/index#entitylisting_management, EntityListingの管理>>の章を参照してください。
 
-メニューへの登録
+.メニューへの登録
 
-マネージャー用メニュー定義を開きます。
+マネージャー用のメニュー定義を開きます。
 
 image::images/sample-ec_entitylisting-topmenu-settings.png[align=left]
 
-. アクションパラメーターをdefName=samples/ec01/OrderItemListing&entityName=samples.ec01.order.OrderItemに指定します。 ※
+. アクションパラメーターに `defName=samples/ec01/OrderItemListing&entityName=samples.ec01.order.OrderItem` を指定します。
 
-※　作成されたEntityListingをメニューに登録する方法について、開発者ガイド<<../../developerguide/entitylisting/index#_表示方法, 表示方法>>を参照してください。
+※ 作成されたEntityListingをメニューに登録する方法については、開発者ガイドの<<../../developerguide/entitylisting/index#_表示方法, 表示方法>>を参照してください。
 
 === 画面表示
 
-マネージャーに属するユーザーが「EC注文管理」メニューを開き、「注文明細カスタム検索」サブメニューを開くと、注文明細カスタム検索を操作することが出来ます。
+マネージャーに属するユーザーで「EC注文管理」メニューを開き、「注文明細カスタム検索」アイテムを開くと、注文明細カスタム検索を操作できます。
 
 image::images/sample-ec_entitylisting.png[align=left]
 

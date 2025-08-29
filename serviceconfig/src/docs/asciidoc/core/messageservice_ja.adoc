@@ -37,7 +37,7 @@ classはorg.iplass.mtp.impl.message.ResourceBundleConfigを指定します。
 |===
 
 ==== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.message.MessageService</interface>

@@ -49,7 +49,7 @@ XMLファイルによるメタデータ定義の場合、「metaDataEntry」のA
 |===
 
 .設定例
-[source, xml]
+[source,xml]
 ----
 <metaDataEntry name="/entity/sampleSampleEntity" overwritable="true">
     <metaData xsi:type="metaEntity" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -68,7 +68,7 @@ Annotation定義の場合、各Annotation（ActionMapping、CommandClass、WebAp
 |===
 
 .設定例
-[source, java]
+[source,java]
 ----
 @ActionMapping(
     overwritable=true,

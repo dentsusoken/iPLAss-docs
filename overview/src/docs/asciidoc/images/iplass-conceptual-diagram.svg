@@ -65,7 +65,7 @@
   <tspan x="131">バックグラウンドサイト（自動構成）</tspan></text>
   <text transform="translate(598.42 923)" style="font-size:14px;fill:#313131;">LDAP／AD<tspan x="70" y="0" style="font-size:12px">など</tspan></text>
   <text transform="translate(435.31 867.67)" style="font-size:13px;fill:#313131;">・SAML2.0 対応サイト</text>
-  <text transform="translate(435.31 846.67)" style="font-size:13px;fill:#313131;">・Office 365</text>
+  <text transform="translate(435.31 846.67)" style="font-size:13px;fill:#313131;">・Microsoft 365</text>
   <text transform="translate(435.31 827)" style="font-size:13px;fill:#313131;">・Salesforce</text>
   <text transform="translate(476.54 805)" style="font-size:14px;fill:#313131;">外部サイト</text>
   <text transform="translate(510.5 692.5)" style="font-size:16px;fill:#fefefe;" text-anchor="middle">
@@ -75,7 +75,7 @@
   <tspan x="0" y="30">（SAML2.0）</tspan></tspan></text>
   <text transform="translate(316.57 923.33)" style="font-size:14px;fill:#313131;">外部RDB／CSV<tspan x="100" y="0" style="font-size:12px">など</tspan></text>
   <text transform="translate(895.5 573.08)" style="font-size:13px;fill:#18747a;" text-anchor="middle">開発・運用ツール</text>
-  <text transform="translate(895.5 523.72)" style="font-size:13px;fill:#18747a;" text-anchor="middle">EUC</text>
+  <text transform="translate(895.5 523.72)" style="font-size:13px;fill:#18747a;" text-anchor="middle">モバイル対応</text>
   <text transform="translate(895.5 473.06)" style="font-size:13px;fill:#18747a;" text-anchor="middle">ジョブスケジューラ</text>
   <text transform="translate(895.5 423.75)" style="font-size:13px;fill:#18747a;" text-anchor="middle">ワークフロー</text>
   <text transform="translate(895.5 374.13)" style="font-size:13px;fill:#18747a;" text-anchor="middle">メール／SMS／プッシュ通知</text>

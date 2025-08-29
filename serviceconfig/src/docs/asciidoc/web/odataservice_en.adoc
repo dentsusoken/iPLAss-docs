@@ -23,7 +23,7 @@ The following item can be configured.
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
     <interface>org.iplass.mtp.impl.webapi.odata.ODataService</interface>

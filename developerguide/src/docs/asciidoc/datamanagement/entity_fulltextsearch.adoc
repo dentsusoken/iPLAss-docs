@@ -7,35 +7,33 @@
 
 NOTE: ただし、全文検索はリアルタイムでデータが反映されるわけではありません。ご注意ください。
 
-iPLAssでは、Lucene、Elasticsearch(OpenSearch)、Solrという全文検索エンジンのいずれかを利用することが可能です。 +
-
-CAUTION: Solr用機能は将来削除される予定です。代替として ElasticsearchFulltextSearchService(OpenSearchFulltextSearchService)を利用することを推奨します。
+iPLAssでは、Lucene、Elasticsearch(OpenSearch) という全文検索エンジンのいずれかを利用することが可能です。 +
 
 各エンジンの簡単な差は下記を参照してください。
 
-[cols="1h,3*3",options="header"]
+[cols="1h,2*3",options="header"]
 |===
-||Lucene|Elasticsearch(OpenSearch)|Solr(非推奨)
+|
+|Lucene
+|Elasticsearch(OpenSearch)
+
 |概要
 |Javaベースのオープンソースの全文検索ライブラリ。 +
 iPLAssが稼働するAPサーバ内の同一VM上に組み込まれ動作。
 |Elasticsearch(OpenSearch)はLuceneをベースに開発されたオープンソースの全文検索エンジン。 + 
 Elasticsearch(OpenSearch)単体でサーバとして稼働する。
-|Luceneをベースに、管理画面やキャッシュ機構を取り入れた全文検索サーバ。Solr単体でWebアプリケーションとして稼働する。
+
 |データ保存先
 |APサーバのローカルストレージ +
 mtp-service-config.xmlに保存先フォルダを指定するだけで利用が可能。
 |Elasticsearch(OpenSearch)サーバ内 +
 別途Elasticsearch(OpenSearch)サーバを構築する必要がある。（本資料は構築済みであることが前提）
-|Solrサーバ内 +
-別途Solrサーバを構築する必要がある。（本資料は構築済みであることが前提）
+
 |Analyzer（※）の扱いやすさ
 |デフォルトで使えるAnalyzerを適用する場合は、とても簡単。（複数種類有） +
 ただし、カスタマイズを行う場合は、Javaファイルを作成する必要がある。
 |デフォルトで使えるAnalyzerを適用する場合は、とても簡単。（複数種類有） +
 カスタマイズを行う場合も基本mtp-service-config.xmlで設定するのみ。
-|Analyzerはないため、Tokenizer/Filterを個別に設定する必要がある。 +
-ただし、カスタマイズも含め設定はXMLの更新だけ済むため、その後はSolrサーバの再起動のみで反映が可能。
 |===
 
 .Analyzer とは
@@ -69,7 +67,7 @@ Analyzerを利用することで、すでに決まったクラス・決まった
 === FulltextSearchServiceの設定
 
 全文検索を利用する場合、まずは設定ファイルにてFulltextSearchServiceの設定を行う必要があります。
-Lucene、Elasticsearch、OpenSearch、Solrを利用する場合で設定内容が異なります。
+Lucene、Elasticsearch、OpenSearch を利用する場合で設定内容が異なります。
 
 ==== Lucene設定
 
@@ -181,7 +179,8 @@ Entity定義単位にAnalyzerを切り替えする場合には、 `org.iplass.mt
 - org.apache.lucene.analysis.cjk.CJKAnalyzer +
 Bi-gram分割（文章が分かち書きされない言語である中国語、日本語および韓国語向け）
 - org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer +
-中国語分割（簡体字中国語または中国語と英語が混在している文字列に有効）
+中国語分割（簡体字中国語または中国語と英語が混在している文字列に有効） +
+※ Gradle 依存関係に `org.apache.lucene:lucene-analysis-smartcn` の追加が必要です。
 - org.apache.lucene.analysis.ja.JapaneseAnalyzer +
 日本語分割（Searchモード）：形態素解析しつつ、複合語で構成された単語を適切に分割します。
 
@@ -291,11 +290,20 @@ Entity定義単位でAnalyzerを切り替えたい場合、Entity名とAnalyzerP
 
 |===
 
-==== [.eeonly]#OpenSearch設定#
+==== [.eeonly]#(非推奨)OpenSearch設定#
 
 全文検索に関する設定をFulltextSearchServiceに設定します。
 サーバURL、Analyzerなどに関する設定などを行います。
 詳細は <<../../serviceconfig/index.adoc#FulltextSearchService, FulltextSearchService>> を参照してください。
+
+[CAUTION]
+====
+AWS SDK for Java 1.x はメンテナンスモードになっており、2025年12月 にサポートを終了する予定です。 +
+iPLAss では AWS SDK for Java 1.x ベースのライブラリ iplass-ee-aws を非推奨とし、AWS SDK for Java 2.x ベースのライブラリ iplass-ee-aws2 への移行を推奨します。 +
+iplass-ee-aws2 の対応に伴い、opensearch の機能は iplass-ee-opensearch へ移管しました。 +
+本機能を利用している場合は、ライブラリ iplass-ee-opensearch の <<datamanagement_fulltextsearch_opensearch_opensearch>> へ設定を移行してください。 +
+ライブラリ iplass-ee-aws は将来削除される予定です。
+====
 
 次に設定ファイルの設定例を示します。
 
@@ -307,7 +315,7 @@ Entity定義単位でAnalyzerを切り替えたい場合、Entity名とAnalyzerP
 <service>
     <interface>org.iplass.mtp.impl.fulltextsearch.FulltextSearchService</interface>
 
-    <class>org.iplass.mtp.impl.aws.fulltextsearch.opensearch.OpenSearchFulltextSearchService/class> <1>
+    <class>org.iplass.mtp.impl.aws.fulltextsearch.opensearch.OpenSearchFulltextSearchService</class> <1>
     <property name="useFulltextSearch" value="true" /> <2>
     <property name="restClientFactory"  class="org.iplass.mtp.impl.aws.fulltextsearch.opensearch.DefaultRestClientFactory">
         <property name="openSearchUrl" value="{SCHEME}://{ADDRESS}:{PORT}"/> <3>
@@ -397,176 +405,118 @@ Entity定義単位でAnalyzerを切り替えたい場合、Entity名とAnalyzerP
 
 |===
 
-==== [.eeonly]#Solr設定#    
+[[datamanagement_fulltextsearch_opensearch_opensearch]]
+==== [.eeonly]#OpenSearch設定#
 
-CAUTION: Solr用機能は将来削除される予定です。代替として ElasticsearchFulltextSearchService(OpenSearchFulltextSearchService)を利用することを推奨します。
+全文検索に関する設定をFulltextSearchServiceに設定します。
+サーバURL、Analyzerなどに関する設定などを行います。
+詳細は <<../../serviceconfig/index.adoc#FulltextSearchService, FulltextSearchService>> を参照してください。
 
+次に設定ファイルの設定例を示します。
 
-. mtp-service-config.xmlの設定 +
-下記設定を確認してください。
-+
+.mtp-service-config.xmlの設定例（必要最低限の設定）
+デフォルト値を利用し、必要最低限の設定のみを行った設定例を以下に示します。
+
 [source,xml]
 ----
-<!-- 全文検索で利用するService -->
 <service>
-  <interface>org.iplass.mtp.impl.fulltextsearch.FulltextSearchService</interface>
-  <property name="useFulltextSearch" value="true" />
-  <property name="maxRows" value="10" />
-  <property name="throwExceptionWhenOverLimit" value="false"/>
+    <interface>org.iplass.mtp.impl.fulltextsearch.FulltextSearchService</interface>
 
-  <!-- solr利用 -->
-  <class>org.iplass.mtp.impl.fulltextsearch.FulltextSearchSolrService</class>
-  <property name="solrUrl" value="http://{ADDRESS}:{PORT}/solr/{CoreName}/" />
+    <class>org.iplass.mtp.impl.fulltextsearch.opensearch.OpenSearchFulltextSearchService</class> <1>
+    <property name="useFulltextSearch" value="true" /> <2>
+    <property name="restClientFactory"  class="org.iplass.mtp.impl.fulltextsearch.opensearch.DefaultRestClientFactory">
+        <property name="openSearchUrl" value="{SCHEME}://{ADDRESS}:{PORT}"/> <3>
+    </property>
 </service>
 ----
-+
+<1> 実装クラスとしてOpenSearchFulltextSearchServiceを指定します
+<2> 全文検索機能を有効化する場合trueを指定します
+<3> OpenSearchのサーバURLを指定します
+
+.mtp-service-config.xmlの設定例（主要な項目を設定）
+
+主要な設定項目を設定した例を以下に示します。
+
+[source,xml]
+----
+<service>
+    <interface>org.iplass.mtp.impl.fulltextsearch.FulltextSearchService</interface>
+    <class>org.iplass.mtp.impl.fulltextsearch.opensearch.OpenSearchFulltextSearchService</class>
+    <property name="useFulltextSearch" value="true" />
+    <!--
+    <property name="restClientFactory"  class="org.iplass.mtp.impl.fulltextsearch.opensearch.DefaultRestClientFactory">
+        <property name="openSearchUrl" value="{SCHEME}://{ADDRESS}:{PORT}"/>
+    </property>
+    -->
+    <property name="transportFactory"  class="org.iplass.mtp.impl.fulltextsearch.openserarch.awsv2.AwsSdk2OpenSearchTransportFactory">
+        <property name="host" value="{ADDRESS}:{PORT}" />
+        <!-- es:マネージド型クラスター、 aoss：サーバーレス -->
+        <property name="serviceName" value="es" />
+        <property name="region" value="ap-northeast-1" />
+    </property>
+
+	<property name="maxRows" value="1000" />
+	<property name="throwExceptionWhenOverLimit" value="true"/>
+
+	<property name="analysisFactory" class="org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.DefaultAnalysisFactory">
+        <property name="analyzer" >
+            <property name="my_kuromoji" class="org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.analyzer.KuromojiAnalyzerFactory">
+                <property name="mode" value="Search"/>
+                <property name="method" value="Nfc"/>
+            </property>
+        </property>
+    </property>
+    <property name="defaultAnalyzerProperty" >
+        <property name="analyzer" value="kuromoji"/>
+    </property>
+    <property name="analyzerPropertyPerEntity" >
+        <property name="testEntity" class="org.iplass.mtp.impl.fulltextsearch.opensearch.mappings.AnalyzerProperty">
+            <property name="analyzer" value="my_kuromoji"/>
+        </property>
+    </property>
+</service>
+----
+
+各設定項目の概要を以下に説明します。
+
 [cols="1,3a",options="header"]
 |===
 |プロパティ名|内容説明
 |useFulltextSearch|全文検索機能を有効にする場合は `true` にします。
+|restClientFactory|OpenSearchのサーバURLを指定します。BASIC認証を利用する場合は本設定を利用します。
+|transportFactory|OpenSearchのサーバURLを指定します。IAM認証情報を使用してリクエストを署名します。<<../../serviceconfig/index.adoc#aws2_AWSSetting, AWSSetting>> の設定が必要となります。 +
+restClientFactory と同時に設定された場合、本設定は無効となり restClientFactory が優先されます。
+|maxRows|
+全文検索サーバから取得する検索結果の最大件数を設定します。 +
 
-|maxRows|全文検索サーバから取得する検索結果の最大件数を設定します。 +
-
-NOTE: 件数が1000件以上で、かつ、Oracleを利用する場合は、Oracle設定の
-`enableInPartitioning` プロパティ値を `true` へ変更してください。
+NOTE: 件数が1000件以上で、かつ、Oracleを利用する場合は、
+Oracle設定の `enableInPartitioning` プロパティ値を `true` へ変更してください。
 
 |throwExceptionWhenOverLimit|
 false：maxRowsの設定値以上に検索結果件数が取得できた場合でも、maxRowsの設定値分の件数は結果を表示します。
 
 下記の画面は設定値以上に取得出来た場合となります。設定値未満の場合、メッセージ表示はありません。
 
-image::images/FulltextSearch_Solr_SearchResult_False.png[]
+image::images/FulltextSearch_Lucene_SearchResult_False.png[]
 
 true：maxRowsの設定値以上に検索結果件数が取得できた場合、結果を表示せずに条件を絞り込むようメッセージで催促されます。
 
-image::images/FulltextSearch_Solr_SearchResult_True.png[]
+image::images/FulltextSearch_Lucene_SearchResult_True.png[]
 
-|solrUrl|利用するSolrサーバのURL
+|binaryParser| 
+BinaryReference解析用のParserを設定します。
+Apache Tikaを利用して、特定のバイナリ内もインデックスすることができます。
+
+|analysisFactory| カスタムでAnalyzer等を定義したい場合に利用します。
+classには `org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.DefaultAnalysisFactory` を指定します。
+
+|defaultAnalyzerProperty| デフォルトで利用するAnalyzer名を指定します。 classには `org.iplass.mtp.impl.fulltextsearch.opensearch.mappings.AnalyzerProperty` を指定します。Analyzer名にはデフォルトで提供されているAnalyzerやカスタムで定義したAnalyzerを指定することができます。 + 
+デフォルトで提供されているAnalyzerについては、OpenSearchのドキュメントを参照してください。
+
+|analyzerPropertyPerEntity|
+Entity定義単位でAnalyzerを切り替えたい場合、Entity名とAnalyzerPropertyをMap形式で指定します。
+
 |===
-
-. schema.xmlの設定 +
-+
-有償版のSDKに同梱されている `iplass-ee-solr-XXX.jar` ファイルを解凍し、`schema\solr` ディレクトリ下の `schema.xml` を取得します。
-+
-schema.xmlは、検索対象値の保持方法や分割方法の情報が定義されています。 +
-対象ファイルはサーバ構築時に作成されたcore（以下の画像であれば、「collection1」）/confの下に配置するファイルとなります。
-+
-image:images/FulltextSearch_Solr_SchemaXML_Setting.png[]
-+
-下記はschema.xmlの一部抜粋したものになります。
-+
-[source,xml]
-----
-<?xml version="1.0" encoding="UTF-8" ?>
-<schema name="iPLAss" version="1.4">
-    :
-    :
-    <fieldType name="text_sen" class="solr.TextField" positionIncrementGap="100" > <1>
-        <analyzer> <2>
-            <charFilter class="solr.MappingCharFilterFactory" mapping="lang/mapping_ja.txt"/>　<3>
-            <tokenizer class="solr.JapaneseTokenizerFactory" mode="SEARCH" discardPunctuation="true" />
-            <filter class="solr.JapaneseBaseFormFilterFactory"/>
-            <filter class="solr.JapanesePartOfSpeechStopFilterFactory" tags="lang/stoptags_ja.txt"/>
-            <filter class="solr.CJKWidthFilterFactory"/>
-            <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_ja.txt" />
-            <filter class="solr.JapaneseKatakanaStemFilterFactory" minimumLength="4"/>
-            <filter class="solr.LowerCaseFilterFactory"/>
-            <filter class="solr.SynonymFilterFactory" synonyms="lang/synonyms_ja.txt" ignoreCase="true" expand="true"/>
-        </analyzer>
-    </fieldType>
-    :
-    :
-    <fields>
-        <field name="V_1" type="text_sen" indexed="true" stored="true" omitNorms="true" multiValued="true" /> <1>
-        <field name="V_2" type="text_sen" indexed="true" stored="true" omitNorms="true" multiValued="true" />
-    </fields>
-</schema>
-----
-<1> この紐付きが一致するプロパティに対して、上記で定義したTokenizer/Filterが適用されます。 +
-フィールドごとに変更した場合は、別途fieldTypeを作成し紐付けるようにしていただくことで実現可能になります。
-<2> この部分をカスタマイズすることで、任意のTokenizer/Filterを組み合わせて全文検索を利用することができます。
-<3> サーバ構築時に作成されたcoreのinstanceDirの `conf/lang` ディレクトリの下にTokenizer/Filterに適用するxxx.txtファイルを入れます。
-+
-※サンプル定義：
-LuceneのデフォルトAnalyzerである `org.apache.lucene.analysis.ja.JapaneseAnalyzer` をSolrで類似実現する場合の定義例 +
-（charFilterのクラスは `org.apache.lucene.analysis.ja.JapaneseAnalyzer` にはない） +
-[.red]#（xxx.txt類は各自用意したものを想定）# +
-+
-その他利用できるclass値についてはSolrのドキュメントを参照ください。
-+
-※Lucene側のAPIに関しては、xxxxFactoryというものがSolrで設定できるクラスとなっております。
-+
-[cols="1,2",format="dsv"]
-|===
-StopAnalyzer:Luceneで指定できるAnalyzer
-StopFilter:Luceneで指定できるFilter
-StopFilterFactory:Solrで指定できるFilter
-|===
-+
-[underline]#*<fieldType>タグ内の各タグについて*#
-
-* <analyzer>タグ +
-Tokenizer/Filterを定義するための親タグです。 +
-また以下のように定義することも可能です。
-+
-[source,xml]
-----
-<analyzer type="index"> 検索対象値を保持する前に適用されるTokenizer/Filterの定義します。
-	････
-</analyzer>
-<analyzer type="query"> 検索文字列を検索対象値と比較する前に適用されるTokenizer/Filterを定義します。
-	････
-</analyzer>
-----
-+
-* <charFilter>タグ +
-Tokenizer実行前に呼ばれるFilterを定義します。
-
-* <tokenizer>タグ +
-実行するTokenizerを定義します。
-
-* <filter>タグ +
-Tokenizer実行後に呼ばれるFilterを定義します。
-
-[IMPORTANT]
-class値以外の要素（modeやtagsなど）は指定するclassにより異なりますので、ご注意ください。
-
-* [underline]#*Solrサーバに関する補足*# +
-Tokenizer/FilterはSolrサーバ本体だけでは動作しないものがあります。 +
-例えば、schema.xmlに以下の定義がある場合、 +
-+
-[source, xml]
-----
-    :
-    :
-    <fieldType name="text_chinese" class="solr.TextField">
-        <analyzer>
-            <tokenizer class="org.apache.lucene.analysis.cn.smart.HMMChineseTokenizerFactory"/>
-            <filter class="solr.LowerCaseFilterFactory" />
-        </analyzer>
-    </fieldType>
-    :
-    :
-----
-+
-この場合は、サーバ構築時に作成されたcoreのinstanceDir（以下の画像であれば、「collection1」）下に `lib` ディレクトリを作成し、そのディレクトリにjarを追加で配置してください。
-+
-image::images/FulltextSearch_Solr_Lib.png[]
-+
-また、検索条件を `AND` とするため `<サーバ構築時に作成されたcore>/conf/solrconfig.xml` に次の設定を行ってください。
-+
-[source,xml]
-----
-    :
-    <initParams path="/update/**,/query,/select,/spell">
-        <lst name="defaults">
-            ････
-            <str name="q.op">AND</str>
-        </lst>
-    </initParams>
-    :
-----
-デフォルトの検索条件は `OR` です。検索条件を `OR` とする場合は上記設定は不要です。
 
 [[fulltextsearch_view]]
 === 利用方法
@@ -625,7 +575,7 @@ image::images/FulltextSearch_Search.png[]
 ====
 
 スコアとは、検索文字列と検索対象値（行単位）の関連度が数値化されたものとなります。
-これらはSolr/Lucene内部で算出された値を利用しています。
+これらはLucene内部で算出された値を利用しています。
 簡単に条件を表すと、以下に一致すればするほどスコア値が高くなる傾向があります。
 ====
 * 検索文字列の単語がより多く含まれている

@@ -74,7 +74,7 @@ iPLAssの処理において、restPathに指定された文字列で開始する
 | logoutUrl | String | ログアウト時にキックするURL。
 | contentDispositionPolicy | <<ContentDispositionPolicy>>、複数指定可 | ContentDispositionの出力設定。
 | tempFileDir | String | テンポラリファイル格納パス。
-未指定時は「javax.servlet.context.tempdir」を使用します。
+未指定時は「jakarta.servlet.context.tempdir」を使用します。
 | maxUploadFileSize | long a|
 WARNING: 本設定項目は非推奨となります。requestRestrictionを利用ください。
 
@@ -230,7 +230,8 @@ TikaFileTypeDetector は以下の項目を設定可能です。
 [cols="1,1,3", options="header"]
 |====================
 | 項目 | 値 | 説明
-| fileUploadTikaAdapter | <<FileUploadTikaAdapter>> | ファイルアップロード機能で利用する Tika 依存関係を解消するアダプタ。
+| fileUploadTikaAdapter | <<FileUploadTikaAdapter>>、必須 | ファイルアップロード機能で利用する Tika 依存関係を解消するアダプタ。
+| substitutionMediaType | Map形式 | ファイルタイプ検出時に特定のMimeタイプの場合、別のMimeタイプに置き換える設定です。name 属性に置換対象のMimeタイプ、value 属性に置換後のMimeタイプを設定します。
 |====================
 
 [[FileUploadTikaAdapter]]
@@ -326,6 +327,7 @@ classはorg.iplass.mtp.impl.web.mdc.MdcValueResolverの実装クラスを指定�
 - <<HttpHeaderMdcValueResolver>>
 - <<SessionIdMdcValueResolver>>
 - <<AmznTraceIdMdcValueResolver>>
+- <<aws2_AmznTraceIdMdcValueResolver>>
 
 
 [[UuidMdcValueResolver]]
@@ -382,8 +384,16 @@ WebFrontendServiceのmdcへの設定ではStringにて、
 `sessionId` を指定することによりSessionIdMdcValueResolverが設定されます。
 
 [[AmznTraceIdMdcValueResolver]]
-.[.eeonly]#AmznTraceIdMdcValueResolver#
+.[.eeonly]#（非推奨）AmznTraceIdMdcValueResolver#
 classはorg.iplass.mtp.impl.aws.web.mdc.AmznTraceIdMdcValueResolverを指定します。
+
+[CAUTION]
+====
+AWS SDK for Java 1.x はメンテナンスモードになっており、2025年12月 にサポートを終了する予定です。 +
+iPLAss では AWS SDK for Java 1.x ベースのライブラリ iplass-ee-aws を非推奨とし、AWS SDK for Java 2.x ベースのライブラリ iplass-ee-aws2 への移行を推奨します。 +
+本機能を利用している場合は、ライブラリ iplass-ee-aws2 の <<aws2_AmznTraceIdMdcValueResolver>> へ設定を移行してください。 +
+ライブラリ iplass-ee-aws は将来削除される予定です。
+====
 
 HTTPヘッダーに設定されているX-Amzn-Trace-Idの値の特定のフィールド値を取得します。以下の項目を設定可能です。
 [cols="1,1,3", options="header"]
@@ -392,9 +402,19 @@ HTTPヘッダーに設定されているX-Amzn-Trace-Idの値の特定のフィ�
 | field | String | 取得するフィールド名。RootもしくはSelfを指定。
 |===
 
+[[aws2_AmznTraceIdMdcValueResolver]]
+.[.eeonly]#AmznTraceIdMdcValueResolver#
+classはorg.iplass.mtp.impl.web.mdc.awsv2.AmznTraceIdMdcValueResolverを指定します。
+
+HTTPヘッダーに設定されているX-Amzn-Trace-Idの値の特定のフィールド値を取得します。以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| field | String | 取得するフィールド名。RootもしくはSelfを指定。
+|===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.web.WebFrontendService</interface>
@@ -445,7 +465,7 @@ HTTPヘッダーに設定されているX-Amzn-Trace-Idの値の特定のフィ�
 	<property name="errorUrlSelector" class="org.iplass.gem.GemErrorUrlSelector" />
 	<!-- ログインページの設定 -->
 	<property name="loginUrlSelector" class="org.iplass.gem.GemLoginUrlSelector" />
-	<!-- テンポラリファイル格納パス 未指定時は「javax.servlet.context.tempdir」を使用 -->
+	<!-- テンポラリファイル格納パス 未指定時は「jakarta.servlet.context.tempdir」を使用 -->
 	<!--
 	<property name="tempFileDir" value="/tmp" />
 	-->
@@ -620,7 +640,7 @@ HTTPヘッダーに設定されているX-Amzn-Trace-Idの値の特定のフィ�
 
 	<!-- MDC設定 -->
 	<property name="mdc">
-		<property name="traceId" class="org.iplass.mtp.impl.aws.web.mdc.AmznTraceIdMdcValueResolver">
+		<property name="traceId" class="org.iplass.mtp.impl.web.mdc.awsv2.AmznTraceIdMdcValueResolver">
 			<property name="field" value="Root" />
 		</property>
 		<property name="ipaddress" value="remoteAddr" />

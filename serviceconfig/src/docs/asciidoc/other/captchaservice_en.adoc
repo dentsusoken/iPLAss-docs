@@ -40,7 +40,7 @@ The following items can be configured.
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.wam.impl.captcha.CaptchaService</interface>

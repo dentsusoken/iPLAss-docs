@@ -3,7 +3,7 @@
 :_relative-root-path: ../../
 
 GEM(Generic Entity Manager)機能は、エンティティのCRUDの機能を持った汎用的な操作画面モジュール群を指します。Entity定義情報や画面定義情報を元にエンティティを様々な形で表示ます。 +
-GEMには、モバイルファーストなデータ操作画面群を提供する [.eeonly]#MDCモジュール(Mobile Design Components)# が存在します。詳細は、 <<../mobiledesigncomponents/index.adoc#, [.eeonly]#MDC（Mobile Design Components）# >> を参照してください。
+GEMには、マテリアルデザインに準拠したデータ操作画面群を提供する [.eeonly]#MDCモジュール(Material Design Components)# が存在します。MDCは画面サイズに応じたレスポンシブなデザインを特徴としています。詳細は、 <<../materialdesigncomponents/index.adoc#, [.eeonly]#Material Design Components）# >> を参照してください。
 
 == <<./entityview/index.adoc#, EntityView>>
 エンティティの定義を元にデータを操作する検索一覧、詳細画面を自動生成します。

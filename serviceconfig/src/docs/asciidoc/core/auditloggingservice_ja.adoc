@@ -109,7 +109,7 @@ LoggerAuditLoggingServiceの設定項目に加え以下の項目を設定可能�
 
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.entity.auditlog.AuditLoggingService</interface>

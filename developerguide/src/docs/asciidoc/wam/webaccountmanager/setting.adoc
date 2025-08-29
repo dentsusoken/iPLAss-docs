@@ -49,6 +49,11 @@ org.iplass.wam.api.WamPreference
 |サインアップ設定の `initialAccountPolicy` が未指定の場合に、作成されたユーザーに割り当てられるアカウントポリシー(認証ポリシー)です。
 |WAM
 
+|webAuthnDefinitionName
+|パスキーを利用する場合の設定であるWebAuthn定義名を指定します。
+未指定の場合は定義名が `DEFAULT` として定義されたWebAuthn定義を利用します。
+|
+
 |signUp
 |<<wam_wampreference_signUp,signUp>>参照
 |

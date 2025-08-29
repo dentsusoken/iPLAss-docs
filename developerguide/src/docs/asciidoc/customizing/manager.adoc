@@ -7,7 +7,7 @@ Entity定義の詳細については、<<../datamanagement/index.adoc#ref_entity
 
 
 .EntityManagerの利用例
-[source, java]
+[source,java]
 ----
 import org.iplass.mtp.ManagerLocator;
 import org.iplass.mtp.entity.DeleteOption;
@@ -113,7 +113,7 @@ from句に指定されたEntityの件数ではなく、それぞれのEntityが�
 検索結果が大量件数になる可能性がある場合、callbackを利用することで、検索結果をストリーム処理可能です。
 
 .callbackの例
-[source, java]
+[source,java]
 ----
 EntityManager em = ManagerLocator.manager(EntityManager.class);
 :

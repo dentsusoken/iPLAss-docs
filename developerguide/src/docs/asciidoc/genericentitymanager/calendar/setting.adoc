@@ -115,7 +115,7 @@ EntityColorよりも本設定が優先されます。
 
 例えば下記のようなスクリプトを記述することで、期限を過ぎたデータは赤、過ぎていないデータは緑として表示することができます。
 
-[source, Groovy]
+[source,groovy]
 ----
 def diff = today - entity.getValue(toPropertyName);
 if (diff >= 1) {

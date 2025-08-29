@@ -3,30 +3,29 @@
 
 [[GlobalSettings_About_User]]
 === ユーザーについて
-* サンプルは３つのユーザーグループ（≒ロール）によって機能を分けています。
+* サンプルは3つのグループ（≒ロール）によって機能を分けています。
 
-.. マネージャー （ 「EC01(マネージャー001)」グループ） + 
+.. マネージャー （「EC01(マネージャー001)」グループ） +
 [NOTE]
-このユーザーグループで管理用画面が見えるように親グループを `GemUser` に指定しなければなりません。
+このグループで管理画面が参照できるように親グループを `GemUser` に指定する必要があります。
 
-.. オペレーター （「EC01(オペレーター001)」グループ） + 
+.. オペレーター （「EC01(オペレーター001)」グループ） +
 [NOTE]
-このユーザーグループで管理用画面が見えるように親グループを `GemUser` に指定しなければなりません。
+このグループで管理画面が参照できるように親グループを `GemUser` に指定する必要があります。
 
-.. 利用ユーザー （「 EC01(利用ユーザー001)」グループ） + 
+.. 利用ユーザー （「 EC01(利用ユーザー001)」グループ） +
 [NOTE]
-利用ユーザーが管理用画面を参照することができないので、親グループを `GemUser` に指定する必要がありません。
+利用ユーザーは管理画面を参照することができないので、親グループを `GemUser` に指定する必要はありません。
 
-* これらのユーザーにより実行可能な権限などを登録してありますので、実際に権限によってどう動作が変わるかを確認したい場合は、それぞれのグループに属するユーザーを
-登録してください。（Packageをインポートしたタイミングでは、ユーザー情報は登録されません）。
+* 各グループによって実行可能な権限などをあらかじめ登録してあります。実際に各グループの権限によってどのように挙動が変わるのかを確認したい場合は、それぞれのグループに属するユーザーを登録してください（サンプルアプリ用のメタデータとEntityデータををインポートしたタイミングでは、ユーザー情報は登録されません）。
 
-* iPLAssセットアップで入力したテナント管理者ユーザーIDで管理者画面にログインし、マネージャーとオペレーターユーザーグループの親グループを変更します。変更を反映するために、一度ログアウトして再ログインしてください。 + 
+* iPLAssセットアップで入力したテナント管理者ユーザーで管理画面にログインし、マネージャーとオペレーターグループの親グループを `GemUser` に変更します。変更を反映するために、一度ログアウトして再ログインしてください。 +
 +
-編集ボタンをクリックします。
-+ 
+鉛筆マークの「編集」アイコンをクリックします。
++
 image::images/sample-ec_usergroup-edit.png[align=left]
 +
-該当ユーザーグループの親グループを　`GemUser`　に指定し、保存ボタンをクリックします。
+該当グループの親グループを `GemUser` に指定し、「保存」ボタンをクリックします。
 +
 image::images/sample-ec_usergroup-detail.png[align=left]
 +
@@ -34,7 +33,7 @@ image::images/sample-ec_usergroup-detail.png[align=left]
 +
 image::images/sample-ec_usergroup-list.png[align=left]
 
-* 開発環境でテストする時にユーザーを新規登録したい場合、仮パスワードの送信メールがログ出力に確認できるようにsrc/main/resouces/mtp-service-config.xmlファイルに以下の定義を追加してください。
+* ローカルの開発環境での実行時にユーザーを新規登録したい場合、仮パスワードの送信メールがログに出力できるように `src/main/resouces/mtp-service-config.xml` に以下の設定を追加してください。
 +
 [source,xml]
 ----
@@ -57,41 +56,40 @@ image::images/sample-ec_usergroup-list.png[align=left]
 ----
 
 === 多言語対応について
-* 有効にする為に配下の操作を行って下さい。
-（サンプルインポート時に、テナント情報を初期チェック状態で取り込んでいる場合は、すでに有効になっています。）
+* 多言語対応を有効化するためには以下の操作を行う必要があります。 +
 ※カレンダー、集計にて一部多言語対応されていない部分があります。
 
-** 多言語利用を「利用する」、利用可能言語で「日本語」、「English」を選択して保存 + 
-※　Java／Jsp版とVue.js／WebApi版の場合、多言語利用に設定が必要です。 + 
-※　Groovy／GroovyTemplate版の場合、Tenantのメタデータ定義がPackaging機能を利用してインポートされたので、多言語利用に設定は不要です。
+** Admin Consoleのテナント情報の設定で、多言語利用を「利用する」、利用可能言語で「日本語」と「English」を選択して保存します。 +
+※ Java／JSP版とVue.js／WebAPI版の場合、多言語利用に設定が必要です。 +
+※ Groovy／GroovyTemplate版の場合、テナント情報のメタデータがPackaging機能を利用してインポートされるため、多言語利用に設定は不要です。
 +
 image::images/sample-ec_admin-console-tenant-multilang.png[align=left]
 
-** 多言語の利用 + 
-下図のように言語選択がメニューに表示されます。言語を選択後、次遷移の画面から選択言語が有効になります。
+** 多言語の利用 +
+下図のように言語選択がメニューに表示されます。言語を選択後、新たに遷移した画面から選択言語が有効になります。
 +
 image::images/sample-ec_mantainance-top-page-multilang-sel.png[align=left]
 
-* 管理者向けのTop画面　英語版
+* 管理者向けのTop画面（英語版）
 +
 image::images/sample-ec_mantainance-top-page-en.png[align=left]
 
-* 一般消費者向けのTop画面　英語版
+* 一般消費者向けのTop画面（英語版）
 +
 image::images/sample-ec_consumer-top-page-md-width-en.png[align=left]
 
 [[GlobalSettings_FullTextSearch_Settings]]
 === 全文検索について
 
-* 管理画面で利用可能です。詳細な利用方法は開発者ガイド<<../developerguide/datamanagement/index#ref_fulltext_search, 全文検索>>の章をご参照ください。
+* 管理画面で利用可能です。詳細な利用方法は開発者ガイドの<<../developerguide/datamanagement/index#ref_fulltext_search, 全文検索>>の章を参照ください。
 +								
 image::images/sample-ec_mantainance-top-page-fulltext-search.png[align=left]
 +
-プルダウンでエンティティを選択すると選択したエンティティに対して、選択しない場合は全エンティティ（クロール対象となっている）に対し全文検索を実施します。
+プルダウンでエンティティを選択すると選択したエンティティを対象に、選択しない場合はクロール対象となっている全エンティティを対象に、全文検索を実施します。
 +
 image::images/sample-ec_mantainance-top-page-fulltext-search-result.png[align=left]
 
-* 一般消費者向け画面で全文検索を利用したい場合、Containsを利用するソースコードのコメントを外して関連するJavaパッケージをインポートしてください。
+* 一般消費者向け画面で全文検索を利用したい場合、 `Containsクラス` を利用している箇所のソースコードのコメントを外し、関連するJavaパッケージをインポートしてください。
 +
 [cols="1,2"]
 |===
@@ -132,4 +130,4 @@ public class FulltextSearchCommand implements Command {
 }
 ----
 <1> コメントを外します。
-<2> コメントアウトにします。
+<2> コメントアウトします。

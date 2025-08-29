@@ -124,7 +124,7 @@ Please specify org.iplass.wam.impl.outofbandverify.store.SessionVerificationStor
 There is no configurable items.
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.wam.impl.outofbandverify.OutOfBandVerificationService</interface>

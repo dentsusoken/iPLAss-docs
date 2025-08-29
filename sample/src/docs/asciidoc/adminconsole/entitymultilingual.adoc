@@ -1,31 +1,24 @@
 [[AdminConsole_Entity_Mutlilang]]
 === Entity多言語対応
-画面の表示メッセージは多言語利用が可能です。それ以外に、Entityレベルの多言語利用も可能です。 + 
-Entityの定義にて、以下の二つの方法で多言語対応が可能です。詳しくは開発者ガイド<<../../developerguide/i18n/index#data_localize, データの多言語対応>>の章を参照してください。
+画面に表示するメッセージは多言語対応が可能です。 +
+Entity定義において、以下の2つの方法でEntityデータ自体に対する多言語設定ができます。詳しくは、開発者ガイドの<<../../developerguide/i18n/index#data_localize, データの多言語対応>>の章を参照してください。
 
 ==== プロパティ単位の多言語化
 
 ===== 設定方法
 
-同一Entity内に多言語用ラベルのプロパティを持つ
-
-Entity定義のプロパティとして、
-propA
-propA_en  
-propA_ja
-のように、多言語用のラベルを別途保持する形式。
- 
-property名_言語
+同一のEntity内に多言語用ラベルのプロパティを持つ方法です。 多言語用プロパティの命名ルールは以下の通りです。 +
+`{property名}_{言語}`
 
 image::images/sample-ec_adminconsole-entity-multilang-property.png[align=left]
 
-. 多言語用ラベルのプロパティを作成します。
-. "Data Localize Type"を"Each Property"に指定します。
-. "Support Language"の言語項目にチェックを入れます。
+. 多言語用のプロパティを作成します。
+. `Data Localize Type` に `Each Property` を指定します。
+. `Support Language` の言語項目にチェックを入れます。
 
 ===== 画面表示
 
-日本語用Top画面と英語用Top画面
+Top画面の日本語表示（左）と英語表示（右）
 
 image::images/sample-ec_adminconsole-entity-multilang-property-result.png[align=left]
 
@@ -33,25 +26,18 @@ image::images/sample-ec_adminconsole-entity-multilang-property-result.png[align=
 
 ===== 設定方法
 
-多言語別にEntityを複数レコード登録する 
-
-Entity定義のプロパティとして、言語判別用プロパティを定義。
-例えば、"lang"といったプロパティ名で。
-
-このパターンの場合、
-Entityに「多言語判別用プロパティ」および「対応済言語」を設定することにより、
-Entityデータ検索時に自動的に当該プロパティにユーザーの言語をセットして検索する。
+言語毎にレコードを分ける方法です。 Entity定義に「多言語判別用プロパティ」および「対応言語」を設定することにより、 Entityデータ検索時に自動的に検索条件に `多言語判別用プロパティ = ユーザーの言語` を追加します。主に言語毎に対象とするデータの件数が異なる場合での利用を想定しています。
 
 image:images/sample-ec_adminconsole-entity-multilang-instance.png[align=left]
 
 . 言語判別用プロパティを作成します。 
-. "Data Localize Type"を"Each Instance"に指定します。
-. "Language"に作成した言語判別用プロパティを指定します。
-. "Support Language"の言語項目にチェックを入れます。
+. `Data Localize Type` に `Each Instance` を指定します。
+. `Language` に作成した言語判別用プロパティを指定します。
+. `Support Language` の言語項目にチェックを入れます。
 
 ===== 画面表示
 
-日本語用Top画面と英語用Top画面
+Top画面の日本語表示（左）と英語表示（右）
 
 image:images/sample-ec_adminconsole-entity-multilang-instance-result.png[align=left]
 

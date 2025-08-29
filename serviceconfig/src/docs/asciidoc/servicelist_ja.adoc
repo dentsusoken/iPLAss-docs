@@ -60,17 +60,23 @@ ActionやWebApi、Web全般に関するサービス群です。
 | <<index.adoc#ActionMappingService, ActionMappingService>> | ブラウザからのリクエスト時に呼び出されるインターセプターを管理するサービスです。
 | <<index.adoc#CsvUploadService, CsvUploadService>> | CSVアップロードを管理するサービスです。
 | <<index.adoc#EntityCsvImportService, EntityCsvImportService>> | EntityのCSVインポートに関するサービスです。
+| <<index.adoc#EntityFileUploadService, EntityFileUploadService>> | Entityデータのアップロードを管理するサービスです。
 | <<index.adoc#EntityWebApiService, EntityWebApiService>> | EntityWebApiを管理するサービスです。
 | <<index.adoc#IPAddressHistoryStoreService, [.eeonly]#IPAddressHistoryStoreService#>> | 過去にアクセスされたIPアドレスの保持を行うためのサービスです。
 | <<index.adoc#OAuthAuthorizationService, OAuthAuthorizationService>> | OAuth2.0 Authorization ServerおよびOpenID Connect Providerの機能を管理するためのサービスです。
+| <<index.adoc#ODataService, [.eeonly]#ODataService#>> | ODataサービスの動作を管理するサービスです。
+| <<index.adoc#OpenApiService, OpenApiService>> | OpenAPIに関連する機能を管理するためのサービスです。
 | <<index.adoc#OpenIdConnectService, OpenIdConnectService>> | OpenID Connect Relying Partyの機能を管理するためのサービスです。
 | <<index.adoc#ReportingEngineService, ReportingEngineService>> | 帳票出力を管理するサービスです。
 | <<index.adoc#SamlService, [.eeonly]#SamlService#>> | SAML認証を行うためのサービスです。
+| <<index.adoc#ScimIdentityProviderService, [.eeonly]#ScimIdentityProviderService#>> | SCIM Identity Provider 機能の動作を管理するサービスです。
+| <<index.adoc#ScimServiceProviderService, [.eeonly]#ScimServiceProviderService#>> | SCIM Service Provider 機能の動作を管理するサービスです。
 | <<index.adoc#TenantAvailableService, [.eeonly]#TenantAvailableService#>> | テナントの稼動状態を管理するサービスです。
-| <<index.adoc#WebApiService, WebApiService>> | WebApiを管理するサービスです。
 | <<index.adoc#WebApiJaxbService, WebApiJaxbService>> | WebApiのJAXBでの変換対象のクラス定義を行うサービスです。
+| <<index.adoc#WebApiObjectMapperService, WebApiObjectMapperService>> | WebApiのJSON出力時のObjectMapper定義を行うサービスです。
+| <<index.adoc#WebApiService, WebApiService>> | WebApiを管理するサービスです。
+| <<index.adoc#WebAuthnService, WebAuthnService>> | WebAuthn仕様による認証を行うためのサービスです。
 | <<index.adoc#WebFrontendService, WebFrontendService>> | Webアプリケーション全般の動作を管理するサービスです。
-| <<index.adoc#ODataService, [.eeonly]#ODataService#>> | ODataサービスの動作を管理するサービスです。
 |===
 
 === Gem services
@@ -82,9 +88,9 @@ Gem(Generic Entity Manager)画面に関するサービス群です。
 | <<index.adoc#CubeTemplateService, [.eeonly]#CubeTemplateService#>> | Cube集計のカスタムメジャーのテンプレートを管理するサービスです。
 | <<index.adoc#EntityListingService, [.eeonly]#EntityListingService#>> | EntityListing機能のサービスです。
 | <<index.adoc#GemConfigService, GemConfigService>> | 汎用画面全般の設定を行うサービスです。
-| <<index.adoc#MdcConfigService, [.eeonly]#MdcConfigService#>> | モバイル版汎用画面全般の設定を行うサービスです。
-| <<index.adoc#MdcDetailViewService, [.eeonly]#MdcDetailViewService#>> | モバイル版の詳細画面の設定を行うサービスです。
-| <<index.adoc#MdcSearchViewService, [.eeonly]#MdcSearchViewService#>> | モバイル版の検索画面の設定を行うサービスです。
+| <<index.adoc#MdcConfigService, [.eeonly]#MdcConfigService#>> | MDC版汎用画面全般の設定を行うサービスです。
+| <<index.adoc#MdcDetailViewService, [.eeonly]#MdcDetailViewService#>> | MDC版の詳細画面の設定を行うサービスです。
+| <<index.adoc#MdcSearchViewService, [.eeonly]#MdcSearchViewService#>> | MDC版の検索画面の設定を行うサービスです。
 | <<index.adoc#RelativeRangeService, [.eeonly]#RelativeRangeService#>> | 集計機能やEntityListingの日付の検索条件で、相対範囲を独自に追加するためのサービスです。
 |===
 
@@ -112,7 +118,8 @@ Gem(Generic Entity Manager)画面に関するサービス群です。
 [cols="1,3", options="header"]
 |===
 | 名前 | 概要
-| <<index.adoc#AWSSetting, [.eeonly]#AWSSetting#>> | AWSの設定を管理する サービスです。
+| <<index.adoc#AWSSetting, [.eeonly]#(非推奨)AWSSetting#>> | AWSの設定を管理する サービスです。AWS SDK for Java 1.x の設定を管理します。
+| <<index.adoc#aws2_AWSSetting, [.eeonly]#AWSSetting#>> | AWSの設定を管理する サービスです。AWS SDK for Java 2.x の設定を管理します。
 | <<index.adoc#InfinispanService, InfinispanService>> | InfinispanServiceを管理する サービスです。
 | <<index.adoc#RedisService, RedisService>> | RedisServiceを管理する サービスです。
 | <<index.adoc#CaptchaService, [.eeonly]#CaptchaService#>> | reCAPTCHAによるロボット排除を管理するためのサービスです。

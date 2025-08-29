@@ -77,7 +77,7 @@ NEWER:: 有効期間内である証明書のうち、より有効期間が長い
 BEFORE_N_DAYS:: 有効期間が切れるrollOverDaysBeforeExpire日前に切り替える
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
   <interface>org.iplass.mtp.impl.auth.authenticate.saml.SamlService</interface>

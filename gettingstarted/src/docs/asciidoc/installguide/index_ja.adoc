@@ -3,8 +3,8 @@
 
 [[ConstructionEnvironment]]
 == Eclipse開発環境の構築
-iPLAssをベースにWebアプリケーションを開発するために、Eclipseで利用可能なGradleプロジェクトのスケルトンが用意されています。
-ここではEclipseの設定からプロジェクトの取り込み、各種設定を行った後、Webアプリケーションの起動までを説明します。
+iPLAssをベースにWebアプリケーションを開発するために、Eclipseで利用可能なGradleプロジェクトのスケルトンが用意されています。 +
+ここではEclipseの設定からプロジェクトの取り込み、各種設定を行った後、Webアプリケーションを起動するまでを説明します。
 
 
 == 事前準備
@@ -12,14 +12,15 @@ iPLAssをベースにWebアプリケーションを開発するために、Eclip
 
 [cols="1,2"]
 |===
-|JDK|link:https://aws.amazon.com/corretto/[OpenJDK11]
-|APサーバ|link:https://tomcat.apache.org/download-90.cgi[Tomcat 9.0^]
+|JDK|link:https://aws.amazon.com/corretto/[OpenJDK21]
+|APサーバ|link:https://tomcat.apache.org/download-10.cgi[Tomcat 10.1^]
 |DBサーバ a|以下の内いずれか
 
-* Oracle 11gR2以上
-* MySQL 5.7/8.0
-* SQL Server 2012以上
-* PostgreSQL 9.6以上
+* Oracle 19c以上
+* MySQL 8.0以上
+* PostgreSQL 12以上
+* SQL Server 2016以上
+
 |Eclipse a|
 以下の内いずれか
 
@@ -35,7 +36,7 @@ iPLAssをベースにWebアプリケーションを開発するために、Eclip
 Tomcatのインストールディレクトリにある `lib` フォルダに利用するDBのJDBCドライバを配置してください。
 
 TIP: 本番環境ではデータソースを利用したDB接続を利用する場合があります。
-データソースを利用する場合、Tomcatの参照するクラスパス上にJDBCドライバを配置する必要があります。
+データソースを利用する場合、Tomcatの参照するクラスパス上にJDBCドライバを配置する必要があります。 +
 本資料ではデータソースは利用しませんが、上記理由によりプロジェクト側ではなくTomcat側にJDBCドライバを配置します。
 
 === DBの設定
@@ -48,7 +49,6 @@ iPLAss用のデータベースおよびテーブルの準備ができていな�
 
 TIP: 本番環境の構築を行う際は、iPLAss SDKのDDLを利用してください。
 Install and Runによる作成は推奨していません。
-Java 11を利用している場合、必ずデータベースとJDBCを最新バージョンに更新してください。Java 11で接続ポリシーがTLSv1.3に変更された為、旧バージョンでは対応されない可能性があります。
 
 === Eclipseの設定
 . ダウンロードしたインストーラを起動します。 +
@@ -67,11 +67,11 @@ JDKのインストール先にある `javaw.exe` を選択してください。
 .. JDKの設定 +
 `Java > Installed JREs` にインストールしたJDKがあるか確認してください。 
 ない場合はJDKを追加し、デフォルトに設定します。
-続いて `Java > Compiler` を開き、`Compiler compliance level` が `11` となっていることを確認してください。
+続いて `Java > Compiler` を開き、`Compiler compliance level` が `21` となっていることを確認してください。
 
 .. Tomcatの設定 +
 `Server > Runtime Environments` にインストールしたTomcatを追加します。
-`Apache Tomcat v9.0` を選択し、事前にインストールしたTomcatのディレクトリを指定します。
+`Apache Tomcat v10.1` を選択し、事前にインストールしたTomcatのディレクトリを指定します。
 
 +
 TIP: 本手順は、 `Eclipse IDE for Enterprise Java and Web Developers(2023-09)` および、日本語化パッチが未適用の状態であることを前提としています。
@@ -138,7 +138,7 @@ TIP: 有償版の `gradle.properties` には、契約時に配布されるユー
 .アプリケーション名の変更
 . アプリケーション名を決め、`Refactor > Rename` でプロジェクトの名前を変更します。
 . `Refactor > Move` でプロジェクトフォルダをプロジェクト名にあわせて移動します。
-. `setting.gradle` のrootProject.nameをプロジェクト名にあわせて変更します。
+. `setting.gradle` の `rootProject.name` をプロジェクト名にあわせて変更します。
 
 .JDBC Driverの取得
 . Webアプリケーション実行時にはTomcatに配置したJDBCドライバを利用しますが、後述のテナントの作成にて、ツール実行時にJDBCドライバが必要になります。
@@ -161,23 +161,23 @@ TIP: プロキシサーバーを利用する場合は、以下を参考に `grad
 
 .プロジェクトの設定変更
 . プロジェクトの `Properties` を表示し、以下の操作を実施します。
-. `Web Project Settings` のContext rootをプロジェクト名にあわせて変更します。
-. 左ペインにある `Project Facets` のうち、以下の項目をチェックし、Versionを設定します。 +
-その後、右ペインにある `Runtimes` タブをクリックし、事前準備でインストールしたTomcat（Apache Tomcat v9.0）をチェックします。選択肢に存在しない場合は `New...` ボタンから追加してください。
+. `Web Project Settings` の `Context root` をプロジェクト名にあわせて変更します。
+. 左ペインにある `Project Facets` のうち、以下の項目をチェックし、バージョンを設定します。 +
+その後、右ペインにある `Runtimes` タブをクリックし、事前準備でインストールしたTomcat（Apache Tomcat v10.1）をチェックします。選択肢に存在しない場合は `New...` ボタンから追加してください。
 
 [cols="1,2",options="header"]
 |===
 |Project Facet|Version
-|Java|11
-|Dynamic Web Module|4.0
-|Runtimes|Apache Tomcat v9.0
+|Java|21
+|Dynamic Web Module|6.0
+|Runtimes|Apache Tomcat v10.1
 |===
 
 .mtp-service-config.xmlの設定
 . `src/main/resources/mtp-service-config.xml` の設定を変更します。
 以下の項目を変更してください。
 
-[source, xml]
+[source,xml]
 ----
 <serviceDefinition>
 	<inherits>/mtp-core-service-config-oracle.xml</inherits> <1>
@@ -222,7 +222,7 @@ TIP: プロキシサーバーを利用する場合は、以下を参考に `grad
 			DBがMySQL及びPostgreSQLの場合はFileLobStoreの設定は必須です。
 			※下記設定は、Binaryはファイル、LongTextはRDBに保存する設定です。
 			　　LongTextもファイルにする場合は、longTextStoreの設定もFileLobStoreにしてください。
-		 -->
+		-->
 		<!--
 		<property name="binaryStore" class="org.iplass.mtp.impl.lob.lobstore.file.FileLobStore"> <4>
 			<property name="rootDir" value="[setYourBinaryFileStoreRootPath]" /> <5>
@@ -230,7 +230,7 @@ TIP: プロキシサーバーを利用する場合は、以下を参考に `grad
 		</property>
 		<property name="longTextStore" class="org.iplass.mtp.impl.lob.lobstore.rdb.RdbLobStore">
 		</property>
-		 -->
+		-->
 
         ・・・
     
@@ -270,15 +270,14 @@ TIP: プロキシサーバーを利用する場合は、以下を参考に `grad
 . コマンドラインからGradleタスクの `runTenantBatch` を実行します。 +
 * 実行パス： プロジェクト直下 +
 * 実行するコマンド： `gradlew runTenantBatch` +
-	※Gradleタスクの一覧は `gradlew tasks` のコマンドで確認出来ます。 +
 . 起動した画面で `Create Default Tenant` をクリックします。
 . ダイアログで `name（テナント名）` 、 `AdminUserId（管理者ユーザーID）` 、 `AdminUserPassword（管理者ユーザーパスワード）` を入力し、 `Create` をクリックします。 +
 ダイアログ画面のLogに「Execute Result : SUCCESS」が表示されたことを確認後、ダイアログを閉じてください。
 
 TIP: テナント作成時はDBA権限を持つユーザーをmtp-service-config.xmlに設定してください。
 
-TIP: 管理者ユーザーIDには４文字以上の英数字および `-` (マイナス) `@` `\_` `.` (ピリオド)のみ入力可能です。 +
-管理者ユーザーパスワードは６文字以上の英数字および次の記号 `~!#\\$^&*+;:?/|{}\\.=_,-` のみ入力可能です。
+TIP: 管理者ユーザーIDには4文字以上の英数字および `-` (マイナス) `@` `\_` `.` (ピリオド)のみ入力可能です。 +
+管理者ユーザーパスワードは6文字以上の英数字および次の記号 `~!#\\$^&*+;:?/|{}\\.=_,-` のみ入力可能です。
 
 
 == 実行
@@ -289,8 +288,8 @@ TIP: 管理者ユーザーIDには４文字以上の英数字および `-` (マ�
 . プロジェクトのルートで右クリックし、 `Run As > Run on Server` を実行します。
 （次回以降は `Server` Viewから起動できます。）
 
-. `Tomcat v9.0 Server` を選択して、[Finish]をクリックしてください。
-`Always use this server whern running this project` をチェックしておくと、次回Server起動時にそのまま実行できます。
+. `Tomcat v10.1 Server` を選択して、[Finish]をクリックしてください。
+`Always use this server when running this project` をチェックしておくと、次回Server起動時にそのまま実行できます。
 +
 TIP: `Tomcat admin port` の設定が「-」になっている場合、Tomcatの起動に失敗します。使用されていない適当なポート「8015」などを設定してください。
 

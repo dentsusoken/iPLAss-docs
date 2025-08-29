@@ -30,7 +30,7 @@ CAUTION: `alwaysAvailableAction` の方を使用してください。次期マ�
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.tenant.available.TenantAvailableService</interface>

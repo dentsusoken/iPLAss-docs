@@ -52,7 +52,7 @@ The following HttpClientBuilderFactory is provided as standard.
 * <<MicrometerHttpClientBuilderFactory, [.eeonly]#MicrometerHttpClientBuilderFactory#>>
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.auth.authenticate.oidc.OpenIdConnectService</interface>

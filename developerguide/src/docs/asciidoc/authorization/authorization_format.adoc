@@ -16,7 +16,7 @@ GroovyScript形式で条件を設定するEntityは以下になります。
 * header情報 +
 例えば「HTTP Headerの"user-agent"に、Firefoxという文字が入っていること」という条件は以下のようになります。
 +
-[source, Groovy]
+[source,groovy]
 ----
 request.header.'user-agent'.contains('Firefox')
 ----
@@ -59,7 +59,7 @@ PreparedQuery（GroovyTemplate）形式で条件を設定するEntityは以下�
 
 特定のグループに対応した条件が必要で、範囲条件内に直接グループコードを記述する必要がある（環境に依存する自動採番のoidでは無く、固定値のグループコードを利用したい）場合、toGroupOidを利用した下記コードが利用可能です。
 
-[source, GroovyTemplate]
+[source,groovy]
 ----
 groups.oid in (${toIn(toGroupOid(['G01','G02']))})
 ----
@@ -110,7 +110,7 @@ temporaryユーザーはtemporaryユーザー用の権限（条件に `user.temp
 ==== リクエスト情報
 アプリ側でログイン時や任意の処理等でパラメータにセットした値を取得する事が可能です。
 
-[source, groovy]
+[source,groovy]
 ----
 def value = parameter.パラメータ名
 
@@ -121,7 +121,7 @@ def value = parameter.getValue("パラメータ名")<1>
 また、下記のようにin句を利用可能です。
 この場合、defNameがHogeEntityもしくはFugaEntityだった場合にtrueが返ります。
 
-[source, groovy]
+[source,groovy]
 ----
 parameter.in('defName', 'HogeEntity', 'FugaEntity')
 ----
@@ -129,7 +129,7 @@ parameter.in('defName', 'HogeEntity', 'FugaEntity')
 ==== セッション情報
 アプリ側でログイン時や任意の処理等でセッションにセットした値を取得する事が可能です。
 
-[source, groovy]
+[source,groovy]
 ----
 def value = session.項目名;
 
@@ -147,7 +147,7 @@ def value = session.getAttribute("項目名");<1>
 
 * GroovyScript形式の場合 +
 +
-[source, Groovy]
+[source,groovy]
 ----
 import org.iplass.sample.SampleUtil;
 
@@ -158,7 +158,7 @@ return SampleUtil.isAccess();
 
 * PreparedQuery(GroovyTemplate)形式の場合 +
 +
-[source, GroovyTemplate]
+[source,groovy]
 ----
 <%@import org.iplass.sample.SampleUtil%>
 <%

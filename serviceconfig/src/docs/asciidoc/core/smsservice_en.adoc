@@ -84,7 +84,7 @@ It’s SendSmsMailListener with the metric collection function by Micrometer.
 There are no settings that can be configured.
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.sms.SmsService</interface>

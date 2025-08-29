@@ -1,9 +1,10 @@
 [[Groovy_GTmpl_ErrorUrlSelector]]
 === ErrorUrlSelector
-エラー画面Template制御スクリプトクラスです。
+エラー画面Template制御スクリプトです。
 
-* Tokenエラーを例として説明していきます。 + 
-Tenantの設定 -> エラー画面Template制御Scriptを開きます。
+* トークンエラーが発生した場合を例として説明していきます。
+
+Admin Consoleで、テナント情報の設定から「エラー画面Template制御Script」を開きます。
 +
 image:images/sample-ec_groovy-gtmpl-tenant-errorselector.png[align=left]
 +
@@ -37,7 +38,7 @@ if (path != null && path.startsWith("samples/ec01")) {
 	}
 }
 ----
-<1> TokenValidationExceptionが発生した場合、"samples/ec01/error/genericError"テンプレートを呼び出します。
+<1> TokenValidationExceptionが発生した場合、`samples/ec01/error/genericError` テンプレートを呼び出すように実装します。
 
 * 共通エラー画面
 +
@@ -92,12 +93,12 @@ h|Template名|samples/ec01/error/genericError
     </div>
 </div>
 ----
-<1> TokenValidationExceptionが発生した場合、該当するエラーメッセージを表示します。 + 
-※ `${msg()}` は開発者ガイド<<../../developerguide/customizing/index#_groovytemplateの関数,開発者ガイド GroovyTemplateの関数>>の章を参照してください。メタデータとして定義されているメッセージ定義を出力します。
+<1> TokenValidationExceptionが発生した場合、該当するエラーメッセージを表示します。 +
+※ `${msg()}` については、開発者ガイドの<<../../developerguide/customizing/index#_groovytemplateの関数,GroovyTemplateの関数>>の章を参照してください。メタデータとして定義されているメッセージ定義を出力します。
 
 * 動作確認
 +
-Consoleに出力されたエラーログです。
+コンソールに出力されたエラーログは以下の通りです。
 +
 [source]
 ----

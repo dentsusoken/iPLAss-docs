@@ -108,7 +108,7 @@ If you want to prevent logging during data maintenance as the system administrat
 
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.entity.auditlog.AuditLoggingService</interface>

@@ -53,7 +53,7 @@ ServiceAccountSecretKeyGoogleCredentialsFactory は以下の項目を設定可�
 
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <!-- GoogleCloudSettings -->
 <service>

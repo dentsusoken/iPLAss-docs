@@ -1,0 +1,38 @@
+[[OpenApiService]]
+=== OpenApiService
+This is a service for managing functions related to OpenAPI.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.webapi.openapi.OpenApiService
+----
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.webapi.openapi.OpenApiService
+----
+
+==== OpenApiService Configuration
+OpenApiService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| infoTitleOfExport | String | The value of info.title when exporting OpenAPI.
+| infoVersionOfExport | String | The value of info.version when exporting OpenAPI.
+| infoDescriptionOfExport | String | The value of info.description when exporting OpenAPI.
+|===
+
+===== Example
+[source,xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.webapi.openapi.OpenApiService</interface>
+    <class>org.iplass.mtp.impl.webapi.openapi.OpenApiService</class>
+
+    <property name="infoTitleOfExport" value="iPLAss WebAPI, EntityCRUDApi OpenAPI Spec" />
+    <property name="infoVersionOfExport" value="1.0.0" />
+    <property name="infoDescriptionOfExport" value="iPLAss WebAPI and EntityCRUDApi OpenAPI Specification" />
+</service>
+----

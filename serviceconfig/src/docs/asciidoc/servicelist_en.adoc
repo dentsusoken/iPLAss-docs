@@ -60,17 +60,23 @@ Such as Action and WebApi, these Web related services are managed.
 | <<index.adoc#ActionMappingService, ActionMappingService>> | It is the service that manages the interceptor called when a request is sent from the browser.
 | <<index.adoc#CsvUploadService, CsvUploadService>> | The service to manage CSV uploads.
 | <<index.adoc#EntityCsvImportService, EntityCsvImportService>> | Services related to CSV import of Entity.
+| <<index.adoc#EntityFileUploadService, EntityFileUploadService>> | Services related to file import of Entity.
 | <<index.adoc#EntityWebApiService, EntityWebApiService>> | This service manages EntityWebApi.
 | <<index.adoc#IPAddressHistoryStoreService, [.eeonly]#IPAddressHistoryStoreService#>> | This is a service for storing IP addresses accessed in the past.
 | <<index.adoc#OAuthAuthorizationService, OAuthAuthorizationService>> | The service for managing the functions of the OAuth2.0 Authorization Server and OpenID Connect Provider.
+| <<index.adoc#ODataService, [.eeonly]#ODataService#>> | The service to control the behavior of OData Service.
+| <<index.adoc#OpenApiService, OpenApiService>> | The service for managing OpenAPI-related functions.
 | <<index.adoc#OpenIdConnectService, OpenIdConnectService>> | The service for managing the functions of OpenID Connect Relying Party.
 | <<index.adoc#ReportingEngineService, ReportingEngineService>> | This service manages report output(such as receipts).
 | <<index.adoc#SamlService, [.eeonly]#SamlService#>> | A service for SAML authentication.
+| <<index.adoc#ScimIdentityProviderService, [.eeonly]#ScimIdentityProviderService#>> | This service manages the operation of the SCIM Identity Provider function.
+| <<index.adoc#ScimServiceProviderService, [.eeonly]#ScimServiceProviderService#>> | This service manages the operation of the SCIM Service Provider function.
 | <<index.adoc#TenantAvailableService, [.eeonly]#TenantAvailableService#>> | This service manages the operating status of tenants.
-| <<index.adoc#WebApiService, WebApiService>> | This service manages WebApi.
 | <<index.adoc#WebApiJaxbService, WebApiJaxbService>> | This is a service that defines the class to be converted in JAXB of WebApi.
+| <<index.adoc#WebApiObjectMapperService, WebApiObjectMapperService>> | This is a service for defining the ObjectMapper used for JSON output in WebApi.
+| <<index.adoc#WebApiService, WebApiService>> | This service manages WebApi.
+| <<index.adoc#WebAuthnService, WebAuthnService>> | This is a service for performing authentication based on the WebAuthn specification.
 | <<index.adoc#WebFrontendService, WebFrontendService>> | A service that manages the overall operation of Web applications.
-| <<index.adoc#ODataService, [.eeonly]#ODataService#>> | The service to control the behavior of OData Service.
 |===
 
 === Gem services
@@ -82,9 +88,9 @@ Gem(Generic Entity Manager) page related services.
 | <<index.adoc#CubeTemplateService, [.eeonly]#CubeTemplateService#>> | The services to manage the major templates of Cube aggregation.
 | <<index.adoc#EntityListingService, [.eeonly]#EntityListingService#>> | The service to manage EntityListing mechanism.
 | <<index.adoc#GemConfigService, GemConfigService>> | The service for general settings for GEM pages.
-| <<index.adoc#MdcConfigService, [.eeonly]#MdcConfigService#>> | This service for general settings for the mobile version of the GEM pages.
-| <<index.adoc#MdcDetailViewService, [.eeonly]#MdcDetailViewService#>> | This service for settings for the mobile version of the Detail pages.
-| <<index.adoc#MdcSearchViewService, [.eeonly]#MdcSearchViewService#>> | This service for settings for the mobile version of the Search pages.
+| <<index.adoc#MdcConfigService, [.eeonly]#MdcConfigService#>> | This service for general settings for the MDC version of the GEM pages.
+| <<index.adoc#MdcDetailViewService, [.eeonly]#MdcDetailViewService#>> | This service for settings for the MDC version of the Detail pages.
+| <<index.adoc#MdcSearchViewService, [.eeonly]#MdcSearchViewService#>> | This service for settings for the MDC version of the Search pages.
 | <<index.adoc#RelativeRangeService, [.eeonly]#RelativeRangeService#>> | This is a service for adding your own relative range in the search conditions of Aggregation and EntityListing.
 |===
 
@@ -112,7 +118,8 @@ The service group for other plug-in modules.
 [cols="1,3", options="header"]
 |===
 | Name | Description
-| <<index.adoc#AWSSetting, [.eeonly]#AWSSetting#>> | This service manages AWS settings.
+| <<index.adoc#AWSSetting, [.eeonly]#(Deprecated)AWSSetting#>> | This service manages AWS settings. Manage AWS SDK for Java 1.x settings.
+| <<index.adoc#aws2_AWSSetting, [.eeonly]#AWSSetting#>> | This service manages AWS settings. Manage AWS SDK for Java 2.x settings.
 | <<index.adoc#InfinispanService, InfinispanService>> | The service to manage InfinispanService.
 | <<index.adoc#RedisService, RedisService>> | The service to manage RedisService.
 | <<index.adoc#CaptchaService, [.eeonly]#CaptchaService#>> | The service to manage robot-access prevention by reCAPTCHA.

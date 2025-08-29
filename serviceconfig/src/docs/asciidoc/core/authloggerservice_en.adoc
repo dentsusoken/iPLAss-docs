@@ -74,7 +74,7 @@ This logger records the number of successful/unsuccessful authentication attempt
 There is no configurable items.
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.auth.log.AuthLoggerService</interface>

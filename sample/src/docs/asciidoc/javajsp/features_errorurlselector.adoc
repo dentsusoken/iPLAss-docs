@@ -1,8 +1,8 @@
 [[Java_JSP_ErrorUrlSelector]]
 === ErrorUrlSelector
-エラー画面Template制御スクリプトクラスです。
+エラー画面Template制御スクリプトです。
 
-* Tokenエラーを例として説明していきます。
+* トークンエラーが発生した場合を例として説明していきます。
 +
 [cols="1,2"]
 |===
@@ -46,9 +46,9 @@ public class EcErrorUrlSelector extends GemErrorUrlSelector {
 	}
 }
 ----
-<1> TokenValidationExceptionが発生した場合、カスタムのsamples/ec01/error/tokenErrorテンプレートが呼び出されます。 + 
+<1> TokenValidationExceptionが発生した場合、カスタムの `samples/ec01/error/tokenError` テンプレートが呼び出されます。 +
 
-* カスタムのErrorUrlSelectorをservice-configに登録する必要が有ります。<<index#Java_JSP_ConfigFiles,設定ファイル>>をご参照ください。
+* カスタムのErrorUrlSelectorの実装クラスを `mtp-service-config.xml` に登録する必要があります。<<index#Java_JSP_ConfigFiles,設定ファイル>>を参照ください。
 
 * メタデータ定義ファイル
 +
@@ -75,8 +75,8 @@ h|ファイル名|samples-ec01-ce-metadata.xml
 	</metaDataEntry>
 ----------------------------------------以下略----------------------------------------
 ----
-<1> tokenエラーテンプレート名
-<2> エラーテンプレートファイルをJSPファイルに指定してます。
+<1> トークンエラー画面のテンプレート名
+<2> エラーテンプレートファイルを指定
 
 * 共通エラーテンプレートファイル
 +
@@ -88,7 +88,7 @@ h|ファイル名|/src/main/webapp/jsp/samples/ec01/error/genericError.jsp
 * 動作確認
 ** TokenValidationExceptionが発生した場合、カスタムのテンプレートが表示されること。
 +
-Consoleで出力されたエラーログです。
+コンソールに出力されたエラーログは以下の通りです。
 +
 [source]
 ----
@@ -103,6 +103,6 @@ org.iplass.mtp.web.actionmapping.TokenValidationException: 不正な画面遷移
 	at org.iplass.mtp.impl.command.interceptors.TransactionInterceptor.intercept(TransactionInterceptor.java:33)
 ----
 
-** エラー内容表示画面
+** エラー内容表示
 +
 image:images/sample-ec_java-jsp-errorselector-token-error.png[align=left]

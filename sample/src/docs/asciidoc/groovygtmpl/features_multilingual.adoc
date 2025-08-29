@@ -12,11 +12,11 @@ image:images/sample-ec_groovy-gtmpl-multilang-registinquiry-en.png[align=left]
 
 * 多言語用テンプレートの作成
 +
-テンプレート画面のMutilingualAttributeを開きAddボタンより日本語用・英語用テンプレートを作成します。
+テンプレート画面の「MultilingualAttribute」を開き、「Add」ボタンより日本語用・英語用テンプレートを作成します。
 +
-※指定した言語のテンプレートが存在しないときには、あらかじめ作成しているテンプレートが表示されます。
+※ 指定した言語のテンプレートが存在しないときには、あらかじめ作成されているテンプレートが表示されます。
 +
-（Templateのsamples/01/inquiry/registInquiryを参照）
+（Templateの `samples/01/inquiry/registInquiry` を参照）
 +
 image:images/sample-ec_groovy-gtmpl-multilang-registinquiry-template.png[align=left]
 +

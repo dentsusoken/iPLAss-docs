@@ -34,7 +34,7 @@ em.insert(user);
 パスワードの変更は、AuthManagerを利用して行います。
 変更前のパスワードと変更後のパスワードが必要です。
 
-[source, java]
+[source,java]
 ----
 import org.iplass.mtp.ManagerLocator;
 import org.iplass.mtp.auth.AuthManager;
@@ -59,7 +59,7 @@ try {
 ==== パスワードリセット
 パスワードのリセットは、AuthManagerを利用して行います。
 
-[source, java]
+[source,java]
 ----
 import org.iplass.mtp.ManagerLocator;
 import org.iplass.mtp.auth.AuthManager;
@@ -90,7 +90,7 @@ try {
 
 NOTE: 認証ポリシーの `Reset Password With Specific Password` を有効にする必要があります。
 
-[source, java]
+[source,java]
 ----
 import org.iplass.mtp.ManagerLocator;
 import org.iplass.mtp.auth.AuthManager;

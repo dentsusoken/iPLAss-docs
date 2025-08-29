@@ -128,7 +128,7 @@ It’s PushNotificationListener with the metric collection function by Micromete
 There are no settings that can be configured.
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
     <interface>org.iplass.mtp.impl.pushnotification.PushNotificationService</interface>

@@ -63,7 +63,7 @@ Default is `false`.
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>
@@ -128,7 +128,7 @@ Default is `false`.
 |===
 
 ===== Example(JNDI)
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>
@@ -151,7 +151,7 @@ Default is `false`.
 ----
 
 ===== Example(Direct)
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>
@@ -229,7 +229,7 @@ Default is `true`.
 |===
 
 ===== Example(JNDI)
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>
@@ -251,7 +251,7 @@ Default is `true`.
 ----
 
 ===== Example(Direct)
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>

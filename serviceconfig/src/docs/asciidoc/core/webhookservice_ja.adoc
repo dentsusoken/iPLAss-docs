@@ -59,7 +59,7 @@ classはorg.iplass.mtp.impl.http.HttpClientBuilderFactoryを実装するクラ�
 * <<MicrometerHttpClientBuilderFactory, [.eeonly]#MicrometerHttpClientBuilderFactory#>>
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 	<!-- Webhook -->
 	<service>

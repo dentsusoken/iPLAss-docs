@@ -37,7 +37,6 @@ classはorg.iplass.mtp.impl.tools.tenant.create.TenantCreateProcessの実装ク�
 * <<CreateGemUserRoleProcess>>
 * <<CreateAppAdminRoleEEProcess>>
 * <<CreateGemUserRoleEEProcess>>
-* <<CreateAppConsolePermissionProcess>>
 * <<CreateCompleteProcess>>
 
 [[CreateAdminUserProcess]]
@@ -96,13 +95,6 @@ Gemユーザーロール向けのEnterpriseEdition用権限データを作成し
 classはorg.iplass.mtp.impl.tools.tenant.create.CreateGemUserRoleEEProcessを指定します。
 設定可能な項目はありません。
 
-[[CreateAppConsolePermissionProcess]]
-.[.eeonly]#CreateAppConsolePermissionProcess#
-管理者ロールとGemユーザーロールにAppコンソール用権限データを作成します。
-
-classはorg.iplass.mtp.impl.tools.tenant.create.CreateAppConsolePermissionProcessを指定します。
-設定可能な項目はありません。
-
 [[CreateCompleteProcess]]
 .CreateCompleteProcess
 テナント作成完了処理を行います。
@@ -123,7 +115,7 @@ classは org.iplass.mtp.impl.tools.tenant.rdb.TenantRdbManagerParameter を指�
 |====================
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.tools.tenant.TenantToolService</interface>
@@ -138,8 +130,6 @@ classは org.iplass.mtp.impl.tools.tenant.rdb.TenantRdbManagerParameter を指�
 	<!-- for ee -->
 	<property name="createProcesses" class="org.iplass.mtp.impl.tools.tenant.create.CreateAppAdminRoleEEProcess" />
 	<property name="createProcesses" class="org.iplass.mtp.impl.tools.tenant.create.CreateGemUserRoleEEProcess" />
-	<!-- for appconsole -->
-	<property name="createProcesses" class="org.iplass.mtp.impl.tools.tenant.create.CreateAppConsolePermissionProcess" />
 
 	<property name="createProcesses" class="org.iplass.mtp.impl.tools.tenant.create.CreateCompleteProcess" />
 

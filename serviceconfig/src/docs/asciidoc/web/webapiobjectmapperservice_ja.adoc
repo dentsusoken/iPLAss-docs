@@ -1,15 +1,15 @@
 [[WebApiObjectMapperService]]
 === WebApiObjectMapperService
-WebApiのJAXBでの変換対象のクラス定義を行うサービスです。
+WebApiのJSON出力時のObjectMapper定義を行うサービスです。
 
 ==== インタフェース名
 ----
-org.iplass.mtp.impl.webapi.jaxb.WebApiJaxbService
+org.iplass.mtp.impl.webapi.jackson.WebApiObjectMapperService
 ----
 
 ==== 実装クラス名
 ----
-org.iplass.mtp.impl.webapi.jaxb.WebApiJaxbService
+org.iplass.mtp.impl.webapi.jackson.WebApiObjectMapperService
 ----
 
 ==== WebApiObjectMapperServiceの設定
@@ -51,7 +51,7 @@ classはorg.iplass.mtp.impl.webapi.jackson.MixinConfigを指定します。
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.webapi.jackson.WebApiObjectMapperService</interface>

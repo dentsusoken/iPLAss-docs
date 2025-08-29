@@ -142,24 +142,24 @@ Please specify org.iplass.mtp.impl.auth.authorize.builtin.workflow.WorkflowAuthC
 .AuthenticationProvider
 Please specify the implementation of org.iplass.mtp.impl.auth.authenticate.AuthenticationProvider to the class.
 
-.Implementing Class Name
-----
-org.iplass.mtp.impl.auth.authenticate.builtin.BuiltinAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.simpletoken.SimpleAuthTokenAuthenticationProvider
-org.iplass.mtp.impl.auth.oauth.AccessTokenAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.configfile.ConfigFileAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.jaas.JaasAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.jee.JeeContainerManagedAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.ldap.LdapAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.preexternal.PreExternalAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.x509.X509AuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.saml.SamlAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.twostep.TwoStepAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.onetime.OnetimeCodeAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.knowledgebased.KnowledgeBasedAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.timebased.TimeBasedAuthenticationProvider
-org.iplass.mtp.impl.auth.authenticate.rememberme.RememberMeTokenAuthenticationProvider
-----
+By default, the following AuthenticationProviders are provided.
+
+* <<BuiltinAuthenticationProvider>>
+* <<SimpleAuthTokenAuthenticationProvider>>
+* <<AccessTokenAuthenticationProvider>>
+* <<ConfigFileAuthenticationProvider>>
+* <<JaasAuthenticationProvider>>
+* <<JeeContainerManagedAuthenticationProvider>>
+* <<LdapAuthenticationProvider>>
+* <<PreExternalAuthenticationProvider>>
+* <<X509AuthenticationProvider>>
+* <<SamlAuthenticationProvider>>
+* <<TwoStepAuthenticationProvider>>
+* <<OnetimeCodeAuthenticationProvider>>
+* <<KnowledgeBasedAuthenticationProvider>>
+* <<TimeBasedAuthenticationProvider>>
+* <<RememberMeTokenAuthenticationProvider>>
+* <<WebAuthnAuthenticationProvider>>
 
 [[BuiltinAuthenticationProvider]]
 .BuiltinAuthenticationProvider
@@ -209,8 +209,8 @@ Please specify org.iplass.mtp.impl.auth.authenticate.builtin.PasswordHashSetting
 
 As our standard implementation, the following PasswordHashSetting implementations are provided.
 
-- <<PasswordHashSetting>>(default)
-- <<Argon2PasswordHashSetting>>
+- <<PasswordHashSetting>>
+- <<Argon2PasswordHashSetting>>(default)
 
 If using the PasswordHashSetting class, the following items can be configured.
 
@@ -432,7 +432,7 @@ It is assumed that the admin user account for developers who manage all tenants 
 A setting example is shown below.
 In addition, since users with administrator privileges are described in the configuration file, when using ConfigFileAuthenticationProvider, also use <<obfuscation, Setting Value Obfuscation>>.
 
-[source, xml]
+[source,xml]
 ----
 <service>
   <interface>org.iplass.mtp.impl.auth.AuthService</interface>
@@ -643,7 +643,7 @@ The user ID and tenant name requested for authentication are embedded in ${userN
 If userDn is not specified, the userFilter setting is mandatory.
 | uniqueKeyAttribute | String | Attribute name to uniquely identify the user among user attributes obtained from LDAP.
 If not specified, the user ID value at the time of authentication request is set as the unique key.
-userAttribute name obtained from userAttributeLDAP. Multiple settings are possible.
+| userAttribute | String, Multiple | User attribute name obtained from LDAP. Multiple settings are possible.
 If not specified, all attributes are obtained from LDAP.
 | getGroup | boolean | Whether to acquire group information on LDAP to which the user belongs after successful user authentication.
 The acquired group information can be used in iPLAss role definition.
@@ -758,7 +758,7 @@ To handle binary attributes correctly, the JNDI environment property (java.namin
 
 An example of settings when using Active Directory is shown below.
 
-[source, xml]
+[source,xml]
 ----
 <service>
   <interface>org.iplass.mtp.impl.auth.AuthService</interface>
@@ -994,7 +994,7 @@ Please refer to [User-Management] sheet for details of authentication policy.
 
 In the setting of TwoStepAuthenticationProvider, define the primary and secondary AuthenticationProvider as shown in the example below.
 
-[source, xml]
+[source,xml]
 ----
 <service>
   <interface>org.iplass.mtp.impl.auth.AuthService</interface>
@@ -1127,7 +1127,7 @@ Please define the configuration file to include AuthenticationProvider that you 
 
 A setting example is shown below.
 
-[source, xml]
+[source,xml]
 ----
 <service>
   <interface>org.iplass.mtp.impl.auth.AuthService</interface>
@@ -1179,7 +1179,7 @@ The following items can be configured.
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.auth.AuthService</interface>
@@ -1245,3 +1245,37 @@ The following items can be configured.
 	</property>
 </service>
 ----
+
+[[WebAuthnAuthenticationProvider]]
+.WebAuthnAuthenticationProvider
+
+An authentication provider that offers passwordless and nameless authentication using Discoverable Credentials (Passkeys) based on the WebAuthn specification.
+When using WebAuthnAuthenticationProvider,
+it is necessary to configure the settings in <<../developerguide/authentication/index.adoc#webauthn,WebAuthn Definition>>
+and enable WebAuthn in <<../developerguide/authentication/index.adoc#authpolicy,Authentication Policy>>.
+
+Please specify org.iplass.mtp.impl.auth.authenticate.webauthn.WebAuthnAuthenticationProvider to the class.
+
+The following items can be configured.
+[cols="1,1,3a", options="header"]
+|===
+| Item | Value | Description
+| providerName | String | refer to <<BuiltinAuthenticationProvider>>
+| userEntityResolver | UserEntityResolver | Specify how to retrieve the user Entity after successful authentication.
+You can specify one of the following:
+Refer to the link destination for the class to be actually specified.
+
+<<DefaultUserEntityResolver_webauthn,DefaultUserEntityResolver>> (Default) +
+<<UserEntityResolver_webauthn,Custom implementing class of UserEntityResolver>>
+|===
+
+[[DefaultUserEntityResolver_webauthn]]
+.DefaultUserEntityResolver
+Please specify org.iplass.mtp.impl.auth.authenticate.DefaultUserEntityResolver to the class.
+For more details, please refer to <<DefaultUserEntityResolver_builtin,DefaultUserEntityResolver>>.
+
+[[UserEntityResolver_webauthn]]
+.Custom implementing class of UserEntityResolver
+Specify a custom implementation of org.iplass.mtp.impl.auth.authenticate.UserEntityResolver as the class.
+
+Write the logic to retrieve the User Entity in the implementation class of org.iplass.mtp.impl.auth.authenticate.UserEntityResolver.

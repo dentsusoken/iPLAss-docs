@@ -1,9 +1,9 @@
 [[Groovy_GTmpl_WebAPI]]
 === WebApiとの連携
 
-Ajaxを利用することで、GroovyTemplateでWebApiと連携することが出来ます。一般消費者向け画面で全文検索処理を例として説明していきます。
+Ajaxを利用することで、WebApiで連携することができます。一般消費者向けのECサイト画面における全文検索処理を例として説明していきます。
 
-* 開発者ガイド<<../../developerguide/webapi/index#, WebApi>>を参照してください。 + 
+* 開発者ガイドの<<../../developerguide/webapi/index#,WebApiの作成方法>>を参照してください。 +
 以下はここで利用しているWebApiです。
 +
 image:images/sample-ec_groovy-gtmpl-tenant-webapi-fulltextsearch.png[align=left]
@@ -27,13 +27,13 @@ h|Template名|samples/ec01/search/search
 ----------------------------------------GroovyTemplateの部分略----------------------------------------
 <script type="text/javascript">
 function fullTextSearch() {
-	var productName = \$("#productName").val();
-	var categoryOid = \$("#categoryList").attr("category-item-selected");
+	const productName = \$("#productName").val();
+	const categoryOid = \$("#categoryList").attr("category-item-selected");
 	if(productName == "") {
 		\$("#helpId").html("${msg('samples/ec01/general', 'samples.ec01.search.nokeyword')}");
 		return false;
 	}
-    var param = "{\"productName\":\"" + productName + "\",\"categoryOid\":\"" + categoryOid +"\"}";
+    const param = "{\"productName\":\"" + productName + "\",\"categoryOid\":\"" + categoryOid +"\"}";
     \$.ajax({
         type: "POST",
         contentType: "application/json",
@@ -47,7 +47,7 @@ function fullTextSearch() {
 			}
     		if(commandResult.status == "SUCCESS"){
     			if(commandResult.defaultResult != null && commandResult.defaultResult.length > 0){
-    				var resultHtml = ListSearchResult(commandResult.defaultResult, productName); <3>
+    				const resultHtml = ListSearchResult(commandResult.defaultResult, productName); <3>
     				\$("#searchResultDiv").html(resultHtml);
     			}
     			else{
@@ -58,20 +58,20 @@ function fullTextSearch() {
 	});
 }
 function dropdownSelect(item){
-	var t = \$(item);
-	var v = t.attr("category-item-value");
+	const t = \$(item);
+	const v = t.attr("category-item-value");
 	\$("#categoryList").text(t.html()).attr("category-item-selected", v);
 }
 function ListSearchResult(entities, productName){ <4>
-	var yen = "${msg('samples/ec01/general', 'samples.ec01.all.yen')}";
-	var html =  "<div class=\"col-12 mb-2\">";
+	const yen = "${msg('samples/ec01/general', 'samples.ec01.all.yen')}";
+	let html =  "<div class=\"col-12 mb-2\">";
 		html += "	<h4>${msg('samples/ec01/general', 'samples.ec01.search.result')}" + productName + "</h4>";
 		html += "</div>";
-	for(var i =0; i < entities.length; i++){
-		var name = entities[i].name;
-		var price = isNaN(entities[i].price)? "" : entities[i].price;
-		var imageUrl = "${tcPath()}/samples/ec01/resource/bin?id=" + entities[i].productImg.lobId + "&type=productImg";
-		var detailUrl = "${tcPath()}/samples/ec01/product/detail?productId=" + entities[i].oid;
+	for(let i =0; i < entities.length; i++){
+		const name = entities[i].name;
+		const price = isNaN(entities[i].price)? "" : entities[i].price;
+		const imageUrl = "${tcPath()}/samples/ec01/resource/bin?id=" + entities[i].productImg.lobId + "&type=productImg";
+		const detailUrl = "${tcPath()}/samples/ec01/product/detail?productId=" + entities[i].oid;
 		html += "<div class=\"col-12 col-md-4\">";
 		html += "	<div class=\"card border-light border-0\">";
 		html += "	    <a href=\"" + detailUrl + "\" class=\"h-100\">";
@@ -100,4 +100,4 @@ function ListSearchResult(entities, productName){ <4>
 
 * 動作確認
 +
-動作結果はJava／JSP版と同じなので、そちらの<<../javajsp/index#Java_JSP_WebAPI_Operation_Check,動作確認>>画面を参照してくださん。
+動作結果はJava／JSP版と同じなので、そちらの<<../javajsp/index#Java_JSP_WebAPI_Operation_Check,動作確認>>を参照してください。

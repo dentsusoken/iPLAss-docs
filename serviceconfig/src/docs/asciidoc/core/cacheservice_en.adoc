@@ -19,7 +19,7 @@ CacheService can be configured withe the following items.
 [cols="1,1,3", options="header"]
 |===
 | Item | Value | Description
-| reloadThreadPoolSize | int | Number of threads to perform cache reload processing. The default is 0.
+| reloadThreadPoolSize | int | Number of threads to perform cache reload processing. The default is 4.
 | defaultFactory | <<CacheStoreFactory>> | Settings of  CacheStoreFactory
 | Text string (excluding `defaultFactory` and `reloadThreadPoolSize`)  | <<CacheStoreFactory>>, Multiple | specific Settings of CacheStoreFactory。
 |===
@@ -227,7 +227,7 @@ Please specify org.iplass.mtp.impl.metadata.MetaDataSyncServerCacheListener to t
 It will Synchronize metadata. There is no configurable items.
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.cache.CacheService</interface>

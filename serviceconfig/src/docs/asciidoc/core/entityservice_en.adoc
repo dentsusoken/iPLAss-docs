@@ -37,7 +37,7 @@ Please specify the implementing class of org.iplass.mtp.entity.interceptor.Entit
 Please specify the implementing class of org.iplass.mtp.impl.entity.AdditionalStoreMaintainer.
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.entity.EntityService</interface>

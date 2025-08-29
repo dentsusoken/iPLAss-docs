@@ -42,7 +42,7 @@ nameにはSecureRandomGeneratorの任意の名前を指定します。
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.util.random.SecureRandomService</interface>

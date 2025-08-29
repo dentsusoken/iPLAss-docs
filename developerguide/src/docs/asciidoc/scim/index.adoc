@@ -1,0 +1,13 @@
+= SCIM
+:_hreflang-path: developerguide/scim/index.html
+:_relative-root-path: ../../
+:_menu-title-ee-only: true
+:toclevels: 3
+
+include::about_scim.adoc[]
+
+include::scim_idp.adoc[]
+
+include::scim_sp.adoc[]
+
+

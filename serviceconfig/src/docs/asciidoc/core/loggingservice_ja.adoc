@@ -30,7 +30,7 @@ org.iplass.mtp.impl.logging.logback.LogbackLoggingService
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.logging.LoggingService</interface>

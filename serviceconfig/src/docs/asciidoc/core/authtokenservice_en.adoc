@@ -249,7 +249,7 @@ If not set, `default` SecureRandomGenerator will be used.
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.auth.authenticate.token.AuthTokenService</interface>

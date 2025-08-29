@@ -1,10 +1,10 @@
 [[Java_JSP_Multilingual]]
 === 多言語対応
 
-多言語を利用するために、サンプルアプリで以下の対応を行っています。
+多言語を利用するために、サンプルアプリでは以下の対応を行っています。
 
-* 言語別に<<index#Java_JSP_ResourceFiles_Message,メッセージプロパティファイル>>の作成
+* 言語別に<<index#Java_JSP_ResourceFiles_Message,メッセージプロパティファイル>>を作成
 
-* 言語別に<<index#Java_JSP_ResourceFiles_BeanValication,Bean Validation>>エラーメッセージプロパティファイルの作成
+* 言語別に<<index#Java_JSP_ResourceFiles_BeanValication,Bean Validation>>エラーメッセージのプロパティファイルを作成
 
 * <<../adminconsole/index#AdminConsole_Entity_Mutlilang,Entity多言語対応>>

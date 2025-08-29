@@ -424,7 +424,7 @@ NOTE: EQLでバージョン管理されたEntityを検索する際、EQLの検�
 
 Commandなど独自で更新処理を実装する場合は `UpdateOption` で設定します。
 
-[source,Groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.EntityValidationException;
 import org.iplass.mtp.entity.UpdateOption;
@@ -480,7 +480,7 @@ EntityデータのCRUD操作に対するログを記録することができま�
 また `AuditLogManager` を利用することでプログラム上で取得することが可能です。 +
 詳細は `AuditLogManager` のJavaDocを参照してください。
 
-[source,Groovy]
+[source,groovy]
 ----
 /** 注意：以下はGroovy形式で書いています。 */
 
@@ -707,7 +707,7 @@ Script形式の場合、１つのListenerで複数のEventに対する処理を�
 このような場合、EventごとにそれぞれListener定義することもできます。
 
 .（例）typeによる処理の制御方法
-[source,GROOVY]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.definition.listeners.EventType;
 
@@ -869,7 +869,6 @@ image::images/entity_validation_exception_sample_gem.png[]
 MDC画面のエラーメッセージ表示例
 
 image::images/entity_validation_exception_sample_mdc.png[]
-
 
 [[ref_entity_event_listener_sendnotification]]
 ===== SendNotificationでの通知

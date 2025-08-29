@@ -1,0 +1,103 @@
+[[WebAuthnService]]
+=== WebAuthnService
+WebAuthn仕様による認証を行うためのサービスです。
+認証器（パスキー）の登録や認証を行う際に必要な設定を提供します。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.auth.authenticate.webauthn.WebAuthnService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.auth.authenticate.webauthn.WebAuthnService
+----
+
+==== WebAuthnServiceの設定
+WebAuthnによる認証を利用する場合、WebAuthnServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| signatureAlgorithms | String、複数指定可 | サポートする署名アルゴリズムのリスト。
+| optionsTimeoutMinutes | int | 認証器（パスキー）登録時、認証時のタイムアウト時間（分）。デフォルト値は5です。
+| registrationLimitOfAuthenticatorPerUser | int | ユーザーごとに登録可能な認証器（パスキー）の上限数。デフォルト値は3です。
+| metadataStatementRepository | <<MetadataStatementRepository>> | 認証器のメタデータを管理するリポジトリ。
+| userHandleSupplier | <<UserHandleSupplier>> | ユーザーハンドルの生成を提供するサプライヤー。
+|===
+
+[[MetadataStatementRepository]]
+.MetadataStatementRepository
+
+認証器のメタデータを管理するためのリポジトリです。
+認証器の信頼性を検証するために利用されます。
+class に com.webauthn4j.metadata.MetadataStatementRepository の実装クラスを指定します。
+MetadataStatementRepositoryの実装クラスは、WebAuthn4Jにて提供される実装クラスもしくは <<CacheableMetadataStatementRepository>> を利用可能です。
+
+[[CacheableMetadataStatementRepository]]
+.CacheableMetadataStatementRepository
+
+メタデータをiPLAssのCacheStoreを利用してキャッシュするMetadataStatementRepositoryの実装です。
+CacheableMetadataStatementRepository内部でWebAuthn4Jにて提供されるLocalFileMetadataBLOBProvider、LocalFilesMetadataStatementsProviderを用いて
+メタデータを解決します。
+class は org.iplass.mtp.impl.auth.authenticate.webauthn.CacheableMetadataStatementRepository を指定します。
+
+==== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| metadataBLOBFilePath | String | ローカルに配置されたメタデータBLOBファイルのパス。メタデータBLOBファイルはFIDO AllianceのFIDO Metadata Serviceにて提供されます。
+| notFidoCertifiedAllowed | boolean | FIDO認定されていない認証器を許可するかどうか。デフォルト値はfalseです。
+| selfAssertionSubmittedAllowed | boolean | 自己申告された認証器を許可するかどうか。デフォルト値はfalseです。
+| individualMetadataStatementFilePath | String、複数指定可 | メタデータBLOBファイルに格納されていない個別のメタデータステートメントファイルのローカルファイルパス。
+|===
+
+
+[[UserHandleSupplier]]
+.UserHandleSupplier
+ユーザーハンドルの生成を提供するインタフェースです。
+classは org.iplass.mtp.impl.auth.authenticate.webauthn.userhandle.UserHandleSupplier を実装するクラスを指定します。
+標準で次の <<HashingUserHandleSupplier>> を提供します。
+
+[[HashingUserHandleSupplier]]
+.HashingUserHandleSupplier
+Userエンティティの `oid` を元にハッシュ値をユーザハンドルとするUserHandleSupplierの実装です。
+
+==== 主な設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| algorithm | String | ハッシュアルゴリズム（例: SHA-256）。
+| salt | String | ハッシュ計算時に使用するソルト値。
+|===
+
+
+==== 設定例
+[source,xml]
+----
+<service>
+    <interface>org.iplass.mtp.impl.auth.authenticate.webauthn.WebAuthnService</interface>
+
+    <property name="signatureAlgorithms" value="EdDSA" />
+    <property name="signatureAlgorithms" value="ES512" />
+    <property name="signatureAlgorithms" value="ES384" />
+    <property name="signatureAlgorithms" value="ES256" />
+    <property name="signatureAlgorithms" value="RS512" />
+    <property name="signatureAlgorithms" value="RS384" />
+    <property name="signatureAlgorithms" value="RS256" />
+
+    <property name="optionsTimeoutMinutes" value="5" />
+
+    <property name="userHandleSupplier" class="org.iplass.mtp.impl.auth.authenticate.webauthn.userhandle.HashingUserHandleSupplier">
+        <property name="algorithm" value="SHA-256" />
+        <property name="salt" value="set your own salt value" />
+    </property>
+
+    <property name="metadataStatementRepository" class="org.iplass.mtp.impl.auth.authenticate.webauthn.CacheableMetadataStatementRepository">
+        <property name="metadataBLOBFilePath" value="path/to/metadataBLOBFile" />
+        <property name="individualMetadataStatementFilePath" value="path/to/individualMetadataStatementFilePath1" />
+        <property name="individualMetadataStatementFilePath" value="path/to/individualMetadataStatementFilePath2" />
+    </property>
+</service>
+----

@@ -108,7 +108,7 @@ This is the interceptor that records Action latency and SQL execute count as met
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.web.actionmapping.ActionMappingService</interface>

@@ -30,7 +30,7 @@ org.iplass.mtp.impl.query.QuerySyntaxRegister is provided as a standard implemen
 There is no configurable items for this setting options.
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service final="true">
 	<interface>org.iplass.mtp.impl.parser.SyntaxService</interface>

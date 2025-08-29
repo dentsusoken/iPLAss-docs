@@ -75,7 +75,7 @@ Multilingual MailTemplateの「Add」ボタンをクリックする事で多言�
 例として、英語のメールテンプレートを送信する場合、言語設定情報バインド名に「sampleLangKey」と設定。
 メール生成処理にて下記をバインド変数として渡します。
 
-[source, java]
+[source,java]
 ----
 Map<String, Object> bindings = new HashMap<String, Object>();
 bindings.put("sampleLangKey", "en");
@@ -105,7 +105,7 @@ bindings.put("sampleLangKey", "en");
 EntityのEventListenerを利用して、宛先を設定すればメッセージが出せます。MailManagerを利用するコード実装も可能です。
 MailManagerを利用したメール送信は以下のように実装します。
 
-[source, java]
+[source,java]
 ----
 import org.iplass.mtp.mail.Mail;
 import org.iplass.mtp.mail.MailManager;
@@ -175,10 +175,10 @@ private void sendMail() {
 |項目|メソッド
 .3+|送信元アドレス|setFrom(String address)
 |setFrom(String address, String personal)
-|setFromAddress(javax.mail.internet.InternetAddress address)
+|setFromAddress(jakarta.mail.internet.InternetAddress address)
 .3+|返信先アドレス|setReplyTo(String address)
 |setReplyTo(String address, String personal)
-|setReplyToAddress(javax.mail.internet.InternetAddress address)
+|setReplyToAddress(jakarta.mail.internet.InternetAddress address)
 |ReturnPathアドレス|setReturnPath(String returnPath)
 |===
 
@@ -197,7 +197,7 @@ MailServiceの「mail.smtp.from」が設定されている場合はその値が�
 [cols="1,2", options="header"]
 |===
 |項目|メソッド
-|DataHandler形式|addAttachment(javax.activation.DataHandler dataHandler)
+|DataHandler形式|addAttachment(jakarta.activation.DataHandler dataHandler)
 |BinaryReference形式|addAttachment(org.iplass.mtp.entity.BinaryReference bin)
 |===
 

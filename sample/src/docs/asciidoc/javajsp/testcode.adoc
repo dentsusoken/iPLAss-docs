@@ -1,6 +1,6 @@
 [[Java_Jsp_Testcode]]
 == テストコード
-* プロジェクトの `src/test/` フォルダを開き、以下の構成になっています。
+* プロジェクトの `src/test/` フォルダを開くと、以下の構成になっています。
 +
 [source]
 ----
@@ -22,7 +22,7 @@ src.test
 [cols="1,2", options="header"]
 |===
 |パッケージ|クラス名
-|samples.ec01.test.command|TopComamnd.java
+|samples.ec01.test.command|TopCommand.java
 |samples.ec01.test.command.inquiry|RegistInquiryCommandTest.java
 |===
 
@@ -47,7 +47,7 @@ password= <5>
 <4> テストを実行するユーザー
 <5> テストを実行するユーザーのパスワード
 +
-※ プロパティによる指定以外に、クラスレベルアノテーションとメソッドレベルアノテーションによる指定も可能です。詳しい設定方法は    `org.iplass.mtp.test.MTPJUnitTestRule` のJavaDocをご参照ください。
+※ プロパティによる指定以外に、クラスレベルアノテーションとメソッドレベルアノテーションによる指定も可能です。詳しい設定方法については、 `org.iplass.mtp.test.MTPJUnitTestRule` のJavaDocを参照ください。
 +
 [cols="1,2"]
 |===
@@ -118,4 +118,4 @@ BUILD SUCCESSFUL
 Total time: 1.855 secs
 ----
 
-** Eclipseでテストコードを実行する場合、`src.test.java` パッケージを右クリックして `Run as` を選択し、`Junit Test` を実行してください。
+** Eclipseでテストコードを実行する場合、`src.test.java` パッケージを右クリックして `Run as` を選択し、`JUnit Test` を実行してください。

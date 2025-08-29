@@ -25,7 +25,7 @@ The user can configure about how to retain the IP address accessed in the past i
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.auth.authenticate.ipaddress.IPAddressHistoryStoreService</interface>

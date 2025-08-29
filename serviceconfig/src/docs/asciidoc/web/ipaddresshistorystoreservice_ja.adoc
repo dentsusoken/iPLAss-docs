@@ -25,7 +25,7 @@ org.iplass.mtp.impl.auth.authenticate.ipaddress.UserEntityIPAddressHistoryStoreS
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.auth.authenticate.ipaddress.IPAddressHistoryStoreService</interface>

@@ -1,31 +1,32 @@
 [[Groovy_GTmpl_Security]]
 === セキュリティ対策
 
-.ここで作成する機能について
-画面、処理、ともにオレンジ色の部分を例にセキュリティ対策を解説していきます。
+.対象とする機能
+オレンジ色の部分を例にセキュリティ対策を解説していきます。
 
 image::../images/sample-ec_fullcustomize_flow2.png[]
 
 .セキュリティ対策について
-ここでは会員登録を例としてiPLAssで利用できる以下のセキュリティ対策について説明します。 + 
- + 
-・ エスケープ機能　　XSS対策 ： ユーザーの入力内容を正常に画面表示させる +
-・ TokenCheck機能　　CSRF対策/トランザクション重複起動対策 ： 画面表示時に正常な画面遷移が行われているかをチェックする +
- + 
+ここでは会員登録を例としてiPLAssで利用できる以下のセキュリティ対策について説明します。 +
+ +
+・ XSS対策となるエスケープ機能 ： ユーザーの入力内容を正常に画面表示させる +
+・ CSRF対策/トランザクション重複起動対策となるトークンチェック機能 ： 画面表示時に正常な画面遷移が行われているかをチェックする +
+ +
 会員登録処理の中でそれぞれの機能は下記のように利用されます。
 
-* ＄エスケープの導入
-Templateの作成
-入力された値を出力する会員情報確認画面にて、該当箇所に＄エスケープを導入する
-+
+* $エスケープの導入
+
+.Templateの作成
+入力された値を出力する会員情報確認画面にて、該当箇所に$エスケープを導入します。
+
 image::./images/sample-ec_groovy-gtmpl-security-registconfirm.png[]
-+
+
 [cols="1,2",options="header"]
 |===
 |表示名|Template名
 |会員情報確認画面|samples/ec01/member/registConfirm
 |===
-+
+
 [source]
 ----
 ----------------------------------------以上略----------------------------------------
@@ -33,39 +34,39 @@ image::./images/sample-ec_groovy-gtmpl-security-registconfirm.png[]
         <div class="card-body">
             <div class="row mt-3 border-bottom">
                 <div class="col-12 col-md-4">
-                    <span class="text-muted font-weight-bold">${msg("samples/ec01/general", "samples.ec01.member.regist.userId")}</span>
+                    <span class="text-muted fw-bold">${msg("samples/ec01/general", "samples.ec01.member.regist.userId")}</span>
                 </div>
                 <div class="col-12 col-md-8">$h{userBean.userId}</div> <1>
             </div>
             <div class="row mt-3 border-bottom">
                 <div class="col-12 col-md-4">
-                    <span class="text-muted  font-weight-bold">${msg("samples/ec01/general", "samples.ec01.member.registConfirm.fullName")}</span>
+                    <span class="text-muted  fw-bold">${msg("samples/ec01/general", "samples.ec01.member.registConfirm.fullName")}</span>
                 </div>
                 <div class="col-12 col-md-3">
-                    <span class="text-muted  font-weight-bold">${msg("samples/ec01/general", "samples.ec01.member.regist.familyName")}</span>
+                    <span class="text-muted  fw-bold">${msg("samples/ec01/general", "samples.ec01.member.regist.familyName")}</span>
                     &nbsp;$h{userBean.familyName} <1>
                 </div>
                 <div class="col-12 col-md-3">
-                    <span class="text-muted  font-weight-bold">${msg("samples/ec01/general", "samples.ec01.member.regist.firstName")}</span>
+                    <span class="text-muted  fw-bold">${msg("samples/ec01/general", "samples.ec01.member.regist.firstName")}</span>
                     &nbsp;$h{userBean.firstName} <1>
                 </div>
             </div>
             <div class="row mt-3 border-bottom">
                 <div class="col-12 col-md-4">
-                    <span class="text-muted  font-weight-bold">${msg("samples/ec01/general", "samples.ec01.member.registConfirm.fullNameKana")}</span>
+                    <span class="text-muted  fw-bold">${msg("samples/ec01/general", "samples.ec01.member.registConfirm.fullNameKana")}</span>
                 </div>
                 <div class="col-12 col-md-3">
-                    <span class="text-muted  font-weight-bold">${msg("samples/ec01/general", "samples.ec01.member.regist.familyNameKana")}</span>
+                    <span class="text-muted  fw-bold">${msg("samples/ec01/general", "samples.ec01.member.regist.familyNameKana")}</span>
                     &nbsp;$h{userBean.familyNameKana} <1>
                 </div>
                 <div class="col-12 col-md-3">
-                    <span class="text-muted  font-weight-bold">${msg("samples/ec01/general", "samples.ec01.member.regist.firstNameKana")}</span>
+                    <span class="text-muted  fw-bold">${msg("samples/ec01/general", "samples.ec01.member.regist.firstNameKana")}</span>
                     &nbsp;$h{userBean.firstNameKana} <1>
                 </div>
             </div>
             <div class="row mt-3 border-bottom">
                 <div class="col-12 col-md-4">
-                    <span class="text-muted  font-weight-bold">${msg("samples/ec01/general", "samples.ec01.member.regist.mail")}</span>
+                    <span class="text-muted  fw-bold">${msg("samples/ec01/general", "samples.ec01.member.regist.mail")}</span>
                 </div>
                 <div class="col-12 col-md-8">$h{userBean.mail}</div>
             </div>
@@ -73,13 +74,14 @@ image::./images/sample-ec_groovy-gtmpl-security-registconfirm.png[]
     </div>
 ----------------------------------------以下略----------------------------------------
 ----
-<1> 今回は出力先がHTML形式であるため全て `$h{変数名}` の形式でエスケープを行っている。開発者ガイドの<<../../developerguide/customizing/index#_記述形式, 記述形式>>の章を参照してください。
+<1> 今回は出力先がHTML形式であるためすべて `$h{変数名}` の形式でエスケープを行っています。詳細は、開発者ガイドの<<../../developerguide/customizing/index#_記述形式, 記述形式>>の章を参照してください。
 
 * TokenCheckの導入 +
-この機能では、iPLAssで実装されている正常に画面遷移してきたことを証明する"Token"というオブジェクトを利用します。不正な画面遷移を禁止するActionでTokenをチェックすることにより、正常な画面遷移が行われたかを判断します。
+* トークンチェックの導入 +
+この機能では、iPLAssで実装されている正常に画面遷移してきたことを証明するCSRFトークンを利用します。不正な画面遷移を禁止するActionでトークンをチェックすることにより、正常な画面遷移が行われたかを判断します。
 
 ** Actionの設定 +
-不正な画面遷移を禁止するActionでTokenをチェックする設定を行います。
+不正な画面遷移を禁止するActionでトークンをチェックする設定を行います。
 +
 image:images/sample-ec_groovy-gtmpl-security-confirmmemberinfo.png[]
 +
@@ -92,18 +94,18 @@ image:images/sample-ec_groovy-gtmpl-security-confirmmemberinfo.png[]
 image:images/sample-ec_groovy-gtmpl-security-token-check.png[align=left]
 +
 |===
-h|Token Check|Not Check チェックを行わない　Check チェックを行う
-h|use Fixed Token|チェック→セッション単位に固定に払いだされるTokenをチェックする
-h|consume a Token |true→Tokenは再利用されません。
-h|not change the Token(exception occurs)|チェック→現在のTokenを再設定
+h|Token Check|トークンチェックを行うかどうか
+h|use Fixed Token|セッション単位に固定に払いだされるトークンを利用するか
+h|consume a Token |トークンを消費するか
+h|rollback on exception |Exception発生時にトークンをロールバックするか
 |===
 +
 この設定により直接この画面へ遷移するとエラーページが表示されます。
 +
 image:images/sample-ec_groovy-gtmpl-security-token-error.png[]
 
-** TemplateでTokenを作成 + 
-不正な画面遷移を禁止するActionへ遷移する画面でTokenを作成します。
+** Templateでトークンを作成して埋め込む +
+不正な画面遷移を禁止するActionへ遷移する画面でトークンを作成して埋め込みます。
 +
 image:images/sample-ec_groovy-gtmpl-security-regist.png[]
 +
@@ -144,4 +146,4 @@ image:images/sample-ec_groovy-gtmpl-security-regist.png[]
                 </div>
 ----------------------------------------以下略----------------------------------------
 ----
-<1> GroovyTemplate関数を利用してトークンを生成しています。開発者ガイド<<../../developerguide/customizing/index#_groovytemplateの関数,開発者ガイド GroovyTemplateの関数>>の章を参照してください。
+<1> GroovyTemplate関数を利用してトークンを生成しています。

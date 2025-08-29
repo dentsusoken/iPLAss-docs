@@ -1,6 +1,5 @@
 [[VueJS_WebAPI_Overview]]
 == 概要
 Vue.js／WebApiを利用して実装されたサンプルアプリケーションです。 + 
-Vue.js部分の説明を公式サイトを参照してください。 + 
-Vue.js以外に、`vue-router`、`vue-i18n`、`axios` のライブラリを利用しています。 + 
-WebApi部分のカスタマイズする方法は開発者ガイドの<<../../developerguide/webapi/index#, WebApi>>の章を参照してください。
+Vue.jsの説明については、公式ドキュメントを参照してください。 +
+Vue.js以外に、`vue-router`、`vue-i18n`、`axios` といったライブラリを利用しています。

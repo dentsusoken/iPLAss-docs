@@ -59,7 +59,7 @@ The following HttpClientBuilderFactory is provided as standard.
 
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 	<!-- Webhook -->
 	<service>

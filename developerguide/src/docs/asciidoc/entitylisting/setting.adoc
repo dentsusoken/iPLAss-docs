@@ -39,7 +39,7 @@ EntityListingアイコンを右クリックして、「EntityListingを作成す
 |handle inherited user property as name
 |エンティティの「作成者」、「更新者」、「ロックユーザー」を名前で扱います。
 Filter条件に指定する場合は、Userエンティティを選択します。
-検索結果、CSVファイルには名前が出力されます（ただしソートはOIDで比較します）。
+検索結果、ファイルには名前が出力されます（ただしソートはOIDで比較します）。
 
 |display user name in privileged execution
 | `handle inherited user property as name` がチェックされている場合、ユーザー名を特権実行で取得します。
@@ -57,12 +57,12 @@ Filter条件に指定する場合は、Userエンティティを選択します�
 |抽出項目として「name」プロパティを指定した際に、参照画面のリンクを表示するかを指定します。 +
 下のCustomSettingでエンティティ別に設定をしている場合は、そちらが優先されます。
 
-|can CSV download
-|条件編集画面で「CSV Download」を利用できるかを指定します。 +
-保存リストの詳細画面上で「CSV Download」を許可するかは、TopViewの「SavedList」Partsで行う必要があります。
+|can file download
+|条件編集画面で「Download」を利用できるかを指定します。 +
+保存リストの詳細画面上で「Download」を許可するかは、TopViewの「SavedList」Partsで行う必要があります。
 
-|CSV multiple format
-|CSVファイルダウンロード時の多重度が複数のプロパティの出力形式を指定します。
+|file multiple format
+|ファイルダウンロード時の多重度が複数のプロパティの出力形式を指定します。
 
 Each Column::
 多重度の数分別々の列に出力します。
@@ -74,12 +74,27 @@ One Column Fill Null::
 １つの列にカンマ区切りでまとめて出力します。
 登録データが多重度分保存されていない場合にも多重度分空を補完します。
 
-|CSV file name format
-|CSVファイルダウンロード時のファイル名をGroovyTemplate書式を利用して指定します。
-詳細は<<el_csvfilenameformat,CSV file name format>>を参照してください。
+|File type
+|ダウンロードで利用するファイル形式を指定します。
 
-|use property name in CSV header
-|CSVヘッダに表示名ではなくプロパティ名を出力します。
+CSV::
+CSVファイルを利用します。
+
+EXCEL::
+EXCELファイルを利用します。
+
+SPECIFY::
+CSVファイルかEXCELファイルのどちらを利用するかを画面で選択します。
+
+未指定の場合は、<<../../serviceconfig/index.adoc#EnterpriseGemConfigService,EnterpriseGemConfigService>> の `entityListingFileSupportType` によって動作します。
+
+
+|file name format
+|ファイルダウンロード時のファイル名をGroovyTemplate書式を利用して指定します。
+詳細は<<el_filenameformat,file name format>>を参照してください。
+
+|use property name in file header
+|ファイルヘッダに表示名ではなくプロパティ名を出力します。
 
 |Custom ViewScript
 |条件編集画面内に埋め込むカスタムコード(HTML)を設定できます。GroovyTemplateとして定義します。
@@ -94,22 +109,22 @@ One Column Fill Null::
 
 |===
 
-[[el_csvfilenameformat]]
-.CSV file name format
-CSVファイルダウンロード時のファイル名をGroovyTemplate書式を利用して指定します。
+[[el_filenameformat]]
+.file name format
+ファイルダウンロード時のファイル名をGroovyTemplate書式を利用して指定します。
 フォーマットが指定されている場合、ボタンに「(*)」が表示されます。
 また、/とスペースについては、_（アンダースコア）に変換します。
 
 利用可能なバインド変数は、編集ダイアログの「Notes」を参照してください。
 
-.（例）CSVファイル名の後ろに出力時の時間を付加する。
-[source, GroovyTemplate]
+.（例）ファイル名の後ろに出力時の時間を付加する。
+[source,groovy]
 ----
 ${csvName}_${yyyy}${MM}${dd}${HH}${mm}${ss}
 ----
 
 .（例）保存リストの場合は保存名を先頭に付加する。
-[source, GroovyTemplate]
+[source,groovy]
 ----
 <%
 def fileName = entityDisplayName;
@@ -160,7 +175,7 @@ NOTE: スナップショットとして保存されたリストの場合は実�
 |QueryContext
 |===
 
-[source, java]
+[source,java]
 ----
 package sample.entitylisting;
 
@@ -286,7 +301,7 @@ image::images/entitylisting_set_customsetting.png[]
 |show reference dialog from name property|抽出項目として「name」プロパティを指定した際に、参照画面のリンクを表示するかを指定します。
 |View Name|エンティティの参照画面を開く際のView名をGroovyTemplate書式を利用して指定します。
 詳細は<<el_viewname, View Nameの指定>>を参照してください。
-|CSV file name format|CSVファイルダウンロード時のファイル名をGroovyTemplate書式を利用して指定します。
+|file name format|ファイルダウンロード時のファイル名をGroovyTemplate書式を利用して指定します。
 「Default Setting」と同様です。
 |Without Condition Reference|Entity権限における限定条件を適用せずに検索を実行する参照先プロパティ名を設定します。特権実行する場合、または `Query interrupter class name` の設定がある場合はそちらが優先されます。
 |Query interrupter class name|実際に検索が実行される直前に、実行するEQLをカスタママイズするためのクラスを指定します。
@@ -303,13 +318,13 @@ image::images/entitylisting_set_customsetting.png[]
 利用可能なバインド変数は、編集ダイアログの「Notes」を参照してください。
 
 .（例）文字列直接指定
-[source, GroovyTemplate]
+[source,groovy]
 ----
 opeView
 ----
 
 .（例）GroovyTemplate指定
-[source, GroovyTemplate]
+[source,groovy]
 ----
 <%@import org.iplass.mtp.entity.Entity %>
 

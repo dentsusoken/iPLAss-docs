@@ -26,6 +26,7 @@ NOTE: If `tabular=ture` is specified in the Web API parameter, or if Accept is `
 | csvDateTimeFormat | String | Date format of the DateTime type EntityData, when returning the result of EntityWebApi Query searches in CSV format. If not specified, the runtime LocaleFormat will be used.
 | csvDateFormat | String | Date format of the Date type EntityData, when returning the result of EntityWebApi Query searches in CSV format. If not specified, the runtime LocaleFormat will be used.
 | csvTimeFormat | String | Date format of the Time type EntityData, when returning the result of EntityWebApi Query searches in CSV format. If not specified, the runtime LocaleFormat will be used.
+| csvDownloadFooter | String | Set CSV download footer wording for Entity CRUD API.
 | loadWithMappedByReference | boolean | The default value of whether to acquire the referenced (mapped by) property in Load of EntityWebApi. The default value is false.
 | listWithMappedByReference | boolean | The default value of whether to acquire the referenced (mapped by) property in Query of EntityWebApi. The default value is false.
 | csvListWithMappedByReference | boolean | The default value of whether to acquire the referenced (mapped by) property in Query of EntityWebApi that returned in CSV format.
@@ -37,7 +38,7 @@ CAUTION: Setting flag for backward compatibility. This setting flag will be dele
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.webapi.EntityWebApiService</interface>
@@ -45,6 +46,7 @@ CAUTION: Setting flag for backward compatibility. This setting flag will be dele
 	<property name="csvDateTimeFormat" value="yyyy/MM/dd HH:mm:ss" />
 	<property name="csvDateFormat" value="yyyy/MM/dd" />
 	<property name="csvTimeFormat" value="HH:mm:ss" />
+	<property name="csvDownloadFooter" value=""/>
 
 	<property name="loadWithMappedByReference" value="true" />
 

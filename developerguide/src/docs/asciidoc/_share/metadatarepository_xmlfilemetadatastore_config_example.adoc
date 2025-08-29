@@ -1,0 +1,42 @@
+// NOTE
+// 本ファイルは、別の adoc ファイルから include して利用します。
+// 参照しているファイルは、本ファイル名で検索してください。
+// 修正した場合は、本ファイルを include している adoc ファイルのビルド結果で修正内容を確認してください。
+.設定例
+[source,xml]
+----
+<!-- MetaDataRepository Settings -->
+<service>
+  <interface>org.iplass.mtp.impl.metadata.MetaDataRepository</interface> <1>
+
+  <property name="tenantLocalStore" class="org.iplass.mtp.impl.metadata.composite.CompositeMetaDataStore" > <2>
+    <property name="pathMapping" class="org.iplass.mtp.impl.metadata.composite.MetaDataStorePathMapping">
+        <property name="pathPrefix" value="/entity/"/>
+        <property name="store" value="org.iplass.mtp.impl.metadata.rdb.RdbMetaDataStore"/>
+    </property>
+    <property name="pathMapping" class="org.iplass.mtp.impl.metadata.composite.MetaDataStorePathMapping">
+        <property name="pathPrefix" value="/staticresource/"/>
+        <property name="store" value="org.iplass.mtp.impl.metadata.rdb.RdbMetaDataStore"/>
+    </property>
+
+    <property name="store" class="org.iplass.mtp.impl.metadata.rdb.RdbMetaDataStore" />
+    <property name="store" class="org.iplass.mtp.impl.metadata.xmlfile.XmlFileMetaDataStore" > <3>
+      <property name="fileStorePath" value="src/main/tenantLocalStore/" /> <4>
+      <property name="groovySourceStorePath" value="src/main/groovy/" />
+      <property name="localTenantId" value="CHANGE_YOUR_TENANT_ID"/> <5>
+    </property>
+    <property name="defaultStoreClass" value="org.iplass.mtp.impl.metadata.xmlfile.XmlFileMetaDataStore"/>
+  </property>
+</service>
+
+----
+<1> 設定の詳細については <<../../serviceconfig/index.adoc#MetaDataRepository,MetaDataRepository>> の設定を参照。
+<2> tenantLocalStore プロパティは、 `org.iplass.mtp.impl.metadata.composite.CompositeMetaDataStore` を設定する。
+<3> `org.iplass.mtp.impl.metadata.composite.CompositeMetaDataStore` のプロパティ store に以下のファイル管理用のMetaDataStoreを設定する。 +
+{nbsp}{nbsp} <<../../serviceconfig/index.adoc#XmlFileMetaDataStore,org.iplass.mtp.impl.metadata.xmlfile.XmlFileMetaDataStore>>（開発時の利用用途。メタデータの修正差分を git 等で管理することを想定。） +
+{nbsp}{nbsp} <<../../serviceconfig/index.adoc#VersioningXmlFileMetaDataStore,org.iplass.mtp.impl.metadata.xmlfile.VersioningXmlFileMetaDataStore>>（RdbMetaDataStore の完全なるファイルベースの代替）
+<4> XMLファイルは fileStorePath プロパティのパスに出力される。 +
+value 属性値に相対パスを設定する場合は、Eclipse の Tomcat 起動構成の引数タブで、作業ディレクトリをプロジェクトのルートディレクトリに設定する。 +
+作業ディレクトリを設定することで、ウェブアプリケーション（Tomcat）の実行時にメタデータを参照することができる。
+<5> バッチ実行時に指定することができるテナントIDは、localTenantId に設定されているテナントIDと同一であること。 +
+※当該行の value 属性は利用対象のテナントIDを設定する。

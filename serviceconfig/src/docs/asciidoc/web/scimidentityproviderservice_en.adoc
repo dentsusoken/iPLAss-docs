@@ -1,0 +1,65 @@
+[[ScimIdentityProviderService]]
+=== [.eeonly]#ScimIdentityProviderService#
+This service manages the operation of the SCIM Identity Provider function.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.webapi.scim.ScimIdentityProviderService
+----
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.webapi.scim.ScimIdentityProviderService
+----
+
+==== The settings of ScimIdentityProviderService
+ScimIdentityProviderService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item
+| Value
+| Description
+
+| entityReference
+| <<ScimEntityReference>> , Multiple
+| Provides functions for setting entity property values and creating responses for reference properties (mtp.auth.User, mtp.auth.Group) of entities subject to SCIM resources when registering or updating.
+|===
+
+[[ScimEntityReference]]
+.ScimEntityReference
+Please specify the implementing class of org.iplass.mtp.impl.webapi.scim.receive.reference.ScimEntityReference to the class to the class.
+
+As the standard implementation, the following ScimEntityReference are provided.
+
+* <<ScimUserEntityReference>>
+* <<ScimGroupEntityReference>>
+
+[[ScimUserEntityReference]]
+.ScimUserEntityReference
+The reference property link resolves the value of mtp.auth.User.
+
+Please specify org.iplass.mtp.impl.webapi.scim.receive.reference.ScimUserEntityReference to the class.
+There are no configurable items.
+
+[[ScimGroupEntityReference]]
+.ScimGroupEntityReference
+The reference property link resolves the value of mtp.auth.Group.
+
+Please specify org.iplass.mtp.impl.webapi.scim.receive.reference.ScimGroupEntityReference to the class.
+There are no configurable items.
+
+===== Example
+[source,xml]
+----
+<!-- SCIM Identity Provider -->
+<service>
+    <interface>org.iplass.mtp.impl.webapi.scim.ScimIdentityProviderService</interface>
+    <class>org.iplass.mtp.impl.webapi.scim.ScimIdentityProviderService</class>
+    
+    <!-- Reference property resolution for entities; User, Group defined by default -->
+    <property name="entityReference" class="org.iplass.mtp.impl.webapi.scim.receive.reference.ScimUserEntityReference" />
+    <property name="entityReference" class="org.iplass.mtp.impl.webapi.scim.receive.reference.ScimGroupEntityReference" />
+</service>
+----

@@ -98,7 +98,7 @@ For NumberGenerateStrategy, the following item can be configured.
 |====================
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.auth.authenticate.onetime.OnetimeCodeGeneratorService</interface>

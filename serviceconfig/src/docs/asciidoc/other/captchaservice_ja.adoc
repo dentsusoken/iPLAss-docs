@@ -40,7 +40,7 @@ classはorg.iplass.wam.impl.captcha.CaptchaMethodの実装クラスを指定し�
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.wam.impl.captcha.CaptchaService</interface>

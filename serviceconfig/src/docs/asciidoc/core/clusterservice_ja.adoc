@@ -109,7 +109,7 @@ InfinispanMessageChannelを利用する場合は、別途 <<InfinispanService,In
 
 ===== 設定例
 .HttpMessageChannel
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.cluster.ClusterService</interface>
@@ -127,7 +127,7 @@ InfinispanMessageChannelを利用する場合は、別途 <<InfinispanService,In
 ----
 
 .JGroupsMessageChannel
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.cluster.ClusterService</interface>
@@ -139,7 +139,7 @@ InfinispanMessageChannelを利用する場合は、別途 <<InfinispanService,In
 ----
 
 .InfinispanMessageChannel
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.cluster.ClusterService</interface>

@@ -4,12 +4,12 @@ This service manages CSV uploads
 
 ==== Interface Name
 ----
-org.iplass.mtp.impl.csv.CsvUploadService
+org.iplass.mtp.impl.fileport.CsvUploadService
 ----
 
 ==== Implementing Class
 ----
-org.iplass.mtp.impl.csv.CsvUploadService
+org.iplass.mtp.impl.fileport.CsvUploadService
 ----
 
 ==== The settings of CsvUploadService
@@ -31,11 +31,11 @@ In the case of SQLServer, the following conditions will result in a situation wh
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
-	<interface>org.iplass.mtp.impl.csv.CsvUploadService</interface>
-	<class>org.iplass.mtp.impl.csv.CsvUploadService</class>
+	<interface>org.iplass.mtp.impl.fileport.CsvUploadService</interface>
+	<class>org.iplass.mtp.impl.fileport.CsvUploadService</class>
 	<!-- Maximum number of CSV upload errors to be displayed(-1 means unlimited)  -->
 	<property name="showErrorLimitCount" value="100"/>
 

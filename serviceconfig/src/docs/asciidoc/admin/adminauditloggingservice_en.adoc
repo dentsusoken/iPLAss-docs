@@ -27,7 +27,7 @@ AdminAuditLoggingService can be configured with the following items
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.adminconsole.server.base.service.auditlog.AdminAuditLoggingService</interface>

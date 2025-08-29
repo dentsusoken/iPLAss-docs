@@ -1,11 +1,12 @@
 [[Groovy_GTmpl_BeanValidation]]
 === Bean／Bean Validation
-iPLAssのBean／Bean Validation機能を利用する場合、チェックしたいBeanクラスのプロパティにアノテーションをつけることで、バリデーションが自動に実行されます。それに、バリデーション結果を画面に表示できます。 
+iPLAssのBean/Bean Validation機能を利用する場合、バリデーションチェックしたいBeanクラスのプロパティにアノテーションをつけることで、バリデーションが自動で実行されます。また、バリデーション結果を画面に表示できます。
+
 
 サンプルアプリの問い合わせ登録画面で入力された値に対してバリデーションが実行される機能を例として説明していきます。 
 
-* 必要なUtilityClassを作成しています。 + 
-AdminConsoleのUtilityClassの設定を開くます。
+* 必要なUtilityClassを作成します。 + 
+Admin ConsoleのUtilityClassの設定を開きます。
 +
 image:images/sample-ec_groovy-gtmpl-bean-validation-classes.png[align=left]
 +
@@ -70,7 +71,7 @@ h|Command名|samples/ec01/inquiry/RegistInquiryCommand
 +
 [source,groovy]
 ----
-import javax.validation.groups.Default;
+import jakarta.validation.groups.Default;
 import org.iplass.mtp.command.beanmapper.BeanParamMapper;
 import org.iplass.mtp.entity.SelectValue;
 import org.iplass.mtp.web.template.TemplateUtil;
@@ -133,15 +134,15 @@ h|Template名|samples/ec01/inquiry/registInquiry
 ----------------------------------------以下略----------------------------------------
 ----
 <1> `org.iplass.mtp.impl.web.template.groovy.BindContext` にBeanインスタンスをバインドします。
-<2> `org.iplass.mtp.impl.web.template.groovy.BindContext` にBeanインスタンスに格納されているプロパティ名と値をバインドします。autoDetectErrors=true（デフォルトがtrue）の場合、WebRequestConstants.EXCEPTIONをキーにMappingExceptionを取得し、MappingResultのインスタンスが自動解決されます。当該Bean、プロパティに紐付くエラーがバインドされます。
+<2> `org.iplass.mtp.impl.web.template.groovy.BindContext` にBeanインスタンスに格納されているプロパティ名と値をバインドします。 `autoDetectErrors=true` の場合、`WebRequestConstants.EXCEPTION` をキーにMappingExceptionを取得し、MappingResultのインスタンスが自動解決されます。当該Bean、プロパティに紐付くエラーがバインドされます。
 <3> バインドされたプロパティの名前と値をテキストボックスにバインドします。
 <4> バインドされたエラーメッセージを画面に出力します。
 +
-※ 詳しい使い方について、`org.iplass.mtp.impl.web.template.groovy.WebGTmplBase` を参照してください。
+※ 詳しい使い方については、`org.iplass.mtp.impl.web.template.groovy.WebGTmplBase` を参照してください。
 
 * 動作確認
-** 「姓」と「名」を空文字として登録しようとしたら、バリデーションエラーが発生することを画面から確認できます。
-** 「セイ」と「メイ」に全角カタカナ以外の値を入れて登録しようとしたら、バリデーションエラーが発生することを画面から確認できます。
+** 「姓」と「名」を空文字として登録しようとした場合に、バリデーションエラーが発生することを画面から確認できます。
+** 「セイ」と「メイ」に全角カタカナ以外の値を入れて登録しようとした場合に、バリデーションエラーが発生することを画面から確認できます。
 +
 image:images/sample-ec_groovy-gtmpl-bean-validation-error.png[align=left]
 

@@ -61,7 +61,7 @@ SERIALIZABLE:: ConnectionのTRANSACTION_SERIALIZABLEに対応
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>
@@ -124,7 +124,7 @@ SERIALIZABLE:: ConnectionのTRANSACTION_SERIALIZABLEに対応
 |===
 
 ===== 設定例（JNDI経由）
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>
@@ -147,7 +147,7 @@ SERIALIZABLE:: ConnectionのTRANSACTION_SERIALIZABLEに対応
 ----
 
 ===== 設定例（直接生成）
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>
@@ -223,7 +223,7 @@ SERIALIZABLE:: ConnectionのTRANSACTION_SERIALIZABLEに対応
 |===
 
 ===== 設定例（JNDI経由）
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>
@@ -245,7 +245,7 @@ SERIALIZABLE:: ConnectionのTRANSACTION_SERIALIZABLEに対応
 ----
 
 ===== 設定例（直接生成）
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>

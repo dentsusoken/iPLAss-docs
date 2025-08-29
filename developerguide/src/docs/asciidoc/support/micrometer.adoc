@@ -12,7 +12,7 @@ NOTE: サーバ側でIPv6が有効になっている場合、ホスト名が正�
 その場合、 `mtp.server.myserverid` システムプロパティで明示的に指定することが可能です。
 
 ==== 標準メトリクス
-NOTE: 標準メトリクスの収集には、Micrometerのcoreモジュールを使用しています。iPLAssで利用しているMicrometer(coreモジュール)のバージョンは、 `1.6.2` です。 +
+NOTE: 標準メトリクスの収集には、Micrometerのcoreモジュールを使用しています。iPLAssで利用しているMicrometer(coreモジュール)のバージョンは、 `1.12.8` です。 +
 一部表記していないメーターも存在しています。取得可能な全てのメーターの詳細は、Micrometer(coreモジュール)のMeterBinderのJavaDocを参照してください（デフォルトで使用しているMeterBinderの一覧は、<<../../serviceconfig/index.adoc#MicrometerService, MicrometerService>> を参照してください）。
 
 * JVMメモリ
@@ -169,6 +169,7 @@ NOTE: 標準メトリクスの収集には、Micrometerのcoreモジュールを
 **** `bucket_name`：S3のバケット名
 **** `method`：HTTPメソッド
 **** `status`：レスポンスのHTTPステータスコード
+**** `operation_name`：S3操作名（GetObject, PutObject, HeadObject, GetObjectTagging, DeleteObject）(iplass-ee-aws2 モジュール利用時)
 
 * メール系のログ
 ** メール送信処理に対する成功回数/失敗回数

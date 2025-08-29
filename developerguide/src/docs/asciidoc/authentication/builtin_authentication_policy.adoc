@@ -26,6 +26,10 @@ AuthenticationPolicyアイコンを右クリックして「AuthenticationPolicy�
 通知設定については、 <<ref_notification_listener, 通知設定>> で詳しく説明します。
 | 認証プロバイダ | 利用する認証プロバイダを指定します。 +
 認証プロバイダについては、 <<ref_authentication_provider, 認証プロバイダ>> で詳しく説明します。
+| OpenID Connect | iPLAssをOpenID ConnectにおけるRelying Partyとして利用する場合にOpenID Connect設定を指定します。 +
+OpenID Connectについては、 <<../oauth/index.adoc#relyingparty_setting, OpenID Connect Relying Partyとしての設定>> で詳しく説明します。
+| WebAuthn | WebAuthn（パスキー）を利用する場合にWebAuthn設定を指定します。 +
+WebAuthn（パスキー）については、 <<webauthn, WebAuthn（パスキー）>> で詳しく説明します。
 | [.eeonly]#2段階認証、リスク算出# | 2段階認証の種類や、2段階認証を実行するかの判断に関する設定。 +
 2段階認証については、 <<ref_two_step, 2段階認証>> で詳しく説明します。
 | [.eeonly]#代理ログイン# | 代理ログインに関する設定。
@@ -202,7 +206,7 @@ EntityのEventListenerと同様の形式で指定します。
 |===
 +
 .利用例
-[source, Groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.auth.policy.definition.NotificationType;
 

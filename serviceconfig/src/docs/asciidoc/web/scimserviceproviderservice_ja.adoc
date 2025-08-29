@@ -1,0 +1,59 @@
+[[ScimServiceProviderService]]
+=== [.eeonly]#ScimServiceProviderService#
+SCIM Service Provider 機能の動作を管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.webapi.scim.ScimServiceProviderService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.webapi.scim.ScimServiceProviderService
+----
+
+==== ScimServiceProviderService の設定
+ScimServiceProviderService を設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目
+| 値
+| 説明
+
+| httpClientConfig
+| <<ScimServiceProviderService_HttpClientConfig>>
+| HTTPクライアントの設定。
+|===
+
+[[ScimServiceProviderService_HttpClientConfig]]
+.HttpClientConfig
+classはorg.iplass.mtp.impl.http.HttpClientConfigを指定します。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| connectionTimeout | int | HTTPコネクションを確立する際のタイムアウト（ミリ秒）。デフォルト値は30000（30秒）です。
+| soTimeout | int | HTTP通信時のsocket timeout (SO_TIMEOUT)（ミリ秒）。デフォルト値は30000（30秒）です。
+| poolingMaxTotal | int | httpコネクションのプールの最大数。デフォルト値は20です。
+| poolingDefaultMaxPerRoute | int | ドメイン単位のhttpコネクションの最大数。デフォルト値は2です。
+| poolingTimeToLive | int | プールされているhttpコネクションの生存期間（ミリ秒）。デフォルトは無制限です。
+| proxyHost | String | プロキシサーバのホスト。
+| proxyPort | int | プロキシサーバのポート番号。
+| httpClientBuilderFactory | <<HttpClientBuilderFactory, HttpClientBuilderFactory>> |カスタムのHttpClientBuilderを生成したい場合に指定します。
+|====================
+
+===== 設定例
+[source,xml]
+----
+<!-- SCIM Service Provider -->
+<service>
+    <interface>org.iplass.mtp.impl.webapi.scim.ScimServiceProviderService</interface>
+    <class>org.iplass.mtp.impl.webapi.scim.ScimServiceProviderService</class>
+    
+    <property name="httpClientConfig" class="org.iplass.mtp.impl.http.HttpClientConfig">
+    </property>
+</service>
+----

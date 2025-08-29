@@ -25,6 +25,8 @@ include::core/autonumbertypecounter_ja.adoc[]
 
 include::other/awssetting_ja.adoc[]
 
+include::other/aws2_awssetting_ja.adoc[]
+
 include::core/binarymetadataservice_ja.adoc[]
 
 include::core/cacheservice_ja.adoc[]
@@ -46,6 +48,8 @@ include::core/defaultqueuebaseasynctaskservice_ja.adoc[]
 include::core/entityservice_ja.adoc[]
 
 include::web/entitycsvimportservice_ja.adoc[]
+
+include::web/entityfileuploadservice_ja.adoc[]
 
 include::tools/entityportingservice_ja.adoc[]
 
@@ -95,6 +99,8 @@ include::core/oidcounter_ja.adoc[]
 
 include::core/onetimecodegeneratorservice_ja.adoc[]
 
+include::web/openapiservice_ja.adoc[]
+
 include::web/openidconnectservice_ja.adoc[]
 
 include::other/outofbandverificationdervice_ja.adoc[]
@@ -120,6 +126,10 @@ include::web/reportingengineservice_ja.adoc[]
 include::web/samlservice_ja.adoc[]
 
 include::core/scheduleservice_ja.adoc[]
+
+include::web/scimidentityproviderservice_ja.adoc[]
+
+include::web/scimserviceproviderservice_ja.adoc[]
 
 include::core/scriptservice_ja.adoc[]
 
@@ -149,7 +159,11 @@ include::core/warmupservice_ja.adoc[]
 
 include::web/webapijaxbservice_ja.adoc[]
 
+include::web/webapiobjectmapperservice_ja.adoc[]
+
 include::web/webapiservice_ja.adoc[]
+
+include::web/webauthnservice_ja.adoc[]
 
 include::web/webfrontendservice_ja.adoc[]
 

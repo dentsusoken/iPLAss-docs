@@ -1,7 +1,7 @@
 [[Java_JSP_Layout]]
 === Top画面の作成
-* Layoutの利用 +
-Top画面の構成は下図のようになっています。画面共通で利用するレイアウト用テンプレート `defaultLayout` と `shippingLayout` を用意し、画面右部分はそれぞれの機能に併せて呼びだす形にしています。ここでは"top"テンプレートを呼び出して利用しています。
+* レイアウトの利用 +
+Top画面の構成は下図のようになっています。画面共通で利用する2つのレイアウト用テンプレート `defaultLayout` と `shippingLayout` を用意し、画面のメインエリアは機能に併せて呼びだす形にしています。ここでは画面のメインエリアに `top` テンプレートを利用しています。
 +
 image:images/sample-ec_java-jsp-template-layout.png[align=left]
 +
@@ -16,7 +16,7 @@ h|ファイル|src/main/webapp/jsp/samples/ec01/layout/defaultLayout.jsp
 <%@ page import="org.iplass.mtp.web.template.TemplateUtil"%>
 <%@ page import="samples.ec01.utils.URLHelper" %>
 <%@ taglib prefix="m" uri="http://iplass.org/tags/mtp"%> <1>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
 
 ----------------------------------------以上略----------------------------------------
         <!-- 小さい画面で表示 end-->
@@ -24,8 +24,8 @@ h|ファイル|src/main/webapp/jsp/samples/ec01/layout/defaultLayout.jsp
             <div class="col-md-3 d-none d-md-block">
                 <div class="row">
                     <div class="col-12">
-                        <div class="list-group list-group-item-dark list-group-flush">
-                            <a href="${m:tcPath()}/samples/ec01/top" class="list-group-item list-group-item-action font-weight-bold border-top">${m:rs('iplass-wtp-messages', 'samples.ec01.layout.defaultLayout.home')}</a>
+                        <div class="list-group list-group-flush">
+                            <a href="${m:tcPath()}/samples/ec01/top" class="list-group-item list-group-item-action fw-bold border-top">${m:rs('iplass-wtp-messages', 'samples.ec01.layout.defaultLayout.home')}</a>
 							<c:forEach var="category" items="${categoryList}">
 								<a href="${URLHelper.getCategoryPath(category.oid)}" class="list-group-item list-group-item-action">${category.name}</a>
 							</c:forEach>
@@ -41,7 +41,7 @@ h|ファイル|src/main/webapp/jsp/samples/ec01/layout/defaultLayout.jsp
         <div class="row">
             <div class="col-12">
                 <ul class="list-group">
-                    <li class="list-group-item border-0 font-weight-bold">Links</li>
+                    <li class="list-group-item border-0 fw-bold">Links</li>
                     <li class="list-group-item border-0">
                         <a href="${m:tcPath()}/samples/ec01/news/newInfo" class="text-dark">${m:rs('iplass-wtp-messages','samples.ec01.layout.defaultLayout.news')}</a>
                     </li>
@@ -60,7 +60,7 @@ h|ファイル|src/main/webapp/jsp/samples/ec01/layout/defaultLayout.jsp
 ----------------------------------------以下略----------------------------------------
 ----
 <1> iPLAssのJSPタグライブラリ
-<2> LayoutアクションのJSPにおいて、実際のコンテンツを表示する箇所を指定するJSPタグです。
+<2> LayoutテンプレートのJSPにおいて、メインコンテンツを表示する箇所を指定するJSPタグです。
 
 * メタデータ定義ファイル
 +
@@ -99,5 +99,5 @@ h|ファイル名|samples-ec01-ce-metadata.xml
 ----------------------------------------以下略----------------------------------------
 ----
 <1> レイアウト用のテンプレートファイルを指定しています。
-<2> Top画面のテンプレートファイルをJSPファイルにしています。
-<3> 読みこまれる側（この例だとTop用テンプレート）ではLayoutIdをレイアウトテンプレートに指定しています。
+<2> Top画面用のテンプレートファイルを指定しています。
+<3> Top画面のテンプレートでは、 `layoutId` にレイアウト用テンプレートを指定しています。

@@ -87,7 +87,7 @@ classにorg.iplass.mtp.impl.properties.extend.crypt.KeyStoreEncryptionSettingを
 
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
     <interface>org.iplass.mtp.impl.properties.extend.crypt.PropertyEncryptionService</interface>

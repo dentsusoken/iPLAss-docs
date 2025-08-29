@@ -72,7 +72,7 @@ To use this debug app, edit `mtp-service-config.xml` stored in `src/main/resourc
 
 The related information can be found in a property called `listener` commented in the `MailService` configuration of `mtp-service-config.xml`.
 
-[source, xml]
+[source,xml]
 ----
 <!-- Mail Service Settings -->
 <service>
@@ -93,7 +93,7 @@ The related information can be found in a property called `listener` commented i
 As a method to check outgoing mail, we provide a class that outputs the contents of the mail to a log.
 This time, we will enable this debugging function assuming that you are using Tomcat from Eclipse on your local PC. (Please uncomment)
 
-[source, xml]
+[source,xml]
 ----
     <!-- ■ for develop only (additional="true) ■ -->
 	<!-- If you want to output the mail in debug mode, please enable the following configuration. -->
@@ -368,7 +368,7 @@ Whether or not a user is an administrator is determined by the `admin` Property 
 By using the `user` variable bound to the conditional statement, it can be determined as follows.
 
 .Determine if you are an administrator
-[source, groovy]
+[source,groovy]
 ----
 return user.isAdmin();
 
@@ -376,13 +376,13 @@ return user.isAdmin();
 ----
 
 Determine if it is included in group code `Group001`
-[source, groovy]
+[source,groovy]
 ----
 return user.memberOf("Group001");
 ----
 
 Determine if the rank is `3` or higher
-[source, groovy]
+[source,groovy]
 ----
 return user.rank.level >= 3; // See `level` Property of` rank` Property (RankEntity) of `User` Entity
 ----

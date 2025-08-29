@@ -26,7 +26,7 @@ The default value is `scheduler`.
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.scheduling.ScheduleService</interface>

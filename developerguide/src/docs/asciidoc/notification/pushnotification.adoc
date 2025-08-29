@@ -17,7 +17,7 @@ NOTE: iPLAssの実装は、FCM HTTP v1 API に対応しています。
 
 以下に FCM HTTP v1 API を利用するサンプルコードを示します。
 
-[source, java]
+[source,java]
 ----
 import org.iplass.mtp.ManagerLocator;
 import org.iplass.mtp.pushnotification.*;
@@ -112,7 +112,7 @@ Default PushNotificationTemplateタブでは、言語設定によらない共通
 本文はGroovyTemplate形式で記述可能です。
 次の例は、userでUserエンティティ、pointでIntegerのインスタンスがバインドされている場合を想定したものです。
 
-[source, GroovyTemplate]
+[source,groovy]
 ----
 ${user.name}さん、
 あなたのポイントは${point}ポイントです。
@@ -123,7 +123,7 @@ ${user.name}さん、
 ConfigScriptはGroovyScript形式で記述可能です。
 pnという変数名でPushNotificationのインスタンスがバインドされています。
 
-[source, Groovy]
+[source,groovy]
 ----
 //<1>
 pn.message = [
@@ -170,7 +170,7 @@ PushNotificationTemplateを利用してプッシュ通知する場合もPushNoti
 
 以下にapi利用のサンプルコードを示します。
 
-[source, java]
+[source,java]
 ----
 import org.iplass.mtp.ManagerLocator;
 import org.iplass.mtp.auth.AuthContext;
@@ -211,7 +211,7 @@ Firebase Cloud Messaging（FCM）を利用する場合、mtp-service-config.xml 
 FCM の API リクエストに利用する認証情報を取得するため、GoogleCloudSettings の設定も必要となります。
 
 設定例を以下に示します。
-[source, xml]
+[source,xml]
 ----
 <!-- FCM HTTP v1 API を利用するための設定-->
 

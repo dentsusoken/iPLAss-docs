@@ -26,6 +26,8 @@ LobStoreServiceを設定します。
 | temporaryKeepDay | int | テンポラリデータの保存日数。クリーナによりここで指定された日数よりも前のデータが削除されます。デフォルト値は `1` です。
 | invalidKeepDay | int | 無効(非参照)データの保存日数。クリーナによりここで指定された日数よりも前のデータが削除されます。デフォルト値は `0` です。
 | cleanCommitLimit | int | クリーナの削除処理のコミット単位。デフォルト値は `100` です。
+| detectAbandonedStream | boolean | バイナリデータの入出力に利用するInputStream/OutputStreamのクローズ漏れを検知してクローズ処理を行うか否かを設定。デフォルト値は `false` です。
+| logAbandoned | boolean | detectAbandonedStreamが `true` の場合にそのStreamを生成した箇所を特定するためのスタックトレースを出力するか否かを設定。デフォルト値は `false` です。
 |===
 
 [[LobStore]]
@@ -37,6 +39,7 @@ classはorg.iplass.mtp.impl.lob.lobstore.LobStoreの実装クラスを指定し�
 - <<RdbLobStore>>
 - <<FileLobStore>>
 - <<S3LobStore>>
+- <<aws2_S3LobStore>>
 - <<MetricsS3LobStore>>
 - <<AddableMultiLobStore>>
 
@@ -67,8 +70,16 @@ classはorg.iplass.mtp.impl.lob.lobstore.file.FileLobStoreを指定します。
 |===
 
 [[S3LobStore]]
-.[.eeonly]#S3LobStore#
+.[.eeonly]#（非推奨）S3LobStore#
 classはorg.iplass.mtp.impl.aws.lobstore.s3.S3LobStoreを指定します。
+
+[CAUTION]
+====
+AWS SDK for Java 1.x はメンテナンスモードになっており、2025年12月 にサポートを終了する予定です。 +
+iPLAss では AWS SDK for Java 1.x ベースのライブラリ iplass-ee-aws を非推奨とし、AWS SDK for Java 2.x ベースのライブラリ iplass-ee-aws2 への移行を推奨します。 +
+本機能を利用している場合は、ライブラリ iplass-ee-aws2 の <<aws2_S3LobStore>> へ設定を移行してください。 +
+ライブラリ iplass-ee-aws は将来削除される予定です。
+====
 
 S3に保存するLobStoreです。
 以下の項目を設定可能です。
@@ -121,12 +132,163 @@ SSE-KMS方式で暗号化します。
 | awsKmsKeyId | String | AWS Key Management Service (KMS)S3のKey Id
 |===
 
+[[aws2_S3LobStore]]
+.[.eeonly]#S3LobStore#
+classはorg.iplass.mtp.impl.lob.lobstore.s3.awsv2.S3LobStoreを指定します。 +
+S3に保存するLobStoreです。以下の項目を設定可能です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| bucketName | String、必須 | S3のバケット名
+| s3controller | <<aws2_S3Controller>> | S3 操作を行う機能。未設定の場合のデフォルト値は、<<aws2_S3AsyncClientController>> です。
+| clientConfig | <<aws2_AWSSetting_AWSClientConfig>> | S3 クライアントの設定を管理します。AWSリージョンや通信設定を設定します。<<aws2_S3Controller>>、 <<aws2_S3ClientFactory>> の初期化に利用します。
+| overwriteFile | boolean | 既にS3オブジェクトが存在した場合に上書きを行うか否か。 +
+デフォルト値はfalse（上書きしない）です。
+| keyPrefix | String a| S3 オブジェクトキーに、プレフィックスを設定します。 
+
+.オブジェクトキーが"object/key/file.dat"の場合、プレフィックス有無の結果例
+* プレフィックスなし : `object/key/file.dat`
+* プレフィックス有り("test-key-prefix" を指定) : `test-key-prefix/object/key/file.dat` 
+
+link:https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html#object-key-guidelines[オブジェクトキーの命名のガイドライン^]に従ってプレフィックスを設定してください。
+
+| lobValidator | <<LobValidator>> | Lobに対するチェック処理。
+| requiredTagMap | String、Map形式 | S3オブジェクトにおいて、必要なタグの値をチェックする場合にMap形式で指定します。keyとしてタグ名、valueとしてタグ値を設定します。
+| retryTagCheckIntervalMillis | long | タグチェックのリトライ間隔（ミリ秒）。
+| retryTagCheckCount | int | タグチェックのリトライ回数。
+|===
+
+[[aws2_S3Controller]]
+.[.eeonly]#S3Controller#
+class は org.iplass.mtp.impl.lob.lobstore.s3.awsv2.S3Controller の実装クラスを設定します。 +
+標準で以下の S3Controller を提供しています。
+
+- <<aws2_S3SyncClientController>>
+- <<aws2_S3AsyncClientController>>
+
+[[aws2_S3SyncClientController]]
+.[.eeonly]#S3SyncClientController#
+class は org.iplass.mtp.impl.lob.lobstore.s3.awsv2.S3SyncClientController を指定します。 +
+S3Client を利用した S3 操作機能です。<<aws2_AWSSetting>> で管理されている認証情報、クライアント設定を利用します。以下の項目が設定可能です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| s3ClientFactory | <<aws2_S3ClientFactory>> | S3 同期クライアント生成機能を指定します。未設定の場合のデフォルト値は、<<aws2_S3SyncClientFactory>> です。
+| requestConfigureList | <<aws2_S3RequestConfigure>>、複数指定可 | S3リクエスト実行時に追加の設定を行います。
+|===
+
+[[aws2_S3AsyncClientController]]
+.[.eeonly]#S3AsyncClientController#
+class は org.iplass.mtp.impl.lob.lobstore.s3.awsv2.S3AsyncClientController を指定します。 +
+S3AsyncClient を利用した S3 操作機能です。<<aws2_AWSSetting>> で管理されている認証情報、クライアント設定を利用します。以下の項目が設定可能です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| s3ClientFactory | <<aws2_S3ClientFactory>> | S3 非同期クライアント生成機能を指定します。未設定の場合のデフォルト値は、<<aws2_S3AsyncClientFactory>> です。
+| requestConfigureList | <<aws2_S3RequestConfigure>>、複数指定可 | S3リクエスト実行時に追加の設定を行います。
+|===
+
+[[aws2_S3ClientFactory]]
+.[.eeonly]#S3ClientFactory#
+class は org.iplass.mtp.impl.lob.lobstore.s3.awsv2.S3ClientFactory の実装クラスを設定します。 +
+標準で以下の S3ClientFactory を提供しています。
+
+* 同期クライアントを生成するクラス
+** <<aws2_S3SyncClientFactory>>
+* 非同期クライアントを生成するクラス
+** <<aws2_S3AsyncClientFactory>>
+** <<aws2_S3AsyncCrtClientFactory>>
+
+[TIP]
+====
+S3 オブジェクトパートの最大サイズは 5GB です。透過的なマルチパートをサポートしていないクライアントの最大オブジェクトサイズとなります。 +
+5GB を超えるオブジェクトをアップロードする場合は、透過的なマルチパートが有効なクライアントを利用してください。
+
+S3 Client の選定については、link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/examples-s3.html#s3-clients[AWS SDK for Java 2.x の S3 クライアント^] を参考にしてください。
+====
+
+[[aws2_S3SyncClientFactory]]
+.[.eeonly]#S3SyncClientFactory#
+class は org.iplass.mtp.impl.lob.lobstore.s3.awsv2.S3SyncClientFactory を指定します。 +
+透過的なマルチパート操作はサポートしていません。 +
+同期クライアントの S3Client を生成します。設定項目はありません。
+
+[[aws2_S3AsyncClientFactory]]
+.[.eeonly]#S3AsyncClientFactory#
+class は org.iplass.mtp.impl.lob.lobstore.s3.awsv2.S3AsyncClientFactory を指定します。 +
+透過的なマルチパート操作は設定によって有効にすることができます。 +
+非同期クライアントの S3AsyncClient を生成します。以下の項目が設定可能です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| multipartEnabled | Boolean | true が設定された場合、マルチパートを有効にします。未設定の場合のデフォルト値は、false です。
+|===
+
+[[aws2_S3AsyncCrtClientFactory]]
+.[.eeonly]#S3AsyncCrtClientFactory#
+class は org.iplass.mtp.impl.lob.lobstore.s3.awsv2.S3AsyncCrtClientFactory を指定します。 +
+透過的なマルチパート操作をサポートしています。 +
+非同期クライアントの S3AsyncClient を生成します。本機能で生成されるクライアントは link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/crt-based-s3-client.html[AWS CRT ベースの S3 クライアント^]です。設定項目はありません。 
+
+S3操作のパフォーマンスを重視する場合は、CRT ベースのクライアントの利用を推奨します。 +
+CRT ベースのクライアントは native ライブラリを利用しています。その為、システムが利用するプラットフォーム上で動作することを確認してください。
+
+
+機能を利用する際には、ライブラリ `software.amazon.awssdk.crt:aws-crt` の追加が必要です。 +
+詳細は link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/crt-based-s3-client.html#crt-based-s3-client-depend[AWS CRTベースの S3 クライアントを使用するための依存関係を追加する^] を参照してください。
+
+[[aws2_S3RequestConfigure]]
+.[.eeonly]#S3RequestConfigure#
+class は org.iplass.mtp.impl.lob.lobstore.s3.awsv2.S3RequestConfigure の実装クラスを設定します。 +
+GetObjectRequest, PutObjectRequest, DeleteObjectRequest, HeadObjectRequest, GetObjectTaggingRequest に追加の設定を加えたい場合に指定します。 +
+標準で以下の S3RequestConfigure を提供します。
+
+- <<aws2_S3PutRequestEncryptionSseKmsConfigure>>
+- <<aws2_S3PutRequestEncryptionSseS3Configure>>
+- <<aws2_micrometer_S3RequestMetricPublisherConfigure>>
+
+[[aws2_S3PutRequestEncryptionSseKmsConfigure]]
+.[.eeonly]#S3PutRequestEncryptionSseKmsConfigure#
+class は org.iplass.mtp.impl.lob.lobstore.s3.awsv2.S3PutRequestEncryptionSseKmsConfigure を設定します。 +
+S3 PutObjectRequest を実行時に SSE-KMS 暗号化を設定します。以下の項目を設定します。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| awsKmsKeyId | String | KMS キー ID を設定します。設定することで指定したキーを利用した暗号化が設定されます。 +
+設定しない場合は AWS マネージド KMS キーで暗号化されます。
+|===
+
+[[aws2_S3PutRequestEncryptionSseS3Configure]]
+.[.eeonly]#S3PutRequestEncryptionSseS3Configure#
+class は org.iplass.mtp.impl.lob.lobstore.s3.awsv2.S3PutRequestEncryptionSseS3Configure を設定します。 +
+S3 PutObjectRequest を実行時に SSE-S3 暗号化を設定します。設定項目はありません。
+
+[[aws2_micrometer_S3RequestMetricPublisherConfigure]]
+.[.eeonly]#S3RequestMetricPublisherConfigure#
+class は org.iplass.mtp.impl.lob.lobstore.s3.awsv2.S3RequestMetricPublisherConfigure を設定します。 +
+S3 リクエスト実行時に Micrometer によるメトリクス収集の設定を追加します。
+
+CAUTION: <<aws2_S3AsyncCrtClientFactory, CRT ベースの S3Client (S3AsyncCrtClientFactory)>> を利用している場合は、Micrometer によるメトリクス収集は利用できません。 +
+
 [[MetricsS3LobStore]]
-.[.eeonly]#MetricsS3LobStore#
+.[.eeonly]#（非推奨）MetricsS3LobStore#
 classはorg.iplass.mtp.impl.micrometer.metrics.aws.lobstore.s3.MetricsS3LobStoreを指定します。
 
 Micrometerによるメトリクス収集機能を追加したS3LobStoreです。
 S3LobStoreと同じ項目を設定可能です。
+
+[CAUTION]
+====
+AWS SDK for Java 1.x はメンテナンスモードになっており、2025年12月 にサポートを終了する予定です。 +
+iPLAss では AWS SDK for Java 1.x ベースのライブラリ iplass-ee-aws を非推奨とし、AWS SDK for Java 2.x ベースのライブラリ iplass-ee-aws2 への移行を推奨します。 +
+本機能を利用している場合は、AWS SDK for Java 2.x ベースの <<aws2_S3LobStore>> と <<aws2_micrometer_S3RequestMetricPublisherConfigure>> に設定を移行してください。 +
+ライブラリ iplass-ee-aws は将来削除される予定です。
+====
 
 [[AddableMultiLobStore]]
 .AddableMultiLobStore
@@ -171,7 +333,7 @@ Adler-32/CRC-32/MD5/SHA-1/SHA-256のいずれかを指定してください。
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.lob.LobStoreService</interface>

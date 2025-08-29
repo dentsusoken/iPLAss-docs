@@ -222,10 +222,9 @@ image::images/entity_projectname.png[]
 |項目|設定値
 |Type|Expression
 |Result Type|String
-|式|(select task.projectAndVer from tutorial.advanced.dailyTask on .this=this)<<1>>
+|式| (select task.projectAndVer from tutorial.advanced.dailyTask on .this=this) +
+※ タスクマスタEntityのプロジェクト･バージョンを取得
 |===
-
-<<1>>:タスクマスタEntityのプロジェクト･バージョン
 
 変更が完了したら、Entityを保存してください。
 
@@ -239,10 +238,9 @@ image::images/entity_projectname.png[]
 |DisplayName|総工数（予定）[h]
 |Type|Expression
 |Result Type|Float
-|式|(select sum(dailyTask.planedManhour) from tutorial.advanced.dailySchedule on .this=this)<<2>>
+|式|(select sum(dailyTask.planedManhour) from tutorial.advanced.dailySchedule on .this=this) +
+※ 今日のタスクEntityの工数（予定）[h]の値の合計値を取得
 |===
-
-<<2>>:今日のタスクEntityの工数（予定）[h]の値の合計値を取得
 
 [options="header"]
 |===
@@ -251,10 +249,9 @@ image::images/entity_projectname.png[]
 |DisplayName|総工数（実績）[h]
 |Type|Expression
 |Result Type|Float
-|式|(select sum(dailyTask.actualManhour) from tutorial.advanced.dailySchedule on .this=this)<<3>>
+|式|(select sum(dailyTask.actualManhour) from tutorial.advanced.dailySchedule on .this=this) +
+※ 今日のタスクEntityの工数（実績）[h]の値の合計値を取得
 |===
-
-<<3>>:今日のタスクEntityの工数（実績）[h]の値の合計値を取得
 
 変更が完了したら、Entityを保存してください。
 
@@ -308,7 +305,7 @@ image::images/entity_addeventlistener.png[]
 
 image::images/entity_editeventlistenerscript.png[]
 
-[source, groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.Entity;
 entity.setName("予定あり");
@@ -323,7 +320,7 @@ image::images/entity_setevent.png[]
 
 image::images/entity_eventlistener-dailytask.png[]
 
-[source, groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.Entity;
 
@@ -342,7 +339,7 @@ image::images/entity_eventlistener-taskmaster.png[]
 
 バージョンマスタEntityから名前Propertyとプロジェクト名Propertyの値を取得し、両者を結合してプロジェクト・バージョンプロパティにセットします。
 
-[source, groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.Entity;
 
@@ -855,7 +852,7 @@ image::images/top_createtemplate.png[]
 
 image::images/top_edit-template.png[]
 
-[source, jsp]
+[source,jsp]
 ----
 <%@import org.iplass.mtp.web.template.TemplateUtil%>
 
@@ -1109,7 +1106,7 @@ image::images/other_createmailtemplate.png[]
 
 image::images/other_edit-mailtemplate.png[]
 
-[source, jsp]
+[source,jsp]
 ----
 関係者各位
 
@@ -1318,7 +1315,7 @@ image::images/other_aggregationfilter.png[]
 
 image::images/other_aggregationgrid.png[]
 
-[source, sql]
+[source,sql]
 ----
 select day, totalPlanedManhour, totalActualManhour
 from tutorial.advanced.dailySchedule

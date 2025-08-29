@@ -7,7 +7,7 @@ Serverless(JavaScript)版のWAMプラグインモジュールでは、スケル�
 
 
 .サンプル
-[source, javascript]
+[source,javascript]
 ----
 export default defineConfig(() => ({
   // iPLAssサーバー側(=WAM本体)のURL
@@ -40,8 +40,9 @@ export default defineConfig(() => ({
   // エラー発生時のデフォルトのリダイレクト先URL
   defaultErrorRedirectUrl: "/error/default.html",
 
-  // デバッグモード
-  debug: false,
+  // 4.0.0以降のバージョンではdebugが廃止され、logLevelが追加されました
+  // ログレベル
+  logLevel: "error",
 
   // ヘッダーにiPLAssのユーザー情報を格納するかの判定フラグ
   mapUserAttribute: false,

@@ -1,0 +1,101 @@
+[[WebAuthnService]]
+=== WebAuthnService
+A service for performing authentication based on the WebAuthn specification.
+It provides the necessary settings for registering and authenticating authenticators (passkeys).
+
+==== Interface Name
+----
+org.iplass.mtp.impl.auth.authenticate.webauthn.WebAuthnService
+----
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.auth.authenticate.webauthn.WebAuthnService
+----
+
+==== The settings of WebAuthnService
+To use authentication with WebAuthn, configure the WebAuthnService.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| signatureAlgorithms | String, Multiple | List of supported signature algorithms.
+| optionsTimeoutMinutes | int | Timeout duration (in minutes) for registering and authenticating authenticators (passkeys). Default value is 5.
+| registrationLimitOfAuthenticatorPerUser | int | Maximum number of authenticators (passkeys) that can be registered per user. Default value is 3.
+| metadataStatementRepository | <<MetadataStatementRepository>> | Repository for managing metadata of authenticators.
+| userHandleSupplier | <<UserHandleSupplier>> | Supplier for generating user handles.
+|===
+
+[[MetadataStatementRepository]]
+.MetadataStatementRepository
+
+A repository for managing metadata of authenticators.
+It is used to verify the reliability of authenticators.
+Specify the implementation class of com.webauthn4j.metadata.MetadataStatementRepository as the class.
+You can use the implementation classes provided by WebAuthn4J or <<CacheableMetadataStatementRepository>>.
+
+[[CacheableMetadataStatementRepository]]
+.CacheableMetadataStatementRepository
+
+An implementation of MetadataStatementRepository that uses iPLAss's CacheStore to cache metadata.
+Within CacheableMetadataStatementRepository, LocalFileMetadataBLOBProvider and LocalFilesMetadataStatementsProvider provided by WebAuthn4J are used to resolve metadata.
+Specify org.iplass.mtp.impl.auth.authenticate.webauthn.CacheableMetadataStatementRepository as the class.
+
+==== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| metadataBLOBFilePath | String | Path to the locally placed metadata BLOB file. The metadata BLOB file is provided by the FIDO Alliance's FIDO Metadata Service.
+| notFidoCertifiedAllowed | boolean | Whether to allow authenticators that are not FIDO certified. Default value is false.
+| selfAssertionSubmittedAllowed | boolean | Whether to allow self-asserted authenticators. Default value is false.
+| individualMetadataStatementFilePath | String, Multiple | Local file paths of individual metadata statement files not included in the metadata BLOB file.
+|===
+
+
+[[UserHandleSupplier]]
+.UserHandleSupplier
+An interface for providing user handle generation.
+Specify a class that implements org.iplass.mtp.impl.auth.authenticate.webauthn.userhandle.UserHandleSupplier as the class.
+By default, the following <<HashingUserHandleSupplier>> is provided.
+
+[[HashingUserHandleSupplier]]
+.HashingUserHandleSupplier
+An implementation of UserHandleSupplier that generates a user handle as a hash value based on the `oid` of the User entity.
+
+==== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| algorithm | String | Hash algorithm (e.g., SHA-256).
+| salt | String | Salt value used for hash calculation.
+|===
+
+==== Example
+[source,xml]
+----
+<service>
+    <interface>org.iplass.mtp.impl.auth.authenticate.webauthn.WebAuthnService</interface>
+
+    <property name="signatureAlgorithms" value="EdDSA" />
+    <property name="signatureAlgorithms" value="ES512" />
+    <property name="signatureAlgorithms" value="ES384" />
+    <property name="signatureAlgorithms" value="ES256" />
+    <property name="signatureAlgorithms" value="RS512" />
+    <property name="signatureAlgorithms" value="RS384" />
+    <property name="signatureAlgorithms" value="RS256" />
+
+    <property name="optionsTimeoutMinutes" value="5" />
+
+    <property name="userHandleSupplier" class="org.iplass.mtp.impl.auth.authenticate.webauthn.userhandle.HashingUserHandleSupplier">
+        <property name="algorithm" value="SHA-256" />
+        <property name="salt" value="set your own salt value" />
+    </property>
+
+    <property name="metadataStatementRepository" class="org.iplass.mtp.impl.auth.authenticate.webauthn.CacheableMetadataStatementRepository">
+        <property name="metadataBLOBFilePath" value="path/to/metadataBLOBFile" />
+        <property name="individualMetadataStatementFilePath" value="path/to/individualMetadataStatementFilePath1" />
+        <property name="individualMetadataStatementFilePath" value="path/to/individualMetadataStatementFilePath2" />
+    </property>
+</service>
+----

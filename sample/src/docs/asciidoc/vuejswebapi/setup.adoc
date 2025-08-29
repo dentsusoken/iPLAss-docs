@@ -1,16 +1,16 @@
 [[VueJS_WebAPI_Setup]]
 == セットアップ
-サンプルアプリケーションのセットアップ説明です。 + 
-もし、既にiPLASSの<<../../gettingstarted/installguide/index#,開発環境の構築>>と<<../../gettingstarted/index#_チュートリアル,チュートリアル>>を実行できた方で、サンプルアプリケーションのサンプルを動かしたい場合、以下の手順に従って実施してみてください。 + 
-それ以外の方は<<../../gettingstarted/installguide/index#,開発環境の構築>>を先に実施することをお勧めします。
+サンプルアプリケーションのセットアップに関する説明です。 +
+もし、既にiPLAssの<<../../gettingstarted/installguide/index#,開発環境の構築>>と<<../../gettingstarted/index#_チュートリアル,チュートリアル>>を実行できており、サンプルアプリケーションを動かしたい場合、以下の手順に従って実施してください。 +
+それ以外の場合は、<<../../gettingstarted/installguide/index#,開発環境の構築>>を先に実施することをお勧めします。
 
 * サンプルアプリケーションのプロジェクトをlink:https://github.com/dentsusoken/iplass-sample-app-vuejs[GitHub]から取得してプロジェクトを作成します。プロジェクトの作成手順は<<../../gettingstarted/installguide/index#_プロジェクトの作成,プロジェクトの作成>>を参照してください。 +
 +
 [TIP]
 ====
-サンプルコードで Java8 より上のバージョンのスタイルでコーディングする場合は build.gradle の javaVersion を使用したい Java のバージョンに書き換えてください。 +
+サンプルコードで Java21 より上のバージョンのスタイルでコーディングする場合は build.gradle の javaVersion を使用したい Java のバージョンに書き換えてください。 +
 書き換えた後はGradleプロジェクトのリフレッシュを行い、エラーが出ないことを確認してください。 +
-`Vue Component` のビルドに利用する nodejs のバージョンは、nodejsVersion で指定します。
+`Vue Component` のビルドに利用する Node.js のバージョンは、nodejsVersion で指定します。
 
 .build.gradle
 [source,groovy]
@@ -25,35 +25,23 @@ apply plugin: 'eclipse-wtp'
 apply plugin: 'com.github.node-gradle.node'
 
 ext {
-	javaVersion = JavaVersion.VERSION_1_8 <1>
-	nodejsVersion = '16.19.0' <2>
+	javaVersion = JavaVersion.VERSION_21 <1>
+	nodejsVersion = '20.13.1' <2>
 }
 
 ----------------------------------------以下略----------------------------------------
 -----
 <1> 必要に応じて使用したい Java のバージョンに書き換えます。
-<2> ビルドに利用する nodejs のバージョンを指定します。
+<2> ビルドに利用する Node.js のバージョンを指定します。
 ====
-* サンプルアプリを起動する前に、`Vue Component` をビルドする必要があります。 +
-ビルドを行う前に、webpack.config.js内のstaticContentPathの値を作成したプロジェクト名に修正します。
-+
-[source,js]
-----
-var path = require('path')
-var webpack = require('webpack')
-var staticContentPath = '/mtp' <1>
-----------------以下略----------------
-----
-<1> この値を `'/{作成したプロジェクト名}'` に修正する。
-+
-webpack.config.jsの修正後、 `Vue Component` のビルドをプロジェクトルートから以下のコマンドを用いて実行します。
+* サンプルアプリを起動する前に、プロジェクトルートから以下のコマンドを用いてVue.jsのコンポーネントを事前にビルドしておく必要があります。
 +
 [source]
 ----
 gradlew buildVue
 ----
 
-* Vue.js版のサンプルアプリの起動手順はJava／JSP版と同じになっているので、<<../javajsp/index#Java_JSP_Setup_startup,Java／JSP版の起動手順>>を参照してください。
+* Vue.js版のサンプルアプリの起動手順はJava／JSP版と同じになっているため、<<../javajsp/index#Java_JSP_Setup_startup,Java／JSP版の起動手順>>を参照してください。
 +
 [NOTE]
 このサンプルアプリは<<../../gettingstarted/installguide/index#,開発環境の構築>>の章で作成したテナントで動かすことを想定しています。 +

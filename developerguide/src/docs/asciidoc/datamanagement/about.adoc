@@ -16,8 +16,9 @@ RDBのように物理的にテーブルを追加・修正する必要はあり�
 Entityを定義するだけで、汎用的な検索画面、登録・編集画面が実行可能になります。
 汎用画面は、表示項目や表示レイアウトなど、独自にカスタマイズすることもできます。また、カレンダービュー、ツリービューなどいくつかの表示形式を標準で提供しています。 +
 詳細は<<../genericentitymanager/index.adoc#, GEM（Generic Entity Manager）>>を参照してください。 +
-また、 [.eeonly]#モバイルファーストなデータ操作画面（Mobile Design Components、通称：MDC）# を提供します。 +
-詳細は<<../mobiledesigncomponents/index.adoc#, [.eeonly]#MDC（Mobile Design Components）# >>を参照してください。
+また、 [.eeonly]#マテリアルデザインに準拠したデータ操作画面（Material Design Components、通称：MDC）# を提供します。
+MDCはレスポンシブなデザインを特徴としています。 +
+詳細は<<../materialdesigncomponents/index.adoc#, [.eeonly]#MDC（Material Design Components）# >>を参照してください。
 
 * データ検証 +
 Propertyごとに必須チェックやLengthチェックなどのValidatorを設定することができます。

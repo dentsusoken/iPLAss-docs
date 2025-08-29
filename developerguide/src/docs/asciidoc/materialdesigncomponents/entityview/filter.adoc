@@ -1,0 +1,9 @@
+[[filter]]
+== フィルタの管理
+
+フィルタを設定することでエンティティの検索補助を実現できます。
+検索画面（条件部）のタブに `定型検索` タブが追加されます。
+
+image::images/filter_view.png[]
+
+設定方法などの詳細については <<../../genericentitymanager/entityview/index.adoc#filter_management, フィルタの管理>> を参照してください。

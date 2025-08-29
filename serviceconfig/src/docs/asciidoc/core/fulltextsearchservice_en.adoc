@@ -1,7 +1,7 @@
 [[FulltextSearchService]]
 === FulltextSearchService
 The service is for full-text searches.
-As a full-text search implementation, full-text search using Lucene, Elasticsearch, OpenSearch and Solr are provided.
+As a full-text search implementation, full-text search using Lucene, Elasticsearch and OpenSearch are provided.
 
 ==== Interface Name
 ----
@@ -19,16 +19,15 @@ org.iplass.mtp.impl.fulltextsearch.lucene.LuceneFulltextSearchService
 org.iplass.mtp.impl.fulltextsearch.elasticsearch.ElasticsearchFulltextSearchService
 ----
 
-.[.eeonly]#Full-text Search Using OpenSearch#
+.[.eeonly]#(Deprecated) Full-text Search Using OpenSearch#
 ----
 org.iplass.mtp.impl.aws.fulltextsearch.opensearch.OpenSearchFulltextSearchService
 ----
 
-.[.eeonly]#(deprecated) Full-text Search Using Solr#
+.[.eeonly]#Full-text Search Using OpenSearch#
 ----
-org.iplass.mtp.impl.fulltextsearch.FulltextSearchSolrService
+org.iplass.mtp.impl.fulltextsearch.opensearch.OpenSearchFulltextSearchService
 ----
-
 
 ==== Settings of FulltextSearchService
 The followings are the common settings of full-text searches.
@@ -156,12 +155,12 @@ This is the setting about the full-text search features provided by Lucene.
 | Item | Value | Description
 | indexWriterSetting | <<IndexWriterSetting>>, Optional | IndexWriter setting.
 | directory | String | Specify the root directory where the Index file will be stored. Under the root directory, an Index file will be created for each tenant and entity under the root directory.
-| luceneFSDirectory | `org.apache.lucene.store.SimpleFSDirectory`, `org.apache.lucene.store.MMapDirectory`, `org.apache.lucene.store.NIOFSDirectory` | Lucene Directory for storing INDEX files in the file system Implementation class. +
+| luceneFSDirectory | `org.apache.lucene.store.MMapDirectory`, `org.apache.lucene.store.NIOFSDirectory` | Lucene Directory for storing INDEX files in the file system Implementation class. +
 The Lucene documentation does not recommend using `NIOFSDirectory` in a Windows environment. +
 * If not set, the default FSDirectory determined by Lucene will be used.
-| luceneFSDirectoryMaxChunkSizeMB | int | maxChunkSize for memory mapping used by `org.apache.lucene.store.MMapDirectory` class. +
+| luceneFSDirectoryMaxChunkSizeMB | long | maxChunkSize for memory mapping used by `org.apache.lucene.store.MMapDirectory` class. +
 If not set, the default value determined by Lucene is used. +
-* If anything other than `org.apache.lucene.store.MMapDirectory` is selected, this Settings of value is ignored.
+* If the value of the item luceneFSDirectory is not `org.apache.lucene.store.MMapDirectory`, this setting is ignored.
 | analyzerSetting | <<AnalyzerSetting>>, Optional | This is the setting class that initializes the analyzer. If the setting is omitted, JapaneseAnalyzerSetting will be applied.
 | defaultOperator | Operator | Operator. Possible operators are `AND` or `OR`.
 | searcherAutoRefreshTimeMinutes | int | The time interval (minutes) at which the Lucene IndexSearcher (≒ IndexReader) held by iPLAss is automatically updated. +
@@ -181,6 +180,7 @@ Please specify org.iplass.mtp.impl.fulltextsearch.lucene.IndexWriterSetting to t
 | mergePolicy | org.apache.lucene.index.MergePolicy | Specify an instance of org.apache.lucene.index.MergePolicy.
 | infoStream | org.apache.lucene.util.InfoStream | Specify an instance of org.apache.lucene.util.InfoStream.
 We provides a `org.iplass.mtp.impl.fulltextsearch.lucene.LoggingInfoStream` to output to the DEBUG log, so you can also use it.
+| indexDeletionPolicy | org.apache.lucene.index.IndexDeletionPolicy | Specify an instance of org.apache.lucene.index.IndexDeletionPolicy.
 |===
 
 
@@ -226,9 +226,9 @@ If not set, the default value `SEARCH` is applied.
 | userDictionary | String | User-defined dictionary. Must be placed on the classpath. +
 If not set, it will be the same as if not using a user-defined dictionary.
 | stopwords | String | Stopword definition file. Must be placed on the classpath. +
-If no set, the definition file in `lucene-analyzers-kuromoji-XXX.jar` will be used instead.
+If no set, the definition file in `lucene-analysis-kuromoji-XXX.jar` will be used instead.
 | stoptags | String | Stop tag definition file. Must be placed on the classpath. +
-If not set, the definition file in `lucene-analyzers-kuromoji-XXX.jar` will be used instead.
+If not set, the definition file in `lucene-analysis-kuromoji-XXX.jar` will be used instead.
 |===
 
 [[PerEntityAnalyzerSetting]]
@@ -378,8 +378,18 @@ Please specify org.iplass.mtp.impl.fulltextsearch.elasticsearch.mappings.Analyze
 |===
 
 [[OpenSearchFulltextSearchService]]
-==== [.eeonly]#Settings of OpenSearchFulltextSearchService#
-This is the setting about the full-text search features provided by OpenSearch.
+==== [.eeonly]#(Deprecated) Settings of OpenSearchFulltextSearchService#
+This is the setting about the full-text search features provided by OpenSearch. +
+To use this function, please add the library iplass-ee-aws.
+
+[CAUTION]
+====
+AWS SDK for Java 1.x is in maintenance mode and will be discontinued in December 2025. +
+iPLAss recommends deprecating the AWS SDK for Java 1.x-based library iplass-ee-aws and moving to the AWS SDK for Java 2.x-based library iplass-ee-aws2. +
+With the support of iplass-ee-aws2, the opensearch functionality has been transferred to iplass-ee-opensearch. +
+If you are using this function, please migrate your settings to <<opensearch_OpenSearchFulltextSearchService>> in the library iplass-ee-opensearch. +
+The library iplass-ee-aws will be removed in the future.
+====
 
 ===== Configurable Items
 [cols="1,1,3", options="header"]
@@ -501,7 +511,7 @@ Please specify org.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.analyz
 [cols="1,1,3", options="header"]
 |===
 | Item | Value | Description
-| mode | co.elastic.clients.opensearch._types.analysis.KuromojiTokenizationMode | The tokenization mode
+| mode | org.opensearch.client.opensearch._types.analysis.KuromojiTokenizationMode | The tokenization mode
 | userDictionary | String | user_dictionary
 |===
 
@@ -534,24 +544,177 @@ Please specify org.iplass.mtp.impl.aws.fulltextsearch.opensearch.mappings.Analyz
 | searchQuoteAnalyzer | String | Analyzer name used for searches using phrases
 |===
 
-==== [.eeonly]#Settings of FulltextSearchSolrService#
-
-CAUTION: FulltextSearchSolrService will be removed in the future. It is recommended to use <<ElasticsearchFulltextSearchService, [.eeonly]#ElasticsearchFulltextSearchService#>> or <<OpenSearchFulltextSearchService, [.eeonly]#OpenSearchFulltextSearchService#>> is recommended.
-
-Configurable items for full text search using Solr are listed below.
+[[opensearch_OpenSearchFulltextSearchService]]
+==== [.eeonly]#Settings of OpenSearchFulltextSearchService#
+This is the setting about the full-text search features provided by OpenSearch. +
+To use this function, please add the library iplass-ee-opensearch.
 
 ===== Configurable Items
 [cols="1,1,3", options="header"]
 |===
 | Item | Value | Description
-| solrUrl | String, Multiple | URL of the prepared solr server.
-| solrMasterUrl | String | URL of the master server when using the replication function.
-| highlightPreTag | String | Start tag for highlights.
-| highlightPostTag | String | The end tag for the highlight.
+| restClientFactory | <<org.iplass.mtp.impl.fulltextsearch.opensearch.RestClientFactory>> | RestClientFactory setting.
+| transportFactory | <<org.iplass.mtp.impl.fulltextsearch.opensearch.OpenSearchTransportFactory>> | Sets the class that creates the OpenSearchTransport instance. If set at the same time as restClientFactory, the restClientFactory setting takes precedence.
+| analysisFactory | <<org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.AnalysisFactory>> | AnalysisFactory setting.
+| defaultAnalyzerProperty | <<org.iplass.mtp.impl.fulltextsearch.opensearch.mappings.AnalyzerProperty>> | AnalyzerProperty setting.
+| analyzerPropertyPerEntity | <<org.iplass.mtp.impl.fulltextsearch.opensearch.mappings.AnalyzerProperty>>, in format of Map | Specify the name of the entity definition as key and set the AnalyzerProperty instance as value.
+| defaultOperator | Operator | Operator. The operators that can be set are `AND`, `OR`, `And` or `Or`.
+|===
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.RestClientFactory]]
+.RestClientFactory
+Please specify the implementing class of org.iplass.mtp.impl.fulltextsearch.opensearch.RestClientFactory. + 
+
+he following RestClientFactory are provided as standard.
+
+- <<org.iplass.mtp.impl.fulltextsearch.opensearch.DefaultRestClientFactory>>
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.DefaultRestClientFactory]]
+.DefaultRestClientFactory
+Please specify org.iplass.mtp.impl.fulltextsearch.opensearch.DefaultRestClientFactory to the class. + 
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| openSearchUrl | String, Multiple | OpenSearch server URL
+| headers | String, in format of Map | Header that can be set when making a request, and can be specified in format of Map.
+| connectionTimeout | int | ConnectionTimeout value (milliseconds) when establishing http communication. The default value is -1.
+| soTimeout | int | SoTimeout value (milliseconds) when establishing http communication. The default value is -1.
+| proxyHost | String | proxyHost for http communication.
+| proxyPort | int | proxyPort for http communication.
+| userName | String | userName used for BASIC authentication
+| password | String | password used for BASIC authentication
+| httpRequestInterceptorFactory | <<org.iplass.mtp.impl.fulltextsearch.opensearch.HttpRequestInterceptorFactory>> | HttpRequestInterceptorFactory setting. Applies when userName and password values are not set.
+|===
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.HttpRequestInterceptorFactory]]
+.HttpRequestInterceptorFactory
+Please specify the implementing class of org.iplass.mtp.impl.fulltextsearch.opensearch.HttpRequestInterceptorFactory. +
+Factory class that generates `org.apache.http.HttpRequestInterceptor` for Apache HttpComponents4. +
+There are no functions provided as standard.
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.OpenSearchTransportFactory]]
+.OpenSearchTransportFactory
+Please specify the implementing class of org.iplass.mtp.impl.fulltextsearch.opensearch.OpenSearchTransportFactory. +
+Factory class that generates `org.opensearch.client.transport.OpenSearchTransport` for OpenSearch Client. +
+The following OpenSearchTransportFactory is provided by default.
+
+- <<org.iplass.mtp.impl.fulltextsearch.openserarch.awsv2.AwsSdk2OpenSearchTransportFactory>>
+
+[[org.iplass.mtp.impl.fulltextsearch.openserarch.awsv2.AwsSdk2OpenSearchTransportFactory]]
+.AwsSdk2OpenSearchTransportFactory
+Please specify the implementing class of org.iplass.mtp.impl.fulltextsearch.openserarch.awsv2.AwsSdk2OpenSearchTransportFactory. +
+Used to sign requests with AWS IAM credentials. Authentication information uses the <<aws2_AWSSetting>> setting. +
+The following items can be set
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| host | String | Set the host name of the service. Set the value excluding the scheme ( https:&#47;&#47; ).
+| serviceName | String a| Service Name. The service to be used determines the set value. 
+
+- `es` (Amazon OpenSearch)
+- `aoss` (Amazon OpenSearch Serverless)
+
+For more information, see link:https://opensearch.org/docs/latest/clients/java/#connecting-to-amazon-opensearch-service[Connecting to Amazon OpenSearch Service {vbar} Serverless^].
+| region | String | Specify the region where the service was built.
+|===
+
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.AnalysisFactory]]
+.AnalysisFactory
+This factory class is used when you want to define a custom Analyzer, etc.
+
+Please specify the implementing class of org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.AnalysisFactory.
+
+The following AnalysisFactory are provided as standard.
+
+- <<org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.DefaultAnalysisFactory>>
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.DefaultAnalysisFactory]]
+.DefaultAnalysisFactory
+Please specify org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.DefaultAnalysisFactory to the class.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| analyzer | <<org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.AnalyzerFactory>>, in format of Map | Specify the definition name of the entity definition as key and set the AnalyzerFactory instance as value.
+| charFilter | <<org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.charfilter.CharFilterFactory>>, in format of Map | Specify the definition name of the entity definition as key and set the CharFilterFactory instance as value.
+| filter | <<org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.filter.TokenFilterFactory>>, in format of Map | Specify the definition name of the entity definition as key and set the TokenFilterFactory instance as value.
+| tokenizer | <<org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.tokenizer.TokenizerFactory>>, in format of Map | Specify the definition name of the entity definition as key and set the TokenizerFactory instance as value.
+|===
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.AnalyzerFactory]]
+.AnalyzerFactory
+This factory class is used when you want to define a custom Analyzer.
+Please specify the implementing class of org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.AnalyzerFactory.
+
+The following AnalysisFactory are provided as standard.
+
+- <<org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.analyzer.CustomAnalyzerFactory>>
+- <<org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.analyzer.KuromojiAnalyzerFactory>>
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.analyzer.CustomAnalyzerFactory]]
+.CustomAnalyzerFactory
+It can define Analyzer by combining charFilter, tokenizer and filter.
+Please specify org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.analyzer.CustomAnalyzerFactory to the class.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| charFilter | String, Multiple | definition names of charFilter
+| filter | String, Multiple | definition names of filter
+| tokenizer | String, required | definition name of tokenizer
+|===
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.analyzer.KuromojiAnalyzerFactory]]
+.KuromojiAnalyzerFactory
+It can define a customized KuromojiAnalyzer.
+Please specify org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.analyzer.KuromojiAnalyzerFactory to the class.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| mode | org.opensearch.client.opensearch._types.analysis.KuromojiTokenizationMode | The tokenization mode
+| userDictionary | String | user dictionary
+|===
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.charfilter.CharFilterFactory]]
+.CharFilterFactory
+This factory class is used when you want to define a custom CharFilter.
+Please specify the implementing class of org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.AnalyzerFactory.
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.filter.TokenFilterFactory]]
+.TokenFilterFactory
+This factory class is used when you want to define a custom TokenFilter.
+Please specify the implementing class of org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.filter.TokenFilterFactory.
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.tokenizer.TokenizerFactory]]
+.TokenizerFactory
+This factory class is used when you want to define a custom Tokenizer.
+Please specify the implementing class of org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.tokenizer.TokenizerFactory.
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.mappings.AnalyzerProperty]]
+.AnalyzerProperty
+It is used when specifying Analyzer.
+Please specify org.iplass.mtp.impl.fulltextsearch.opensearch.mappings.AnalyzerProperty to the class. + 
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| analyzer | String | Analyzer name to use by default
+| searchAnalyzer | String | Analyzer name used for search
+| searchQuoteAnalyzer | String | Analyzer name used for searches using phrases
 |===
 
 ===== Example (when using LuceneFulltextSearchService)
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.fulltextsearch.FulltextSearchService</interface>
@@ -610,7 +773,7 @@ Configurable items for full text search using Solr are listed below.
 
 
 ===== Example (when using ElasticsearchFulltextSearchService)
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.fulltextsearch.FulltextSearchService</interface>
@@ -662,9 +825,10 @@ Configurable items for full text search using Solr are listed below.
 </service>
 ----
 
-===== Example (when using OpenSearchFulltextSearchService)
-[source, xml]
+===== Example (Deprecated)(when using OpenSearchFulltextSearchService)
+[source,xml]
 ----
+<!-- OpenSearch configuration using classes from the iplass-ee-aws project. This configuration is deprecated. -->
 <service>
 	<interface>org.iplass.mtp.impl.fulltextsearch.FulltextSearchService</interface>
 	<class>org.iplass.mtp.impl.aws.fulltextsearch.opensearch.OpenSearchFulltextSearchService</class>
@@ -718,8 +882,72 @@ Configurable items for full text search using Solr are listed below.
 </service>
 ----
 
+===== Example (when using OpenSearchFulltextSearchService)
+[source,xml]
+----
+<!-- OpenSearch configuration using classes from the iplass-ee-opensearch project. -->
+<service>
+	<interface>org.iplass.mtp.impl.fulltextsearch.FulltextSearchService</interface>
+	<class>org.iplass.mtp.impl.fulltextsearch.opensearch.OpenSearchFulltextSearchService</class>
+	
+	<property name="useFulltextSearch" value="true" />
+	<property name="maxRows" value="1000" />
+    <property name="throwExceptionWhenOverLimit" value="true"/>
+
+	<property name="restClientFactory" class="org.iplass.mtp.impl.fulltextsearch.opensearch.DefaultRestClientFactory" >
+		<property name="openSearchUrl" value="{SCHEME}://{ADDRESS}:{PORT}"/>
+		<property name="userName" value="openSearchUserName" />
+		<property name="password" value="openSearchPassword" />
+	</property>
+
+	<!-- To use AWS authentication, comment out restClientFactory and enable the following settings. AWSSetting must also be set. -->
+	<!--
+	<property name="transportFactory"  class="org.iplass.mtp.impl.fulltextsearch.openserarch.awsv2.AwsSdk2OpenSearchTransportFactory">
+		<property name="host" value="{ADDRESS}:{PORT}" />
+		<property name="serviceName" value="es or aoss" />
+		<property name="region" value="ap-northeast-1" />
+	</property>
+	-->
+
+	
+	<property name="analysisFactory" class="org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.DefaultAnalysisFactory">
+        <property name="analyzer" >
+            <property name="my_kuromoji" class="org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.analyzer.KuromojiAnalyzerFactory">
+                <property name="mode" value="Search"/>
+                <property name="method" value="Nfc"/>
+            </property>
+        </property>
+    </property>
+	
+	<!--
+	Example of a configuration that uses my_kuromoji for testEntity, and otherwise uses kuromoji.
+	-->
+    <property name="defaultAnalyzerProperty" >
+        <property name="analyzer" value="kuromoji"/>
+    </property>
+    <property name="analyzerPropertyPerEntity" >
+        <property name="testEntity" class="org.iplass.mtp.impl.fulltextsearch.opensearch.mappings.AnalyzerProperty">
+            <property name="analyzer" value="my_kuromoji"/>
+        </property>
+    </property>
+
+	<property name="defaultOperator" value="AND" />
+
+	<property name="binaryParseLimitLength" value="100000"/>
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryPDFParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryOOXMLParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryOfficeParser">
+		<property name="continuableExceptions" value="org.apache.poi.poifs.filesystem.NotOLE2FileException" />
+	</property>
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryHtmlParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryTextParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryXMLParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryNameTypeParser" />
+</service>
+----
+
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <!--
 	■Full-Text Search Service
@@ -731,10 +959,6 @@ Configurable items for full text search using Solr are listed below.
 									false -> Displays the message about the excessiveness of the records, and the system will display the search results.
 	indexWriterRAMBufferSizeMB：	Set the memory cache size when creating an index.
 	redundantTimeMinutes：			Index processing is performed on the data after "Last index update date and time-redundantTimeMinutes".
-
-	□ use to solr
-	solrUrl：
-		Set url of solr server.
 
 	□ use to lunece
 	directory：
@@ -748,13 +972,21 @@ Configurable items for full text search using Solr are listed below.
 	defaultAnalyzerProperty：
 		Set the analyzer to use
 
-	□ use to OpenSearch
+	□ (Deprecated) use to OpenSearch
 	openSearchUrl：
 		Set url of OpenSearch server.
 	defaultAnalyzerProperty：
 		Set the analyzer to use
 
-
+	□ use to OpenSearch
+	When setting DefaultRestClientFactory to restClientFactory
+		openSearchUrl：
+			Set url of OpenSearch server.
+	When setting AwsSdk2OpenSearchTransportFactory to transportFactory
+		host：
+			Set url of OpenSearch server without scheme.
+	defaultAnalyzerProperty：
+		Set the analyzer to use
 -->
 <service>
 	<interface>org.iplass.mtp.impl.fulltextsearch.FulltextSearchService</interface>
@@ -799,12 +1031,6 @@ Configurable items for full text search using Solr are listed below.
 	<!-- Return only name and type for all binary files -->
 	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryNameTypeParser" />
 
-	<!-- using solr -->
-	<!--
-	<class>org.iplass.mtp.impl.fulltextsearch.FulltextSearchSolrService</class>
-	<property name="solrUrl" value="http://ADDRESS:PORT/solr/coreName/" />
-	 -->
-
 	<!-- using lucene -->
 	<class>org.iplass.mtp.impl.fulltextsearch.lucene.LuceneFulltextSearchService</class>
 	<property name="directory" value="D:\tmp\lucene" />
@@ -848,7 +1074,7 @@ Configurable items for full text search using Solr are listed below.
     </property>
 	-->
 
-	<!-- using OpenSearch -->
+	<!-- (Deprecated) using OpenSearch -->
 	<!--
 	<class>org.iplass.mtp.impl.aws.fulltextsearch.opensearch.OpenSearchFulltextSearchService</class>
 	<property name="restClientFactory" class="org.iplass.mtp.impl.aws.fulltextsearch.opensearch.DefaultRestClientFactory" >
@@ -877,6 +1103,34 @@ Configurable items for full text search using Solr are listed below.
     </property>
 	-->
 
+	<!-- using OpenSearch -->
+	<!--
+	<class>org.iplass.mtp.impl.fulltextsearch.opensearch.OpenSearchFulltextSearchService</class>
+	<depend>org.iplass.mtp.impl.awsv2.AWSSetting</depend>
+
+	<property name="transportFactory"  class="org.iplass.mtp.impl.fulltextsearch.openserarch.awsv2.AwsSdk2OpenSearchTransportFactory">
+		<property name="host" value="{ADDRESS}:{PORT}" />
+		<property name="serviceName" value="es or aoss" />
+		<property name="region" value="ap-northeast-1" />
+	</property>
+	
+	<property name="analysisFactory" class="org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.DefaultAnalysisFactory">
+        <property name="analyzer" >
+            <property name="my_kuromoji" class="org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.analyzer.KuromojiAnalyzerFactory">
+                <property name="mode" value="Search"/>
+                <property name="method" value="Nfc"/>
+            </property>
+        </property>
+    </property>
+    <property name="defaultAnalyzerProperty" >
+        <property name="analyzer" value="kuromoji"/>
+    </property>
+    <property name="analyzerPropertyPerEntity" >
+        <property name="testEntity" class="org.iplass.mtp.impl.fulltextsearch.opensearch.mappings.AnalyzerProperty">
+            <property name="analyzer" value="my_kuromoji"/>
+        </property>
+    </property>
+	-->
 </service>
 ----
 

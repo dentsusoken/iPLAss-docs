@@ -4,9 +4,23 @@
 === WebApi定義（AdminConsole）
 
 ==== WebApi定義の作成
-WebApiアイコンを右クリックして「WebApiを作成する」を選択してください。
+WebApiアイコンを右クリックして「WebApiを作成する」を選択してください。 +
+その後、WebApiの定義情報を入力しWebApiを作成することができます。
+
+.WebApi作成：WebApiを作成する
+image::images/command/webapi_create1.png[]
+
+.WebApi作成：定義情報の入力
+image::images/command/webapi_create2.png[]
+
+.WebApi作成：作成後の画面
+image::images/command/webapi_create3.png[]
+
 
 ==== WebApiの設定項目
+
+.WebApi設定画面
+image::images/command/webapi_configuration.png[]
 
 ===== 共通設定
 `name` はAPIを呼び出す際のURLのパスとなります。
@@ -38,11 +52,16 @@ PUT http(s)://[server]/[tenantContextPath]/api/mtp/entity
 .AllowMethod
 [cols="1,3a",options="header"]
 |===
-|項目|内容
-|Allow Method|アクセス可能なHTTPメソッド（GET, POST, PUT, DELETE）を指定します。 +
+|項目
+|内容
+
+|Allow Method
+|アクセス可能なHTTPメソッド（GET, POST, PUT, DELETE, PATCH）を指定します。 +
 全てチェックされていない場合は全メソッドでのアクセスが可能です。
 デフォルトでは全てチェックされていない状態となります。 +
-ひとつでもチェックされている場合は、チェックされているメソッドでのみアクセスが可能となります。
+ひとつでもチェックされている場合は、チェックされているメソッドのみアクセスが可能となります。
+
+CAUTION: SOAP 形式は PATCH メソッドに対応していません。
 |===
 [[synchronize_on_session]]
 .Access Policy
@@ -140,20 +159,22 @@ CAUTION: Max Ageの値を指定しない場合、ブラウザにより挙動が�
 .Restriction of Request
 [cols="1,3a",options="header"]
 |===
-|項目|内容
-|Allow Request Content Types|
-許可するcontentTypeを指定します。未指定の場合は全て許可します。 +
-複数のcontentTypeを指定する場合は、半角スペースで区切ってください。
+|項目
+|内容
 
-NOTE: WebApiは、`applicaiton/json` `applicaiton/xml` `application/x-www-form-urlencoded` `multipart/form-data`
-にのみ対応しているため、この範囲内での指定になります。
+|Allow Request Content Types
+|許可するContent-Typeを指定します。未指定の場合は全て許可します。 +
+複数のContent-Typeを指定する場合は、半角スペースで区切ってください。
 
-|Max Request Body Size|
-リクエストボディの最大サイズ(Byte)を指定します。 +
-contentTypeが `application/x-www-form-urlencoded` の場合は適用されません。
+NOTE: REST OTHERS 形式の WebAPIで本項目を設定しない場合、`applicaiton/json` `applicaiton/xml` `application/x-www-form-urlencoded` `multipart/form-data` 以外の全ての Content-Type を許容する設定となります。
+REST OTHERS を利用する場合は、必要な Content-Type に限定することを推奨します。
 
-|Max File Size|
-リクエストされるファイルの最大サイズ(Byte)を指定します。
+|Max Request Body Size
+|リクエストボディの最大サイズ(Byte)を指定します。 +
+Content-Typeが `application/x-www-form-urlencoded` の場合は適用されません。
+
+|Max File Size
+|リクエストされるファイルの最大サイズ(Byte)を指定します。
 |===
 
 .CORS
@@ -199,7 +220,12 @@ scopeC
 |===
 |項目|内容
 |Request Type|許可するリクエストの種類を選択します。 +
-REST FORM、REST JSON、REST XML、[.eeonly]#SOAP WSDL# の4種類が選択可能です。
+REST FORM、REST JSON、REST XML、[.eeonly]#SOAP WSDL#、REST OTHERS の5種類が選択可能です。 +
+デフォルトでは全てチェックされていない状態となります。
+
+全てチェックされていない場合は REST FORM、REST JSON、REST XML、[.eeonly]#SOAP WSDL# でのアクセスが可能です。 +
+ひとつでもチェックされている場合は、チェックされているメソッドのみアクセスが可能となります。 +
+REST OTHERS に該当するリクエストを許可する場合は、明示的にチェックが必要となります。
 
 |REST JSON parameter|
 `Request Type` で `REST JSON` を選択した場合のみ設定可能です。
@@ -208,22 +234,25 @@ REST FORM、REST JSON、REST XML、[.eeonly]#SOAP WSDL# の4種類が選択可�
 WebApiのクライアントからは、JSONは次の形で指定します。
 
 GET, DELETEの場合:: `parameter name` に指定した名前でクエリストリングに指定します
-POST, PUTの場合:: リクエストボディにJSON文字列を指定します
+POST, PUT, PATCHの場合:: リクエストボディにJSON文字列を指定します
 
 サーバ側では、JSON文字列を、 `parameter type` で指定したクラスに変換します。 `parameter type` 未指定の場合は `java.util.Map` として変換されます。
+`parameter type` に `java.io.Reader` を指定した場合はJSON文字列をReader経由でそのまま取得可能です。
 
 変換されたオブジェクトは、RequestContextから `parameter name` で指定したキー名でattributeから取得可能です。
 
 .例
 parameter nameにvalueXを指定し、parameter typeにSomeTypeを指定した場合、
 ----
-SomeType valueX = (SomeType) request#getAttribute("valueX")
+SomeType valueX = (SomeType) request.getAttribute("valueX")
 ----
 で取得可能です。
 
 NOTE: `parameter name` の設定値が `param` 且つ `parameter type` が `java.util.Map` （もしくは未指定）の場合、 +
 `request.getParam("keyX")` でMap内の値を取得することが可能です。
 
+`Acceptable Content Type` は `application/json` 以外の Content-Type を受け付ける場合に設定します。複数指定する場合はカンマ区切りで設定します。 +
+（設定例： `application/vnd.api+json, application/vnd.collection+json`）
 
 |REST XML Parameter|
 `Request Type` で `REST XML` を選択した場合のみ設定可能です。
@@ -232,11 +261,14 @@ NOTE: `parameter name` の設定値が `param` 且つ `parameter type` が `java
 WebApiのクライアントからは、XMLは次の形で指定します。
 
 GET, DELETEの場合:: `parameter name` に指定した名前でクエリストリングに指定します
-POST, PUTの場合:: リクエストボディにXML文字列を指定します
+POST, PUT, PATCHの場合:: リクエストボディにXML文字列を指定します
 
 サーバ側ではXML文字列をJAXBにより変換します。
 変換可能なオブジェクトはservice-configのWebApiJAXBServiceに設定されたクラスとなります。
 設定については、 <<../../serviceconfig/index.adoc#WebApiJaxbService,WebApiJAXBService>> を参照してください。
+
+また、サーバ側でXMLをマッピングするクラスを明示的に指定したい場合は、`parameter type`  にクラス名を指定します。
+`parameter type` に `java.io.Reader`  を指定した場合はXML文字列をReader経由でそのまま取得可能です。
 
 変換されたオブジェクトは、RequestContextから `parameter name` で指定したキー名でattributeから取得可能です。
 
@@ -246,6 +278,9 @@ parameter nameにvalueXを指定し、SomeTypeがWebApiJAXBServiceに設定さ�
 SomeType valueX = (SomeType) request.getAttribute("valueX")
 ----
 で取得可能です。
+
+`Acceptable Content Type` は `application/xml` 以外の Content-Type を受け付ける場合に設定します。複数指定する場合はカンマ区切りで設定します。 +
+（設定例： `application/xhtml+xml, application/svg+xml`）
 
 |Response Type|
 許可するレスポンスのタイプを指定します。 +
@@ -277,12 +312,15 @@ WebApi呼び出し時に実行されるCommandです。 +
 |Init Script|Commandのインスタンスの初期化ロジックが設定されているか否かを表示します。
 |===
 
+[[webapi_configuration_results]]
 .Results
 [cols="1,3a",options="header"]
 |===
-|項目|内容
-|Attribute Name|
-レスポンスとして返すアトリビュート名を設定します。 +
+|項目
+|内容
+
+|Attribute Name
+|レスポンスとして返すアトリビュート名を設定します。 +
 Command内で `RequestContext#setAttribute(attribute name)` で値を設定してください。
 
 返却可能な型は以下となります。 
@@ -294,6 +332,88 @@ Command内で `RequestContext#setAttribute(attribute name)` で値を設定し�
 
 レスポンスとして返却するデータ構造をカスタマイズすることが可能です。 +
 カスタマイズについては<<WebApi-Result,返却値について>>を参照ください。
+
+|Data Type
+|任意の設定項目です。レスポンスとして返すデータの型を指定します。 + 
+設定する値は、Java の完全修飾クラス名を指定してください。 +
+設定することで OpenAPI 出力時にレスポンスのデータ型に反映されます。
+
+OpenAPIの出力については、link:../support/index.html#tools_openapi_support[開発・運用サポート - OpenAPISupport^] を参照してください。
+|===
+
+[[webapi_openapi_configuration]]
+===== OpenAPI設定（任意設定項目）
+WebAPI 設定画面の OpenAPI セクションで設定する項目です。 +
+本セクションでは、WebAPIの動作に直接影響しない設定項目や、開発用の設定項目を管理します。
+
+[[webapi_openapi_configuration_stub]]
+====== スタブ
+WebAPI のスタブを有効化することで、コマンドの実装・設定をせずに任意のレスポンスを返却することが可能です。 +
+本設定項目は、開発時に利用することを想定しています。 +
+スタブ機能を利用するには、link:../../serviceconfig/index.html#WebApiService[Service-Config - WebApiService^] の enableStubResponse を設定する必要があります。
+
+.スタブ設定画面
+image::images/command/webapi_configuration_openapi_stub.png[]
+
+.Stub Contents設定画面
+image::images/command/webapi_configuration_openapi_stub_edit_stub_contents.png[]
+
+.スタブ設定項目
+[cols="1,3a",options="header"]
+|===
+|項目
+|内容
+
+| Return Stub Response
+| チェックされている場合、WebAPI が実行された際に Stub Default Content, Stub Contents に設定した値を利用してレスポンスを返却します。
+
+| Stub Default Content
+| スタブレスポンスのデフォルトコンテンツ設定します。 Response Type で指定したいずれかの形式に合わせてスタブコンテンツを設定してください。 +
+本設定値は、Stub Contents に該当するレスポンスが設定されていない場合のデフォルト値として利用されます。
+
+| Stub Contents
+| スタブコンテンツを設定します。コンテンツは以下の項目で構成されおり、全て入力が必須です。
+
+[cols="1,3",options="header"]
+!===
+!項目
+!内容
+
+! Content Type
+! スタブの Content Type を設定します。Response Type に設定されている Content Type のいずれかを設定してください。
+
+! Label
+! スタブコンテンツの識別用ラベルです。 +
+Content Type 当たりのスタブレスポンスを複数設定する場合、リクエストのクエリ文字列 `mtp_stub_label` に設定した値が使用されます。 +
+リクエストのクエリ文字列 `mtp_stub_label` の設定が無い場合や、`mtp_stub_label` に該当する値が存在しない場合はランダムに選択されます。
+
+クエリ文字列の例： ?mtp_stub_label=stubJson1 +
+リクエストに適用した例： https://example.com/iplass/tenant/api/stubApi?mtp_stub_label=stubJson1
+
+! Content
+! スタブのレスポンス本体を設定します。Response Type に設定されている形式に合わせて記載してください。
+!===
+|===
+
+[[webapi_openapi_configuration_openapispec]]
+====== OpenAPI Spec.
+WebAPI の OpenAPI を管理することが可能です。本設定項目は WebAPI の動作に影響しません。 +
+記載した OpenAPI は、link:../support/index.html#tools_openapi_support[開発・運用サポート - OpenAPISupport^] から出力することが可能です。
+
+.OpenAPI設定画面
+image::images/command/webapi_configuration_openapi_openapispec.png[]
+
+.OpenAPI 設定項目
+[cols="1,3a",options="header"]
+|===
+|項目
+|内容
+
+| OpenAPI Version
+| OpenAPI のバージョンを指定します。3.1, 3.0 のいずれかを選択します。
+
+| OpenAPI Spec
+| OpenAPI 仕様を指定します。YAML, JSON のいずれかの形式で指定可能です。
 |===
 
 [[WebApi-Param-Mapping]]
@@ -355,6 +475,68 @@ viewName=hoge, defName=fuga
 
 となります。
 
+[[webapi-attributes]]
+=== 属性値
+属性値として値を保持しています。属性値のスコープはリクエストスコープとなります。 +
+保持している値は、HttpServletRequest や Httpヘッダーなどがあります。
+
+[[webapi-attributes-get]]
+==== 属性値の取得
+属性値を取得するには、 `RequestContext#getAttribute` メソッドを使用します。 +
+WebApi から実行されるコマンドで一般的に取得可能な属性値のキーは `org.iplass.mtp.webapi.WebApiRequestConstants` に定義されています。詳細は当該クラスのJavadocを参照してください。
+
+.属性値の取得例
+[source,java]
+----
+import org.iplass.mtp.command.Command;
+import org.iplass.mtp.command.RequestContext;
+
+public class CommandImpl implements Command {
+    public String execute(RequestContext request) {
+        Object attributeValue = request.getAttribute("attributeName"); // <1>
+
+        // : 
+        // :
+
+        return "SUCCESS";
+    }
+}
+----
+<1> "attributeName" で指定した属性値を取得します。
+
+[[webapi-attributes-get-request-body-rest-others]]
+==== リクエスト本文取得（REST 形式 REST_OTHERS）
+REST 形式 REST_OTHERS の場合、リクエスト本文は Command の処理でパースする必要があります。 +
+リクエスト本文は以下のように取得することができます。
+
+.REST_OTHERSのリクエスト本文の取得方法
+[source,java]
+----
+import java.io.InputStream;
+
+import org.iplass.mtp.command.Command;
+import org.iplass.mtp.command.RequestContext;
+import org.iplass.mtp.webapi.WebApiRequestConstants;
+
+public class RestOthersCommandImpl implements Command {
+    public String execute(RequestContext request) {
+        try (InputStream body = (InputStream)request.getAttribute(WebApiRequestConstants.REQUEST_BODY)) { // <1>
+            String characterEncoding = (String)request.getAttribute(WebApiRequestConstants.REQUEST_CHARACTER_ENCODING); // <2>
+
+            // requestBody, characterEncoding を利用してリクエスト本文をパースし処理を行う
+
+            return "SUCCESS";
+
+        } catch (IOException e) {
+            // 例外時の処理
+            return "FAIL";
+        }
+    }
+}
+----
+<1> HttpServletRequest#getInputStream() と同等の InputStream を取得できます。
+<2> リクエスト本文の文字エンコーディングを取得できます。
+
 [[WebApi-Command]]
 === Commandの設定
 APIが呼ばれた際に実行するCommandとその処理方法を設定します。
@@ -382,7 +564,7 @@ SUPPORTS::
 |Rollback when exception |Command実行時に例外がスローされた場合、
 自動的にトランザクションをロールバックするか否かを指定します。
 |Throw Exception if setRollbackOnly |トランザクションが本Command処理用に新規作成された際、
-且つCommand処理中にsetRoobackOnlyされた場合、かつ明示的に例外がスローされなかった場合、iPLAss側で例外扱い（ `org.iplass.mtp.transaction.RollbackException` をスロー）にするか否かの設定です。
+且つCommand処理中にsetRollbackOnlyされた場合、かつ明示的に例外がスローされなかった場合、iPLAss側で例外扱い（ `org.iplass.mtp.transaction.RollbackException` をスロー）にするか否かの設定です。
 |Init Script | Commandのインスタンスの初期化Script（Groovy Script）を指定可能です。
 
 対象となるCommandのインスタンスは `cmd` としてバインドされています。 +
@@ -422,9 +604,9 @@ NOTE: 通常はインスタンスが複数のリクエストで共有される�
 自動的にトランザクションをロールバックするか否かを指定します。
 
 |Throw Exception if setRollbackOnly |トランザクションが本複合Command処理用に新規作成された際、
-且つCommand処理中にsetRoobackOnlyされた場合、かつ明示的に例外がスローされなかった場合、iPLAss側で例外扱い（ `org.iplass.mtp.transaction.RollbackException` をスロー）にするか否かの設定です。
+且つCommand処理中にsetRollbackOnlyされた場合、かつ明示的に例外がスローされなかった場合、iPLAss側で例外扱い（ `org.iplass.mtp.transaction.RollbackException` をスロー）にするか否かの設定です。
 
-|Initilize Script |
+|Initialize Script |
 複数のCommandの初期化処理のスクリプトを設定可能です。
 あらかじめ変数の `cmd` にCommandのインスタンスが配列でバインドされています。
 
@@ -516,12 +698,12 @@ return "SUCCESS";
 * 返却値が１つである
 * 上記の返却値に設定されたオブジェクトが、以下のいずれかであること
 
-- javax.ws.rs.core.StreamingOutput
-- javax.ws.rs.core.Response.ResponseBuilder
+- jakarta.ws.rs.core.StreamingOutput
+- jakarta.ws.rs.core.Response.ResponseBuilder
 
-NOTE: ResponseBuilderにおいては、HTTPステータスやContentTypeもカスタマイズすることが可能です。
+NOTE: ResponseBuilderにおいては、HTTPステータスやContent-Typeもカスタマイズすることが可能です。
 
-.例 : javax.ws.rs.core.StreamingOutput +
+.例 : jakarta.ws.rs.core.StreamingOutput +
 * ソース +
 +
 [source,groovy]
@@ -531,8 +713,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.StreamingOutput;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.StreamingOutput;
 
 ...
 
@@ -559,15 +741,15 @@ return "SUCCESS";
 test1
 ----
 
-.例 : javax.ws.rs.core.Response.ResponseBuilder +
+.例 : jakarta.ws.rs.core.Response.ResponseBuilder +
 * ソース +
 +
 [source,groovy]
 ----
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
+import jakarta.ws.rs.core.Response.Status;
 
 ...
 

@@ -96,7 +96,7 @@ There is no configurable items for this configuration options.
 ////
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.core.TenantContextService</interface>

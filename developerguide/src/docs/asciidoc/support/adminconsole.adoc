@@ -423,6 +423,9 @@ Abort Log Fatal:: 処理を中断し、FATALとしてログ出力します。
 LogExplorerは、テナントのログ出力設定を行ったり、ログファイルをダウンロードする機能です。
 出力可能なフォルダやファイル名パターンは、service-configの<<../../serviceconfig/index.adoc#AdminConsoleService, AdminConsoleService>>で指定します。
 
+NOTE: Limitについて、service-configの `logHome` として指定されたフォルダを、複数ある場合は先頭から順番に検索し、各フォルダに対して、 `File#listFiles()` により取得される順番でLimitまでファイルを取得します。
+画面上でのファイル名などでのソート指定（降順指定など）は、Limitまで取得されたデータに適用されます。ファイル名をソートした状態に対して、Limitをチェックするわけではありません。
+
 .ログ出力条件の設定
 動的にログ出力条件を変更することが可能です。
 「一時的にある特定ユーザーの操作のみ、DEBUGレベルで出力する。」といったことが可能です。
@@ -456,3 +459,50 @@ auth:: AuthContextを参照可能です。
 
 未指定の場合は、すべてのログ出力にこのログ設定が適用されます。
 |===
+
+[[tools_openapi_support]]
+=== OpenAPISupport
+OpenAPI 仕様をサポートするツールです。以下の機能を用意しています。
+
+- <<tools_openapi_support_export>>
+- <<tools_openapi_support_import>>
+
+OpenAPI バージョンは「3.1 / 3.0」、入出力フォーマットは「YAML / JSON」を選択することができます。
+
+.OpenAPISupportメイン画面
+image::images/adminconsole_tools_openapi_support.png[]
+
+
+[[tools_openapi_support_export]]
+==== OpenAPI エクスポート機能（WebAPI Entity CRUD API）
+OpenAPI 仕様をエクスポートする機能です。WebAPI, Entity CRUD API が対象となります。 +
+画面に表示された WebAPI, Entity CRUD API の一覧から、エクスポートしたいものを選択し、メイン画面の `Export` ボタンをクリックします。
+
+[NOTE]
+====
+WebAPI は定義されているメタデータが全て表示されます。 +
+Entity CRUD API は権限が設定されている場合に一覧に表示されます。詳細は、link:../webapi/index.html#entity_crud_api_permission[WebAPI - Entity CRUD API 権限設定]を参照してください。
+====
+
+.エクスポートダイアログ
+image::images/adminconsole_tools_openapi_support_export_dialog.png[]
+
+バージョン、ファイルタイプを選択し、ダイアログの `Export` ボタンをクリックすると OpenAPI 仕様のファイルがダウンロードできます。
+
+
+[[tools_openapi_support_import]]
+==== OpenAPI インポート機能（WebAPI）
+OpenAPI 仕様から簡易的に WebAPI をインポートする機能です。 +
+メイン画面の `Import` ボタンをクリックすると、インポートダイアログが表示されます。
+
+.インポートダイアログ
+image::images/adminconsole_tools_openapi_support_import_dialog.png[]
+
+インポートファイル、バージョンを選択し、ダイアログの `Import` ボタンをクリックすると OpenAPI 仕様を WebAPI としてインポートします。
+インポート結果はダイアログ下部の Log に表示されます。
+
+[WARNING]
+====
+本機能はWebAPIの簡易的なインポート機能です。すべての設定項目は設定されません。 +
+WebAPIの定義をメタデータとして完全な形式で管理する場合は、<<MetaDataExplorer>>を利用してください。
+====

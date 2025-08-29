@@ -21,7 +21,7 @@ SMSTemplateアイコンを右クリックして「SMSテンプレートを作成
 例として、英語のSMSテンプレートを送信する場合、言語設定情報バインド名に「sampleLangKey」と設定。
 メッセージ生成処理にて下記をバインド変数として渡します。
 
-[source, java]
+[source,java]
 ----
 Map<String, Object> bindings = new HashMap<String, Object>();
 bindings.put("sampleLangKey", "en");
@@ -51,7 +51,7 @@ SMS送信時の基本設定はservice-configの<<../../serviceconfig/index.adoc#
 EntityのEventListenerを利用して、宛先を設定すればメッセージが出せます。SmsMailManagerを利用するコード実装も可能です。
 SmsMailManagerを利用したメッセージ送信は以下のように実装します。
 
-[source, java]
+[source,java]
 ----
 import org.iplass.mtp.sms.SmsMail;
 import org.iplass.mtp.sms.SmsMailManager;

@@ -85,7 +85,7 @@ Micrometerによるメトリクス収集機能を追加したSendSmsMailListener
 設定変更可能な項目はありません。
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.sms.SmsService</interface>

@@ -1,14 +1,14 @@
 [[Java_JSP_Setup]]
 == セットアップ
-サンプルアプリケーションのセットアップ説明です。 + 
-もし、既にiPLASSの<<../../gettingstarted/installguide/index#,開発環境の構築>>と<<../../gettingstarted/index#_チュートリアル,チュートリアル>>を実行できた方で、サンプルアプリケーションを動かしたい場合、以下の手順に従って実施してみてください。 + 
-それ以外の方は<<../../gettingstarted/installguide/index#,開発環境の構築>>を先に実施することをお勧めします。
+サンプルアプリケーションのセットアップに関する説明です。 +
+もし、既にiPLAssの<<../../gettingstarted/installguide/index#,開発環境の構築>>と<<../../gettingstarted/index#_チュートリアル,チュートリアル>>を実行できており、サンプルアプリケーションを動かしたい場合、以下の手順に従って実施してください。 +
+それ以外の場合は、<<../../gettingstarted/installguide/index#,開発環境の構築>>を先に実施することをお勧めします。
 
 * サンプルアプリケーションのプロジェクトをlink:https://github.com/dentsusoken/iplass-sample-app[GitHub]から取得してプロジェクトを作成します。プロジェクトの作成手順は<<../../gettingstarted/installguide/index#_プロジェクトの作成,プロジェクトの作成>>を参照してください。
 +
 [TIP]
 ====
-サンプルコードで Java8 より上のバージョンのスタイルでコーディングする場合は build.gradle の javaVersion を使用したい Java のバージョンに書き換えてください。 +
+サンプルコードで Java21 より上のバージョンのスタイルでコーディングする場合は build.gradle の javaVersion を使用したい Java のバージョンに書き換えてください。 +
 書き換えた後はGradleプロジェクトのリフレッシュを行い、エラーが出ないことを確認してください。
 
 .build.gradle
@@ -19,7 +19,7 @@ apply plugin: 'war'
 apply plugin: 'eclipse-wtp'
 
 ext {
-	javaVersion = JavaVersion.VERSION_1_8 <1>
+	javaVersion = JavaVersion.VERSION_21 <1>
 }
 
 ----------------------------------------以下略----------------------------------------
@@ -32,9 +32,9 @@ ext {
 +
 [NOTE]
 このサンプルアプリは<<../../gettingstarted/installguide/index#,開発環境の構築>>の章で作成したテナントで動かすことを想定しています。もし新規テナントで
-サンプルアプリを起動したい場合、以下の手順を実施してください。それ以外の場合、次の [underline]#サンプルアプリの起動手順# を参照してくだい。
+サンプルアプリを起動したい場合、以下の手順を実施してください。
 +
-** service-configに以下の設定を入れ替えます。
+** mtp-service-config.xmlに以下の設定を入れます。
 +
 [source,xml]
 -----
@@ -65,7 +65,7 @@ ext {
 	</service>
 -----
 <1> データソース利用に関する設定項目をコメントアウトします。
-<2> ドライバ利用に関する設定項目を追加します。
+<2> DriverManager利用に関する設定項目を追加します。
 <3> テナント作成時はDBA権限を持つユーザーを設定してください。
 <4> クラスパスが通っている場所にJDBCドライバを配置します。
 
@@ -76,16 +76,15 @@ ext {
 . ダイアログで `name（テナント名）` 、 `AdminUserId（管理者ユーザーID）` 、 `AdminUserPassword（管理者ユーザーパスワード）` を入力し、 `Create` をクリックします。
 
 [IMPORTANT]
-サンプルアプリではデータベースへの接続方法がデータソースを利用することを想定していますが、テナントを作成する処理の `runTenantBatch` タスクではデータソースに関する設定を利用できないため、一時的に接続方法をデータソース利用からドライバ利用に変えます。　+
-テナント作成が完了しましたら、データソースを利用する設定に戻してください。
+サンプルアプリでは、データベースへの接続方法にDataSourceを利用することを想定していますが、テナントを作成する処理の `runTenantBatch` タスクではDataSourceに関する設定を利用できないため、一時的に接続方法をDataSource利用からDriverManager利用に変えます。テナント作成後は、再度DataSourceを利用する設定に戻してください。
 
 * 以下のサンプルアプリの起動手順を順に実施してください。
 
 [[Java_JSP_Setup_startup]]
 .サンプルアプリの起動手順
 
-. サンプルではデータソースを利用しますので、Tomcatのコンテキスト設定にmtp-service-config.xmlに書いてあるデータソースに対する定義を入れます。 + 
-それに、Tomcatの `lib` フォルダに該当するjdbcドライバーを入れます。
+. サンプルアプリでは、DataSourceを利用するため、mtp-service-config.xmlでDataSource名を設定します。また、Tomcatのコンテキスト設定にDataSourceの接続情報を入れます。 +
+また、Tomcatの `lib` フォルダに利用するDBに該当するJDBCドライバを入れます。
 +
 [cols="1,2"]
 |===
@@ -113,7 +112,7 @@ h|ファイル名|/src/main/resources/mtp-service-config.xml
 
 </service>
 ----
-<1> サンプルアプリ実行用のデータソース名
+<1> サンプルアプリ実行用のDataSource名
 +
 <<../../gettingstarted/installguide/index#,開発環境の構築>>の章で作成したデータベースの接続情報をインストールしたTomcatの次の設定ファイルに入れます。
 +
@@ -136,9 +135,9 @@ h|ファイル名|/src/main/resources/mtp-service-config.xml
                 
 </Context>
 ----
-<1> Tomcatのコンテキスト設定に該当するデータソースの設定を入れます。
+<1> Tomcatのコンテキスト設定に該当するデータベースの接続情報を入れます。
 
-. サンプルが全文検索機能（lucene）を利用しますので、mtp-service-config.xmlに書いてあるINDEXデータファイルの仮の保存場所をローカル環境の適当な場所に変えます。
+. サンプルアプリでは、全文検索機能（lucene）を利用するため、mtp-service-config.xmlに記載のあるINDEXファイルの保存場所をローカル環境の適当な場所に変えます。
 +
 [cols="1,2"]
 |===
@@ -162,17 +161,17 @@ h|ファイル名|/src/main/resources/mtp-service-config.xml
 </service>
 ----
 <1> useFulltextSearchをtrueに設定します。
-<2> INDEXファイル保存場所をローカルパスに設定します。
+<2> INDEXファイル保存場所をローカルパスの適当な場所に設定します。
 
 . Tomcatを起動し、`http://localhost:8080/コンテキスト名/テナント名/gem/` にアクセスすると、ログイン画面が表示されます。管理者ユーザーIDとパスワードでログインします。
 
-. Admin Consoleの `Packaging` 機能を利用してプロジェクトのsample-dataフォルダにあるサンプル実行用のデータをインポートします。
+. Admin Consoleの `Packaging` 機能を利用して、プロジェクトの `sample-data` フォルダにあるサンプル実行用のデータをインポートします。
 +
-「entitydata.zip」ファイルを、AdminConsoleの「Packaging」ツールで取り込んでください。
+「entitydata.zip」ファイルを、Admin Consoleの「Packaging」ツールで取り込んでください。
 +
 image::images/sample-ec_java-jsp-setup-package-upload.png[align=left]
 +
-デフォルトの設定で「import」ボタンを押下してください。
+デフォルトの設定で「Import」ボタンを押下してください。
 +
 image::images/sample-ec_java-jsp-setup-package-import.png[align=left]
 +
@@ -180,11 +179,11 @@ Importを実行すると「Log」パネルに処理状況が表示されます�
 +
 image::images/sample-ec_java-jsp-setup-package-import-logpanel.png[align=left]
 +
-新たに作成したロールなどを反映させるために、MetaDataSettingsメニューの右上の「MetaDataの一覧を更新にします。」ボタンをクリックします。
+新たに作成したロールなどを反映させるために、MetaDataSettingsメニューの右上の「MetaDataのリフレッシュ」アイコンをクリックします。
 +
 image::images/sample-ec_java-jsp-setup-metadata-refresh.png[align=left]
 
-. Admin ConsoleでTenant多言語利用設定で「日本語」と「英語」にチェックを入れます。
+. Admin Consoleのテナント情報の多言語利用設定で、「日本語」と「English」にチェックを入れます。
 +
 image::images/sample-ec_java-jsp-setup-tenant-multilingual.png[align=left]
 +
@@ -192,8 +191,8 @@ image::images/sample-ec_java-jsp-setup-tenant-multilingual.png[align=left]
 +
 image::images/sample-ec_java-jsp-setup-tenant-multilingual-save.png[align=left]
 
-. Admin ConsoleでEntityExplorerの `Entity Crawl` 機能を利用してINDEXデータを作成します。 +
-本ドキュメントでは以下の手順で説明しますが、詳細を知りたい方は<<../../developerguide/datamanagement/index#fulltextsearch_view,データ管理 6.全文検索>>を参照してください。
+. Admin ConsoleでEntityExplorerの `Entity Crawl` 機能を利用して全文検索のINDEXデータを作成します。 +
+詳細については、<<../../developerguide/datamanagement/index#fulltextsearch_view,全文検索>>を参照してください。
 +
 ToolsのEntityExplorerを選択します。
 +
@@ -203,11 +202,11 @@ image::images/sample-ec_java-jsp-setup-entityexplorer.png[align=left]
 +
 image::images/sample-ec_java-jsp-setup-entityexplorer-tabs.png[align=left]
 +
-A) 任意のEntityのみを対象としてクローリングしたい場合はリストのEntityにチェックをいれ、「Start Crawl」ボタンをクリックして下さい。
+A) 任意のEntityのみを対象としてクローリングしたい場合は、リストの対象Entityにチェックを入れて、「Start Crawl」ボタンをクリックしてください。
 +
-B) クローリング対象Entityを全てクローリングしたい場合は「Re Crawl All Entity」ボタンをクリックして下さい。この場合、チェックをいれていないEntityも全てが対象となります。
+B) クローリング対象Entityをすべてクローリングしたい場合は「Re Crawl All Entity」ボタンをクリックしてください。
 +
-C) クローリングが完了しましたら、最新のINDEXデータを反映させるために、「Refresh」ボタンをクリックして下さい。
+C) クローリングが完了したら、最新のINDEXデータを反映させるために、「Refresh」ボタンをクリックしてください。
 +
 image::images/sample-ec_java-jsp-setup-entityexplorer-crawl.png[align=left]
 

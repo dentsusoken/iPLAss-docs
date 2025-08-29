@@ -81,7 +81,7 @@ classはorg.iplass.mtp.impl.aggregation.cube.engine.inmemory.fact.load.SaveMemor
 ファイルへデータをスワップしながらなるべくメモリ消費を抑えながらロードする方式です。設定変更可能な項目はありません。
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.aggregation.cube.CubeService</interface>

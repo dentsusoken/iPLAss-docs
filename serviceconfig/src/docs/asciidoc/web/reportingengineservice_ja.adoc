@@ -69,7 +69,7 @@ classはorg.iplass.mtp.impl.report.JxlsReportingEngineを指定します。
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.report.ReportingEngineService</interface>

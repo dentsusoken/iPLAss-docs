@@ -458,7 +458,7 @@ image::images/mail_flow.png[]
 ローカルでメールの確認がしたい場合のみ「mtp-service-config.xml」の設定が必要になります。
 下記の通りMailServiceのlistenerを有効にしてください。
 
-[source, xml]
+[source,xml]
 ----
 <!-- ■ for develop only (additional="true) ■ -->
 <!-- 送信メールをデバッグ出力する場合、以下を有効にしてください。 -->
@@ -745,7 +745,7 @@ image::images/custom_edit-command.png[]
 
 作成したCommandを開き、 `Edit` ボタンから下記の内容を設定後、 `Save` ボタンをクリックして保存してください。
 
-[source, groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.ManagerLocator;
 import org.iplass.mtp.entity.Entity;
@@ -1067,7 +1067,7 @@ mtp-service-config.xmlに設定が必要になります。
 下記の通りuseQueueをtrueにして下さい。 +
 設定変更を行った際はTomcatサーバの再起動が必要になります。
 
-[source, xml]
+[source,xml]
 ----
 <!-- AsyncTask queue and counter setting -->
 <service>

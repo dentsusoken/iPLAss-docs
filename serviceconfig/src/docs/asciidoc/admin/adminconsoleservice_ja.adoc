@@ -39,7 +39,7 @@ LogExplorerからサーバに出力されたログをダウンロードするた
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.adminconsole.server.base.service.AdminConsoleService</interface>

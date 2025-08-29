@@ -1,15 +1,15 @@
 [[WebApiObjectMapperService]]
 === WebApiObjectMapperService
-This is a service that defines the class to be converted in JAXB of WebApi.
+This is a service for defining the ObjectMapper used for JSON output in WebApi.
 
 ==== Interface Name
 ----
-org.iplass.mtp.impl.webapi.jaxb.WebApiJaxbService
+org.iplass.mtp.impl.webapi.jackson.WebApiObjectMapperService
 ----
 
 ==== Implementing Class
 ----
-org.iplass.mtp.impl.webapi.jaxb.WebApiJaxbService
+org.iplass.mtp.impl.webapi.jackson.WebApiObjectMapperService
 ----
 
 ==== The settings of WebApiObjectMapperService
@@ -51,7 +51,7 @@ The following items can be configured.
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.webapi.jackson.WebApiObjectMapperService</interface>

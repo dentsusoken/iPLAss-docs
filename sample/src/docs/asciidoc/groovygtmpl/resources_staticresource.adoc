@@ -1,6 +1,6 @@
 [[Groovy_GTmpl_StaticResource]]
 === StaticResource
-* サンプルアプリではJavascript、css、fontファイルをZip形式の圧縮ファイルにしてメタデータとして登録しています。
+* サンプルアプリでは、JavaScript、CSS、FontファイルをZip形式の圧縮ファイルにしてメタデータとして登録しています。
 +
 image:images/sample-ec_groovy-gtmpl-static-resource-resources.png[align=left]
 +
@@ -11,7 +11,7 @@ h|StaticResource名|samples/ec01/resources
 +
 image:images/sample-ec_groovy-gtmpl-static-resource.png[align=left]
 +
-resources.zipファイルを解凍したディレクトリ構造が以下のようです。
+resources.zipファイルを解凍したディレクトリ構造は以下の通りです。
 +
 [source]
 ----
@@ -20,13 +20,13 @@ resources
 	┗ styles <2>
 		┗ fonts <3>
 ----
-<1> javascriptリソースのフォルダ
-<2> cssリソースのフォルダ
-<3> fontリソースのフォルダ
+<1> JavaScriptリソースのフォルダ
+<2> CSSリソースのフォルダ
+<3> Fontリソースのフォルダ
 
 * Actionの作成
 +
-上記の圧縮ファイルにエントリされたリソースファイルを指定するAction。
+上記の圧縮ファイルにエントリされたリソースファイルを指定するActionを作成します。
 +
 image:images/sample-ec_groovy-gtmpl-static-resource-ref.png[align=left]
 +
@@ -60,6 +60,6 @@ h|Action名|samples/ec01/resource/ref
 </head>
 ----------------------------------------以下略----------------------------------------
 ----
-<1> "{コンテキストルート}/{テナント名}/resource/ref/"のURLで登録されたstatic Resourceをアクセスすることが出来ます。
+<1> `{コンテキストルート}/{テナント名}/resource/ref/` のURLパスで、リソースファイルを取得します。
 +
-※ 詳しくは開発者ガイド<<../../developerguide/customizing/index#StaticResource, StaticResource>>の章を参照してください。
+※ 詳しくは、開発者ガイドの<<../../developerguide/customizing/index#StaticResource, Static Resource>>の章を参照してください。

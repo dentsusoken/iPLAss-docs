@@ -100,7 +100,9 @@ It is a store that manages metadata other than the metadata specified in pathMap
 
 [[XmlFileMetaDataStore]]
 .XmlFileMetaDataStore
-Manage metadata on an XML file basis.
+Manage metadata on an XML file basis. Modifications to the XML file will be overwritten in the same file. +
+It is assumed that metadata modification differences will be managed by git, etc. during development. +
+It is available only during development and is not recommended for use in a production environment.
 
 When specifying a relative path, set the working directory to the project root directory in the Eclipse Tomcat startup configuration argument tab.
 ====
@@ -122,8 +124,9 @@ If not specified, it will be saved in fileStorePath.
 
 [[VersioningXmlFileMetaDataStore]]
 .VersioningXmlFileMetaDataStore
-Manage metadata on an XML file basis.
-Metadata is assigned a version and generation management is performed.
+Manage metadata on an XML file basis. Metadata is assigned a version and generation management is performed. +
+It is a perfect replacement for the file-based management of RdbMetaDataStore. +
+Only for a single server is it available in a production environment. For multiple servers, we recommend using RdbMetaDataStore.
 
 Please specify org.iplass.mtp.impl.metadata.xmlfile.VersioningXmlFileMetaDataStore to the class.
 
@@ -251,7 +254,7 @@ This is the interface to convert the new and old metadata.
 Please specify the implementing class of org.iplass.mtp.impl.metadata.typeconversion.TypeConverter to the class.
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.metadata.MetaDataRepository</interface>

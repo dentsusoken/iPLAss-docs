@@ -61,7 +61,7 @@ The following HttpClientBuilderFactory is provided as standard.
 * <<MicrometerHttpClientBuilderFactory>>
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.wam.impl.WamService</interface>

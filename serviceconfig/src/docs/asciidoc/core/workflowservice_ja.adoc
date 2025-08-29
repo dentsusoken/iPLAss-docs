@@ -56,7 +56,7 @@ classはorg.iplass.mtp.impl.workflow.store.EntityHistoryLogStoreを指定しま�
 設定可能な項目はありません。
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service final="true">
 	<interface>org.iplass.mtp.impl.workflow.WorkflowService</interface>

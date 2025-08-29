@@ -47,7 +47,7 @@ GroovyTemplate書式で設定します。
 その他のバインド変数についてはScript編集画面のNoteを参照してください。
 
 .設定例1
-[source, GroovyTemplate]
+[source,groovy]
 ----
 <%
 //高、緊急の場合、赤色で表示(01:低、02:中、03:高、04:緊急)
@@ -68,7 +68,7 @@ font-size:20px;
 ----
 
 .設定例2
-[source, GroovyTemplate]
+[source,groovy]
 ----
 <% //期限まで5日以下の場合は赤くする
 if (entity.limitDate != null) {
@@ -95,7 +95,7 @@ GroovyTemplate書式で設定します。
 編集画面では、対象となるエンティティデータやプロパティ値がバインドされます。 その他のバインド変数についてはScript編集画面のNoteを参照してください。
 
 .設定例1
-[source, GroovyTemplate]
+[source,groovy]
 ----
 <% //入力テキストの幅を100pxに、背景色を赤に変更
 %>
@@ -103,7 +103,7 @@ background-color:#FFCCCC; width:100px;
 ----
 
 .設定例2
-[source, GroovyTemplate]
+[source,groovy]
 ----
 <% //ラジオボタンを1行に1つずつ表示させる（通常はdisplay:inline）
 %>
@@ -236,10 +236,11 @@ Hidden:: hiddenとして出力。検索結果の場合、列を非表示
 |詳細・編集画面
 |
 |ファイルをアップロード時に、受け入れ可能な MIME Type パターンを設定します。設定値は正規表現パターンを指定します。 +
-設定が無い場合は、Service-Config の GemConfigService binaryUploadAcceptMimeTypesPattern の設定が適用されます。Service-Config の詳細は link:../../../serviceconfig/index.html#GemConfigService[こちら] を参照ください。 +
-本設定と Service-Config の両方が設定されていた場合は、本設定が優先されます。
+未指定の場合は、<<../../../serviceconfig/index.adoc#GemConfigService, GemConfigService>> の
+ `binaryUploadAcceptMimeTypesPattern` の設定が適用されます。
 
-検証対象となる MIME Type の決定方法については、link:../../../serviceconfig/index.html#WebFrontendService[WebFrontendService uploadFileTypeDetector], link:../../../serviceconfig/index.html#FileTypeDetector[FileTypeDetector] を参照してください。
+検証対象となる MIME Type の決定方法については、<<../../../serviceconfig/index.adoc#WebFrontendService, WebFrontendService>> の `uploadFileTypeDetector` 、
+<<../../../serviceconfig/index.adoc#FileTypeDetector, FileTypeDetector>> を参照してください。
 |===
 
 swfファイルをアップロードする場合は、高さ、幅の両方の設定が必須となります。
@@ -265,6 +266,19 @@ Checkbox:: チェックボックスを表示
 Select:: 選択リストを表示
 Label:: ラベルを表示、検索条件では複数値指定不可
 Hidden:: hiddenとして出力。検索結果の場合、列を非表示
+
+|RADIO、CHECKBOX形式の場合、アイテムを縦に並べる
+|検索条件 +
+詳細・編集画面
+|
+|RADIO、CHECKBOX形式の場合、アイテムを縦に並べるかを指定します。
+
+|「値なし」を検索条件の選択肢に追加するか
+|検索条件
+|
+|「値なし」を検索条件の選択肢に追加するかを指定します。値なしが選択された場合、IS NULLを検索条件として指定します。
+
+NOTE: 「値なし」を選択する場合、値として「isNull」が使用されるため、他の選択肢にはこのキーワードを値として使用しないでください。
 
 |真の表示ラベル
 |検索条件 +
@@ -401,7 +415,7 @@ function userDefFunc($input) { //<1>
 	return new Date();
 }
 
-var userDefObject = {
+const userDefObject = {
 	prop1: {
 		func: function($input) { //<2>
 			return 10;
@@ -899,11 +913,6 @@ Hidden:: hiddenとして出力。検索結果の場合、列を非表示
 |
 |新規作成時（詳細編集画面）の初期値を設定します。
 
-|完全一致で検索
-|
-|
-|LongTextPropertyEditorでは、適用されません。
-
 |RichText表示時にタグを許可
 |詳細・編集画面
 |RichText
@@ -983,6 +992,19 @@ Reference型用のプロパティエディタです。
 `Hidden` は、hiddenとして `oid` と `version` が出力されます。
 また検索結果では、列が非表示になります。
 
+|CHECKBOX形式の場合、アイテムを縦に並べる
+|検索条件 +
+詳細・編集画面
+|
+|CHECKBOX形式の場合、アイテムを縦に並べるかを指定します。
+
+|「値なし」を検索条件の選択肢に追加するか
+|検索条件
+|
+|「値なし」を検索条件の選択肢に追加するかを指定します。値なしが選択された場合、IS NULLを検索条件として指定します。
+
+NOTE: 「値なし」を選択する場合、値として「isNull」が使用されるため、他の選択肢にはこのキーワードを値として使用しないでください。
+
 |表示ラベルとして扱うプロパティ
 |検索条件 +
 詳細・編集画面
@@ -995,7 +1017,9 @@ Label
 |表示ラベルとして扱うプロパティを設定します。
 `name` 以外のプロパティを画面にラベルとして表示できます。
 
-本項目が設定された、かつGemConfigServiceの `useDisplayLabelItemInSearch` が `true` の場合、テキスト入力による条件指定時に名前項目ではなく、表示ラベルとして扱うプロパティを条件項目として利用します。
+本項目が設定された、かつ <<../../../serviceconfig/index.adoc#GemConfigService, GemConfigService>> の
+ `useDisplayLabelItemInSearch` が `true` の場合、テキスト入力による条件指定時に名前項目ではなく、
+ 表示ラベルとして扱うプロパティを条件項目として利用します。
 
 `StringProperty` にのみ適用されます。それ以外のプロパティを指定すると、画面表示にエラーになります。指定するプロパティは多重度が複数の場合はサポートされません。
 
@@ -1350,7 +1374,7 @@ parentDefName:: 親エンティティのエンティティ定義名
 ====
 
 GroovyTemplate書式で設定します。改行やスペースは無視されます。
-[source, GroovyTemplate]
+[source,groovy]
 ----
 <%@page import="org.iplass.mtp.view.generic.editor.ReferencePropertyEditor.UrlParameterActionType"%>
 <%
@@ -1395,12 +1419,12 @@ urlParam:: URLパラメータで設定した固定パラメータ
 
 Javascript書式で設定します。画面内の項目の値を取得し、URLパラメータ形式の文字列をreturnします。
 URLパラメータの項目でパラメータを設定している場合、それを含めた形でreturnしてください。
-[source, Javascript]
+[source,javascript]
 ----
-var name = $("input[name='name']").val()
-var str = $("input[name='str']").val()
+const name = $("input[name='name']").val()
+const str = $("input[name='str']").val()
 
-return "sc_name="+name+"&sc_str="+str+"&"+urlParam;
+return "sc_name=" + name + "&sc_str=" + str + "&" + urlParam;
 ----
 
 [[selectactioncallbackscript]]
@@ -1414,10 +1438,10 @@ deleteList:: 選択解除されたEntityの配列
 propName:: 対象の参照プロパティ名
 ====
 
-[source, javascript]
+[source,javascript]
 ----
 if (entityList.length > 0) {
-	for (var i = 0; i < entityList.length; i++) {
+	for (let i = 0; i < entityList.length; i++) {
 		alert(entityList[i].oid + "-" + entityList[i].version + "-" + entityList[i].name);
 	}
 }
@@ -1432,6 +1456,12 @@ NestTable等に表示する、参照先のエンティティのプロパティ�
 |設定項目
 |利用箇所
 |設定内容
+
+|仮想プロパティ
+|検索条件 +
+検索結果 +
+詳細・編集画面
+|Entityに定義されたプロパティではなく、任意の名前を持った項目として扱います。
 
 |プロパティ名
 |検索条件 +
@@ -1510,11 +1540,11 @@ NONE:: 必須マークを表示しません。
 
 WARNING: 対象のプロパティが暗号化されている場合、またはReference型以外で多重度が複数の場合は、ソートはできません。許可設定は無効になります。
 
-|CSVに出力する
+|ダウンロードファイルに出力する
 |検索結果
-|CSVに出力するかを設定します。
-検索条件設定で `CSVダウンロード項目` を指定している場合は、この設定は無視されます。
-（CSVダウンロードダイアログで `検索結果一覧に表示された項目で出力` が選択された場合は、有効になります）
+|ダウンロードファイルに出力するかを設定します。
+検索条件設定で `ダウンロード項目` を指定している場合は、この設定は無視されます。
+アップロード形式ではないダウンロードファイルに対して有効になります。
 
 |自動補完設定
 |検索条件 +
@@ -1795,6 +1825,19 @@ Select:: 選択リストを表示
 Label:: ラベルを表示、検索条件では複数値指定不可
 Hidden:: hiddenとして出力。検索結果の場合、列を非表示
 
+|RADIO、CHECKBOX形式の場合、アイテムを縦に並べる
+|検索条件 +
+詳細・編集画面
+|
+|RADIO、CHECKBOX形式の場合、アイテムを縦に並べるかを指定します。
+
+|「値なし」を検索条件の選択肢に追加するか
+|検索条件
+|
+|「値なし」を検索条件の選択肢に追加するかを指定します。値なしが選択された場合、IS NULLを検索条件として指定します。
+
+NOTE: 「値なし」を選択する場合、値として「isNull」が使用されるため、他の選択肢にはこのキーワードを値として使用しないでください。
+
 |初期値
 |詳細・編集画面
 |
@@ -1885,33 +1928,78 @@ PropertyとしてはStringで保持するが、入力値を固定させたい場
 |
 |新規作成時（詳細編集画面）の初期値を設定します。
 
+|範囲で検索
+|検索条件
+|
+|チェックした場合、通常検索（検索一覧の検索タブ）の検索条件でFromToの入力フィールドを表示し、範囲検索を行います。
+
+.範囲検索がONの場合
+From、To入力時(入力string値数字を含まれている場合) → `プロパティ between From入力値 and To入力値` +
+Fromのみ入力時(入力string値数字を含まれている場合) → `プロパティ &gE; From入力値` +
+Toのみ入力時(入力string値数字を含まれている場合) → `プロパティ &lE; To入力値` +
+
+.範囲検索がOFFの場合
+`プロパティ = 入力値Like検索`
+
+|検索条件Fromを非表示
+|検索条件
+|
+|チェックした場合、通常検索（検索一覧の検索タブ）の検索条件のうち、From部分を非表示にします。
+範囲で検索がONの場合に有効になります。
+
+|検索条件Toを非表示
+|検索条件
+|
+|チェックした場合、通常検索（検索一覧の検索タブ）の検索条件のうち、To部分を非表示にします。
+範囲で検索がONの場合に有効になります。
+
+|検索条件範囲記号を非表示
+|検索条件
+|
+|チェックした場合、通常検索（検索一覧の検索タブ）の検索条件のうち、範囲記号 `～` を非表示にします。
+範囲検索で、かつFromまたはToが非表示の場合に有効になります。
+
 |完全一致で検索
 |検索条件
 |
 |チェックした場合、検索一覧で条件を設定した時に完全一致で検索します。
 表示タイプが `Select` の場合は、当該項目に関係なく、完全一致検索を行います。
 
-|RichText表示時にタグを許可
+|「値なし」を検索条件の選択肢に追加するか
+|検索条件
+|
+|「値なし」を検索条件の選択肢に追加するかを指定します。値なしが選択された場合、IS NULLを検索条件として指定します。
+
+NOTE: 「値なし」を選択する場合、値として「isNull」が使用されるため、他の選択肢にはこのキーワードを値として使用しないでください。
+
+|RichTextライブラリ
 |詳細・編集画面
 |RichText
-|リッチテキストエディタで許可されていない文字を利用できるようにします。
-本文内にJavascriptやcssを埋め込む場合、ソースボタンを押してから直接記述してください。
+|リッチテキストエディタとして利用するライブラリを指定します。
+未指定の場合は、 <<../../../serviceconfig/index.adoc#GemConfigService, GemConfigService>> の
+ `richTextLibrary` で設定されているライブラリを利用します。
 
-|RichText表示時にリンク動作を許可
+|詳細画面でRickTextエディタのツールバーを表示しない
 |詳細画面
 |RichText
-|リッチテキストエディタで許可されていないリンク動作を利用できるようにします。
-
-|RickText表示時にツールバーなどを表示しない
-|詳細画面
-|RichText
-|リッチテキストエディタで表示する際にツールバーなどを表示しないかを設定します。
+|詳細画面でリッチテキストエディタのツールバーを表示しないかを設定します。
 
 |RickText Editor Option
 |詳細・編集画面
 |RichText
 |リッチテキストエディタを生成する際のオプションをJavascriptのオブジェクトリテラルで指定します。
-指定可能なオプションについてはCKEDITOR configを参照してください。
+指定可能なオプションについては、利用するリッチテキストライブラリの説明を参照してください。
+
+|RichTextで標準以外のタグ入力を許可 (CKEditor)
+|詳細・編集画面
+|RichText
+|CKEditorの標準で許可されていないHTMLタグ利用できるようにします ( `allowedContent = true` )。
+本文内にJavascriptやcssを埋め込む場合、ソースボタンを押してから直接記述してください。
+
+|詳細画面でRichTextのリンク動作を許可 (CKEditor)
+|詳細画面
+|RichText
+|CKEditorの標準で許可されていないリンク動作を利用できるようにします。
 
 |入力カスタムスタイル|
 |
@@ -2139,7 +2227,7 @@ function userDefFunc($input) { //<1>
 	return new Date();
 }
 
-var userDefObject = {
+const userDefObject = {
 	prop1: {
 		func: function($input) { //<2>
 			return 10;

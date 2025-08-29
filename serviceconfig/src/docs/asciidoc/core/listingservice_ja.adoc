@@ -43,7 +43,7 @@ SerializedClassResolverを実装するクラスでは、 `Class<?> resolveClass(
 
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.listing.ListingService</interface>

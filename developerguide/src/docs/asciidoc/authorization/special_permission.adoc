@@ -13,7 +13,7 @@ WebApi設定の詳細は <<../webapi/index.adoc#, WebApi>>を参照してくだ�
 また、Action、WebApiの実行を特権実行にせずに、実行されるロジックの一部のみを特権として実行する事も可能です。 +
 この場合は下記のように `AuthContext.doPrivileged` を利用します。
 
-[source, java]
+[source,java]
 ----
 import org.iplass.mtp.auth.AuthContext;
 
@@ -24,7 +24,7 @@ AuthContext.doPrivileged(()-> {
 
 EntityのLoad処理を特権実行で実行する場合の例を示します。
 
-[source, java]
+[source,java]
 ----
 import org.iplass.mtp.ManagerLocator;
 import org.iplass.mtp.auth.AuthContext;
@@ -42,7 +42,7 @@ Entity entity = AuthContext.doPrivileged(()-> {
 Command内で検索は通常に処理し、更新は特権で実行する場合の例を示します。
 更新部分のみを特権実行にすることで、必要最低限の特権実行とすることが出来ます。
 
-[source, java]
+[source,java]
 ----
 public final class PrivelegeSampleCommand implements Command {
 

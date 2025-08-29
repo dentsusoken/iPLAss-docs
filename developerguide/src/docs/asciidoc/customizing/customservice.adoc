@@ -262,7 +262,15 @@ public class SampleService implements Service {
 ----
 
 ==== ServiceInitListener
-カスタムServiceに定義されるBeanにおいて、Serviceのライフサイクルに応じて初期化処理、破棄処理を行いたい場合、 `org.iplass.mtp.spi.ServiceInitListener` を実装します。
+カスタムServiceに定義されるBeanにおいて、Serviceのライフサイクルに応じて初期化処理、破棄処理を行いたい場合、 `org.iplass.mtp.spi.ServiceInitListener` を実装します。 +
+次の形式でインスタンス化されるBeanに対して通知されます。
+
+* service-configの定義から生成されるBeanのインスタンス 
+* `Config#getValue()` メソッドでデフォルト値として指定・提供されるBeanのインスタンス
+* `Config#addServiceInitListener()` メソッドで明示的に登録されるインスタンス
+
+NOTE: Beanのコンストラクタやinitedメソッド内のコードから自らnewしたServiceInitListenerのインスタンスはそのままではライフサイクル通知を受け取ることができません。 
+
 
 .ServiceInitListenerを実装するBean
 [source,java]

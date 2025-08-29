@@ -1,0 +1,160 @@
+[[aws2_AWSSetting]]
+=== [.eeonly]#AWSSetting#
+AWSの設定を管理するサービスです。本サービスでは、AWS SDK for Java 2.x の設定を管理します。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.awsv2.AWSSetting
+----
+
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.awsv2.AWSSetting
+----
+
+
+==== AWSSettingの設定
+AWSSetting を設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| credentialsProviderFactory | <<aws2_AWSSetting_CredentialsProviderFactory>> | AwsCredentialsProvider を生成する為の設定。未設定の場合は DefaultCredentialsProviderFactory が設定されます。
+| clientConfig | <<aws2_AWSSetting_AWSClientConfig>> | AWS SDK クライアントの全体に適用するデフォルト設定。AWSリージョンや通信設定を設定します。
+|===
+
+[[aws2_AWSSetting_CredentialsProviderFactory]]
+.[.eeonly]#CredentialsProviderFactory#
+class は org.iplass.mtp.impl.awsv2.CredentialsProviderFactory の実装クラスを設定します。 +
+標準で以下の CredentialsProviderFactory を提供しています。
+
+- <<aws2_AWSSetting_DefaultCredentialsProviderFactory>>
+- <<aws2_AWSSetting_StaticCredentialsProviderFactory>>
+
+[[aws2_AWSSetting_DefaultCredentialsProviderFactory]]
+.[.eeonly]#DefaultCredentialsProviderFactory#
+classはorg.iplass.mtp.impl.awsv2.DefaultCredentialsProviderFactoryを指定します。 +
+デフォルトの認証情報プロバイダーチェーンを使用して AWS認証情報を作成します。設定変更可能な項目はありません。 +
+詳細は link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/credentials-chain.html[AWS SDK for Java 2.x デフォルトの認証情報プロバイダーチェーン^]を参照してください。
+
+[[aws2_AWSSetting_StaticCredentialsProviderFactory]]
+.[.eeonly]#StaticCredentialsProviderFactory#
+classはorg.iplass.mtp.impl.awsv2.StaticCredentialsProviderFactoryを指定します。 +
+AWS で作成したアクセスキーを利用して AWS 認証情報を作成します。以下の項目を設定可能です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| accessKeyId | String | アクセスキーの、Access key ID を設定します。
+| secretAccessKey | String | アクセスキーの、Secret access key を設定します。
+|===
+
+
+[[aws2_AWSSetting_AWSClientConfig]]
+.[.eeonly]#AWSClientConfig#
+classは org.iplass.mtp.impl.awsv2.AWSClientConfig を設定します。  +
+AWS SDK クライアントの設定を指定します。AWS サービスに対応したクライアントでも個別に設定可能な場合は、個別に設定した値が優先されます。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 
+| 値 
+| 説明
+
+| proxyScheme 
+| String 
+| プロキシースキームを設定します。http, https のいずれかを設定します。
+
+| proxyHost 
+| String 
+| プロキシーホスト名を設定します。
+
+| proxyPort 
+| Integer 
+| プロキシーポート番号を設定します。未指定の場合は、proxyScheme のデフォルトポートが設定されます。
+
+| connectionTimeoutMillis 
+| Long 
+| HttpClient コネクションタイムアウト（ミリ秒）を設定します。
+
+| socketTimeoutMillis 
+| Long 
+| HttpClient ソケットタイムアウト（ミリ秒）を設定します。
+
+| maxConnections 
+| Integer 
+| HttpClient 最大コネクション数を設定します。
+
+| connectionAcquisitionTimeoutMillis 
+| Long 
+| プールコネクション獲得タイムアウト（ミリ秒）を設定します。
+
+| maxPendingConnectionAcquires 
+| Integer 
+| プールコネクション獲得待ち許容数を設定します。
+
+| apiCallTimeoutMillis 
+| Long 
+| API全体実行タイムアウト（ミリ秒）を設定します。API リトライを含む呼び出し全体のタイムアウトを設定します。 +
+詳細は link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/best-practices.html#bestpractice5[Best Practices API タイムアウトの設定^] を参照してください。
+
+| apiCallAttemptTimeoutMillis 
+| Long 
+| API実行タイムアウト（ミリ秒）を設定します。1回のAPI実行のHTTP施行にかかる時間を設定します。 +
+通常、apiCallTimeoutMillis よりも小さな値を設定します。 +
+詳細は link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/best-practices.html#bestpractice5[Best Practices API タイムアウトの設定^] を参照してください。
+
+| defaultsMode 
+| String 
+| スマート設定のデフォルトを設定します。詳細は link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/http-configuration.html#http-config-smart-defaults[HttpClient スマート設定のデフォルト^] を参照してください。
+
+| endpointOverride 
+| String 
+| サービスエンドポイントを設定します。localstack 等、AWS以外の環境を利用する場合に設定することを想定しています。
+
+| region 
+| String 
+| AWSリージョンを設定します。
+
+|===
+
+
+===== 設定例
+[source,xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.awsv2.AWSSetting</interface>
+	<class>org.iplass.mtp.impl.awsv2.AWSSetting</class>
+
+	<!-- use AWS Access Key Id -->
+	<!--
+	<property name="credentialsProviderFactory" class="org.iplass.mtp.impl.awsv2.StaticCredentialsProviderFactory">
+		<property name="accessKeyId" value="input your access key id" />
+		<property name="secretAccessKey" value="input your secret access key" />
+	</property>
+	-->
+	
+	<!--
+		Aws クライアントのデフォルト設定。全ての設定値は任意。個別サービスでも設定可能で、設定されている場合は個別サービスの設定値が優先される。
+	-->
+	<!--
+	<property name="clientConfig" class="org.iplass.mtp.impl.awsv2.AWSClientConfig">
+		<property name="proxyScheme" value="http" />
+		<property name="proxyHost" value="proxy.domain" />
+		<property name="proxyPort" value="8080" />
+		<property name="connectionTimeoutMillis" value="3000" />
+		<property name="socketTimeoutMillis" value="3000" />
+		<property name="maxConnections" value="5" />
+		<property name="connectionAcquisitionTimeoutMillis" value="60000" />
+		<property name="maxPendingConnectionAcquires" value="20" />
+		<property name="apiCallTimeoutMillis" value="10000" />
+		<property name="apiCallAttemptTimeoutMillis" value="3000" />
+		<property name="defaultsMode" value="auto" />
+		<property name="endpointOverride" value="[setYourDefaultEndpoint]" />
+		<property name="region" value="[setYourDefaultRegion]" />
+	</property>
+	-->
+</service>
+----

@@ -137,13 +137,13 @@ Number型に対応するPropertyタイプは `Integer` `Float` `Decimal` です�
 * 値が正規表現にマッチしない場合
 
 .（例）半角英数字
-[source,Java]
+[source,java]
 ----
 [0-9a-zA-Z]+
 ----
 
 .（例）ひらがな
-[source,Java]
+[source,java]
 ----
 [\\u3040-\\u309F]+
 ----
@@ -257,7 +257,7 @@ ValidationContextにsetAttributeされた値は、`${key}` 形式でエラーメ
 |===
 
 .（例）ReferencePropertyに対する存在チェック
-[source,Groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.EntityManager;
 import org.iplass.mtp.ManagerLocator;
@@ -310,7 +310,7 @@ org.iplass.mtp.entity.PropertyValidator
 |===
 
 .PropertyValidatorの例
-[source,Java]
+[source,java]
 ----
 import org.iplass.mtp.entity.PropertyValidator;
 import org.iplass.mtp.entity.ValidationContext;
@@ -392,7 +392,7 @@ EntityManagerを利用した `insert` 、 `update` 時には
 この `EntityValidationException` 内に、エラーとなった
 `ValidateError` が格納されています。
 
-[source,Groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.EntityValidationException;
 import org.iplass.mtp.entity.ValidateError;
@@ -437,7 +437,7 @@ Entityのデータ移行時など、データ更新時にValidatorチェック�
 `EntityManager#validate` を利用することで手動でValidatorチェックを実行できます。
 この場合、チェック結果は「ValidateResult」として返ってきます。
 
-[source,Groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.ValidateResult;
 

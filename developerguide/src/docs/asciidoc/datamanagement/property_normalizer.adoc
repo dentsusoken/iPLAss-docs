@@ -128,7 +128,7 @@ GroovyScript書式で正規化ロジックを実装します。
 |===
 
 .（例）接頭辞を付与する
-[source,Groovy]
+[source,groovy]
 ----
 if (value == null) {
     return null;
@@ -163,7 +163,7 @@ org.iplass.mtp.entity.PropertyNormalizer
 |===
 
 .PropertyNormalizerの例
-[source,Java]
+[source,java]
 ----
 import org.iplass.mtp.entity.PropertyNormalizer;
 import org.iplass.mtp.entity.ValidationContext;

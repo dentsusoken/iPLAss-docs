@@ -49,7 +49,7 @@ Custom relative ranges for each language. The following items can be set.
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.view.relativerange.RelativeRangeService</interface>

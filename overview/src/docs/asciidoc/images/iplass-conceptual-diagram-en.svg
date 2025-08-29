@@ -65,7 +65,7 @@
   <tspan x="131">Back End Interface（auto-constructed）</tspan></text>
   <text transform="translate(598.42 923)" style="font-size:14px;fill:#313131;">LDAP／AD<tspan x="70" y="0" style="font-size:12px"> etc.</tspan></text>
   <text transform="translate(435.31 867.67)" style="font-size:13px;fill:#313131;">・SAML2.0 Corresponding Site</text>
-  <text transform="translate(435.31 846.67)" style="font-size:13px;fill:#313131;">・Office 365</text>
+  <text transform="translate(435.31 846.67)" style="font-size:13px;fill:#313131;">・Microsoft 365</text>
   <text transform="translate(435.31 827)" style="font-size:13px;fill:#313131;">・Salesforce</text>
   <text transform="translate(476.54 805)" style="font-size:14px;fill:#313131;">External Sites</text>
   <text transform="translate(510.5 692.5)" style="font-size:16px;fill:#fefefe;" text-anchor="middle">
@@ -75,7 +75,7 @@
   <tspan x="0" y="30">（SAML2.0）</tspan></tspan></text>
   <text transform="translate(316.57 923.33)" style="font-size:14px;fill:#313131;">External RDB/CSV<tspan x="100" y="0" style="font-size:12px"></tspan></text>
   <text transform="translate(895.5 573.08)" style="font-size:13px;fill:#18747a;" text-anchor="middle">Development/Maintenance Tool</text>
-  <text transform="translate(895.5 523.72)" style="font-size:13px;fill:#18747a;" text-anchor="middle">EUC</text>
+  <text transform="translate(895.5 523.72)" style="font-size:13px;fill:#18747a;" text-anchor="middle">Mobile</text>
   <text transform="translate(895.5 473.06)" style="font-size:13px;fill:#18747a;" text-anchor="middle">Job Scheduler</text>
   <text transform="translate(895.5 423.75)" style="font-size:13px;fill:#18747a;" text-anchor="middle">Workflow</text>
   <text transform="translate(895.5 374.13)" style="font-size:13px;fill:#18747a;" text-anchor="middle">Mail/SMS/Push Notification</text>

@@ -80,7 +80,7 @@ For the language fonts, the following items can be configured.
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.i18n.I18nService</interface>

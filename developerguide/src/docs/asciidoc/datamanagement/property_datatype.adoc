@@ -167,7 +167,7 @@ Entityの登録処理と同一トランザクションで採番するため、�
 未指定の場合、採番された値が設定されます( `${nextVal()` と同等)。
 
 .（例）書式設定
-[source,Groovy]
+[source,groovy]
 ----
 // `2018-01-01-0000001001` のようになります。 
 ${yyyy}-${MM}-${dd}-${nextVal()}
@@ -198,7 +198,7 @@ NOTE: `UnitKey` を利用していない場合、 `UnitKey` は空で表示さ�
 ====== ソースでのリセット
 ソース上から直接現在値の取得やリセットを行いたい場合は、 `EntityDefinitionManager` を利用します。
 
-[source,Java]
+[source,java]
 ----
 //現在値の取得
 EntityDefinitionManager#getAutoNumberCurrentValue(String definitionName, String propertyName);
@@ -228,7 +228,7 @@ Query機能の `Value Expression` として指定可能な式を設定するこ�
 |===
 
 .（例）四則演算以外の例
-[source,EQL]
+[source,sql]
 ----
 case
   when integer1 = 50 then '△△△'
@@ -237,12 +237,12 @@ case
 end
 ----
 
-[source,EQL]
+[source,sql]
 ----
 integer1 /  (select sum(integer1) from samples.Sample)
 ----
 
-[source,EQL]
+[source,sql]
 ----
 case
   when 50 = (select integer1 + integer2 from sample.Sample on .this=this)  then '△△△' <1>
@@ -598,7 +598,7 @@ EventListenerでの実装がActionやCommandなどをカスタマイズする必
 .（例）EntityEventListenerで参照Entityを強制的に更新する(Script形式)
 EventListenerの `beforeInsert` `beforeUpdate` `beforeDelete` で以下のScriptを実行します。
 
-[source,Groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.ManagerLocator;
 import org.iplass.mtp.entity.EntityManager;

@@ -1,6 +1,6 @@
 [[MdcConfigService]]
 === [.eeonly]#MdcConfigService#
-モバイル版汎用画面全般の動作の設定を行うサービスです。
+MDC版汎用画面全般の動作の設定を行うサービスです。
 
 ==== インタフェース名
 ----
@@ -21,12 +21,27 @@ org.iplass.mtp.mdc.MdcConfigService
 |===
 | 項目 | 値 | 説明
 | formatNumberWithComma | boolean | 詳細表示画面で数値プロパティの値をカンマでフォーマットするか。デフォルト値はtrueです。
+| searchResultDetailViewType | MdcDetailViewTypeInSearchResult | 検索結果画面での詳細画面の表示タイプ。 `DIALOG` 、 `TWO_PANE` から指定します。デフォルト値は `DIALOG` です。
 | searchResultDispRowCount | int | 検索結果画面で表示する検索結果の件数。デフォルト値は10です。
 | searchInterval | int | 検索処理のインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
+| useDisplayLabelItemInFileDownload | boolean a| ダウンロード処理で表示ラベルとして扱うプロパティを出力するか。trueの場合、ReferencePropertyEditorで「表示ラベルとして扱うプロパティ」として設定された項目をファイル項目として出力します。
+
+CAUTION: 後方互換性のための設定フラグです。将来のバージョンでは本設定項目は削除されます。
+| fileSupportType | FileSupportType | ダウンロードで利用するファイル形式。`CSV` `EXCEL` `SPECIFY` から指定します。デフォルト値は `CSV` です。
+| fileDownloadMaxCount | int | ダウンロード件数の上限値。デフォルト値は65535です。
+| uploadableFileDownloadLoadSize | int | Upload形式のダウンロード時に多重度複数の参照を含むEntityの一括ロード件数。デフォルト値は1です。
+| searchUserResultCacheLimitForFileDownload | int | ダウンロード時User名取得のための検索内部キャッシュサイズ。デフォルト値は300です。
+| fileDownloadReferenceVersion | boolean | ダウンロードで参照項目のバージョンを出力するか。デフォルト値はtrueです。
+| showDownloadButtonInSearchConditionDialog | boolean | SearchConditionDialog内でダウンロードボタンを表示するか。デフォルト値はfalseです。
+| csvDownloadCharacterCode | String、複数指定可 | CSVダウンロードの文字コード。デフォルト値は `UTF-8` です。
+| csvDownloadQuoteAll | boolean | CSVダウンロードで常時ダブルクォートの出力を行うか。デフォルト値はtrueです。
+| csvDownloadWithFooter | boolean | 汎用検索のCSVダウンロードでフッターを出力するか。デフォルト値はfalseです。
+| csvDownloadFooter | String | 汎用検索のCSVダウンロードのフッター文言。
 | recycleBinMaxCount | int | ゴミ箱の表示件数上限値。未指定の場合のデフォルト値は100です。-1を指定した場合は無制限となります。
 | deleteAllCommandBatchSize | int | 一括削除のコミットバッチサイズ件数。未指定の場合のデフォルト値は100です。一括削除コミットタイプがDIVISIONの場合適用されます。
-| themes | <<MdcTheme>>、複数指定可 | テーマ。
-| themeColorSchemes | <<ThemeColorScheme>>、Map形式 | テーマ配色。keyにテーマ名を指定し、Map形式で各テーマの配色を設定します。
+| shallowCopyLobData | boolean | Lobデータをシャローコピーするか。
+`true` の場合、実体のコピーは行わず、コピー元と同じデータを参照します。
+`false` の場合、実体のコピーを行い、コピー後のデータを参照します。
 | displayBreakpoint | <<DisplayBreakpoint>> | ディスプレイブレイクポイント。各デバイスサイズの幅を設定します。
 | permitRolesToMdc | String、複数指定可 | MdcAuthでのMdc許可ロール。
 デフォルト値は `MdcUser` と `AppAdmin` です。
@@ -44,35 +59,6 @@ org.iplass.mtp.mdc.MdcConfigService
 検証対象となる MIME Type の決定方法については、<<WebFrontendService, WebFrontendService uploadFileTypeDetector>>, <<FileTypeDetector, FileTypeDetector>> を参照してください。
 
 |===
-
-[[MdcTheme]]
-.Theme
-classはorg.iplass.mtp.mdc.tenant.Themeを指定します。
-以下の項目を設定可能です。
-[cols="1,1,3", options="header"]
-|====================
-| 項目 | 値 | 説明
-| themeName | String | テーマ名。
-| displayName | String | 表示名。
-|====================
-
-[[ThemeColorScheme]]
-.ThemeColorScheme
-classはorg.iplass.mtp.mdc.tenant.ThemeColorSchemeを指定します。
-以下の項目を設定可能です。
-[cols="1,1,3", options="header"]
-|====================
-| 項目 | 値 | 説明
-| primary | String | プライマリカラー
-| secondary | String | セカンダリカラー
-| neutral | String | ニュートラルカラー。デフォルト値は `#D4D4D4` です。
-| success | String | 成功カラー。デフォルト値は `#4CAF50` です。
-| info | String | 情報カラー。デフォルト値は `#2196F3` です。
-| warning | String | 警告カラー。デフォルト値は `#FF7D07` です。
-| error | String | エラーカラー。デフォルト値は `#FF5252` です。
-| background | String | バックグラウンドカラー。デフォルト値は `#F7F7F7` です。
-| surface | String | サーフェスカラー。デフォルト値は `#FFFFFF` です。
-|====================
 
 [[DisplayBreakpoint]]
 .DisplayBreakpoint
@@ -113,7 +99,7 @@ classはorg.iplass.mtp.mdc.BinaryDownloadLoggingTargetPropertyを指定します
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.mdc.MdcConfigService</interface>
@@ -121,11 +107,47 @@ classはorg.iplass.mtp.mdc.BinaryDownloadLoggingTargetPropertyを指定します
 	<!-- 詳細画面で数値プロパティの値をカンマでフォーマットするか -->
 	<property name="formatNumberWithComma" value="true" />
 
+	<!-- 検索結果での詳細画面の表示形式 DIALOG or TWO_PANE -->
+	<property name="searchResultDetailViewType" value="DIALOG" />
+
 	<!-- 検索画面で表示する検索結果の件数 -->
 	<property name="searchResultDispRowCount" value="10"/>
 
 	<!-- 検索処理のインターバル、無期限(0)/指定ミリ秒(1以上) -->
 	<property name="searchInterval" value="60000"/>
+	
+	<!-- ファイルダウンロード処理で表示ラベルとして扱うプロパティを出力するか -->
+	<property name="useDisplayLabelItemInFileDownload" value="false"/>
+
+	<!-- Entityデータのサポートファイルタイプ。CSV, EXCEL, SPECIFY -->
+	<property name="fileSupportType" value="CSV" />
+
+	<!-- ファイルダウンロード件数上限値 -->
+	<property name="fileDownloadMaxCount" value="65535" />
+
+	<!-- Upload形式のCSVダウンロード時に多重度複数の参照を含む場合の一括ロード件数 -->
+	<property name="uploadableFileDownloadLoadSize" value="1" />
+
+	<!-- ファイルダウンロード時User名取得のための検索内部キャッシュサイズ -->
+	<property name="searchUserResultCacheLimitForFileDownload" value="300" />
+
+	<!-- ファイルダウンロード参照項目バージョン出力 -->
+	<property name="fileDownloadReferenceVersion" value="true"/>
+
+	<!-- SearchConditionDialog内でダウンロードボタンを表示するか -->
+	<property name="showDownloadButtonInSearchConditionDialog" value="false"/>
+
+	<!-- CSVダウンロード文字コード -->
+	<property name="csvDownloadCharacterCode" value="UTF-8" additional="true" />
+
+	<!-- CSVダウンロード常時ダブルクォート出力 -->
+	<property name="csvDownloadQuoteAll" value="true"/>
+
+	<!-- 汎用検索のCSVダウンロードでフッターを出力するか -->
+	<property name="csvDownloadWithFooter" value="false"/>
+
+	<!-- 汎用検索のCSVダウンロードのフッター文言 -->
+	<property name="csvDownloadFooter" value=""/>
 
 	<!-- ゴミ箱の表示件数上限値 (-1は無制限) -->
 	<property name="recycleBinMaxCount" value="100" />
@@ -133,43 +155,8 @@ classはorg.iplass.mtp.mdc.BinaryDownloadLoggingTargetPropertyを指定します
 	<!-- 一括削除のコミット件数 -->
 	<property name="deleteAllCommandBatchSize" value="100" />
 
-	<!-- テーマ定義 -->
-	<property name="themes" class="org.iplass.mtp.mdc.tenant.Theme">
-		<property name="themeName" value="green" />
-		<property name="displayName" value="Green" />
-	</property>
-	<property name="themes" class="org.iplass.mtp.mdc.tenant.Theme">
-		<property name="themeName" value="red" />
-		<property name="displayName" value="Red" />
-	</property>
-	<property name="themes" class="org.iplass.mtp.mdc.tenant.Theme">
-		<property name="themeName" value="blue" />
-		<property name="displayName" value="Blue" />
-	</property>
-	<property name="themes" class="org.iplass.mtp.mdc.tenant.Theme">
-		<property name="themeName" value="orange" />
-		<property name="displayName" value="Orange" />
-	</property>
-
-	<!-- テーマのカラー配色定義 -->
-	<property name="themeColorSchemes">
-		<property name="green" class="org.iplass.mtp.mdc.tenant.ThemeColorScheme" >
-			<property name="primary" value="#4CAF50" />
-			<property name="secondary" value="#0D909B" />
-		</property>
-		<property name="red" class="org.iplass.mtp.mdc.tenant.ThemeColorScheme" >
-			<property name="primary" value="#F44336" />
-			<property name="secondary" value="#0D909B" />
-		</property>
-		<property name="blue" class="org.iplass.mtp.mdc.tenant.ThemeColorScheme" >
-			<property name="primary" value="#2196F3" />
-			<property name="secondary" value="#0D909B" />
-		</property>
-		<property name="orange" class="org.iplass.mtp.mdc.tenant.ThemeColorScheme" >
-			<property name="primary" value="#FF5722" />
-			<property name="secondary" value="#0D909B" />
-		</property>
-	</property>
+	<!-- 詳細画面のエンティティデータをコピーする際にLobデータをシャローコピーするか -->
+	<property name="shallowCopyLobData" value="false" />
 
 	<!-- ディスプレイ設定  -->
 	<property name="displayBreakpoint" class="org.iplass.mtp.mdc.DisplayBreakpoint">

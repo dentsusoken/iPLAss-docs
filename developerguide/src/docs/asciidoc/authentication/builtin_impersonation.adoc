@@ -37,7 +37,7 @@ ONの場合:: 下記項目で指定する条件の範囲で代理ログインが
 |===
 
 .（例）代理先ユーザーがgroup1またはgroup2に所属する場合は許可
-[source, GroovyTemplate]
+[source,groovy]
 ----
 groups.code in ('group1', 'group2')
 ----

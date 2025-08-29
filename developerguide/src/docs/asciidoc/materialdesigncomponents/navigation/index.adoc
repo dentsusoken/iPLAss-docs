@@ -1,0 +1,17 @@
+= Material Design Components (Navigation)
+:_hreflang-path: developerguide/materialdesigncomponents/navigation/index.html
+:_relative-root-path: ../../../
+:_menu-title-ee-only: true
+
+[[navigation]]
+== Navigation
+各種ナヴィゲーションを管理する機能です。EntityViewやAction等と紐づくメニューアイテムを定義するサイドメニュー（SideMenu）、言語選択やユーザー情報変更などのユーザーメニューを定義するアプリケーションバー（AppBar）から構成されます。
+
+<<../topview/index.adoc#topview, TopView>>と併せてロールと連動しており、ロール毎にNavigationとTopViewを管理できます。
+（<<role, ロールとの連動>>）
+
+include::operationguide.adoc[]
+
+include::setting.adoc[]
+
+include::role.adoc[]

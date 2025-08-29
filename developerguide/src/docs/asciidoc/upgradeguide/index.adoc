@@ -1,0 +1,401 @@
+= アップグレードガイド（from 3.2 to 4.0）
+:_hreflang-path: developerguide/upgradeguide/index.html
+:_relative-root-path: ../../
+
+本ガイドは、iPLAss 3.2 から 4.0 へのアップグレードに関する情報を提供します。
+
+== 動作環境の変更
+
+iPLAss 4.0 を動作させるためには、以下の環境が必要です。
+
+=== iPLAss framework
+
+[cols="1,4"]
+|===
+|Java|Java 21以上
+|APサーバ|Tomcat 10.1（Servlet 6.0、JSP 3.1以上を実装するWebコンテナ）
+|DBサーバ|Oracle 19c以上、MySQL 8.0以上、PostgreSQL 12以上、SQL Server 2016以上、Amazon Aurora
+|===
+
+=== Web Account Manager plugin module
+
+[cols="1,4"]
+|===
+|Apache版|Apache HTTP Server 2.4
+|IIS版|IIS 8.5以上 +
+.NET 4.5.1以上 +
+Windows Server 2012R2以上
+|JavaEE版| Java 21以上 +
+Tomcat 10.1 (Servlet 6.0、JSP 3.1以上を実装するWebコンテナ)
+|Serverless(JavaScript)版|Fetch APIに対応したJavaScriptランタイムが提供されるサーバーレス環境（CDN前段などで動作するエッジ環境）
+|===
+
+== Java 21 への対応
+
+iPLAss 4.0 では、Java 21 以上が必要です。以下の点に注意してください。
+
+* 削除された機能やAPIを使用していないか確認してください。
+* 依存ライブラリがJava 21 以上に対応しているか確認してください。
+* Gradleファイル（build.gradle）でJavaのターゲットバージョンを指定している場合は、Java 21 以上を指定してください。
+* Eclipse WTPプロジェクトのファセット設定で、JavaのバージョンをJava 21以上に変更してください。
+
+== Jakarta EE 10 への対応
+
+iPLAss 4.0 では、Jakarta EE 10 に準拠しています。それに伴い、以下の変更が必要となります。
+
+* Gradleファイル（build.gradle）に定義されている Jakarta EE 8 用の依存関係を Jakarta EE 10 用の依存関係に変更する必要があります（推移的に依存しているライブラリにも注意が必要です）。
+* Jakarta EE 9 以降では、 `javax` パッケージではなく、 `jakarta` パッケージを使用するようになりました。プロジェクト内のJava/Groovyコードのimport文を `jakarta` パッケージに変更する必要がある可能性があります（GroovyコードはメタデータのXML内にあります）。
+* JSPのタグライブラリのURIを変更する必要があります。例えば、coreタグライブラリのURIは、`http&#58;//java.sun.com/jsp/jstl/core` から `jakarta.tags.core` に変更する必要があります。
+* web.xmlのXSD（XML Scheme Definition）をJakarta EE 10 用に変更する必要があります。
+* web.xmlに定義されているJAX-RS（Jersey）のServlet定義の `<param-name>` の値を `jakarta.ws.rs.Application` に変更する必要があります。
+* Eclipse WTPプロジェクトのファセット設定で、 `Dynamic Web Module` のバージョンを `6.0` に、`Runtimes` を `Apache Tomcat v10.1` に変更してください。
+
+変更内容の詳細については、スケルトンプロジェクトやサンプルアプリのリポジトリにおいて、Jakarta EE 10 への対応が行われたGitHub Pull Requestを参照してください。
+
+* https://github.com/dentsusoken/iplass-skeleton/pull/63
+* https://github.com/dentsusoken/iplass-sample-app/pull/37
+
+
+== 非推奨項目の削除
+
+iPLAss 3.2で非推奨とされていた以下の機能が削除されました。
+
+* Eclipse Plugin
+** 代替として、link:../gradleplugin/index.html[Gradle Plugin]を使用してください。
+* [.eeonly]#Solrを用いた全文検索機能#
+** 代替として、Luceneもしくは [.eeonly]#Elasticsearch/OpenSearch# を用いた全文検索機能を使用してください。
+* [.eeonly]#EUC（AppConsole）#
+** EUC機能は削除されました。代替機能は提供されていません。
+
+また、3.2で非推奨だったクラス、メソッド、プロパティの一部は4.0で削除されました。アップグレードする前に、非推奨のメソッドを呼び出していないことを確認してください。
+
+== 互換性に関する注意事項
+
+iPLAss 4.0 でのすべての変更点の一覧については、以下のリンクを参照してください。 +
+https://github.com/dentsusoken/iPLAss/releases/tag/4.0.0
+
+互換性に関する注意事項は以下の通りです。
+
+=== コミュニティ版
+
+* service-configファイルの記述方法と挙動の改善
+** 詳細は、 link:https://github.com/dentsusoken/iPLAss/issues/1612[iPLAss Issues #1612^] を参照してください。
+* プッシュ通知機能、Firebase Cloud Messaging（FCM）のHTTP v1 APIへの対応
+** 詳細は、 link:https://github.com/dentsusoken/iPLAss/issues/1593[iPLAss Issues #1593^] を参照してください。
+* GEMモジュール、jQueryなどWebJars管理のJavaScriptライブラリのバージョンアップ
+** 詳細は、 link:https://github.com/dentsusoken/iPLAss/issues/1412[iPLAss Issues #1412^] を参照してください。
+* GEMモジュール、StringPropertyEditorのリッチテキストライブラリのデフォルトをQuillに変更
+** 詳細は、 link:https://github.com/dentsusoken/iPLAss/issues/1605[iPLAss Issues #1605^] を参照してください。
+* 帳票出力機能、Jxlsのメジャーバージョンアップ
+** 詳細は、 link:https://github.com/dentsusoken/iPLAss/issues/1570[iPLAss Issues #1570^] を参照してください。
+* 全文検索機能、Luceneのメジャーバージョンアップ
+** 詳細は、 link:https://github.com/dentsusoken/iPLAss/issues/1542[iPLAss Issues #1542^] を参照してください。
+
+=== エンタープライズ版
+
+* WebJars管理のJavaScriptライブラリバージョンアップ
+** GEMモジュール、MDCモジュール、WAMモジュール内で使用しているWebJars管理のJavaScriptライブラリのバージョンがアップデートされています。アップデート対象のライブラリを使用したカスタムコードを記述している場合は、バージョンアップに伴う変更点を確認してください。
+*** GEMモジュール
++
+[cols="1,1,2a",options="header"]
+|===
+|名前   |旧バージョン         | 新バージョン
+|org.webjars.bower:jQuery-contextMenu -> org.webjars.npm:jquery-contextmenu  |2.8.0    | 2.9.2
+|===
++
+*** MDCモジュール
++
+[cols="1,1,2a",options="header"]
+|===
+|名前   |旧バージョン         | 新バージョン
+|org.webjars:pdf-js   | 4.2.67  | 4.4.168
+|org.webjars.npm:js-cookie  | 3.0.1  | 3.0.5
+|org.webjars:bootstrap  | 5.2.0  | 5.3.3
+|===
++
+*** WAMモジュール
++
+[cols="1,1,2a",options="header"]
+|===
+|名前   |旧バージョン         | 新バージョン
+|org.webjars:jquery  | 3.5.1  | 3.7.1
+|org.webjars:momentjs -> org.webjars.npm:moment | 2.29.4  | 2.30.1
+|org.webjars:bootstrap  | 5.2.0  | 5.3.3
+|org.webjars:bootstrap-datepicker  | 1.9.0  | 1.10.0
+|org.webjars.npm:popperjs__core  | 2.11.5  | 2.11.8
+|===
+
+* MDCモジュールにおけるBreaking Changes
++
+** カラースキーム指定方法の変更
+*** テーマによるカラー指定は、メタデータとMdcConfigServiceの両方で廃止されました。代替として、テナントのメタデータで画面のカラースキームを指定してください。 +
+カラースキームはlink:https://m3.material.io/styles/color/roles[Material Design 3の配色^]に準拠しており、4.0から新たに `Tertiary`、`Surface Container` の2つが追加されました。 +
+指定可能なカラースキームの詳細については、<<../multitenant/index.adoc#ColorScheme, カラースキーム>>を参照してください。
++
+** ランタイムライブラリのバージョンアップ
+*** MDCモジュール内で使用しているランタイムライブラリのバージョンがアップデートされています。アップデート対象のライブラリを使用したカスタムコードを記述している場合は、バージョンアップに伴う変更点を確認してください。
++
+.公開ライブラリ
+[cols="1,1,2a",options="header"]
+|===
+|名前   |旧バージョン         | 新バージョン
+|vue  | 3.3.13  | 3.5.10
+|vuetify  | 3.4.9  | 3.7.2
+|vue-i18n  | 9.5.0  | 10.0.3
+|axios  | 1.5.1 | 1.7.7
+|dayjs  | 1.11.10 | 1.11.13
+|===
++
+** Vue.jsの公開コンポーネントのインタフェース変更
++
+.MBottomAppBar
+[cols="1,1,2a",options="header"]
+|===
+|タイプ   |名前         | 4.0での変更点
+|props    |inDialog    | 削除
+|props    |noElevation | 削除
+|===
++
+.MBottomAppBarIcon
+[cols="1,1,2a",options="header"]
+|===
+|タイプ   |名前           | 4.0での変更点
+|props    |hideIcon      | 削除
+|props    |noRightMargin | 削除
+|slots    |default       | 削除
+|===
++
+.MSearchCondition
+[cols="1,1,2a",options="header"]
+|===
+|タイプ   |名前                             | 4.0での変更点
+|props    |showSearchMethodSelectTab       | 削除
+|expose   |versioned                       | 削除
+|expose   |getSearchConditionSection       | 削除
+|expose   |searchMethodSelectTabIndex      | 削除
+|expose   |setSearchMethodSelectTabIndex   | 削除
+|===
++
+.MSearchConditionDialog
+[cols="1,1,2a",options="header"]
+|===
+|タイプ   |名前                           | 4.0での変更点
+|props    |sliderColor                   | 削除
+|events   |change:search-condition       | データ型をSearchConditionから{ searchCondition: SearchCondition; immediate: boolean; }に変更
+|events   |do-custom-click-event-handler | 削除
+|===
++
+.MSearchResult
+[cols="1,1,2a",options="header"]
+|===
+|タイプ   |名前                           | 4.0での変更点
+|events   |do-custom-click-event-handler | 削除
+|===
++
+** Javaの公開パッケージクラスのクラス名・パッケージ変更
++
+.org.iplass.mtp.mdc.command
+[options="header"]
+|===
+|クラス名  | 4.0での変更点
+|org.iplass.mtp.mdc.command. +
+auth.impersonation.BaseImpersonationCommand  | 削除
+|org.iplass.mtp.mdc.command. +
+auth.setting.twostep.BaseTwoStepVerificationSettingCommand  | 削除
+|org.iplass.mtp.mdc.command. +
+view.entityview.detail.auditlog.AuditLogData   | org.iplass.mtp.mdc.view. +
+entityview.detail.auditlog.AuditLogDataにクラス名変更
+|org.iplass.mtp.mdc.command. +
+view.entityview.detail.auditlog.BaseGetAuditLogCommand  | 削除
+|org.iplass.mtp.mdc.command. +
+view.entityview.detail.DeleteCommand  | org.iplass.mtp.mdc.command. +
+view.entityview.detail.delete.DeleteCommandにクラス名変更
+|org.iplass.mtp.mdc.command. +
+view.entityview.detail.GetVersionCommand  | org.iplass.mtp.mdc.command. +
+view.entityview.detail.version.GetVersionCommandにクラス名変更
+|org.iplass.mtp.mdc.command. +
+view.entityview.detail.LockCommand  | org.iplass.mtp.mdc.command. +
+view.entityview.detail.lock.LockCommandにクラス名変更
+|org.iplass.mtp.mdc.command. +
+view.entityview.detailUnlockCommand  | org.iplass.mtp.mdc.command. +
+view.entityview.detail.lock.UnlockCommandにクラス名変更
+|org.iplass.mtp.mdc.command. +
+view.entityview.search.delete.DeleteConditionCommand  | org.iplass.mtp.mdc.command. +
+view.entityview.search.delete.BatchDeleteBySearchConditionCommandにクラス名変更
+|org.iplass.mtp.mdc.command. +
+view.entityview.search.delete.DeleteConditionParameter | org.iplass.mtp.mdc.command. +
+view.entityview.search.delete.BatchDeleteBySearchConditionParameterにクラス名変更
+|org.iplass.mtp.mdc.command. +
+view.entityview.search.delete.DeleteListCommand | org.iplass.mtp.mdc.command. +
+view.entityview.search.delete.BatchDeleteBySelectionListCommandにクラス名変更
+|org.iplass.mtp.mdc.command. +
+view.entityview.search.delete.DeleteListParameter | org.iplass.mtp.mdc.command. +
+view.entityview.search.delete.BatchDeleteBySelectionListParameterにクラス名変更
+|org.iplass.mtp.mdc.command. +
+view.entityview.search.delete.DeleteTarget  | 削除
+|org.iplass.mtp.mdc.command. +
+view.entityview.search.error.detail.DetailSearchApplicationException +
+org.iplass.mtp.mdc.command. +
+view.entityview.search.error.detail.DetailSearchError +
+org.iplass.mtp.mdc.command. +
+view.entityview.search.error.detail.DetailSearchValidateError | org.iplass.mtp.mdc.command. +
+view.entityview.search.error.DetailSearchErrorに統合
+|org.iplass.mtp.mdc.command. +
+view.entityview.search.select.SearchSelectListCommand | org.iplass.mtp.mdc.command. +
+view.entityview.search.select.SearchBatchSelectionListCommandにクラス名変更
+|org.iplass.mtp.mdc.command. +
+view.entityview.search.select.SearchSelectListParameter | org.iplass.mtp.mdc.command. +
+view.entityview.search.select.SearchBatchSelectionListParameterにクラス名変更
+|org.iplass.mtp.mdc.command. +
+view.entityview.search.DetailConditionItem  | 削除
+|org.iplass.mtp.mdc.command. +
+view.navigation.fulltext.FullTextSearchContext  | 削除
+|org.iplass.mtp.mdc.command. +
+view.navigation.fulltext.FullTextSearchOptionGenerator  | 削除
+|org.iplass.mtp.mdc.command. +
+view.navigation.fulltext.FullTextSearchParameter | org.iplass.mtp.mdc.command. +
+view.navigation.fulltext.NavigationFullTextSearchParameterにクラス名変更
+|org.iplass.mtp.mdc.command. +
+view.navigation.fulltext.FullTextSearchResponse | org.iplass.mtp.mdc.command. +
+view.navigation.fulltext.NavigationFullTextSearchResponseにクラス名変更
+|org.iplass.mtp.mdc.command. +
+view.navigation.fulltext.FullTextSearchResponseGenerator  | 削除
+|===
++
+.org.iplass.mtp.mdc.tenant
+[options="header"]
+|===
+|クラス名  | 4.0での変更点
+|org.iplass.mtp.mdc.tenant.Theme  | 削除
+|===
++
+.org.iplass.mtp.mdc.view
+[options="header"]
+|===
+|クラス名  | 4.0での変更点
+|org.iplass.mtp.mdc.view. +
+entityview.detail.copy.CopyEntityController  | 削除
+|org.iplass.mtp.mdc.view. +
+entityview.detail.definition.GenerateDetailViewOption  | 削除
+|org.iplass.mtp.mdc.view. +
+entityview.detail.definition.MdcDetailViewHandlerGenerator  | 削除
+|org.iplass.mtp.mdc.view. +
+entityview.detail.load.LoadEntityController  | 削除
+|org.iplass.mtp.mdc.view. +
+entityview.detail.save.SaveEntityController  | 削除
+|org.iplass.mtp.mdc.view. +
+entityview.search.definition.element.property.MdcTableTextAlign  | 削除
+|org.iplass.mtp.mdc.view. +
+entityview.search.definition.MdcSearchViewHandlerGenerator  | 削除
+|org.iplass.mtp.mdc.view. +
+entityview.search.delete.DeleteListController  | 削除
+|org.iplass.mtp.mdc.view. +
+entityview.search.delete.DeleteListResult  | 削除
+|org.iplass.mtp.mdc.view. +
+entityview.search.search.SearchController  | 削除
+|org.iplass.mtp.mdc.view. +
+entityview.search.search.SearchResult | org.iplass.mtp.mdc.view. +
+entityview.search.search.SearchEntityResultにクラス名変更
+|org.iplass.mtp.mdc.view. +
+entityview.search.select.SearchSelectListController  | 削除
+|org.iplass.mtp.mdc.view. +
+entityview.search.select.SearchSelectListOption  | 削除
+|org.iplass.mtp.mdc.view. +
+entityview.search.select.SearchSelectListResult | org.iplass.mtp.mdc.view. +
+entityview.search.select.SearchEntityForBatchSelectionResultにクラス名変更
+|org.iplass.mtp.mdc.view. +
+entityview.search.validation.ConditionValidateProcessor  | 削除
+|org.iplass.mtp.mdc.view. +
+entityview.search.validation.ConditionValidatorProcessorFactory  | 削除
+|org.iplass.mtp.mdc.view. +
+entityview.search.validation.RequiresAtLeastOneFieldValidateProcessor  | 削除
+|org.iplass.mtp.mdc.view. +
+entityview.trash.TrashController  | 削除
+|===
++
+.org.iplass.mtp.mdc.view.entityview.detail.definition.editor
+[options="header"]
+|===
+|パッケージ名  | 4.0での変更点
+|org.iplass.mtp.mdc.view.entityview.detail.definition.editor.*  | org.iplass.mtp.mdc.view.entityview.definition.editor.detail.*にパッケージ変更
+|===
++
+.org.iplass.mtp.mdc.view.entityview.search.definition.editor
+[options="header"]
+|===
+|パッケージ名  | 4.0での変更点
+|org.iplass.mtp.mdc.view.entityview.search.definition.editor.*  | org.iplass.mtp.mdc.view.entityview.definition.editor.search.*にパッケージ変更
+|===
++
+.org.iplass.mtp.mdc.view.entityview.search.definition.element.section
+[options="header"]
+|===
+|クラス名  | 4.0での変更点
+|org.iplass.mtp.mdc.view.entityview.search.definition.element.section. +
+MdcConditionSortType  | org.iplass.mtp.mdc.view.entityview.definition.sort. +
+MdcConditionSortTypeにクラス名変更
+|org.iplass.mtp.mdc.view.entityview.search.definition.element.section. +
+MdcNullOrderType  | org.iplass.mtp.mdc.view.entityview.definition.sort. +
+MdcNullOrderTypeにクラス名変更
+|org.iplass.mtp.mdc.view.entityview.search.definition.element.section. +
+MdcSortSetting  | org.iplass.mtp.mdc.view.entityview.definition.sort. +
+MdcSortSettingにクラス名変更
+|===
++
+** SearchView定義での一部プロパティの型変更
++
+.変更点
+[options="header"]
+|===
+|クラス名  | 4.0での変更点
+|org.iplass.mtp.mdc.view. + 
+entityview.search.definition.MdcSearchViewDefinition  | 一部プロパティの型をMdcSearchCustomSectionからMdcSearchSectionに変更
+|org.iplass.mtp.mdc.view. + 
+entityview.search.definition.element.section.MdcSearchConditionSection  | elementsプロパティの型をMdcSearchConditionPropertyからMdcSearchConditionElementに変更
+|org.iplass.mtp.mdc.view. + 
+entityview.search.definition.element.section.MdcSearchResultSection | elementsプロパティの型をMdcSearchResultPropertyからMdcSearchResultElementに変更
+|===
++
+** MdcConfigServiceの変更
++
+.変更点
+[cols="1,1,2a",options="header"]
+|===
+|タイプ | 名前 | 4.0での変更点
+|property  |  themes  |  削除
+|property  |  themeColorSchemes  |  削除
+|method  |  getThemes  |  削除
+|method  |  getThemeColorSchemes  |  削除
+|method  |  getThemeColorScheme  |  削除
+|===
++
+** ViewManagerとViewDefinitionManagerの分離
++
+.変更点
+[options="header"]
+|===
+|クラス名  | 4.0での変更点
+|org.iplass.mtp.mdc.view. +
+entityview.detail.definition.MdcDetailViewDefinitionManager  | 
+org.iplass.mtp.mdc.view. + 
+entityview.detail.MdcDetailViewManagerに一部の機能を分離
+|org.iplass.mtp.mdc.view. +
+entityview.search.definition.MdcSearchViewDefinitionManager  | 
+org.iplass.mtp.mdc.view. + 
+entityview.search.MdcSearchViewManagerに一部の機能を分離
+|org.iplass.mtp.mdc.view. +
+navigation.definition.MdcNavigationDefinitionManager  | 
+org.iplass.mtp.mdc.view. + 
+navigation.MdcNavigationManagerに一部の機能を分離
+|org.iplass.mtp.mdc.view. +
+topview.definition.MdcTopViewDefinitionManager  | 
+org.iplass.mtp.mdc.view. + 
+topview.MdcTopViewManagerに一部の機能を分離
+|===
+
+== モジュール別の特筆事項
+
+=== [.eeonly]#MDCモジュール#
+
+MDCモジュールは、iPLAss 4.0 で最新のマテリアルデザイン仕様（Material Design 3）に準拠し、画面デザインが大幅に刷新されました。  +
+また、従来はモバイルファーストのデザインでしたが、PC向けのデザインも大幅に強化されました。それに伴い、モジュール名が `MDC` という略称はそのままに、 `Material Design Components` に変更されました。

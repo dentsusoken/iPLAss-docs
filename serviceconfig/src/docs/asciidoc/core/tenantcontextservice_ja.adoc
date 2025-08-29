@@ -96,7 +96,7 @@ valueにorg.iplass.mtp.impl.tenant.available.TenantAvaliableTenantResourceを指
 ////
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.core.TenantContextService</interface>

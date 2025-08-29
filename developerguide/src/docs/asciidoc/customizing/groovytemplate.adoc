@@ -176,7 +176,7 @@ GroovyTemplate形式は、Webページのレスポンス（Template）に利用�
 メールテンプレートやEQL文のテンプレートなど、メタデータ上に定義される文字列のテンプレートとして汎用的に利用されます。
 
 .GroovyTemplateの例
-[source,groovytemplate]
+[source,html]
 ----
 <%@page import="java.util.Date"%>
 <%@page import="org.iplass.mtp.ApplicationException"%>
@@ -241,7 +241,7 @@ if (session.info != null) {
 指定の[import target]をインポートします。
 
 .記述例
-[source,groovytemplate]
+[source,groovy]
 ----
 <%@import java.sql.Timestamp%>
 <%@page import="java.sql.Timestamp"%>
@@ -252,7 +252,7 @@ if (session.info != null) {
 JSPと同様、<% ... %>内にGroovy Scriptを記述可能です。
 
 .記述例
-[source,groovytemplate]
+[source,groovy]
 ----
 <%
   if (a == 'OK') {
@@ -270,7 +270,7 @@ JSPと同様、<% ... %>内にGroovy Scriptを記述可能です。
 JSPと同様、<%= ... %>内、${ ... }内に値を返却する式を記述可能です。
 
 .記述例
-[source,groovytemplate]
+[source,groovy]
 ----
 <%=escXml('val=' + val)%>
 ${bean.propABC}
@@ -302,7 +302,7 @@ Scriptlet、Expressionにて利用可能です。
 `'` を `''` にエスケープします。また、引数がnullの場合は空文字を出力します。
 
 .利用例
-[source, groovytemplate]
+[source,groovy]
 ----
 user.accountId='${escEql(bean.aid)}'
 ----
@@ -326,7 +326,7 @@ user.accountId='${escEql(bean.aid)}'
 
 
 .利用例
-[source, groovytemplate]
+[source,groovy]
 ----
 user.name like '${escEqlLike(bean.userName)}%'
 ----
@@ -347,7 +347,7 @@ user.name like '${escEqlLike(bean.userName)}%'
 引数の文字列をHTML出力用にエスケープします。
 
 .利用例
-[source, groovytemplate]
+[source,groovy]
 ----
 ${escHtml(bean.user.name)}
 ----
@@ -370,7 +370,7 @@ ${escHtml(bean.user.name)}
 エスケープ対象がString以外の場合は、toString()された値をエスケープします。
 
 .利用例
-[source, groovytemplate]
+[source,groovy]
 ----
 ${escJs(bean.user.name)}
 ----
@@ -391,7 +391,7 @@ ${escJs(bean.user.name)}
 引数の文字列をXML出力用にエスケープします。
 
 .利用例
-[source, groovytemplate]
+[source,groovy]
 ----
 <sample val='${escXml(bean.user.name)}' />
 ----
@@ -414,11 +414,11 @@ ${escJs(bean.user.name)}
 
 
 .利用例
-[source, groovytemplate]
+[source,groovy]
 ----
 ${rs('resource-bundle-name', 'key1')}
 ----
-[source, groovytemplate]
+[source,groovy]
 ----
 ${rs('resource-bundle-name', 'key2', bean.param1, bean.param2)}
 ----
@@ -440,7 +440,7 @@ ResourceBundleに定義された文字列にパラメータ埋め込みした文
 指定の第一引数の値を第二引数で指定されるパターンでフォーマット出力します。
 
 .利用例
-[source, groovytemplate]
+[source,groovy]
 ----
 <input type="text" name="endDate" value="${fmt(dateVal, 'yyyy/MM/dd')}">
 ----
@@ -460,11 +460,11 @@ ResourceBundleに定義された文字列にパラメータ埋め込みした文
 Message定義（メタデータ）として登録されているメッセージを、指定のパラメータを埋め込み出力します。
 
 .利用例
-[source, groovytemplate]
+[source,groovy]
 ----
 ${msg('path/to/MessageCategory', 'M101')}
 ----
-[source, groovytemplate]
+[source,groovy]
 ----
 ${msg('path/to/MessageCategory', 'M102', bean.messageParams)}
 ----
@@ -485,7 +485,7 @@ ${msg('path/to/MessageCategory', 'M102', bean.messageParams)}
 引数がnullの場合は、空文字列をそれ以外の場合は、引数をそのまま返却します。
 
 .利用例
-[source, groovytemplate]
+[source,groovy]
 ----
 ${'propX: ' + nte(bean.propX)}
 ----
@@ -505,7 +505,7 @@ ${'propX: ' + nte(bean.propX)}
 Preference定義の値を取得します。
 
 .利用例
-[source, JSP]
+[source,jsp]
 ----
 ${prefs('path/to/preferenceName')}
 ----
@@ -529,7 +529,7 @@ Scriptletにて利用可能です。 +
 コンテンツはClosureにて定義します。
 
 .利用例
-[source, groovytemplate]
+[source,groovy]
 ----
 
 <%auth(role:'roleA,roleB') {%> <1>
@@ -581,7 +581,7 @@ NOTE: Template定義でのみ利用可能な関数です。
 
 
 .利用例
-[source, groovytemplate]
+[source,groovy]
 ----
 ${esc(bean.user.name)}
 ----
@@ -603,7 +603,7 @@ errors関数をbind関数と組み合わせて利用することにより、紐�
 NOTE: Template定義でのみ利用可能な関数です。
 
 .利用例
-[source, groovytemplate]
+[source,groovy]
 ----
 
 <form>
@@ -680,7 +680,7 @@ errors::
 また、Bean内にネストされたリストをバインドしたい場合、例えば次のような記述が可能です。
 
 .ネストされたリストを出力する例
-[source, groovytemplate]
+[source,groovy]
 ----
 <%bind(bean: fb) {%>
 
@@ -722,7 +722,7 @@ beanが指定されているbindタグに指定した場合、配下のプロパ
 formatterを利用せず個別にrawValueからフォーマットすることも可能です。 
 
 .rawValueから直接出力する例
-[source, groovytemplate]
+[source,groovy]
 ----
 <%bind(prop:'dateProp') {%>
   <input type="text" value="${errorValue ?: fmt(rawValue, 'yyyy/MM/dd')}" name="${name}">
@@ -769,7 +769,7 @@ errors関数が記述される場所、設定される属性値により、出�
 当該プロパティに紐付くエラーがある場合、エラーを出力します。
 +
 .利用例
-[source, groovytemplate]
+[source,groovy]
 ----
 <%bind(bean: formBean) {%>
   :
@@ -790,7 +790,7 @@ errors関数が記述される場所、設定される属性値により、出�
 当該Beanに紐付くエラーがある場合、そのすべてのエラーを出力します。
 +
 .利用例
-[source, groovytemplate]
+[source,groovy]
 ----
 <%bind(bean: formBean) {%>
   <%errors()%> <1>
@@ -860,7 +860,7 @@ requestから定数： `org.iplass.mtp.web.WebRequestConstants.EXCEPTION` をキ
 Closure内にGroovyTemplateコードを記述することにより、エラーメッセージ出力内容をカスタマイズすることが可能です。
 
 .カスタマイズ例
-[source, groovytemplate]
+[source,groovy]
 ----
 <%errors() {%>
   <span>
@@ -879,7 +879,7 @@ Closure内にGroovyTemplateコードを記述することにより、エラー�
 NOTE: Template定義でのみ利用可能な関数です。
 
 .利用例
-[source, groovytemplate]
+[source,groovy]
 ----
 <input type="hidden" name="_t" value="${token()}">
 ----
@@ -898,7 +898,7 @@ CSRF(XSRF)対策用に利用可能です。
 NOTE: Template定義でのみ利用可能な関数です。
 
 .利用例
-[source, groovytemplate]
+[source,groovy]
 ----
 <input type="hidden" name="_t" value="${fixToken()}">
 ----
@@ -917,7 +917,7 @@ APサーバ上でテナントまでを特定するルート相対パスです。
 NOTE: Template定義でのみ利用可能な関数です。
 
 .利用例
-[source, groovytemplate]
+[source,groovy]
 ----
 <a href="${tcPath()}/path/to/action">link</a>
 ----
@@ -935,7 +935,7 @@ GroovyTemplate内に別Actionの出力を取り込むための関数です。
 NOTE: Template定義でのみ利用可能な関数です。
 
 .利用例
-[source, groovytemplate]
+[source,groovy]
 ----
 
 <%include('your/action/path')%>
@@ -959,7 +959,7 @@ GroovyTemplate内に別Templateの出力を取り込むための関数です。
 NOTE: Template定義でのみ利用可能な関数です。
 
 .利用例
-[source, groovytemplate]
+[source,groovy]
 ----
 
 <%includeTemplate('your/template/path')%>
@@ -983,7 +983,7 @@ Layoutアクションのgroovy templateにおいて、実際のコンテンツ�
 NOTE: Template定義でのみ利用可能な関数です。
 
 .利用例
-[source, groovytemplate]
+[source,groovy]
 ----
 
 :

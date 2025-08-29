@@ -58,7 +58,7 @@ CachableRdbTableCounterServiceを設定します。
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <!-- デフォルト設定 -->
 <service name="OidCounter">

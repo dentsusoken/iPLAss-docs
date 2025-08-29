@@ -30,17 +30,27 @@ OData準拠のサービスエンドポイント、ODataで連携するEntityデ�
 
 [cols="1,5",options="header"]
 |===
-|iPLAssでの名称|概要
-|REST FORM|
-クライアントから送信されるMIMEメディアタイプがapplication/x-www-form-urlencoded、multipart/form-dataに対応するREST通信を "REST FORM" と呼びます。 +
+|iPLAssでの名称
+|概要
+
+|REST FORM
+|クライアントから送信されるMIMEメディアタイプがapplication/x-www-form-urlencoded、multipart/form-dataに対応するREST通信を "REST FORM" と呼びます。 +
 パラメータをFORM形式（Key, Value）で扱います。
-|REST JSON|
-クライアントから送信されるMIMEメディアタイプがapplication/jsonに対応するREST通信を "REST JSON" と呼びます。 +
+
+|REST JSON
+|クライアントから送信されるMIMEメディアタイプがapplication/jsonに対応するREST通信を "REST JSON" と呼びます。 +
 パラメータをJSON形式で扱います。
-|REST XML|
-クライアントから送信されるMIMEメディアタイプがapplication/xmlに対応するREST通信を "REST XML" と呼びます。 +
+
+|REST XML
+|クライアントから送信されるMIMEメディアタイプがapplication/xmlに対応するREST通信を "REST XML" と呼びます。 +
 パラメータをXML形式で扱います。
-|SOAP WSDL|一般のSOAP、WSDL形式での通信と同義です。
+
+|REST OTHERS
+|クライアントから送信されるMIMEメディアタイプが上記以外のREST通信を "REST OTHERS" と呼びます。 +
+パラメータのパース処理から実装が必要となります。
+
+|SOAP WSDL
+|一般のSOAP、WSDL形式での通信と同義です。
 |===
 
-NOTE: REST FORM、REST JSON、REST XMLを総称してREST形式、SOAP WSDLをSOAP形式と記載します。
+NOTE: REST FORM、REST JSON、REST XML, REST OTHERS を総称してREST形式、SOAP WSDLをSOAP形式と記載します。

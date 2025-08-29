@@ -25,7 +25,7 @@ RdbQueueServiceを設定します。
 
 [horizontal]
 default:: 非同期タスク側でキューを指定しない場合に利用されるキュー
-csvupload:: 汎用画面のCSVアップロードで利用するキュー
+entityupload:: 汎用画面のEntityファイルアップロードで利用するキュー
 
 | cleanupHistoryOnInit | boolean | サービス初期化時に履歴を削除するか。デフォルトはfalseです。
 | historyHoldDay | int | 履歴を削除する際に何日分の履歴を残すか。デフォルトは1です。
@@ -73,9 +73,9 @@ classはorg.iplass.mtp.impl.async.rdb.WorkerConfigを指定します。
 mtp.async.rdb.workers=[queueName]:[id]:[id],...
 
 例： +
-`mtp.async.rdb.workers=default:0:2,csvupload:0:2:4`
+`mtp.async.rdb.workers=default:0:2,entityupload:0:2:4`
 
-このノードではdefaultキューのワーカーID0と2、csvuploadキューのワーカーID0、2、4に割り当てられたタスクを実行します。
+このノードではdefaultキューのワーカーID0と2、entityuploadキューのワーカーID0、2、4に割り当てられたタスクを実行します。
 | newProcessPerTask | boolean |  ワーカーを新しい別プロセスで実行するか否か。デフォルト値はfalseです。
 | javaCommand | String | ワーカーを別プロセスで起動する場合の、Javaを起動するためのコマンド。
 | vmArgs | String、複数指定可 | `javaCommand` に渡すVM引数。
@@ -104,7 +104,7 @@ classはorg.iplass.mtp.impl.micrometer.metrics.async.MetricsWorkerFactoryを指�
 Micrometerモジュールを依存関係に追加した場合に設定可能です。設定変更可能な項目はありません。
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.async.rdb.RdbQueueService</interface>

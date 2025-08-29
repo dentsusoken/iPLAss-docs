@@ -8,43 +8,40 @@
 
 [cols="1,4"]
 |===
-|Java|Java 8（OracleJDKのみ）、Java 11、Java 17
-|APサーバ|Tomcat 9.0 (Servlet 4.0、JSP 2.3以上を実装するWebServer)
-|DBサーバ|Oracle 11gR2以上※１、MySQL 5.7/8.0、PostgreSQL 9.6以上、SQL Server 2012以上※２、Amazon Aurora※３
+|Java|Java 21以上
+|APサーバ|Tomcat 10.1（Servlet 6.0、JSP 3.1以上を実装するWebコンテナ）
+|DBサーバ|Oracle 19c以上、MySQL 8.0以上、PostgreSQL 12以上、SQL Server 2016以上（※1）、Amazon Aurora（※2）
 |===
 
-※１::
-バージョンは11.2.0.3.0以上を推奨します。
-※２::
+※1::
 SQL Serverでは以下の制限があります。
 +
 ====
 - EQLのLOCALTIME関数は使用できません。
 ====
-※３::
-Aurora利用の際はMySQL純正のJDBCドライバを利用してください。
+
+※2::
+Amazon Aurora利用の際はMySQL純正のJDBCドライバを利用してください。
 
 ==== 対応ブラウザ
 
-Google Chrome, Safari, Mozilla Firefox, Microsoft Edge +
+Google Chrome、Safari、Mozilla Firefox、Microsoft Edge
 
 === Web Account Manager plugin module
 
 [cols="1,4"]
 |===
-|Apache版|Apache HTTP Server 2.4 +
-Windows、RHEL、Amazon Linux
+|Apache版|Apache HTTP Server 2.4
 |IIS版|IIS 8.5以上 +
 .NET 4.5.1以上 +
 Windows Server 2012R2以上
-|JavaEE版|Tomcat 8.5以上 (Servlet 3.1、JSP 2.3以上を実装するWebServer) +
-Java 8 (Oracle JDK)、Java 11 (Oracle JDK、Open JDK) +
-Windows、RHEL、Amazon Linux
+|JavaEE版|Java 21以上 +
+Tomcat 10.1 (Servlet 6.0、JSP 3.1以上を実装するWebコンテナ)
 |Serverless(JavaScript)版|Fetch APIに対応したJavaScriptランタイムが提供されるサーバーレス環境（CDN前段などで動作するエッジ環境）
 |===
 
 == DB、テーブル作成に関する情報
-iPLAssのDB及びテーブルの作成手順についてはlink:https://iplass.org/downloads/[iPLAss SDK^]をダウンロードし、同梱されているサーバセットアップキット（iplass-server-setup-kit）のreadme_setup.txtを参照ください。
+iPLAssのDB及びテーブルの作成手順についてはlink:https://iplass.org/downloads/[iPLAss SDK^]をダウンロードし、同梱されているサーバセットアップキット（iplass-server-setup-kit）の「readme_setup.txt」を参照ください。
 
 トランザクション分離レベルは「READ COMMITTED」である必要があります。
 
@@ -309,7 +306,7 @@ PostgreSQLではロックタイムアウトの待機時間指定は出来ませ�
 ==== Oracle固有設定
 * LIKE句のワイルドカードについて +
 11.2.0.3.0よりLIKE句のワイルドカードの仕様が変更になっています。 +
-上記バージョンより、全角の％、＿がワイルドカードではなくなり、通常の文字となっています。 +
+上記バージョンより、全角の `％` と `＿` がワイルドカードではなくなり、通常の文字となっています。 +
 この差異を吸収するため、OracleRdbAdapterにescapeFullwidthWildcardフラグを用意しています。 +
 デフォルトはfalse（11.2.0.3.0以上で正しく動作する設定）です。 +
 11.2.0.2.0を利用する場合は、このフラグをtrueに設定するようにしてください。 +
@@ -524,12 +521,13 @@ Tomcatの最大スレッド数 + 1 + Tomcat以外のスレッドが確保する�
 ----
 +
 .HikariCPでの設定例
-[source, xml]
+[source,xml]
 +
 ----
 <service>
 	<interface>org.iplass.mtp.impl.rdb.connection.ConnectionFactory</interface>
 	<class>org.iplass.mtp.impl.rdb.connection.DataSourceConnectionFactory</class>
+
 	<property name="dataSource" class="com.zaxxer.hikari.HikariDataSource">
 		<property name="jdbcUrl" value="jdbc:mysql://server:3306/mtdb" />
 		<property name="username" value="user" />
@@ -591,7 +589,7 @@ Apacheなどのプロキシサーバの設定により、WebApplicaton名（=war
 </service>
 ----
 +
-上記の設定を行わない場合、Servlet仕様で規定される、"javax.servlet.context.tempdir"を利用するため、意図しない場所に作成される可能性があるので注意してください。
+上記の設定を行わない場合、Servlet仕様で規定される、"jakarta.servlet.context.tempdir"を利用するため、意図しない場所に作成される可能性があるので注意してください。
 
 * アップロードファイルの最大サイズ制限 +
 アップロードされるファイルの最大サイズに制限をかけることが可能です。
@@ -795,8 +793,8 @@ gradlew copyRuntimeLibs
 
 
 ==== 環境定義設定
-* tool_env.shまたはtool_env.batの設定 +
-tool_env.shまたはtool_env.bat内の以下の変数に適切な値が設定されている必要があります。
+* 「tool_env.sh」または「tool_env.bat」の設定 +
+「tool_env.sh」または「tool_env.bat」内の以下の変数に適切な値が設定されている必要があります。
 +
 ====
 SERVICE_CONFIG_NAME +
@@ -963,7 +961,7 @@ TIP: ユーザーIDには４文字以上の「英数字」および「-」(マ�
 . ``%CATALINA_HOME%/bin``ディレクトリに``setenv.bat``ファイルを作成します。
 . 作成した``setenv.bat``に次のように記述します。
 +
-[source, bat]
+[source,bat]
 ----
 set JAVA_OPTS=%JAVA_OPTS% -Dmtp.install="＜インストール設定ファイルの配置場所＞/my-install.properties"
 ----
@@ -1115,7 +1113,7 @@ tenant.admin.password=password
 カスタムservice-configはJVMのシステムプロパティ``mtp.config.custom``にて指定します。
 
 指定例：カスタムservice-configのファイル名を``custom-service-config.xml``とした場合
-[source, bat]
+[source,bat]
 ----
 -Dmtp.config.custom="＜カスタムservice-configファイルの配置場所＞/custom-service-config.xml"
 ----

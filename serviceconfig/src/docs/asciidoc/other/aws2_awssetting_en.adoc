@@ -1,0 +1,161 @@
+[[aws2_AWSSetting]]
+=== [.eeonly]#AWSSetting#
+This is the service to manage the settings of AWS. This service manages the AWS SDK for Java 2.x configuration.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.awsv2.AWSSetting
+----
+
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.awsv2.AWSSetting
+----
+
+
+==== The settings of AWSSetting
+AWSSetting can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| credentialsProviderFactory | <<aws2_AWSSetting_CredentialsProviderFactory>> | Configuration for generating AwsCredentialsProvider. If not set, DefaultCredentialsProviderFactory will be set.
+| clientConfig | <<aws2_AWSSetting_AWSClientConfig>> | Default settings that apply to the entire AWS SDK client. Configure AWS regions and communication settings.
+|===
+
+[[aws2_AWSSetting_CredentialsProviderFactory]]
+.[.eeonly]#CredentialsProviderFactory#
+Please specify the implementing class of org.iplass.mtp.impl.awsv2.CredentialsProviderFactory to the class. +
+As the standard implementation, the following CredentialsProviderFactory are provided.
+
+- <<aws2_AWSSetting_DefaultCredentialsProviderFactory>>
+- <<aws2_AWSSetting_StaticCredentialsProviderFactory>>
+
+[[aws2_AWSSetting_DefaultCredentialsProviderFactory]]
+.[.eeonly]#DefaultCredentialsProviderFactory#
+Please specify org.iplass.mtp.impl.awsv2.DefaultCredentialsProviderFactory to the class. +
+Create AWS credentials using the default credentials provider chain. There are no configurable items. +
+For more information, see link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/credentials-chain.html[AWS SDK for Java 2.x Default credentials provider chain^].
+
+[[aws2_AWSSetting_StaticCredentialsProviderFactory]]
+.[.eeonly]#StaticCredentialsProviderFactory#
+Please specify org.iplass.mtp.impl.awsv2.StaticCredentialsProviderFactory to the class. +
+Create AWS credentials using the access key created by AWS. The following items can be set
+
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| accessKeyId | String | Set the Access key ID of the access key.
+| secretAccessKey | String | Set the Secret access key of the access key.
+|===
+
+
+[[aws2_AWSSetting_AWSClientConfig]]
+.[.eeonly]#AWSClientConfig#
+Please specify org.iplass.mtp.impl.awsv2.AWSClientConfig to the class. +
+Specifies the AWS SDK client settings. If the client supporting the AWS service can also be configured individually, the individually configured value will take precedence.
+
+[cols="1,1,3", options="header"]
+|===
+| Item 
+| Value 
+| Description
+
+| proxyScheme 
+| String 
+| Set the proxy scheme, either http or https.
+
+| proxyHost 
+| String 
+| Set the proxy host name.
+
+| proxyPort 
+| Integer 
+| Sets the proxy port number. If unspecified, the default port of proxyScheme is set.
+
+| connectionTimeoutMillis 
+| Long 
+| Sets the HttpClient connection timeout in milliseconds.
+
+| socketTimeoutMillis 
+| Long 
+| Sets the HttpClient socket timeout in milliseconds.
+
+| maxConnections 
+| Integer 
+| HttpClient Sets the maximum number of connections.
+
+| connectionAcquisitionTimeoutMillis 
+| Long 
+| Sets the pool connection acquisition timeout in milliseconds.
+
+| maxPendingConnectionAcquires 
+| Integer 
+| Sets the allowable number of pool connections waiting to be acquired.
+
+| apiCallTimeoutMillis 
+| Long 
+| Sets the API overall execution timeout in milliseconds for the entire call, including API retries. +
+For more information, see link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/best-practices.html#bestpractice5[Best Practices Configure API timeouts^].
+
+| apiCallAttemptTimeoutMillis 
+| Long 
+| Set the API execution timeout (in milliseconds), which is the amount of time it takes for HTTP enforcement of a single API execution. +
+Normally, set a value smaller than apiCallTimeoutMillis. +
+For more information, see link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/best-practices.html#bestpractice5[Best Practices Configure API timeouts^].
+
+| defaultsMode 
+| String 
+| Set Smart configuration defaults.
+For more information, see link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/http-configuration.html#http-config-smart-defaults[HttpClient Smart configuration defaults^].
+
+| endpointOverride 
+| String 
+| Configure service endpoints, intended for use in non-AWS environments such as localstack.
+
+| region 
+| String 
+| Set the AWS region.
+
+|===
+
+
+===== Example
+[source,xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.awsv2.AWSSetting</interface>
+	<class>org.iplass.mtp.impl.awsv2.AWSSetting</class>
+
+	<!-- use AWS Access Key Id -->
+	<!--
+	<property name="credentialsProviderFactory" class="org.iplass.mtp.impl.awsv2.StaticCredentialsProviderFactory">
+		<property name="accessKeyId" value="input your access key id" />
+		<property name="secretAccessKey" value="input your secret access key" />
+	</property>
+	-->
+	
+	<!--
+		Default settings for Aws client. All setting values are optional. Can also be set by individual services, and if so, the values set by individual services take precedence.
+	-->
+	<!--
+	<property name="clientConfig" class="org.iplass.mtp.impl.awsv2.AWSClientConfig">
+		<property name="proxyScheme" value="http" />
+		<property name="proxyHost" value="proxy.domain" />
+		<property name="proxyPort" value="8080" />
+		<property name="connectionTimeoutMillis" value="3000" />
+		<property name="socketTimeoutMillis" value="3000" />
+		<property name="maxConnections" value="5" />
+		<property name="connectionAcquisitionTimeoutMillis" value="60000" />
+		<property name="maxPendingConnectionAcquires" value="20" />
+		<property name="apiCallTimeoutMillis" value="10000" />
+		<property name="apiCallAttemptTimeoutMillis" value="3000" />
+		<property name="defaultsMode" value="auto" />
+		<property name="endpointOverride" value="[setYourDefaultEndpoint]" />
+		<property name="region" value="[setYourDefaultRegion]" />
+	</property>
+	-->
+</service>
+----

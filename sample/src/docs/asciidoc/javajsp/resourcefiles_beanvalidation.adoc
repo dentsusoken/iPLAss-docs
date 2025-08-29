@@ -31,5 +31,5 @@ samples.ec01.bean.validation.isBlank            = Please enter value.
 samples.ec01.bean.validation.notKana            = Please enter Katakana. 
 ......
 ----
-<1> 多言語を利用するので、英語と日本語のバリデーションエラーメッセージを用意しています。
+<1> 多言語を利用するので、日本語と英語のバリデーションエラーメッセージを用意しています。
 <2> メッセージにパラメーターの利用が可能です。

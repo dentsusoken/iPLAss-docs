@@ -650,7 +650,7 @@ Entityの登録エラー時など、採番値の連続性を保証しません�
 Entityの登録処理とは別のトランザクションで採番するため、登録時の並列実効性は高まります。
 同一トランザクションで採番::
 飛び番を許容しないルールです。
-Entityの登録エラー時など、最番値の連続性を保証させます。
+Entityの登録エラー時など、採番値の連続性を保証させます。
 Entityの登録処理と同一トランザクションで採番するため、登録処理はシーケンシャルになります。
 |===
 
@@ -677,7 +677,7 @@ image::images/property_expression.png[]
 |===
 
 四則演算以外でも以下のような式を設定することができます。
-[source, EQL]
+[source,sql]
 ----
 case
   when integer1 = 50 then '△△△' 
@@ -686,12 +686,12 @@ case
 end
 ----
 
-[source, EQL]
+[source,sql]
 ----
 integer1 / (select sum(integer1) from sample.Sample)
 ----
 
-[source, EQL]
+[source,sql]
 ----
 case
   when 50 = (select integer1 + integer2 from sample.Sample on .this=this) then '△△△'
@@ -752,7 +752,7 @@ image::images/property_reference-dialog.png[]
 指定可能になるのは `参照Entity` で指定したEntityのProperty定義に、当EntityのReferencePropertyが存在する場合です。
 
 |バージョン管理
-|参照左記のデータとして取得するバージョンのポリシーを指定します。
+|参照先のデータとして取得するバージョンのポリシーを指定します。
 この設定は参照先Entityがバージョン管理している場合のみに違いが発生します。
 バージョン管理していない場合は0のため同値です。
 
@@ -1914,7 +1914,7 @@ image::images/topview_savesearchlayout.png[]
 同様に `プロパティ確認用２` EntityのDetailLayoutについてもViewを追加してください。
 追加する際のView名はSearchLayoutと同じで `topview` にします。
 
-一番上の基本項目セクションを削除してみましょう。
+一番上の基本項目セクション以外を削除してみましょう。
 削除し終わったらViewの `保存` ボタンをクリックして保存します。
 
 image::images/topview_detaillayout-topview1.png[]
@@ -1923,7 +1923,7 @@ image::images/topview_detaillayout-topview1.png[]
 
 image::images/topview_searchresultlistsetting.png[]
 
-`ResultList View` に先ほど追加した `topview` が追加されているので、それを選択してください。
+`ResultList View` と `Detail Action View` に先ほど追加した `topview` が追加されているので、それを選択してください。
 
 image::images/topview_searchresultlistdialog-topview.png[]
 
@@ -2158,7 +2158,7 @@ image::images/entitymenu_searchlayout-topview2.png[]
 今回は link:https://fontawesome.com/icons/star?style=regular[星型のアイコン^] を設定してみます。
 各アイコンのページ内に表示用のhtmlタグが記載されているので、それを利用します。
 
-[source, html]
+[source,html]
 ----
 <i class="far fa-star"></i>
 ----

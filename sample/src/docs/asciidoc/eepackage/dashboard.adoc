@@ -1,8 +1,7 @@
 [[EEPackage_Dashboard]]
 == [.eeonly]#DashBoard#
 
-このサンプルでは作成したAggregationを複数選択し、ひとつの画面に表示しています。 + 
-それに、複数のAggregationを跨いだフィルターを設定しています。
+サンプルアプリでは、作成したAggregationを複数選択し、単一画面にダッシュボード形式で表示しています。
 
 === AdminConsoleでの設定
 
@@ -14,18 +13,18 @@ image::images/sample-ec_dashboard-settings.png[align=left]
 . カスタムのダッシュボードアイテム
 . このサンプルで作成している集計
 
-※　設定項目の説明は開発者ガイド <<../../developerguide/aggregation/index#dashboard, ダッシュボードの管理>>の章を参照してください。
+※ 各設定項目の詳細については、開発者ガイド <<../../developerguide/aggregation/index#dashboard, ダッシュボードの管理>>の章を参照してください。
 
 === 画面表示
 
-マネージャーに属するユーザーが「EC注文管理」メニューを開き、「売上集計」サブメニューをクリックすると、ダッシュボードを参照することが出来ます。
+マネージャーに属するユーザーで「EC注文管理」メニューを開き、「売上集計」アイテムをクリックすると、ダッシュボードを参照できます。
 
 image::images/sample-ec_dashboard-filter.png[align=left]
 
 . 中心となる集計定義
 . カスタムのダッシュボードアイテム
 
-各集計グラフ
+.各集計グラフ
 
 image::images/sample-ec_dashboard-orderItemAggregatedByDay.png[align=left]
 

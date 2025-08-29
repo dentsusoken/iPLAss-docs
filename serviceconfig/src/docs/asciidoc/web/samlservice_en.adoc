@@ -77,7 +77,7 @@ NEWER:: Use a certificate with a longer validation period (NotAfter is new).
 BEFORE_N_DAYS :: switch to "rollOverDaysBeforeExpire" days before expiration
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
   <interface>org.iplass.mtp.impl.auth.authenticate.saml.SamlService</interface>

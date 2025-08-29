@@ -30,7 +30,7 @@ classはorg.iplass.mtp.impl.parser.SyntaxRegisterの実装クラスを指定し�
 設定可能な項目はありません。
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service final="true">
 	<interface>org.iplass.mtp.impl.parser.SyntaxService</interface>

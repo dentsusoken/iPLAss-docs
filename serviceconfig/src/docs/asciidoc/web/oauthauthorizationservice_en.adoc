@@ -343,7 +343,7 @@ NEWER:: Use a certificate key with a longer validity period (NotAfter is newer) 
 BEFORE_N_DAYS:: switch to rollOverDaysBeforeExpire days before expiration
 
 ===== Example (when Authorization Server and Resource Server are the same instance)
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.auth.oauth.OAuthAuthorizationService</interface>
@@ -370,7 +370,7 @@ BEFORE_N_DAYS:: switch to rollOverDaysBeforeExpire days before expiration
 ----
 
 ===== Example (Resource Server)
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.auth.oauth.OAuthAuthorizationService</interface>

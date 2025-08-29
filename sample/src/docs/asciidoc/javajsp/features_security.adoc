@@ -2,29 +2,30 @@
 [[Java_Jsp_Security]]
 === セキュリティ対策
 
-.ここで作成する機能について
-画面、処理、ともにオレンジ色の部分を例にセキュリティ対策を解説していきます。
+.対象とする機能
+オレンジ色の部分を例にセキュリティ対策を解説していきます。
 
 image::../images/sample-ec_fullcustomize_flow2.png[align=left]
 
 .セキュリティ対策について
 ここでは会員登録を例としてiPLAssで利用できる以下のセキュリティ対策について説明します。 +
  +
-・ エスケープ機能　　XSS対策 ： ユーザーの入力内容を正常に画面表示させる +
-・ TokenCheck機能　　CSRF対策/トランザクション重複起動対策 ： 画面表示時に正常な画面遷移が行われているかをチェックする +
+・ XSS対策となるエスケープ機能 ： ユーザーの入力内容を正常に画面表示させる +
+・ CSRF対策/トランザクション重複起動対策となるトークンチェック機能 ： 画面表示時に正常な画面遷移が行われているかをチェックする +
  +
 会員登録処理の中でそれぞれの機能は下記のように利用されます。
 
 * エスケープの導入 +
-Templateの作成 +
-入力された値を出力する会員情報確認画面にて、該当箇所に `${m:esc()}` エスケープを導入する。
-+
+
+.Templateの作成
+入力された値を出力する会員情報確認画面にて、該当箇所に `${m:esc()}` エスケープを導入します。
+
 [cols="1,2",options="header"]
 |===
 |表示名|Template名
 |会員情報確認画面|samples/ec01/member/confirmMemberInfo
 |===
-+
+
 [source,jsp]
 ----
 <%@ taglib prefix="m" uri="http://iplass.org/tags/mtp"%> <1>
@@ -33,41 +34,41 @@ Templateの作成 +
 			<div class="card-body">
 				<div class="row mt-3 border-bottom">
 					<div class="col-12 col-md-4">
-						<span class="text-muted font-weight-bold">${m:rs('iplass-wtp-messages', 'samples.ec01.member.regist.userId')}</span>
+						<span class="text-muted fw-bold">${m:rs('iplass-wtp-messages', 'samples.ec01.member.regist.userId')}</span>
 					</div>
 					<div class="col-12 col-md-8">${m:esc(userBean.userId)}</div>
 				</div>
 				<div class="row mt-3 border-bottom">
 					<div class="col-12 col-md-4">
-						<span class="text-muted  font-weight-bold">${m:rs('iplass-wtp-messages', 'samples.ec01.member.registConfirm.fullName')}</span>
+						<span class="text-muted  fw-bold">${m:rs('iplass-wtp-messages', 'samples.ec01.member.registConfirm.fullName')}</span>
 					</div>
 					<div class="col-12 col-md-4">
-						<span class="text-muted  font-weight-bold">${m:rs('iplass-wtp-messages', 'samples.ec01.member.regist.familyName')}</span>
+						<span class="text-muted  fw-bold">${m:rs('iplass-wtp-messages', 'samples.ec01.member.regist.familyName')}</span>
 						&nbsp;${m:esc(userBean.familyName)} <2>
 					</div>
 					<div class="col-12 col-md-4">
-						<span class="text-muted  font-weight-bold">${m:rs('iplass-wtp-messages', 'samples.ec01.member.regist.firstName')}</span>
+						<span class="text-muted  fw-bold">${m:rs('iplass-wtp-messages', 'samples.ec01.member.regist.firstName')}</span>
 						&nbsp;${m:esc(userBean.firstName)} <2>
 					</div>
 				</div>
 				<% if (Consts.LANGUAGE_JA.equals(TemplateUtil.getLanguage()) || TemplateUtil.getLanguage() == null) { %>
 				<div class="row mt-3 border-bottom">
 					<div class="col-12 col-md-4">
-						<span class="text-muted  font-weight-bold">${m:rs('iplass-wtp-messages', 'samples.ec01.member.registConfirm.fullNameKana')}</span>
+						<span class="text-muted  fw-bold">${m:rs('iplass-wtp-messages', 'samples.ec01.member.registConfirm.fullNameKana')}</span>
 					</div>
 					<div class="col-12 col-md-4">
-						<span class="text-muted  font-weight-bold">${m:rs('iplass-wtp-messages', 'samples.ec01.member.regist.familyNameKana')}</span>
+						<span class="text-muted  fw-bold">${m:rs('iplass-wtp-messages', 'samples.ec01.member.regist.familyNameKana')}</span>
 						&nbsp;${m:esc(userBean.familyNameKana)} <2>
 					</div>
 					<div class="col-12 col-md-4">
-						<span class="text-muted  font-weight-bold">${m:rs('iplass-wtp-messages', 'samples.ec01.member.regist.firstNameKana')}</span>
+						<span class="text-muted  fw-bold">${m:rs('iplass-wtp-messages', 'samples.ec01.member.regist.firstNameKana')}</span>
 						&nbsp;${m:esc(userBean.firstNameKana)} <2>
 					</div>
 				</div>
 				<% } %>
 				<div class="row mt-3 border-bottom">
 					<div class="col-12 col-md-4">
-						<span class="text-muted  font-weight-bold">${m:rs('iplass-wtp-messages', 'samples.ec01.member.regist.mail')}</span>
+						<span class="text-muted  fw-bold">${m:rs('iplass-wtp-messages', 'samples.ec01.member.regist.mail')}</span>
 					</div>
 					<div class="col-12 col-md-8">${m:esc(userBean.mail)}</div> <2>
 				</div>
@@ -76,13 +77,13 @@ Templateの作成 +
 ----------------------------------------以下略----------------------------------------
 ----
 <1> iPLAssのJSPタグライブラリ
-<2> 今回は出力先がHTML形式であるため全て${m:esc(変数名)}の形式でエスケープを行っている。
+<2> 今回は出力先がHTML形式であるためすべて `${m:esc(変数名)}` の形式でエスケープを行っています。
 
-* TokenCheckの導入 +
-この機能では、iPLAssで実装されている正常に画面遷移してきたことを証明する"Token"というオブジェクトを利用します。不正な画面遷移を禁止するActionでTokenをチェックすることにより、正常な画面遷移が行われたかを判断します。
+* トークンチェックの導入 +
+この機能では、iPLAssで実装されている正常に画面遷移してきたことを証明するCSRFトークンを利用します。不正な画面遷移を禁止するActionでトークンをチェックすることにより、正常な画面遷移が行われたかを判断します。
 
 ** Actionの設定 +
-不正な画面遷移を禁止するActionでTokenをチェックする設定を行います。
+不正な画面遷移を禁止するActionでトークンをチェックする設定を行います。
 +
 [cols="1,2",options="header"]
 |===
@@ -115,23 +116,23 @@ Templateの作成 +
 public class ConfirmMemberInfoCommand implements Command {
 ----------------------------------------以下略----------------------------------------
 ----
-<1> ActionMapping定義にTokenCheckのアノテーションを利用してます。
+<1> ActionMapping定義にTokenCheckのアノテーションを利用してトークンチェックを行う設定を追加します。
 +
 以下の設定が可能です。
 +
 |===
-h|executeCheck|false チェックを行わない　true チェックを行う
-h|useFixedToken|チェック→セッション単位に固定に払いだされるTokenをチェックする
-h|consume|true→Tokenは再利用されません。
-h|exceptionRollback|チェック→現在のTokenを再設定
+h|executeCheck|トークンチェックを行うかどうか
+h|useFixedToken|セッション単位に固定に払いだされるトークンを利用するか
+h|consume|トークンを消費するか
+h|exceptionRollback|Exception発生時にトークンをロールバックするか
 |===
 +
 この設定により直接この画面へ遷移するとエラーページが表示されます。
 +
 image:images/sample-ec_java-jsp-security-token-error.png[]
 
-** TemplateでTokenを作成 +
-不正な画面遷移を禁止するActionへ遷移する画面でTokenを作成します。
+** Templateでトークンを作成して埋め込む +
+不正な画面遷移を禁止するActionへ遷移する画面でトークンを作成して埋め込みます。
 +
 [cols="1,2",options="header"]
 |===
@@ -173,4 +174,4 @@ image:images/sample-ec_java-jsp-security-token-error.png[]
                     </div
 ----------------------------------------以下略----------------------------------------
 ----
-<1> EL関数を利用してTokenを生成します。
+<1> EL関数を利用してトークンを生成します。

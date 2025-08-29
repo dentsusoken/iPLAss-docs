@@ -2,7 +2,6 @@
 :_hreflang-path: developerguide/gradleplugin/index.html
 :_relative-root-path: ../../
 
-[[top]]
 == Gradle Plugin について
 
 iPLAssのデフォルト設定では各種メタデータはRDBで管理されます。 +
@@ -38,8 +37,10 @@ configure(iplass) {
 その他の設定詳細は、Github link:https://github.com/dentsusoken/iplass-gradle-plugin[iplass gradle plugin^] の README を参照ください。
 
 === service-config の設定
-service-config の MetaDataRepository のプロパティ設定が必要となります。 +
-詳細については <<../support/index.adoc#batch_meta_export_rdb_to_file, 開発運用サポート：バッチツール → MetaData → Export Rdb to File>> の `service-config の設定` を参照してください。
+service-config の MetaDataRepository のプロパティ設定が必要となります。以下に設定例を示します。 +
+CompositeMetaDataStore の store プロパティには XmlFileMetaDataStore を設定してください。
+
+include::../_share/metadatarepository_xmlfilemetadatastore_config_example.adoc[]
 
 
 == メタデータ管理
@@ -101,6 +102,8 @@ Git/SVN等のバージョン管理システムを利用することで、メタ�
 ----
 .\gradlew.bat :entityViewDdl
 ----
+
+TIP: 実行時に文字化けする場合は、VM引数に `-Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8` を設定してください。（環境変数 JAVA_TOOL_OPTIONS に設定する等）
 
 === service-config 表示
 バッチツール service-config viewer を plugin から実行します。 +

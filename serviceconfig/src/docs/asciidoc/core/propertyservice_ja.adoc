@@ -27,7 +27,7 @@ StoreServiceの <<StorageSpaceMap>> に定義されるvarcharColumnLengthがlong
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.entity.property.PropertyService</interface>

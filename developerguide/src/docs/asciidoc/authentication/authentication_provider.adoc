@@ -18,6 +18,15 @@ OAuth2.0のアクセストークンで認証処理を行うプロバイダ。
 * SimpleAuthTokenAuthenticationProvider +
 単純なトークンでの認証処理を行うプロバイダ。
 
+* OIDCAuthenticationProvider +
+外部のOpenID Connect OPを利用して認証処理を行うプロバイダ。 +
+OpenID Connectベースの認証は、別途、OpenID Connect定義が行われ、認証ポリシーにて有効化された場合に処理されるようになります。
+
+* WebAuthnAuthenticationProvider +
+FIDO2/WebAuthn仕様に沿った形でパスキーを利用して認証処理を行うプロバイダ。 +
+パスキーの認証は、別途、WebAuthn定義が行われ、認証ポリシーにて有効化された場合に処理されるようになります。
+
+
 .Enterprise Edition +
 * TwoStepAuthenticationProvider (RememberMeTokenAuthenticationProviderに内包される） +
 RememberMe トークンでの認証、ならびに内包するTwoStepAuthenticationProviderによる2段階認証を行うプロバイダ。 +
@@ -43,6 +52,14 @@ OAuth2.0のアクセストークンで認証処理を行うプロバイダ。
 * SimpleAuthTokenAuthenticationProvider +
 単純なトークンでの認証処理を行うプロバイダ。
 
+* OIDCAuthenticationProvider +
+外部のOpenID Connect OPを利用して認証処理を行うプロバイダ。 +
+OpenID Connectベースの認証は、別途、OpenID Connect定義が行われ、認証ポリシーにて有効化された場合に処理されるようになります。
+
+* WebAuthnAuthenticationProvider +
+FIDO2/WebAuthn仕様に沿った形でパスキーを利用して認証処理を行うプロバイダ。 +
+パスキーの認証は、別途、WebAuthn定義が行われ、認証ポリシーにて有効化された場合に処理されるようになります。
+
 === 提供認証プロバイダ
 
 各認証プロバイダや設定可能な項目については<<../../serviceconfig/index.adoc#AuthService,AuthService>>を参照してください。
@@ -66,7 +83,7 @@ org.iplass.mtp.impl.auth.authenticate.AuthenticationProviderBase
 . アカウント情報からUserエンティティを生成する `UserEntityResolver` インターフェースを実装したクラスを作成
 . `AuthenticationProvider` でログイン処理の実装
 
-[source, java]
+[source,java]
 ----
 package org.iplass.mtp.sample.auth;
 
@@ -325,7 +342,7 @@ Userエンティティとしてユーザーを管理していない場合は、�
 mtp-service-config.xmlにてAuthServiceに対して、 `authenticationProvider` を `additional="true"` 指定で追加します。
 この場合、認証プロバイダの定義順として、デフォルト設定されている認証プロバイダ⇒追加した認証プロバイダの順になります。
 +
-[source, xml]
+[source,xml]
 ----
 :
 :
@@ -352,7 +369,7 @@ mtp-service-config.xmlにてAuthServiceに対して、 `authenticationProvider` 
 +
 標準の認証プロバイダも利用する場合は、mtp-service-config.xmlに標準の認証プロバイダの設定も記述する必要があります。
 +
-[source, xml]
+[source,xml]
 ----
 :
 :
@@ -392,7 +409,7 @@ mtp-service-config.xmlにてAuthServiceに対して、 `authenticationProvider` 
 複数の認証プロバイダを利用した場合に、Command処理などでどの認証プロバイダで認証したかの情報が必要になる場合は、
 以下の方法で取得してください。
 
-[source, java]
+[source,java]
 ----
 import org.iplass.mtp.auth.AuthContext;
 

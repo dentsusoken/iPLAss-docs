@@ -45,12 +45,27 @@ Simple及びCrosstabについては<<../aggregation/index.adoc#, 定型集計>>�
 集計結果、グラフともに表示設定されている事が前提です。
 `集計表の上にグラフを表示する` がチェックされている場合は、 `右：グラフ、左：集計表` になります。
 
-|CSVダウンロードを許可する
-|この設定にチェックを入れると、集計画面でCSVダウンロードボタンが表示されます。
+|ファイルダウンロードを許可する
+|この設定にチェックを入れると、集計画面でファイルダウンロードボタンが表示されます。
 
-|CSV file name format
-|CSVファイルダウンロード時のファイル名をGroovyTemplate書式を利用して指定します。
-詳細は<<ag_csvfilenameformat, CSV file name format>>を参照してください。
+|File type
+|ダウンロードで利用するファイル形式を指定します。
+
+CSV::
+CSVファイルを利用します。
+
+EXCEL::
+EXCELファイルを利用します。
+
+SPECIFY::
+CSVファイルかEXCELファイルのどちらを利用するかを画面で選択します。
+
+未指定の場合は、<<../../serviceconfig/index.adoc#EnterpriseGemConfigService,EnterpriseGemConfigService>> の `aggregationFileSupportType` によって動作します。
+
+
+|File name format
+|ファイルダウンロード時のファイル名をGroovyTemplate書式を利用して指定します。
+詳細は<<ag_filenameformat, File name format>>を参照してください。
 
 |保存リストを使用する
 |未選択の場合、フィルター条件と結果の絞り込みの「保存リストから」を選択不可になります。
@@ -68,22 +83,22 @@ Simple及びCrosstabについては<<../aggregation/index.adoc#, 定型集計>>�
 |集計画面内で実行するJavaScriptを設定できます。
 |===
 
-[[ag_csvfilenameformat]]
-.CSV file name format
-CSVファイルダウンロード時のファイル名をGroovyTemplate書式を利用して指定します。
+[[ag_filenameformat]]
+.File name format
+ファイルダウンロード時のファイル名をGroovyTemplate書式を利用して指定します。
 フォーマットが指定されている場合、ボタンに `(*)` が表示されます。
 /とスペースについては、_（アンダースコア）に変換します。
 
 利用可能なバインド変数は、編集ダイアログの `Notes` を参照してください。
 
-.（例）CSVファイル名の後ろに出力時の時間を付加する。
-[source, GroovyTemplate]
+.（例）ファイル名の後ろに出力時の時間を付加する。
+[source,groovy]
 ----
 ${csvName}_${yyyy}${MM}${dd}${HH}${mm}${ss}
 ----
 
 .（例）保存リストの場合は保存名を先頭に付加する。
-[source, GroovyTemplate]
+[source,groovy]
 ----
 <%
 def fileName = defDisplayName;
@@ -129,7 +144,7 @@ ${fileName}_${yyyy}${MM}${dd}${HH}${mm}${ss}
 以下はスクリプトの記述例になります。
 バインドされているマップにキーと値を設定します。
 
-[source, Groovy]
+[source,groovy]
 ----
 initCondMap.put("doFilterAggregation", "true");
 initCondMap.put("point_ope_0", "LE");
@@ -976,12 +991,27 @@ CubeItemからドラッグ&ドロップで設定可能です。
 |ローデータの出力許可。集計表やグラフからローデータの取得が可能となります。 集計表で出力したい行やセルを選択（複数選択可）し、右クリックでコンテキストメニューを開きます。
 グラフの場合は対象のデータをクリックして選択し、右クリックでコンテキストメニューから出力します。
 
-|CSV file name format
-|CSVファイルダウンロード時のファイル名をGroovyTemplate書式を利用して指定します。
-詳細は<<ag_csvfilenameformat, CSV file name format>>を参照してください。
+|File type
+|ダウンロードで利用するファイル形式を指定します。
 
-|CSV multiple format
-|CSVファイルダウンロード時の多重度が複数のプロパティの出力形式を指定します。
+CSV::
+CSVファイルを利用します。
+
+EXCEL::
+EXCELファイルを利用します。
+
+SPECIFY::
+CSVファイルかEXCELファイルのどちらを利用するかを画面で選択します。
+
+未指定の場合は、<<../../serviceconfig/index.adoc#EnterpriseGemConfigService,EnterpriseGemConfigService>> の `aggregationRawdataFileSupportType` によって動作します。
+
+
+|File name format
+|ファイルダウンロード時のファイル名をGroovyTemplate書式を利用して指定します。
+詳細は<<ag_filenameformat, File name format>>を参照してください。
+
+|File multiple format
+|ファイルダウンロード時の多重度が複数のプロパティの出力形式を指定します。
 
 Each Column::
 多重度の数分別々の列に出力します。

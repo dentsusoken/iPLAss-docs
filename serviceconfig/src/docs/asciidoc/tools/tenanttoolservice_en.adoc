@@ -37,7 +37,6 @@ The following TenantCreateProcess is provided as our standard implementation.
 * <<CreateGemUserRoleProcess>>
 * <<CreateAppAdminRoleEEProcess>>
 * <<CreateGemUserRoleEEProcess>>
-* <<CreateAppConsolePermissionProcess>>
 * <<CreateCompleteProcess>>
 
 [[CreateAdminUserProcess]]
@@ -96,13 +95,6 @@ Create EnterpriseEdition permission data for Gem user role.
 Pleas specify org.iplass.mtp.impl.tools.tenant.create.CreateGemUserRoleEEProcess to the class.
 There is no configurable items.
 
-[[CreateAppConsolePermissionProcess]]
-.[.eeonly]#CreateAppConsolePermissionProcess#
-Create App Console permission data for the administrator role and Gem user role.
-
-Pleas specify org.iplass.mtp.impl.tools.tenant.create.CreateAppConsolePermissionProcess to the class.
-There is no configurable items.
-
 [[CreateCompleteProcess]]
 .CreateCompleteProcess
 Perform tenant creation completing process.
@@ -123,7 +115,7 @@ The following items can be configured.
 |====================
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.tools.tenant.TenantToolService</interface>
@@ -138,8 +130,6 @@ The following items can be configured.
 	<!-- for ee -->
 	<property name="createProcesses" class="org.iplass.mtp.impl.tools.tenant.create.CreateAppAdminRoleEEProcess" />
 	<property name="createProcesses" class="org.iplass.mtp.impl.tools.tenant.create.CreateGemUserRoleEEProcess" />
-	<!-- for appconsole -->
-	<property name="createProcesses" class="org.iplass.mtp.impl.tools.tenant.create.CreateAppConsolePermissionProcess" />
 
 	<property name="createProcesses" class="org.iplass.mtp.impl.tools.tenant.create.CreateCompleteProcess" />
 

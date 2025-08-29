@@ -25,7 +25,7 @@ The settings of ScriptService are listed below.
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.script.ScriptService</interface>

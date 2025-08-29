@@ -26,7 +26,7 @@ CAUTION: 将来のバージョンでは本設定項目は削除されます。<<
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.tools.entityport.EntityPortingService</interface>

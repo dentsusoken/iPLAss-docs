@@ -1,12 +1,12 @@
 [[Java_JSP_BeanValidation]]
-=== Bean／Bean Validation
+=== Bean/Bean Validation
 
-iPLAssのBean／Bean Validation機能を利用する場合、チェックしたいBeanクラスのプロパティにアノテーションをつけることで、バリデーションが自動に実行されます。それに、バリデーション結果を画面に表示できます。
+iPLAssのBean/Bean Validation機能を利用する場合、バリデーションチェックしたいBeanクラスのプロパティにアノテーションをつけることで、バリデーションが自動で実行されます。また、バリデーション結果を画面に表示できます。
 
 サンプルアプリの問い合わせ登録画面で入力された値に対してバリデーションが実行される機能を例として説明していきます。 
 
-* 必要なJavaクラスを作成しています。 + 
-プロジェクトのフォルダ src/main/java/samples/ec01/beanを開きます。
+* 必要なJavaクラスを作成します。 + 
+プロジェクトのフォルダ `src/main/java/samples/ec01/bean` を開きます。
 +
 [source]
 ----
@@ -26,11 +26,11 @@ src.main.java
 			┗ ......
 ----
 <1> カスタムのバリデーション + 
-カスタムのバリデーションを `samples.ec01.bean.annotation.Kana` に記述して、それがカスタムのバリデーターを利用しています。
+カスタムのバリデーションを `samples.ec01.bean.annotation.Kana` に記述します。カスタムのバリデーターで利用されています。
 <2> カスタムのバリデーター + 
-カスタムのバリデーターを `samples.ec01.bean.validator.KanaValidator` に記述して、それがカスタムのバリデーションで利用されています。
+カスタムのバリデーターを `samples.ec01.bean.validator.KanaValidator` に記述します。カスタムのバリデーションで利用されています。
 <3> カスタムのバリデーショングループ + 
-カスタムのバリデーショングループを `samples.ec01.bean.validator.group.JapaneseChecks` に記述して、それがBeanクラスのアノテーションで利用されています。
+カスタムのバリデーショングループを `samples.ec01.bean.validator.group.JapaneseChecks` に記述します。Beanクラスのアノテーションで利用されています。
 <4> JavaBeanクラス +
 `samples.ec01.bean.UserBean` でカスタムのバリデーションとバリデーショングループを利用しています。
 
@@ -101,11 +101,12 @@ public class RegistInquiryCommand implements Command {
 	}
 }
 ----
-<1> MappingExceptionが発生した場合、遷移先のTemplateを指定します。※RequestスコープにWebRequestConstants.EXCEPTIONをキーにMappingExceptionを登録してくれます。
-<2> Beanクラスに画面からの入力値をマッピングするためのユーティリティクラスを初期化します。 + 
+<1> MappingExceptionが発生した場合の遷移先Templateを指定します。 +
+※ Requestスコープに `WebRequestConstants.EXCEPTION` をキーにMappingExceptionが格納されます。
+<2> Beanクラスに画面からの入力値をマッピングするためのユーティリティクラスを初期化します。 +
 ※ whitelistPropertyNameRegexメソッドにセット可能な項目の正規表現式を指定します。
-<3> 多言語利用で「日本語」が選択されているまたは多言語利用の設定が取得できなかった場合、`samples.ec01.bean.validator.group.JapaneseChecks` グループとデフォルトグループに属する項目に対してバリデーションが実行されます。 + 
-※ populate(Object, Map, Class)メソッドはスレッドセーフですが、それ以外の delimiters(char, char, char)等の設定用メソッドがスレッドセーフではありません。 詳しい説明は `org.iplass.mtp.command.beanmapper.BeanParamMapper` のJavaDocを参照してください。
+<3> 多言語利用で「日本語」が選択されている、または多言語利用の設定が取得できなかった場合、`samples.ec01.bean.validator.group.JapaneseChecks` グループとデフォルトグループに属する項目に対してバリデーションが実行されます。 +
+※ populateメソッドはスレッドセーフですが、それ以外の delimitersなどの設定用メソッドはスレッドセーフではありません。 詳しい説明は、 `org.iplass.mtp.command.beanmapper.BeanParamMapper` のJavaDocを参照してください。
 <4> 多言語利用で「日本語」以外が選択されている場合、デフォルトグループに属する項目のみに対してバリデーションが実行されます。
 
 * JSPテンプレートファイル
@@ -138,15 +139,15 @@ h|ファイル名|/jsp/samples/ec01/inquiry/registInquiry.jsp
 ----------------------------------------以下略----------------------------------------
 ----
 <1> `PageContext` にBeanインスタンスをバインドします。
-<2> `PageContext` にBeanインスタンスに格納されているプロパティ名と値をバインドします。autoDetectErrors=true（デフォルトがtrue）の場合、WebRequestConstants.EXCEPTIONをキーにMappingExceptionを取得し、MappingResultのインスタンスが自動解決されます。当該Bean、プロパティに紐付くエラーがバインドされます。
+<2> `PageContext` にBeanインスタンスに格納されているプロパティ名と値をバインドします。 `autoDetectErrors=true（デフォルトがtrue）` の場合、 `WebRequestConstants.EXCEPTION` をキーにMappingExceptionを取得し、MappingResultのインスタンスが自動解決されます。当該Bean、プロパティに紐付くエラーがバインドされます。
 <3> バインドされたプロパティの名前と値をテキストボックスにバインドします。
 <4> バインドされたエラーメッセージを画面に出力します。
 +
-※ 詳しい設定する方法を `org.iplass.mtp.web.template.tags.BindTag` と `org.iplass.mtp.web.template.tags.ErrorsTag` のJavaDocをご参照してください。
+※ 詳しい設定方法については、 `org.iplass.mtp.web.template.tags.BindTag` と `org.iplass.mtp.web.template.tags.ErrorsTag` のJavaDocを参照してください。
 
 * 動作確認
-** 「姓」と「名」を空文字として登録しようとしたら、バリデーションエラーが発生することを画面から確認できます。
-** 「セイ」と「メイ」に全角カタカナ以外の値を入れて登録しようとしたら、バリデーションエラーが発生することを画面から確認できます。
+** 「姓」と「名」を空文字として登録しようとした場合、バリデーションエラーが発生することを画面から確認できます。
+** 「セイ」と「メイ」に全角カタカナ以外の値を入れて登録しようとした場合、バリデーションエラーが発生することを画面から確認できます。
 +
 image:images/sample-ec_java-jsp-bean-validation-error.png[align=left]
 
@@ -154,4 +155,4 @@ image:images/sample-ec_java-jsp-bean-validation-error.png[align=left]
 +
 image:images/sample-ec_java-jsp-bean-validation-error-en.png[align=left]
 +
-※ 英語用の画面にカタカナの「セイ」と「メイ」の入力項目がないので、日本語用の画面と比べてレイアウトに少し違いがあります。
+※ 英語用の画面には、カタカナの「セイ」と「メイ」の入力項目がないため、日本語用の画面と比べてレイアウトに少し違いがあります。

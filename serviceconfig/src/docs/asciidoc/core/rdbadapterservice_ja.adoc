@@ -160,7 +160,7 @@ SQL Serverではプロシージャが持つことのできるパラメーター�
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.rdb.adapter.RdbAdapterService</interface>

@@ -100,7 +100,7 @@ Content-Typeに応じた内容を、外部サービスのAPI仕様に合わせ�
 EntityのEventListenerをトリガーとしてWebhookを実行することが可能です。WebhookManagerを利用するコード実装も可能です。実際にWebhookを実行する場合は、mtp-service-config.xmlにて、<<../../serviceconfig/index.adoc#WebhookService,WebhookService>>を正しく設定する必要があります。
 
 WebhookManagerを利用したWebhook送信は以下のように実装します。
-[source, java]
+[source,java]
 ----
 import org.iplass.mtp.webhook.Webhook;
 import org.iplass.mtp.webhook.WebhookManager;
@@ -167,7 +167,7 @@ AdminConsoleからWebhookTemplate定義を新規で作成します。
 | Http Request Method | POST
 | webHook Payload Content |本サンプルでは、以下の簡単なテキストメッセージを通知します
 。
-[source, json]
+[source,json]
 ----
 {
     "text": "new Entity: ${entity.name} が作成されました"
@@ -223,7 +223,7 @@ AdminConsoleからWebhookTemplate定義を新規で作成します。
 | Http Request Method | POST
 | webHook Payload Content |本サンプルでは、以下の簡単なテキストメッセージを通知します
 。
-[source, json]
+[source,json]
 ----
 {
     "text": "new Entity: ${entity.name} が作成されました"
@@ -287,7 +287,7 @@ AdminConsoleからWebhookTemplate定義を新規で作成します。
 | webHook Payload Content | 
 本サンプルでは、以下の簡単なテキストメッセージを通知します。
 
-[source, json]
+[source,json]
 ----
 {
     "messages":[

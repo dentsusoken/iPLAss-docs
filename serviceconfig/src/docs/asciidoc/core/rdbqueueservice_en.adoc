@@ -20,12 +20,12 @@ The configurable items of RdbQueueService are listed below.
 |===
 | Item | Value | Description
 | useQueue | boolean | Whether to use queue. The default is false.
-| queue | <<QueueConfig>> | Set the queue for asynchronous executions. 
+| queue | <<QueueConfig>> | Set the queue for asynchronous executions.
 The standard definition of the queue are depicted below.
 
 [horizontal]
 default:: The default queue used when the queue is not specified by asynchronous task.
-csvupload:: Queue used for CSV upload in GEM pages.
+entityupload:: Queue used for Entity file upload in GEM pages.
 
 | cleanupHistoryOnInit | boolean | Set whether to delete the history logs when the service was initialized. The default is false.
 | historyHoldDay | int | Indicate how many days of the history records to be kept when deleting history log. The default is 1.
@@ -73,9 +73,9 @@ Explicitly specify the worker ID to be executed by this node in a system propert
 mtp.async.rdb.workers=[queueName]:[id]:[id],...
 
 Example: +
-`mtp.async.rdb.workers=default:0:2,csvupload:0:2:4`
+`mtp.async.rdb.workers=default:0:2,entityupload:0:2:4`
 
-This node executes the tasks assigned to worker IDs 0 and 2 in the default queue and worker IDs 0, 2, and 4 in the csvupload queue.
+This node executes the tasks assigned to worker IDs 0 and 2 in the default queue and worker IDs 0, 2, and 4 in the entityupload queue.
 | newProcessPerTask | boolean | Whether or not to run the worker in a new separate process. The default value is false.
 | javaCommand | String | The Java command for starting a worker in a separate process.
 | vmArgs | String, Multiple | VM arguments to pass to `javaCommand`.
@@ -104,7 +104,7 @@ And it collects the metrics of worker running in the same process. +
 This is configurable when the Micrometer module is added to the dependency. There is no configurable items.
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.async.rdb.RdbQueueService</interface>

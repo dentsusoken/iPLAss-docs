@@ -457,7 +457,7 @@ Enter an arbitrary string for the subject and message.
 You need to configure "mtp-service-config.xml" only if you want to check the mail locally.
 Please enable the MailService listener as shown below.
 
-[source, xml]
+[source,xml]
 ----
 <!-- ■ for develop only (additional="true) ■ -->
 <!-- To enable the debug mode for sending mails, Please uncomment the following code.-->
@@ -745,7 +745,7 @@ image::images/custom_edit-command_en.png[]
 
 Open the created Command, set the following contents using the `Edit` button, and then click the `Save` button to save.
 
-[source, groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.ManagerLocator;
 import org.iplass.mtp.entity.Entity;
@@ -1066,7 +1066,7 @@ Settings are required in mtp-service-config.xml.
 Set useQueue to true as shown below. +
 When changing settings, you will need to restart the Tomcat server.
 
-[source, xml]
+[source,xml]
 ----
 <!-- AsyncTask queue and counter setting -->
 <service>

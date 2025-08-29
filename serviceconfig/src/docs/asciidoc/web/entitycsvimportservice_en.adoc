@@ -4,12 +4,12 @@ The service manages CSV import of Entity.
 
 ==== Interface Name
 ----
-org.iplass.mtp.impl.csv.EntityCsvImportService
+org.iplass.mtp.impl.fileport.EntityCsvImportService
 ----
 
 ==== Implementing Class
 ----
-org.iplass.mtp.impl.csv.EntityCsvImportService
+org.iplass.mtp.impl.fileport.EntityCsvImportService
 ----
 
 ==== The settings of EntityCsvImportService
@@ -23,10 +23,10 @@ EntityCsvImportService can be configured with the following items.
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
-	<interface>org.iplass.mtp.impl.csv.EntityCsvImportService</interface>
+	<interface>org.iplass.mtp.impl.fileport.EntityCsvImportService</interface>
 
 	<property name="canCreateUserWithSpecificPassword" value="true" />
 </service>

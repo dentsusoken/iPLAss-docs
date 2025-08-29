@@ -73,7 +73,7 @@ classはorg.iplass.mtp.impl.micrometer.metrics.authentication.AuthenticationEven
 認証試行の成功・失敗回数をメトリクスとして記録するロガーです。Micrometerモジュールを適用した場合、デフォルトで<<MultiAuthLogger>>のロガーとして、<<EnterpriseSlf4jAuthLogger>>と共に使用されます。設定可能な項目はありません。
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.auth.log.AuthLoggerService</interface>

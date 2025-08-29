@@ -1,0 +1,12 @@
+= Material Design Components (TreeGrid)
+:_hreflang-path: developerguide/materialdesigncomponents/treegrid/index.html
+:_relative-root-path: ../../../
+
+[[treegrid]]
+== TreeGrid
+TreeGridはエンティティと参照プロパティのデータを、ツリーグリッド構造で表示するための画面部品です。
+定義の作成後、`TopView` に配置することで画面に表示できます。
+
+include::operationguide.adoc[]
+
+include::setting.adoc[]

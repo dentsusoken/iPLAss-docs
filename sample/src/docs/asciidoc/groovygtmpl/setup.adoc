@@ -1,16 +1,16 @@
 [[Groovy_GTmpl_Setup]]
 == セットアップ
-サンプルアプリケーションのセットアップ説明です。 +
-もし、既にiPLASSの<<../../gettingstarted/gettingstarted/index#,Install and Run>>または<<../../gettingstarted/installguide/index#,開発環境の構築>>を実行できた方で、サンプルアプリケーションを動かしたい場合、以下の手順に従って実施してみてください。 +
-それ以外の方は<<../../gettingstarted/gettingstarted/index#,Install and Run>>から実際に動かしてみることをお勧めします。
+サンプルアプリケーションのセットアップに関する説明です。 +
+もし、既にiPLAssの<<../../gettingstarted/gettingstarted/index#,Install and Run>>または<<../../gettingstarted/installguide/index#,開発環境の構築>>を実行できており、サンプルアプリケーションを動かしたい場合、以下の手順に従って実施してください。 +
+それ以外の場合は<<../../gettingstarted/gettingstarted/index#,Install and Run>>から実際に動かしてみることをお勧めします。
 
 * サンプルアプリケーションのzipファイルをlink:https://iplass.org/downloads/[ダウンロードサイト]からダウンロードします。
 
-* <<../../gettingstarted/gettingstarted/index#,Install and Run>>の章で作成したTenant、または<<../../gettingstarted/installguide/index#,開発環境の構築>>の章でEclipse上で作成したTenant、どちらかを利用してWebアプリケーションを立ち上げて管理者IDとパスワードでログインします。
+* <<../../gettingstarted/gettingstarted/index#,Install and Run>>の章で作成したテナント、または<<../../gettingstarted/installguide/index#,開発環境の構築>>の章でEclipse上で作成したテナント、いずれかを利用してWebアプリケーションを立ち上げ、管理者IDとパスワードでログインします。
 
 .サンプルアプリの起動手順
 
-. `Admin Console` の `Packaging` 機能を利用してzipファイルをインポートします。
+. Admin Consoleの `Packaging` 機能を利用してzipファイルをインポートします。
 +
 ダウンロードした「iplass-sample-app-groovy-package.zip」ファイルを、AdminConsoleの「Packaging」ツールで取り込んでください。
 +
@@ -33,7 +33,7 @@ image::images/sample-ec_groovy-gtmpl-setup-package-import-logpanel.png[align=lef
 +
 image::images/sample-ec_groovy-gtmpl-setup-package-import-refresh.png[align=left]
 
-. サンプルが全文検索機能（lucene）を利用しますので、service-configに書いてあるINDEXデータファイルの仮の保存場所をローカル環境の適当な場所に変えます。
+. サンプルアプリでは、全文検索機能（lucene）を利用するため、mtp-service-config.xmlに記載されているINDEXファイルの保存場所をローカル環境の適当な場所に変えます。
 +
 [source,xml]
 ----
@@ -58,7 +58,7 @@ image::images/sample-ec_groovy-gtmpl-setup-package-import-refresh.png[align=left
 </service>
 ----
 <1> useFulltextSearchをtrueに設定します。
-<2> INDEXファイル保存場所をローカルパスに設定します。
+<2> INDEXファイル保存場所に適当なローカルパスを設定します。
 +
 iPLAssのインストーラでWebアプリケーションを起動した場合、ホームディレクトリに作成された設定ファイルを更新してください。
 +
@@ -74,7 +74,7 @@ EclipseからWebアプリケーションを起動した場合、プロジェク�
 src/main/resources/mtp-service-config.xml
 ----
 
-. `Admin Console` の `EntityExplorer` で `Entity Crawl` 機能を利用してインデックスファイルを作り直します。
+. Admin Consoleの `EntityExplorer` で `Entity Crawl` 機能を利用して全文検索のINDEXファイルを作り直します。
 +
 ToolsのEntityExplorerを選択します。
 +
@@ -84,11 +84,11 @@ image::images/sample-ec_groovy-gtmpl-setup-entityexplorer.png[align=left]
 +
 image::images/sample-ec_groovy-gtmpl-setup-entityexplorer-tabs.png[align=left]
 +
-A) 任意のEntityのみを対象としてクローリングしたい場合はリストのEntityにチェックをいれ、「Start Crawl」ボタンをクリックして下さい。
+A) 任意のEntityのみを対象としてクローリングしたい場合は、リストの対象Entityにチェックを入れて、「Start Crawl」ボタンをクリックしてください。
 +
-B) クローリング対象Entityを全てクローリングしたい場合は「Re Crawl All Entity」ボタンをクリックして下さい。この場合、チェックをいれていないEntityも全てが対象となります。
+B) クローリング対象Entityをすべてクローリングしたい場合は「Re Crawl All Entity」ボタンをクリックしてください。
 +
-C) クローリングが完了しましたら、最新のINDEXデータを反映させるために、「Refresh」ボタンをクリックして下さい。
+C) クローリングが完了したら、最新のINDEXデータを反映させるために、「Refresh」ボタンをクリックしてください。
 +
 image::images/sample-ec_groovy-gtmpl-setup-entityexplorer-crawl.png[align=left]
 

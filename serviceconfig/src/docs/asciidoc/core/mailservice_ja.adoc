@@ -14,14 +14,24 @@ org.iplass.mtp.impl.mail.MailService
 org.iplass.mtp.impl.mail.MailServiceImpl
 ----
 
-.[.eeonly]#Amazon SESを利用したメール送信#
+.[.eeonly]#（非推奨）Amazon SESを利用したメール送信#
 ----
-org.iplass.mtp.impl.mail.AWSMailService
+org.iplass.mtp.impl.aws.AWSMailService
 ----
 
-.[.eeonly]#SendGridを利用したメール送信#
+.[.eeonly]#Amazon SESを利用したメール送信#
+----
+org.iplass.mtp.impl.mail.ses.awsv2.SesMailService
+----
+
+.[.eeonly]#（非推奨）SendGrid Web API v2を利用したメール送信#
 ----
 org.iplass.mtp.impl.sendgrid.SendGridMailServiceImpl
+----
+
+.[.eeonly]#SendGrid Web API v3を利用したメール送信#
+----
+org.iplass.mtp.impl.sendgridv3.SendGridV3MailService
 ----
 
 
@@ -162,7 +172,7 @@ KeyStoreに格納されている証明書はクライアントの証明書も含
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.mail.MailService</interface>
@@ -220,9 +230,17 @@ KeyStoreに格納されている証明書はクライアントの証明書も含
 </service>
 ----
 
-==== [.eeonly]#AWSMailServiceの設定#
+==== [.eeonly]#（非推奨）AWSMailServiceの設定#
 Amazon SESを利用する場合、AWSMailServiceを設定します。 +
 AWSMailServiceを利用する場合、AWSSettingにてAWSの認証設定が行われている必要があります。ただし、注意点としてAWSSettingのclientConfigurationは適用できません。
+
+[CAUTION]
+====
+AWS SDK for Java 1.x はメンテナンスモードになっており、2025年12月 にサポートを終了する予定です。 +
+iPLAss では AWS SDK for Java 1.x ベースのライブラリ iplass-ee-aws を非推奨とし、AWS SDK for Java 2.x ベースのライブラリ iplass-ee-aws2 への移行を推奨します。 +
+本機能を利用している場合は、ライブラリ iplass-ee-aws2 の <<aws2_SesMailService>> へ設定を移行してください。 +
+ライブラリ iplass-ee-aws は将来削除される予定です。
+====
 
 ===== 設定項目
 [cols="1,1,3", options="header"]
@@ -247,8 +265,51 @@ MailServiceImplの<<SendMailListener>>と同様です。
 ===== 設定例
 MailServiceImplと同様です。
 
+[[aws2_SesMailService]]
+==== [.eeonly]#SesMailServiceの設定#
+Amazon SESを利用する場合、SesMailService を設定します。 +
+<<aws2_AWSSetting>> で管理されている認証情報、クライアント設定を利用します。以下の項目が設定可能です。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| mail.charset | String | メールのデフォルトのcharsetです。 +
+例えば `utf-8` を指定します。 +
+| mail.encoding | String | メールのデフォルトのencodingです。 +
+例えば `base64` を指定します。 +
+| listener | <<SendMailListener>>、複数指定可 | メール送信時のListener。
+| smimeHandler | <<SmimeHandler>> | S/MIME利用時のハンドラです。
+| retryIntervalMillis | long | メール送信失敗時のリトライ間隔（ミリ秒）。
+| retryCount | int | メール送信失敗時のリトライ回数。
+| clientConfig | <<aws2_AWSSetting_AWSClientConfig>> | SES クライアントの設定を管理します。AWSリージョンや通信設定を設定します。
+|===
+
+===== 設定例
+[source,xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.mail.MailService</interface>
+	<class>org.iplass.mtp.impl.mail.ses.awsv2.SesMailService</class>
+	<depend>org.iplass.mtp.impl.awsv2.AWSSetting</depend>
+	
+	<property name="mail.charset" value="utf-8"/>
+	<property name="mail.encoding" value="base64"/>
+
+	<property name="retryIntervalMillis" value="0" />
+	<property name="retryCount" value="0" />
+	
+	<property name="clientConfig" class="org.iplass.mtp.impl.awsv2.AWSClientConfig">
+		<property name="region" value="[setYourSesRegion]" />
+	</property>
+</service>
+----
+
 ==== [.eeonly]#SendGridMailServiceImplの設定#
-SendGridを利用する場合、SendGridMailServiceImplを設定します。
+
+CAUTION: SendGridMailServiceImplは将来削除される予定です。SendGridV3MailServiceを利用することを推奨します。
+
+SendGrid Web API v2を利用する場合、SendGridMailServiceImplを設定します。
 
 ===== 設定項目
 [cols="1,1,3", options="header"]
@@ -266,33 +327,6 @@ SendGridを利用する場合、SendGridMailServiceImplを設定します。
 | retryIntervalMillis | long | 送信失敗時のリトライ間隔（ミリ秒）。
 | retryCount | int | 送信失敗時のリトライ回数。
 |===
-
-[[HttpClientConfig]]
-.HttpClientConfig
-classはorg.iplass.mtp.impl.http.HttpClientConfigを指定します。
-
-以下の項目を設定可能です。
-[cols="1,1,3", options="header"]
-|====================
-| 項目 | 値 | 説明
-| connectionTimeout | int | HTTPコネクションを確立する際のタイムアウト（ミリ秒）。デフォルト値は30000（30秒）です。
-| soTimeout | int | HTTP通信時のsocket timeout (SO_TIMEOUT)（ミリ秒）。デフォルト値は30000（30秒）です。
-| poolingMaxTotal | int | httpコネクションのプールの最大数。デフォルト値は20です。
-| poolingDefaultMaxPerRoute | int | ドメイン単位のhttpコネクションの最大数。デフォルト値は2です。
-| poolingTimeToLive | int | プールされているhttpコネクションの生存期間（ミリ秒）。デフォルトは無制限です。
-| proxyHost | String | プロキシサーバのホスト。
-| proxyPort | int | プロキシサーバのポート番号。
-| httpClientBuilderFactory | <<HttpClientBuilderFactory, HttpClientBuilderFactory>> |
-カスタムのHttpClientBuilderを生成したい場合に指定します。
-|====================
-
-[[HttpClientBuilderFactory]]
-.HttpClientBuilderFactory
-classはorg.iplass.mtp.impl.http.HttpClientBuilderFactoryを実装するクラスを指定します。
-
-標準で以下のHttpClientBuilderFactoryを提供します。
-
-* <<MicrometerHttpClientBuilderFactory>>
 
 [[HttpTransport]]
 .HttpTransport
@@ -335,7 +369,7 @@ BlockClientImplは設定変更可能な項目はありません。
 MailServiceImplの<<SendMailListener>>と同様です。
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.mail.MailService</interface>
@@ -353,7 +387,7 @@ MailServiceImplの<<SendMailListener>>と同様です。
 		<!-- 
 		<property name="proxyHost" value="proxyhost.dentsusoken.com" />
 		<property name="proxyPort" value="8080" />
-		 -->
+		-->
 	</property>
 	<property name="httpTransport" class="org.iplass.mtp.impl.sendgrid.apiclient.HttpTransportImpl">
 		<!-- SendGridの認証用キー -->
@@ -377,6 +411,85 @@ MailServiceImplの<<SendMailListener>>と同様です。
 	<!-- ■ for develop only (additional="true") ■ -->
 	<!-- 
 	<property name="listener" class="org.iplass.mtp.mail.listeners.LoggingSendMailListener" additional="true"/>
-	 -->
+	-->
+</service>
+----
+
+==== [.eeonly]#SendGridV3MailServiceの設定#
+
+SendGrid Web API v3を利用する場合、SendGridV3MailServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| apiKey | String、必須 | SendGridのAPI Key。
+| charset | String | メールの文字コード。
+| httpClientConfig | <<HttpClientConfig>> | HTTPクライアントの設定。
+| listener | <<SendMailListener_s_v3, SendMailListener>>、複数指定可 | メール送信時のListener。
+| retryIntervalMillis | long | 送信失敗時のリトライ間隔（ミリ秒）。
+| retryCount | int | 送信失敗時のリトライ回数。
+|===
+
+[[HttpClientConfig]]
+.HttpClientConfig
+classはorg.iplass.mtp.impl.http.HttpClientConfigを指定します。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|====================
+| 項目 | 値 | 説明
+| connectionTimeout | int | HTTPコネクションを確立する際のタイムアウト（ミリ秒）。デフォルト値は30000（30秒）です。
+| soTimeout | int | HTTP通信時のsocket timeout (SO_TIMEOUT)（ミリ秒）。デフォルト値は30000（30秒）です。
+| poolingMaxTotal | int | httpコネクションのプールの最大数。デフォルト値は20です。
+| poolingDefaultMaxPerRoute | int | ドメイン単位のhttpコネクションの最大数。デフォルト値は2です。
+| poolingTimeToLive | int | プールされているhttpコネクションの生存期間（ミリ秒）。デフォルトは無制限です。
+| proxyHost | String | プロキシサーバのホスト。
+| proxyPort | int | プロキシサーバのポート番号。
+| httpClientBuilderFactory | <<HttpClientBuilderFactory, HttpClientBuilderFactory>> |
+カスタムのHttpClientBuilderを生成したい場合に指定します。
+|====================
+
+[[HttpClientBuilderFactory]]
+.HttpClientBuilderFactory
+classはorg.iplass.mtp.impl.http.HttpClientBuilderFactoryを実装するクラスを指定します。
+
+標準で以下のHttpClientBuilderFactoryを提供します。
+
+* <<MicrometerHttpClientBuilderFactory>>
+
+[[SendMailListener_s_v3]]
+.SendMailListener
+MailServiceImplの<<SendMailListener>>と同様です。
+
+===== 設定例
+[source,xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.mail.MailService</interface>
+	<class>org.iplass.mtp.impl.sendgridv3.SendGridV3MailService</class>
+
+	<!-- HttpClientの設定 -->
+	<property name="httpClientConfig" class="org.iplass.mtp.impl.http.HttpClientConfig">
+		<property name="connectionTimeout" value="30000" />
+		<property name="soTimeout" value="30000" />
+		<!-- ■ for develop only ■ -->
+		<!-- 
+		<property name="proxyHost" value="proxyhost.dentsusoken.com" />
+		<property name="proxyPort" value="8080" />
+		-->
+	</property>
+
+	<!-- SendGridの認証用キー -->
+	<property name="apiKey" value="yourOwnApiKey" />
+
+	<!-- メールの文字コード -->
+	<property name="charset" value="UTF-8" />	
+
+
+	<!-- ■ for develop only (additional="true") ■ -->
+	<!-- 
+	<property name="listener" class="org.iplass.mtp.mail.listeners.LoggingSendMailListener" additional="true"/>
+	-->
 </service>
 ----

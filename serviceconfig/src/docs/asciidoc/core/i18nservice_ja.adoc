@@ -80,7 +80,7 @@ classはorg.iplass.mtp.impl.i18n.LanguageFontsを指定します。
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.i18n.I18nService</interface>

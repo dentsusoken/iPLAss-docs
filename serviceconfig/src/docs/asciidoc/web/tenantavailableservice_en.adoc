@@ -29,7 +29,7 @@ CAUTION: Use the `alwaysAvailableAction` one. We will remove it in the next mino
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.tenant.available.TenantAvailableService</interface>

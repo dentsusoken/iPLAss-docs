@@ -1,6 +1,6 @@
 [[Groovy_Gtmpl_Resource_BeanValidation]]
 === Bean Validationエラーメッセージ
-* 言語別にメッセージ定義(メタデータ）を作成することで多言語利用が可能です。
+* 言語別にメッセージ定義（メタデータ）を作成することで多言語利用が可能です。
 +
 image:images/sample-ec_groovy-gtmpl-multilang-validationmessages.png[align=left]
 +
@@ -13,8 +13,8 @@ image:images/sample-ec_groovy-gtmpl-multilang-validation-messages.png[align=left
 +
 . メッセージにパラメータを利用することが可能です。
 
-* 補足 + 
-※ サンプルではValidationエラーメッセージの定義を `/message` の直下に入れています。もしカスタムのパスに入れたい場合、以下のようにservice-configに `org.iplass.mtp.impl.validation.ValidationService` の定義を上書きしなければならないです。
+* 補足 +
+※ サンプルアプリでは、Validationエラーメッセージの定義を `/message` の直下に入れています。もしカスタムのパスに入れたい場合、以下のようにservice-configに `org.iplass.mtp.impl.validation.ValidationService` の定義を上書きする必要があります。
 +
 [source,xml]
 ----

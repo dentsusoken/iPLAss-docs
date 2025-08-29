@@ -117,6 +117,13 @@ NOTE: Acceptが `application/json` もしくは `application/xml` の場合に�
 |countTotal |trueが設定されている場合、 `SearchOption#setCountTotal(true)` で検索します。
 
 NOTE: Acceptが `application/json` もしくは `application/xml` の場合に有効なフラグです。
+
+|footer | trueが設定されている場合、あらかじめ設定ファイルで定義された固定のフッター文字列を、
+CSVファイルの最終行に出力するようにします。未指定時のデフォルトは false です。
+
+フッター文字列は <<../../serviceconfig/index.adoc#EntityWebApiService, EntityWebApiService>> で設定可能です。
+
+NOTE: Acceptが `text/csv` の場合に有効なフラグです。
 |===
 
 * 返却値 +

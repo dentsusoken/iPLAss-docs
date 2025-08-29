@@ -3,7 +3,7 @@
 
 多言語を利用するために、サンプルアプリで以下の対応を行っています。
 
-* <<VueJS_WebAPI_Resources_Message,多言語メッセージファイル>>の作成（※ `vue-i18n` の多言語機能を利用しています。公式サイトを参照してください。）
+* <<VueJS_WebAPI_Resources_Message,多言語メッセージファイル>>の作成（※ `vue-i18n` の多言語機能を利用しています）
 
 * 言語別に<<VueJS_WebAPI_Resources_BeanValidation,Bean Validation>>エラーメッセージプロパティファイルの作成
 

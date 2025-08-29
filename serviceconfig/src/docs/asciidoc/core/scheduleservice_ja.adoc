@@ -26,7 +26,7 @@ ScheduleServiceを設定します。
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.scheduling.ScheduleService</interface>

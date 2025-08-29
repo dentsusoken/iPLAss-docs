@@ -39,7 +39,7 @@ The following items can be configured.
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.redis.RedisService</interface>

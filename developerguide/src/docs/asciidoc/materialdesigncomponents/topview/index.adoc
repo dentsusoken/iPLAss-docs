@@ -1,0 +1,18 @@
+= Material Design Components (TopView)
+:_hreflang-path: developerguide/materialdesigncomponents/topview/index.html
+:_relative-root-path: ../../../
+:_menu-title-ee-only: true
+
+[[topview]]
+== TopView
+TopViewは、MDCモジュールにおけるTop画面に表示する内容を管理する機能です。
+お知らせ一覧や最終ログイン日時表示といったパーツを標準で提供するほか、独自のテンプレートやGroovyTemplateを配置して自由にカスタマイズすることも可能です。
+
+<<../navigation/index.adoc#navigation, Navigation>>と併せてロールと連動しており、ロール毎にTopViewとNavigationを管理できます。
+（<<role, ロールとの連動>>）
+
+include::operationguide.adoc[]
+
+include::setting.adoc[]
+
+include::role.adoc[]

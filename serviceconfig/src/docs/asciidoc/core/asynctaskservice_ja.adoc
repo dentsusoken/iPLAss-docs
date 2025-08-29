@@ -35,7 +35,7 @@ cached:: maximumPoolSizeで指定された可変数のスレッドを再利用�
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.async.AsyncTaskService</interface>

@@ -108,7 +108,7 @@ Actionのレイテンシ・SQLの発行回数をメトリクスとして記録�
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.web.actionmapping.ActionMappingService</interface>

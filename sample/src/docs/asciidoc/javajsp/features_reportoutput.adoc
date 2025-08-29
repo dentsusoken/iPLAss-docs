@@ -2,7 +2,7 @@
 === ReportOutput（注文明細ダウンロード）
 * POIを用いてExcel形式の注文明細帳票の出力機能を実装しています。
 +
-* Java/JSP版では、Javaクラスを用いてTemplateのOutput Logicを実装しています。
+* Java/JSP版では、Javaクラスを用いてTemplateの「Output Logic」を実装しています。
 +
 [cols="1,2"]
 |===
@@ -10,19 +10,19 @@ h|ファイル名|samples.ec01.template.report.OrderOutputLogic
 |===
 
 * 帳票テンプレート +
-作成方法は、開発者ガイド<<../../developerguide/report/index#, 帳票出力（Jasper/JXLS/POI）>>の章をご参照ください。
+作成方法は、開発者ガイドの<<../../developerguide/report/index#, 帳票出力（Jasper/JXLS/POI）>>の章を参照ください。
 
 * POI帳票出力機能の動作確認
 
-** 管理用画面で注文検索一覧画面を開き、詳細リンクをクリックします。
+** 管理画面で注文検索一覧画面を開き、「詳細」リンクをクリックします。
 +
 image:images/sample-ec_java-jsp-report-order-list.png[align=left]
 
-** 「注文明細ダウンロード」ボタンをクリックします。
+** 「注文情報ダウンロード」ボタンをクリックします。
 +
 image:images/sample-ec_java-jsp-report-download.png[align=left]
 
 ** ダウンロードしたExcel帳票を確認します。 +
-このサンプルでは、英語用の帳票テンプレートも別途用意しています。
+サンプルアプリでは、英語用の帳票テンプレートも別途用意しています。
 +
 image:images/sample-ec_java-jsp-report-download-file.png[align=left]

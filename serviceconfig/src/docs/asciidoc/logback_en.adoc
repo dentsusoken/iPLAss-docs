@@ -98,13 +98,17 @@ In iPLAss, the following information is logged by the diagnostic context (MDC).
 | traceId | %X{traceId} | When applying [.eeonly]#iplass-ee-aws# module, output Root of X-Amzn-Trace-Id. +
 In addition, the output value can be set with WebFrontendService.
 | [.eeonly]#impersonatedUser# | %X{impersonatedUser} | Impersonated User
+| infinispanRequestId | %X{infinispanRequestId} | Available when iplass-infinispan or [.eeonly]#iplass-ee-infinispan# module is applied. +
+ID for asynchronous processing sent to cluster nodes using Infinispan. A unique ID is assigned for each transmission unit.
+| scimDistributeId | %X{scimDistributeId} | Available when [.eeonly]#iplass-ee-web# module is applied. +
+Available in the Scheduler task of the SCIM Service Provider function. An ID used to deliver SCIM requests to the Service Provider, with a unique ID assigned on a per-message basis.
 |===
 
 === filter
 In the context of iPLAss, `org.iplass.mtp.impl.logging.logback.LogConditionTurboFilter` is provided. By enabling this TurboFilter, it is possible to modify the log output conditions dynamically corresponding to each tenant.
 
 .The Settings of LogConditionTurboFilter
-[source, xml]
+[source,xml]
 ----
 <configuration>
     <turboFilter class="org.iplass.mtp.impl.logging.logback.LogConditionTurboFilter" />
@@ -137,7 +141,7 @@ Logs can be output in JSON format using the Logstash Logback Encoder.
 Action/WebAPI execution time, number of queries issued, etc. are also output as attributes.
 
 .The Settings of Logstash Logback Encoder
-[source, xml]
+[source,xml]
 ----
 <configuration>
 

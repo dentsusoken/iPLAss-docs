@@ -3,8 +3,8 @@
 
 === Cubeの作成例
 
-このサンプルでは請求用Cubeを作成しています。 + 
-以下は請求用CubeCubeを例として説明して行きます。
+このサンプルアプリでは、請求用Cubeを作成しています。 +
+以下では、請求用Cubeを例として説明していきます。
 
 image::images/sample-ec_cube-filetree.png[align=left]
 
@@ -12,12 +12,12 @@ image::images/sample-ec_cube-filetree.png[align=left]
 
 image::images/sample-ec_cube-settings.png[align=left]
 
-. キューブタイプをEntityに選択します。
-. Cube表示時に最新データを自動的にロードにします。
+. キューブタイプに `Entity` を選択します。
+. Cube表示時に最新データを自動的にロードします。
 . ハッシュ値を利用してパーティショニングします。
-. パーティショニングアイテム名を名前（注文明細番号）に選択します。
+. パーティショニングアイテム名に `名前（注文明細番号）` を選択します。
 . パーティション総数を指定します。
-. 集計対象エンティティを請求エンティティに選択します。
+. 集計対象エンティティに `請求エンティティ` を選択します。
 . 集計に使用するデータをメモリにロードします。
 
-※　設定項目の説明は開発者ガイド<<../../developerguide/simplebi/index#cube, Cubeの管理>>の章を参照してください。
+※ 各設定項目の詳細については、開発者ガイドの<<../../developerguide/simplebi/index#cube, Cubeの管理>>の章を参照してください。

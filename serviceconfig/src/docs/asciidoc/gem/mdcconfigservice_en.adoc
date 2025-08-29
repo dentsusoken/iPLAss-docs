@@ -1,6 +1,6 @@
 [[MdcConfigService]]
 === [.eeonly]#MdcConfigService#
-This service manage the settings of the overall performance of the mobile version of the general pages(MDC).
+This service manage the settings of the overall performance of the MDC version of the general pages.
 
 ==== Interface Name
 ----
@@ -21,12 +21,27 @@ org.iplass.mtp.mdc.MdcConfigService
 |===
 | Item | Value | Description
 | formatNumberWithComma | boolean | Whether to format numeric property values ​​with commas in the detail display screen. The default value is true.
+| searchResultDetailViewType | MdcDetailViewTypeInSearchResult | Detail view type in search result. Specify from `DIALOG` , `TWO_PANE` . The default value is `DIALOG` .
 | searchResultDispRowCount | int |  Number of search results to be displayed on the search screen. The default value is 10.
 | searchInterval | int | Set the search interval to prevent redundant requests. If 0 is set, it will be infinite.(cannot click the search button until the result was retrieved and presented) The default value is 60000 (1 minute).
+| useDisplayLabelItemInFileDownload | boolean a| Whether to use a display label item in file download. Use the item that specified as `Property used as display label` in `ReferencePropertyEditor Setting` as a file item when useDisplayLabelItemInFileDownload is true.
+
+CAUTION: Setting flag for backward compatibility. This setting flag will be deleted in a future version.
+| fileSupportType | FileSupportType | File format to be used for download and upload. Specify from `CSV` `EXCEL` `SPECIFY`. The default value is `CSV`.
+| fileDownloadMaxCount | int | Maximum number of file downloads. The default value is 65535.
+| uploadableFileDownloadLoadSize | int | Size of Entity batch loads containing multiplicity multiple references when downloading file in Upload format. The default value is 1.
+| searchUserResultCacheLimitForFileDownload | int | Search internal cache size for obtaining User name when downloading file. The default value is 300.
+| fileDownloadReferenceVersion | boolean | Whether to output the reference items' version in file downloads. The default value is true.
+| showDownloadButtonInSearchConditionDialog | boolean | Whether to display the download button in the SearchConditionDialog. The default value is false.
+| csvDownloadCharacterCode | String, Multiple | CSV download character code. The default value is `UTF-8`.
+| csvDownloadQuoteAll | boolean | Set whether to output double quotes when downloading CSV file. The default value is true.
+| csvDownloadWithFooter | boolean | Whether to output a footer in CSV downloads of general search. The default value is false.
+| csvDownloadFooter | String | Set CSV download footer wording for general search.
 | recycleBinMaxCount | int | Maximum number of trash cans displayed. If not specified, the default value is 100. If -1 is specified, there is no limit.
 | deleteAllCommandBatchSize | int | Batch size when committing bulk deletion. If not specified, the default value is 100. Applicable when the bulk delete commit type is DIVISION.
-| themes | <<MdcTheme>>, Multiple | Themes.
-| themeColorSchemes | <<ThemeColorScheme>>, In format of Map | Theme color schemes. specify the theme name in key and set the color scheme for each theme in Map format.
+| shallowCopyLobData | boolean | Shallow copy Lob data.
+If `true`, it refers to the same data as the copy source without copying the entity.
+If `false`, copy the entity and refer to the data after copying.
 | displayBreakpoint | <<DisplayBreakpoint>> | Display breakpoint. Set the width for each device size.
 | permitRolesToMdc | String, Multiple | Mdc permit roles in MdcAuth.
 The default value is `MdcUser` and `AppAdmin` .
@@ -45,35 +60,6 @@ Configuration example
 See <<WebFrontendService, WebFrontendService uploadFileTypeDetector>>, <<FileTypeDetector, FileTypeDetector>> for information on how to determine the MIME Type to be validated.
 
 |===
-
-[[MdcTheme]]
-.Theme
-Please specify org.iplass.mtp.mdc.tenant.Theme to the class.
-The following items can be configured.
-[cols="1,1,3", options="header"]
-|====================
-| Item | Value | Description
-| themeName | String | Theme name.
-| displayName | String | Display name.
-|====================
-
-[[ThemeColorScheme]]
-.ThemeColorScheme
-Please specify org.iplass.mtp.mdc.tenant.ThemeColorScheme to the class.
-The following items can be configured.
-[cols="1,1,3", options="header"]
-|====================
-| Item | Value | Description
-| primary | String | Primary color.
-| secondary | String | Secondary color.
-| neutral | String | Neutral color. The default value is `#D4D4D4`.
-| success | String | Success color. The default value is `#4CAF50`.
-| info | String | Information color. The default value is `#2196F3`.
-| warning | String | Warning color. The default value is `#FF7D07`.
-| error | String | Error color. The default value is `#FF5252`.
-| background | String | Background color. The default value is `#F7F7F7`.
-| surface | String | Surface color. The default value is `#FFFFFF`.
-|====================
 
 [[DisplayBreakpoint]]
 .DisplayBreakpoint
@@ -114,18 +100,54 @@ This property is the output target of the binary download log. The following ite
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.mdc.MdcConfigService</interface>
 	<!--  Whether to format numeric property values ​​with commas in the detail display screen -->
 	<property name="formatNumberWithComma" value="true" />
 
+	<!-- Detail view type in search result. Specify from `DIALOG` , `TWO_PANE` -->
+	<property name="searchResultDetailViewType" value="DIALOG" />
+
 	<!-- Number of search results to be displayed on the search screen. -->
 	<property name="searchResultDispRowCount" value="10"/>
 
 	<!-- Search processing interval, infinite (0) / specified milliseconds (1 or more) -->
 	<property name="searchInterval" value="60000"/>
+	
+	<!-- Whether to output the property used as a display label in file download processing -->
+    <property name="useDisplayLabelItemInFileDownload" value="false"/>
+
+    <!-- Supported file types for Entity data: CSV, EXCEL, SPECIFY -->
+    <property name="fileSupportType" value="CSV" />
+
+    <!-- Maximum number of records for file download -->
+    <property name="fileDownloadMaxCount" value="65535" />
+
+    <!-- Batch load size when including multiple references with multiplicity in upload-type CSV download -->
+    <property name="uploadableFileDownloadLoadSize" value="1" />
+
+    <!-- Internal cache size for retrieving user names during file download -->
+    <property name="searchUserResultCacheLimitForFileDownload" value="300" />
+
+    <!-- Output reference item version in file download -->
+    <property name="fileDownloadReferenceVersion" value="true"/>
+
+    <!-- Whether to display the download button in SearchConditionDialog -->
+    <property name="showDownloadButtonInSearchConditionDialog" value="false"/>
+
+    <!-- CSV download character encoding -->
+    <property name="csvDownloadCharacterCode" value="UTF-8" additional="true" />
+
+    <!-- Always output double quotes in CSV download -->
+    <property name="csvDownloadQuoteAll" value="true"/>
+
+    <!-- Whether to output footer in CSV download for generic search -->
+    <property name="csvDownloadWithFooter" value="false"/>
+
+    <!-- Footer text for CSV download in generic search -->
+    <property name="csvDownloadFooter" value=""/>
 
 	<!-- Maximum number of trash cans displayed -->
 	<property name="recycleBinMaxCount" value="100" />
@@ -133,47 +155,8 @@ This property is the output target of the binary download log. The following ite
 	<!-- Batch size when committing bulk deletion. -->
 	<property name="deleteAllCommandBatchSize" value="100" />
 
-	<!-- Themes -->
-	<property name="themes" class="org.iplass.mtp.mdc.tenant.Theme">
-		<property name="themeName" value="green" />
-		<property name="displayName" value="Green" />
-	</property>
-	<property name="themes" class="org.iplass.mtp.mdc.tenant.Theme">
-		<property name="themeName" value="red" />
-		<property name="displayName" value="Red" />
-	</property>
-	<property name="themes" class="org.iplass.mtp.mdc.tenant.Theme">
-		<property name="themeName" value="blue" />
-		<property name="displayName" value="Blue" />
-	</property>
-	<property name="themes" class="org.iplass.mtp.mdc.tenant.Theme">
-		<property name="themeName" value="orange" />
-		<property name="displayName" value="Orange" />
-	</property>
-
-	<!-- Theme color schemes -->
-	<property name="themeColorSchemes">
-		<property name="green" class="org.iplass.mtp.mdc.tenant.ThemeColorScheme" >
-			<property name="primary" value="#4CAF50" />
-			<property name="secondary" value="#DADADA" />
-			<property name="accent" value="#0D909B" />
-		</property>
-		<property name="red" class="org.iplass.mtp.mdc.tenant.ThemeColorScheme" >
-			<property name="primary" value="#F25A4F" />
-			<property name="secondary" value="#DADADA" />
-			<property name="accent" value="#0D909B" />
-		</property>
-		<property name="blue" class="org.iplass.mtp.mdc.tenant.ThemeColorScheme" >
-			<property name="primary" value="#14B4FC" />
-			<property name="secondary" value="#DADADA" />
-			<property name="accent" value="#0D9B6F" />
-		</property>
-		<property name="orange" class="org.iplass.mtp.mdc.tenant.ThemeColorScheme" >
-			<property name="primary" value="#EE961F" />
-			<property name="secondary" value="#DADADA" />
-			<property name="accent" value="#0D909B" />
-		</property>
-	</property>
+	<!-- Shallow copy Lob data when copying entity data on detail view -->
+	<property name="shallowCopyLobData" value="false" />
 
 	<!-- Display Setting  -->
 	<property name="displayBreakpoint" class="org.iplass.mtp.mdc.DisplayBreakpoint">

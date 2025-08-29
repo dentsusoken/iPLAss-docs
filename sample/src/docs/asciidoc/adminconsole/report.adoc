@@ -1,15 +1,15 @@
 [[AdminConsole_Report]]
 === 帳票出力
 
-このサンプルでは２種類の帳票出力機能（請求書ダウンロード（JasperReports）と注文明細ダウンロード（POI））が利用されています。 +
-POIを利用した注文明細帳票(Excel形式)のダウンロード機能の実装はサンプルの実装方法によって異なっている為、詳細は各サンプルの説明を参照してください。 +
+サンプルアプリでは、2種類の帳票出力機能が利用されています。JasperReportsを用いた請求書ダウンロード機能と、POIを利用した注文明細帳票（Excel形式）のダウンロード機能です。 +
+POIを利用した注文明細帳票（Excel形式）のダウンロード機能の実装は各サンプルアプリの実装方法によって異なっているため、詳細は各サンプルの説明を参照してください。
 
-*  Java／JSP版 <<../javajsp/index#Java_JSP_ReportOutput, 注文明細ダウンロード>> +
-* Groovy／GroovyTemplate版 <<../groovygtmpl/index#Groovy_GTmpl_ReportOutput, 注文明細ダウンロード>> +
+* Java／JSP版、Vue.js/WebAPI版: <<../javajsp/index#Java_JSP_ReportOutput, 注文明細ダウンロード>> +
+* Groovy／GroovyTemplate版: <<../groovygtmpl/index#Groovy_GTmpl_ReportOutput, 注文明細ダウンロード>> +
 
 ==== 請求書ダウンロード(JasperReports)
 JasperReportsを用いて、PDF形式の帳票出力を実行することが可能です。 +
-以下では、このサンプルで利用されているPDF形式の請求書ダウンロード機能を実装する為に必要な一連の設定について説明します。
+以下では、このサンプルで利用されているPDF形式の請求書ダウンロード機能を実装するために必要な一連の設定について説明します。
 
 .設定方法
 
@@ -69,17 +69,15 @@ JasperReportsを用いて、PDF形式の帳票出力を実行することが可�
 +
 帳票出力テンプレート定義を設定します。
 +
-※ 帳票テンプレート定義に関する各設定項目の詳細は、開発者ガイド<<../../developerguide/report/index#, 帳票出力（Jasper/JXLS/POI）>>の章を参照してください。
+※ 帳票テンプレート定義に関する各設定項目の詳細は、開発者ガイドの<<../../developerguide/report/index#, 帳票出力（Jasper/JXLS/POI）>>の章を参照してください。
 +
 image:images/sample-ec_adminconsole-report-jasper-template.png[align=left]
 +
 . 呼び出される請求書の帳票テンプレート定義
 . jrxml（JasperでテンプレートとなるXMLファイル）テンプレートファイルを指定します。
-. 事前のCommandクラスで検索データを格納したRequestContextのAttribute名を指定します。
+. 事前に実行したCommandクラスで検索データを格納したRequestContextのAttribute名を指定します。
 . 言語別に帳票出力テンプレート定義を設定することが可能です。
 
-
-+
 * Action
 +
 image::images/sample-ec_adminconsole-report-action.png[align=left]
@@ -90,7 +88,7 @@ image::images/sample-ec_adminconsole-report-action.png[align=left]
 * EntityViewの詳細画面のカスタマイズ
 +
 請求エンティティを右クリックし、「Detail_Layoutを開く」ボタンをクリックします。 +
-編集ボタンをクリックします。
+「編集」ボタンをクリックします。
 +
 image::images/sample-ec_adminconsole-report-customview.png[align=left]
 +
@@ -100,9 +98,8 @@ image::images/sample-ec_adminconsole-report-customview-settings.png[align=left]
 . クリックイベント関数を設定します。
 
 ===== 画面表示
-
 請求書ダウンロード機能の画面表示 +
-管理用画面で請求検索一覧画面を開き、詳細リンクをクリックします。
+管理画面で請求エンティティの検索一覧画面を開き、「詳細」リンクをクリックします。
 
 image:images/sample-ec_adminconsole-report-settlement-detail.png[align=left]
 
@@ -111,6 +108,6 @@ image:images/sample-ec_adminconsole-report-settlement-detail.png[align=left]
 image:images/sample-ec_adminconsole-report-settlement-download.png[align=left]
 
 ダウンロードしたPDF帳票の中身を確認します。 +
-このサンプルでは、英語用の帳票テンプレートも別途用意しています。
+このサンプルアプリでは、英語用の帳票テンプレートも別途用意しています。
 
 image:images/sample-ec_adminconsole-report-settlement-downloadfile.png[align=left]

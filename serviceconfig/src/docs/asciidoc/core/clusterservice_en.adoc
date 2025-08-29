@@ -109,7 +109,7 @@ The following items can be configured.
 
 ===== Example
 .HttpMessageChannel
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.cluster.ClusterService</interface>
@@ -127,7 +127,7 @@ The following items can be configured.
 ----
 
 .JGroupsMessageChannel
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.cluster.ClusterService</interface>
@@ -139,7 +139,7 @@ The following items can be configured.
 ----
 
 .InfinispanMessageChannel
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.cluster.ClusterService</interface>

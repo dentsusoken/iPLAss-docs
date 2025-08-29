@@ -162,7 +162,7 @@ Define it by specifying the Java Time Zone ID for name and the SQL Server Time Z
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.rdb.adapter.RdbAdapterService</interface>

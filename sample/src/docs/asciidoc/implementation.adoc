@@ -1,14 +1,14 @@
 [[Application_Implementation]]
 == サンプルアプリの実装
 
-一般消費者向け（ECサイト）画面の実装は三つのパターンになっています。 + 
-Jsp、GroovyTemplateとVue.jsを利用して独自で実装されています。
+一般消費者向け（ECサイト）画面の実装は3つのパターンを用意しています。
+それぞれ、Java/JSP、Groovy/GroovyTemplate、Vue.js/WebApiを利用して独自に実装しています。
 
 === <<./javajsp/index#,Java／JSP版>>
 
 === <<./groovygtmpl/index#,Groovy／GroovyTemplate版>>
 
-=== <<./vuejswebapi/index#,Vue.js／WebApi版>>
+=== <<./vuejswebapi/index#,Vue.js／WebAPI版>>
 
 === <<./adminconsole/index#,Admin Consoleの共通設定>>
 

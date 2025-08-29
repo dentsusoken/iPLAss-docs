@@ -681,7 +681,7 @@ For details, please refer to the Entity Manager from javadoc.
 
 Other than the algorithms, the following expression can also be used.
 
-[source, EQL]
+[source,sql]
 ----
 case
   when integer1 = 50 then '△△△' 
@@ -690,12 +690,12 @@ case
 end
 ----
 
-[source, EQL]
+[source,sql]
 ----
 integer1 / (select sum(integer1) from sample.Sample)
 ----
 
-[source, EQL]
+[source,sql]
 ----
 case
   when 50 = (select integer1 + integer2 from sample.Sample on .this=this) then '△△△'
@@ -1917,7 +1917,7 @@ image::images/topview_savesearchlayout_en.png[]
 In the same way, add a view to the DetailLayout of the `Property Check 2` Entity.
 Let the view name to be added the same as SearchLayout, which is `topview`.
 
-Let's delete the basic section on top.
+Let's delete all sections excepet for the basic section at the top.
 When you have finished deleting, click the `Save` button in View.
 
 image::images/topview_detaillayout-topview1_en.png[]
@@ -1926,7 +1926,7 @@ Next, go back to TopView and click the edit button for the `SearchResult List` d
 
 image::images/topview_searchresultlistsetting_en.png[]
 
-The `topview` added earlier is added to `ResultList View`, select it.
+The `topview` s that were added earlier are now available in the `ResultList` View and `Detail Action View`, so please select them.
 
 image::images/topview_searchresultlistdialog-topview_en.png[]
 
@@ -2170,7 +2170,7 @@ There are items such as `Icon Tag` and `Icon Tag` in each setting screen, and by
 This time, try setting link:https://fontawesome.com/icons/star?Style=regular[star icon^].
 Since the html tag for display is described in the page of each icon, we will utilize it.
 
-[source, html]
+[source,html]
 ----
 <i class="far fa-star"></i>
 ----

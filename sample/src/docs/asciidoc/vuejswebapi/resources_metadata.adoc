@@ -1,9 +1,7 @@
 [[VueJS_WebAPI_Resources_Metadata]]
 === メタデータ定義
-* コマンドのメタデータ定義。 + 
+* コマンドのメタデータ定義 +
 ここではWebApiのコマンドをメタデータとして登録しています。アプリの起動時に読み込まれます。
-+
-コマンドのメタデータ定義ファイル
 +
 [cols="1,2"]
 |===
@@ -17,7 +15,7 @@ h|ファイル名|/src/main/java/samples/ec01/command/metadata/CommandList.java
 h|ファイル名|/src/main/resources/samples-ec01-ce-metadata.xml
 |===
 +
-ここでは二種類のメタデータが用意されています。
+ここでは2種類のメタデータが用意されています。
 +
 [source]
 ----
@@ -34,12 +32,12 @@ metaDataList
 	┣ contextPath (name=/view/filter) <1>
 	┗ contextPath (name=/template)　<2>	
 ----
-<1> Admin Consoleで作成したメタデータです。Packaging機能もしくはMetaDataExplorer機能を利用することでエクスポートしたものです。
-<2> Templateのメタデータ定義は手で作成しています。 + 
-※ 帳票出力機能と管理トップ画面のTemplate定義はAdmin Consoleで作成し、エクスポートしています。 + 
-※ このサンプルではクライアント側の画面がVue.jsで実装されているので、管理用の<<../adminconsole/index#AdminConsole_Product_BulkUpdate,在庫一括更新画面>>のTemplate定義のみメタデータに登録する必要があります。
+<1> Admin Consoleで作成したメタデータ定義です。Packaging機能、もしくはMetaDataExplorer機能を利用することでエクスポートしたものです。
+<2> Templateのメタデータ定義は手動で作成しています。 +
+※ 帳票出力機能と管理トップ画面のTemplate定義は、Admin Consoleで作成し、エクスポートしています。 +
+※ このサンプルではクライアント側の画面がVue.jsで実装されているため、管理画面の<<../adminconsole/index#AdminConsole_Product_BulkUpdate,在庫一括更新画面>>のTemplate定義のみメタデータに登録する必要があります。
 +
-手で作成したTemplate定義。
+手動で作成したTemplate定義。
 +
 [source]
 ----

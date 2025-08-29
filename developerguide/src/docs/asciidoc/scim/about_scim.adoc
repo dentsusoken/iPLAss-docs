@@ -1,0 +1,20 @@
+[[about_scim]]
+== SCIMとは
+SCIM（System for Cross-domain Identity Management）は、異なるドメイン間でのユーザー・グループ情報の管理を行うための標準規格です。 +
+RESTfulなWebサービスとして提供され、JSON形式でユーザー・グループ情報を取得、登録、更新、削除するためのAPIを提供します。
+
+SCIM 2.0 の詳細については、 link:https://www.rfc-editor.org/rfc/rfc7642.html[&#10697;RFC7642^] link:https://www.rfc-editor.org/rfc/rfc7643.html[&#10697;RFC7643^] link:https://www.rfc-editor.org/rfc/rfc7644.html[&#10697;RFC7644^] を参照してください。
+
+iPLAss では、SCIM 2.0 の API をサポートしており、以下のような機能を提供します。
+
+.Identity Provider 機能
+SCIM 2.0 に対応する外部サービスより、iPLAss がリクエストを受信します。 +
+受信したリクエストに基づいてユーザー・グループ情報の登録、更新、削除を行います。
+
+.Service Provider 機能
+SCIM 2.0 に対応する外部サービスに対して、iPLAss がリクエストを送信します。 +
+iPLAss でユーザー・グループ情報の追加・更新・削除が契機となり、リクエストを送信します。
+
+iPLAss で SCIM 機能を利用するためには、AdminConsole でメタデータを定義します。
+利用する機能に応じて Service-Config の設定が必要な場合もあります。
+

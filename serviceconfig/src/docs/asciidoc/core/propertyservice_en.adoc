@@ -27,7 +27,7 @@ If the varcharColumnLength defined in <<StorageSpaceMap>> of StoreService is les
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.entity.property.PropertyService</interface>

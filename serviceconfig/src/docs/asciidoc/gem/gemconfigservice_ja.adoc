@@ -26,19 +26,23 @@ org.iplass.gem.EnterpriseGemConfigService
 [cols="1,1,3", options="header"]
 |===
 | 項目 | 値 | 説明
-| loadWithReference | boolean | リクエストのパラメータを基に参照データをロードする際、参照プロパティも合わせてロードするか。デフォルト値はfalseです。
+| mustLoadWithReference | boolean a| 更新時に参照先データが含まれる場合、参照プロパティデータをLoadするか。falseの場合、保持するプロパティ値は `oid` と `version` のみとなります。デフォルト値はtrueです。
+
+CAUTION: falseにすることで、更新時のパフォーマンスは上がりますが、既存のInterrupterなどの処理で参照先がLoadされている前提の場合は、trueとしてください。将来のバージョンでは本設定項目は削除され、falseと同様の動作にする予定です。
+| loadWithReference | boolean | mustLoadWithReference がtrueの場合に、参照データをロードする際、参照先の参照プロパティも合わせてロードするか。デフォルト値はfalseです。
 | formatNumberWithComma | boolean | 詳細画面で数値プロパティの値をカンマでフォーマットするか。デフォルト値はtrueです。
-| csvDownloadMaxCount | int | CSVダウンロード件数の上限値。デフォルト値は65535です。
-| uploadableCsvDownloadLoadSize | int | Upload形式のCSVダウンロード時に多重度複数の参照を含むEntityの一括ロード件数。デフォルト値は1です。
+| fileSupportType | FileSupportType | ダウンロードやアップロードで利用するファイル形式。`CSV` `EXCEL` `SPECIFY` から指定します。デフォルト値は `CSV` です。
+| csvDownloadMaxCount | int | ダウンロード件数の上限値。デフォルト値は65535です。
+| uploadableCsvDownloadLoadSize | int | Upload形式のダウンロード時に多重度複数の参照を含むEntityの一括ロード件数。デフォルト値は1です。
 | csvDownloadCharacterCode | String、複数指定可 | CSVダウンロードの文字コード。デフォルト値は `UTF-8` です。
 | csvDownloadQuoteAll | boolean | CSVダウンロードで常時ダブルクォートの出力を行うか。デフォルト値はtrueです。
-| csvDownloadReferenceVersion | boolean | CSVダウンロードで参照項目のバージョンを出力するか。デフォルト値はtrueです。
-| uploadableCsvDownloadWithMappedByReference | boolean | Upload形式のCSVダウンロード時に被参照プロパティも出力するか。デフォルト値はfalseです。
-| csvUploadCommitCount | int | CSVアップロードのコミット単位。デフォルト値は1000です。
-| csvUploadAsync | boolean | CSVアップロードを非同期で行うか。デフォルト値はfalseです。 +
-非同期で行う場合は、 <<RdbQueueService>>の<<useQueue>>プロパティをtrueに設定してください。
-| csvUploadStatusPollingInterval | int | CSVアップロードのステータスポーリングのインターバル。デフォルト値は10000（10秒）です。
-| searchResultCacheLimit | int | CSVダウンロード時User名取得のための検索内部キャッシュサイズ。デフォルト値は300です。
+| csvDownloadReferenceVersion | boolean | ダウンロードで参照項目のバージョンを出力するか。デフォルト値はtrueです。
+| uploadableCsvDownloadWithMappedByReference | boolean | Upload形式のダウンロード時に被参照プロパティも出力するか。デフォルト値はfalseです。
+| csvUploadCommitCount | int | アップロードのコミット単位。デフォルト値は1000です。
+| csvUploadAsync | boolean | アップロードを非同期で行うか。デフォルト値はfalseです。 +
+非同期で行う場合は、 <<RdbQueueService>>の `useQueue` をtrueに設定してください。
+| csvUploadStatusPollingInterval | int | アップロードのステータスポーリングのインターバル。デフォルト値は10000（10秒）です。
+| searchResultCacheLimit | int | ダウンロード時User名取得のための検索内部キャッシュサイズ。デフォルト値は300です。
 | confirmEditSave | boolean | 編集画面、一括更新画面で保存時に確認ダイアログを表示するか。デフォルト値はfalseです。
 BulkLayoutを利用しない一括更新の場合は無条件で確認ダイアログが表示されます。
 | confirmEditCancel | boolean | 編集画面でキャンセル時に確認ダイアログを表示するか。デフォルト値はtrueです。
@@ -50,14 +54,14 @@ NOTE: 3.0.20までの互換設定です。今後は詳細画面に遷移する�
 個別のEntityView定義の<<../developerguide/genericentitymanager/entityview/index#searchresult_setting,検索結果の設定>>で上書きすることが可能です。
 | maxOfDetailSearchItems | int | 詳細検索画面における検索項目の上限数。デフォルト値は100です。
 | searchInterval | int | 検索処理のインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
-| csvDownloadInterval | int | CSVダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
+| csvDownloadInterval | int | ダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
 | csvDownloadWithFooter | boolean | 汎用検索のCSVダウンロードでフッターを出力するか。デフォルト値はfalseです。
 | csvDownloadFooter | String | 汎用検索のCSVダウンロードのフッター文言。
 | useDisplayLabelItemInSearch | boolean a| 検索処理で表示ラベルとして扱うプロパティを検索条件に利用するか。trueの場合、ReferencePropertyEditorで「表示ラベルとして扱うプロパティ」として設定された項目を通常検索のテキスト入力による条件指定時、または詳細検索の条件項目として設定します。
 
 CAUTION: 後方互換性のための設定フラグです。将来のバージョンでは本設定項目は削除されます。
-| useDisplayLabelItemInCsvDownload | boolean a| CSVダウンロード処理で表示ラベルとして扱うプロパティを出力するか。trueの場合、ReferencePropertyEditorで「表示ラベルとして扱うプロパティ」として設定された項目をCSV項目として出力します。
- 
+| useDisplayLabelItemInCsvDownload | boolean a| ダウンロード処理で表示ラベルとして扱うプロパティを出力するか。trueの場合、ReferencePropertyEditorで「表示ラベルとして扱うプロパティ」として設定された項目をファイル項目として出力します。
+
 CAUTION: 後方互換性のための設定フラグです。将来のバージョンでは本設定項目は削除されます。
 | showPulldownPleaseSelectLabel | boolean | プルダウンの未選択時のラベル「選択してください」を表示するか。デフォルト値はtrueです。
 | datePickerDefaultOption | String | Datepickerのデフォルトオプション。デフォルト値は以下です。 +
@@ -77,6 +81,7 @@ CAUTION: 後方互換性のための設定フラグです。将来のバージ�
 
 検証対象となる MIME Type の決定方法については、<<WebFrontendService, WebFrontendService uploadFileTypeDetector>>, <<FileTypeDetector, FileTypeDetector>> を参照してください。
 
+| richTextLibrary | String | StringPropertyEditorの `RichText` タイプで利用するデフォルトのリッチテキストライブラリ。 `QUILL` または `CKEDITOR` を指定します。デフォルト値は `QUILL` です。
 | imageColors | <<ImageColorSetting>>、複数指定可 | 検索画面や詳細画面、メニュー等に設定するイメージカラーの設定。
 | skins | <<Skin>>、複数指定可 | スキン。
 | themes | <<Theme>>、複数指定可 | テーマ。
@@ -97,6 +102,7 @@ CAUTION: 後方互換性のための設定フラグです。将来のバージ�
 デフォルト値は `AppAdmin` です。
 |===
 
+[[EnterpriseGemConfigService]]
 ==== [.eeonly]#EnterpriseGemConfigServiceの設定#
 エンタープライズエディション用の動作を設定します。
 コミュニティエディション用の設定と併せて設定してください。
@@ -105,22 +111,26 @@ CAUTION: 後方互換性のための設定フラグです。将来のバージ�
 [cols="1,1,3", options="header"]
 |===
 | 項目 | 値 | 説明
-| savedListCsvDownloadInterval | int | SavedList一覧のCSVダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
+| savedListFileDownloadInterval | int | SavedList一覧のファイルダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
+| savedListFileSupportType | SavedListFileSupportType | SavedList一覧のファイルダウンロードで利用するファイル形式。`CSV` `EXCEL` `SPECIFY` から指定します。デフォルト値は `CSV` です。
 | entitylistingSearchInterval | int | EntityListingの検索処理のインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
-| entitylistingCsvDownloadInterval | int | EntityListingのCSVダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
-| aggregationCsvDownloadInterval | int | AggregationのCSVダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
-| aggregationRawdataCsvDownloadInterval | int | AggregationのローデータCSVダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
-| showBothAggregationCsvDownloadButton | boolean | AggregationのCSVダウンロードを集計表の上下に表示するか。デフォルト値はfalseです。
-| dividingTableSideAtCrosstabCsvDownload | boolean | Aggregation(Crosstab)のCSVダウンロードで表側を分割して出力するか。デフォルト値はfalseです。
-| dividingTableHeadAtCrosstabCsvDownload | boolean | Aggregation(Crosstab)のCSVダウンロードで表頭を分割して出力するか。デフォルト値はfalseです。
-| outputItemLabelCrosstabCsvDownload | boolean | Aggregation(Crosstab)のCSVダウンロードで表頭/表側のアイテム名を表示するか。デフォルト値はfalseです。
+| entitylistingFileDownloadInterval | int | EntityListingのファイルダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
+| entityListingFileSupportType | EntityListingFileSupportType | EntityListingのファイルダウンロードで利用するファイル形式。`CSV` `EXCEL` `SPECIFY` から指定します。デフォルト値は `CSV` です。
+| aggregationFileDownloadInterval | int | Aggregationのファイルダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
+| aggregationRawdataFileDownloadInterval | int | Aggregationのローデータファイルダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
+| aggregationFileSupportType | AggregationFileSupportType | Aggregationのファイルダウンロードで利用するファイル形式。`CSV` `EXCEL` `SPECIFY` から指定します。デフォルト値は `CSV` です。
+| aggregationRawdataFileSupportType | AggregationFileSupportType | Aggregationのローデータファイルダウンロードで利用するファイル形式。`CSV` `EXCEL` `SPECIFY` から指定します。デフォルト値は `CSV` です。
+| showBothAggregationFileDownloadButton | boolean | Aggregationのファイルダウンロードを集計表の上下に表示するか。デフォルト値はfalseです。
+| dividingTableSideAtCrosstabFileDownload | boolean | Aggregation(Crosstab)のファイルダウンロードで表側を分割して出力するか。デフォルト値はfalseです。
+| dividingTableHeadAtCrosstabFileDownload | boolean | Aggregation(Crosstab)のファイルダウンロードで表頭を分割して出力するか。デフォルト値はfalseです。
+| outputItemLabelCrosstabFileDownload | boolean | Aggregation(Crosstab)のファイルダウンロードで表頭/表側のアイテム名を表示するか。デフォルト値はfalseです。
 | entitylistingSearchLimit | int | EntityListingの検索Limit。デフォルト値は10です。
-| entitylistingCsvDownloadWithFooter | boolean | EntityListingのCSVダウンロードでフッターを出力するか。デフォルト値はfalseです。
-| entitylistingCsvDownloadFooter | String | EntityListingのCSVダウンロードのフッター文言。
-| aggregationCsvDownloadWithFooter | boolean | 集計のCSVダウンロードでフッターを出力するか。デフォルト値はfalseです。
-| aggregationCsvDownloadFooter | String | 集計のCSVダウンロードのフッター文言。
-| aggregationRawdataCsvDownloadWithFooter | boolean | 集計のローデータCSVダウンロードでフッターを出力するか。デフォルト値はfalseです。
-| aggregationRawdataCsvDownloadFooter| String | 集計のローデータのCSVダウンロードのフッター文言。
+| entitylistingFileDownloadWithFooter | boolean | EntityListingのファイルダウンロードでフッターを出力するか。デフォルト値はfalseです。
+| entitylistingFileDownloadFooter | String | EntityListingのファイルダウンロードのフッター文言。
+| aggregationFileDownloadWithFooter | boolean | 集計のファイルダウンロードでフッターを出力するか。デフォルト値はfalseです。
+| aggregationFileDownloadFooter | String | 集計のファイルダウンロードのフッター文言。
+| aggregationRawdataFileDownloadWithFooter | boolean | 集計のローデータファイルダウンロードでフッターを出力するか。デフォルト値はfalseです。
+| aggregationRawdataFileDownloadFooter| String | 集計のローデータのファイルダウンロードのフッター文言。
 | confirmUserTaskSubmit| boolean | ワークフローのタスク編集画面でタスク確認ダイアログを表示するか。デフォルト値はfalseです。
 | confirmUserTaskCancel| boolean | ワークフローのタスク編集画面でキャンセル確認ダイアログを表示するか。デフォルト値はfalseです。
 |===
@@ -212,13 +222,16 @@ classにorg.iplass.gem.EnterpriseEntityViewHelperImplを指定します。
 設定可能な項目はありません。
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.gem.GemConfigService</interface>
 	<class>org.iplass.gem.EnterpriseGemConfigService</class>
 
-	<!-- CSVダウンロード件数上限値 -->
+	<!-- Entityデータのサポートファイルタイプ。CSV, EXCEL, SPECIFY -->
+	<property name="fileSupportType" value="CSV" />
+
+	<!-- ダウンロード件数上限値 -->
 	<property name="csvDownloadMaxCount" value="65535" />
 
 	<!-- CSVダウンロード文字コード -->
@@ -237,13 +250,13 @@ classにorg.iplass.gem.EnterpriseEntityViewHelperImplを指定します。
 	 -->
 	<property name="csvDownloadQuoteAll" value="true"/>
 
-	<!-- CSVダウンロード参照項目バージョン出力 -->
+	<!-- ダウンロード参照項目バージョン出力 -->
 	<property name="csvDownloadReferenceVersion" value="true"/>
 
-	<!-- CSVアップロードコミット単位 -->
+	<!-- アップロードコミット単位 -->
 	<property name="csvUploadCommitCount" value="1000"/>
 
-	<!-- CSVダウンロード時User名取得のための検索内部キャッシュサイズ -->
+	<!-- ダウンロード時User名取得のための検索内部キャッシュサイズ -->
 	<property name="searchResultCacheLimit" value="300" />
 
 	<!-- 編集画面で保存時に確認ダイアログを表示するか
@@ -275,32 +288,44 @@ classにorg.iplass.gem.EnterpriseEntityViewHelperImplを指定します。
 	<!-- 検索処理のインターバル、無期限(0)/指定ミリ秒(1以上) -->
 	<property name="searchInterval" value="60000"/>
 
-	<!-- CSVダウンロードのインターバル、無期限(0)/指定ミリ秒(1以上) -->
+	<!-- ダウンロードのインターバル、無期限(0)/指定ミリ秒(1以上) -->
 	<property name="csvDownloadInterval" value="60000"/>
+	
+	<!-- SavedListのサポートファイルタイプ。CSV, EXCEL, SPECIFY -->
+	<property name="savedListFileSupportType" value="CSV" />
 
 	<!-- EntityListingの検索処理のインターバル、無期限(0)/指定ミリ秒(1以上) -->
 	<property name="entitylistingSearchInterval" value="60000"/>
+	
+	<!-- EntityListingのサポートファイルタイプ。CSV, EXCEL, SPECIFY -->
+	<property name="entityListingFileSupportType" value="CSV" />
 
-	<!-- EntityListingのCSVダウンロードのインターバル、無期限(0)/指定ミリ秒(1以上) -->
-	<property name="entitylistingCsvDownloadInterval" value="60000"/>
+	<!-- EntityListingのファイルダウンロードのインターバル、無期限(0)/指定ミリ秒(1以上) -->
+	<property name="entitylistingFileDownloadInterval" value="60000"/>
 
-	<!-- AggregationのCSVダウンロードのインターバル、無期限(0)/指定ミリ秒(1以上) -->
-	<property name="aggregationCsvDownloadInterval" value="60000"/>
+	<!-- Aggregationのファイルダウンロードのインターバル、無期限(0)/指定ミリ秒(1以上) -->
+	<property name="aggregationFileDownloadInterval" value="60000"/>
 
-	<!-- AggregationのローデータCSVダウンロードのインターバル、無期限(0)/指定ミリ秒(1以上) -->
-	<property name="aggregationRawdataCsvDownloadInterval" value="60000"/>
+	<!-- Aggregationのローデータファイルダウンロードのインターバル、無期限(0)/指定ミリ秒(1以上) -->
+	<property name="aggregationRawdataFileDownloadInterval" value="60000"/>
+	
+	<!-- Aggregationのサポートファイルタイプ。CSV, EXCEL, SPECIFY -->
+	<property name="aggregationFileSupportType" value="CSV" />
+		
+	<!-- Aggregationのローデータのサポートファイルタイプ。CSV, EXCEL, SPECIFY -->
+	<property name="aggregationRawdataFileSupportType" value="CSV" />
 
-	<!-- AggregationのCSVダウンロードを集計表の上下に表示するか -->
-	<property name="showBothAggregationCsvDownloadButton" value="false"/>
+	<!-- Aggregationのファイルダウンロードを集計表の上下に表示するか -->
+	<property name="showBothAggregationFileDownloadButton" value="false"/>
 
-	<!-- Aggregation(Crosstab)のCSVダウンロードで表側を分割して出力するか -->
-	<property name="dividingTableSideAtCrosstabCsvDownload" value="false"/>
+	<!-- Aggregation(Crosstab)のファイルダウンロードで表側を分割して出力するか -->
+	<property name="dividingTableSideAtCrosstabFileDownload" value="false"/>
 
-	<!-- Aggregation(Crosstab)のCSVダウンロードで表頭を分割して出力するか -->
-	<property name="dividingTableHeadAtCrosstabCsvDownload" value="false"/>
+	<!-- Aggregation(Crosstab)のファイルダウンロードで表頭を分割して出力するか -->
+	<property name="dividingTableHeadAtCrosstabFileDownload" value="false"/>
 
-	<!-- Aggregation(Crosstab)のCSVダウンロードで表頭/表側のアイテム名を表示するか -->
-	<property name="outputItemLabelCrosstabCsvDownload" value="false"/>
+	<!-- Aggregation(Crosstab)のファイルダウンロードで表頭/表側のアイテム名を表示するか -->
+	<property name="outputItemLabelCrosstabFileDownload" value="false"/>
 
 	<!-- 汎用検索のCSVダウンロードでフッターを出力するか -->
 	<property name="csvDownloadWithFooter" value="false"/>
@@ -311,29 +336,29 @@ classにorg.iplass.gem.EnterpriseEntityViewHelperImplを指定します。
 	<!-- 検索処理で表示ラベルとして扱うプロパティを検索条件に利用するか -->
 	<property name="useDisplayLabelItemInSearch" value="true"/>
 
-	<!-- CSVダウンロード処理で表示ラベルとして扱うプロパティを出力するか -->
+	<!-- ダウンロード処理で表示ラベルとして扱うプロパティを出力するか -->
 	<property name="useDisplayLabelItemInCsvDownload" value="true"/>
 
 	<!-- EntityListingの検索Limit -->
 	<property name="entitylistingSearchLimit" value="10"/>
 
-	<!-- EntityListingのCSVダウンロードでフッターを出力するか -->
-	<property name="entitylistingCsvDownloadWithFooter" value="false"/>
+	<!-- EntityListingのファイルダウンロードでフッターを出力するか -->
+	<property name="entitylistingFileDownloadWithFooter" value="false"/>
 
-	<!-- EntityListingのCSVダウンロードのフッター文言 -->
-	<property name="entitylistingCsvDownloadFooter" value=""/>
+	<!-- EntityListingのファイルダウンロードのフッター文言 -->
+	<property name="entitylistingFileDownloadFooter" value=""/>
 
-	<!-- 集計のCSVダウンロードでフッターを出力するか -->
-	<property name="aggregationCsvDownloadWithFooter" value="false"/>
+	<!-- 集計のファイルダウンロードでフッターを出力するか -->
+	<property name="aggregationFileDownloadWithFooter" value="false"/>
 
-	<!-- 集計のCSVダウンロードのフッター文言 -->
-	<property name="aggregationCsvDownloadFooter" value=""/>
+	<!-- 集計のファイルダウンロードのフッター文言 -->
+	<property name="aggregationFileDownloadFooter" value=""/>
 
-	<!-- 集計のローデータCSVダウンロードでフッターを出力するか -->
-	<property name="aggregationRawdataCsvDownloadWithFooter" value="false"/>
+	<!-- 集計のローデータファイルダウンロードでフッターを出力するか -->
+	<property name="aggregationRawdataFileDownloadWithFooter" value="false"/>
 
-	<!-- 集計のローデータのCSVダウンロードのフッター文言 -->
-	<property name="aggregationRawdataCsvDownloadFooter" value=""/>
+	<!-- 集計のローデータのファイルダウンロードのフッター文言 -->
+	<property name="aggregationRawdataFileDownloadFooter" value=""/>
 
 	<!-- ワークフローのタスク編集画面でタスク確認ダイアログを表示するか
 		 デフォルトで表示するに設定されています。非表示にしたい場合はfalseを設定してください。
@@ -345,11 +370,11 @@ classにorg.iplass.gem.EnterpriseEntityViewHelperImplを指定します。
 	-->
 	<property name="confirmUserTaskCancel" value="false"/>
 
-	<!-- CSVアップロード非同期設定 -->
+	<!-- アップロード非同期設定 -->
 	<!-- true(非同期)を設定する場合は、 RdbQueueServiceのuseQueueプロパティをtrueに設定してください。 -->
 	<property name="csvUploadAsync" value="false"/>
 
-	<!-- CSVアップロードステータスポーリングのインターバル、指定ミリ秒 -->
+	<!-- アップロードステータスポーリングのインターバル、指定ミリ秒 -->
 	<property name="csvUploadStatusPollingInterval" value="10000"/>
 
 	<!-- プルダウンの「選択してください」を表示するか -->

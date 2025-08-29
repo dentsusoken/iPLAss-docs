@@ -128,7 +128,7 @@ Editボタンを押下し、表示された画面に下記スクリプトを貼�
 
 image::images/groovy_edit-command.png[]
 
-[source, GroovyTemplate]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.query.Query;
 
@@ -173,7 +173,7 @@ image::images/groovy_edit-template.png[]
 
 下記は、画面レイアウトの入力欄と、Commandで取得した商品カテゴリをSelect部品に表示させるためのコードです。
 
-[source, GroovyTemplate]
+[source,html]
 ----
 <%
 def categories = request.getAttribute("categories");
@@ -184,7 +184,7 @@ def categories = request.getAttribute("categories");
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script type="text/javascript">
 function button_onclick(action) {
-    var \$form = \$("#bulkForm");
+    const \$form = \$("#bulkForm");
     \$form.attr("action", "${tcPath()}/" + action).submit(); <1>
 }
 </script>
@@ -288,7 +288,7 @@ Editボタンを押下し、表示された画面に下記スクリプトを貼�
 
 image::images/groovy_edit-command2.png[]
 
-[source, GroovyTemplate]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.GenericEntity;
 import org.iplass.mtp.web.template.TemplateUtil;
@@ -388,7 +388,7 @@ Commandは一括更新処理をそのまま利用します。
 Templateは初期表示処理で作成したものに処理を追記します。
 `tutorial/product/groovy/bulkInsert` のTemplateを下記のように書き換えてください。
 
-[source, GroovyTemplate]
+[source,html]
 ----
 <%
 def categories = request.getAttribute("categories");
@@ -399,11 +399,11 @@ def categories = request.getAttribute("categories");
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script type="text/javascript">
 function button_onclick(action) {
-    var \$form = \$("#bulkForm");
+    const \$form = \$("#bulkForm");
     \$form.attr("action", "${tcPath()}/" + action).submit();
 }
 function button_onclickAsync(webapi) { <1>
-    var data = \$("#bulkForm").serialize();
+    const data = \$("#bulkForm").serialize();
     \$.ajax({
         url: "${tcPath()}/api/" + webapi,
         type: "POST",
@@ -514,7 +514,7 @@ Eclipse上で以下のようにJavaファイルを作成してください。
 |クラス名|InputProduct
 |===
 
-[source, java]
+[source,java]
 .InputProduct.java
 ----
 package org.iplass.tutorial.product;
@@ -597,7 +597,7 @@ InputProductクラスで設定したアノテーションにより、商品一�
 
 `mtp-service-config.xml` 内の `MetaDataRepository` の設定に `annotatedClass` というプロパティがコメントされています。
 
-[source, xml]
+[source,xml]
 .mtp-service-config.xml
 ----
 <!-- XmlResource MetaData and Annotation MetaData Settings -->
@@ -620,7 +620,7 @@ InputProductクラスで設定したアノテーションにより、商品一�
 
 コメントを解除して、作成したCommandクラスを設定してください。
 
-[source, xml]
+[source,xml]
 ----
   <!-- ■ your app command list class (additional="true) ■ -->
 
@@ -630,7 +630,7 @@ InputProductクラスで設定したアノテーションにより、商品一�
 .Commandの複数登録について
 取り込むCommandが複数ある場合、以下のように設定することが可能です。
 
-[source, xml]
+[source,xml]
 ----
   <!-- ■ your app command list class (additional="true) ■ -->
 
@@ -648,7 +648,7 @@ InputProductクラスで設定したアノテーションにより、商品一�
 Commandの登録方法には下記のように纏める事も可能ですので、プロジェクト毎に検討してみてください。
 
 Commandクラスとは別に下記のようなクラスを作成します。
-[source, java]
+[source,java]
 ----
 package org.iplass.tutorial;
 
@@ -664,7 +664,7 @@ public class CommandList { }
 
 そして、先ほどのmtp-service-config.xmlのvalue値に上記クラスを指定します。
 
-[source, xml]
+[source,xml]
 ----
   <!-- ■ your app command list class (additional="true) ■ -->
 
@@ -681,11 +681,11 @@ public class CommandList { }
 |ファイル名|bulkInsert.jsp
 |===
 
-[source, jsp]
+[source,jsp]
 .bulkInsert.jsp
 ----
 <%@ page language="java" pageEncoding="utf-8" trimDirectiveWhitespaces="true"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib prefix="m" uri="http://iplass.org/tags/mtp"%>
 <%@ page import="org.iplass.mtp.entity.GenericEntity"%>
 <%@ page import="org.iplass.mtp.entity.Entity"%>
@@ -702,7 +702,7 @@ public class CommandList { }
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script type="text/javascript">
 function button_onclick(action) {
-    var $form = $("#bulkForm");
+    const $form = $("#bulkForm");
     $form.attr("action", "${m:tcPath()}/" + action).submit();
 }
 </script>
@@ -758,7 +758,7 @@ Eclipse上で操作を行ってください。
 |クラス名|InsertProduct
 |===
 
-[source, java]
+[source,java]
 .InsertProduct.java
 ----
 package org.iplass.tutorial.product;
@@ -820,7 +820,7 @@ InsertProductクラスで設定したアノテーションにより、商品一�
 
 このCommandもクラス作成だけでなく、InputProductクラス同様に `mtp-service-config.xml` を編集します。
 
-[source, xml]
+[source,xml]
 ----
   <!-- ■ your app command list class (additional="true) ■ -->
 
@@ -846,7 +846,7 @@ http://localhost:8080/コンテキスト名/テナント名/tutorial/product/jav
 WebApiの設定はCommandにアノテーションを設定することで作成します。
 一括更新処理のCommandは処理をそのまま利用し、WebApiのアノテーションを追加します。
 
-[source, java]
+[source,java]
 .InsertProduct.java
 ----
 package org.iplass.tutorial.product;
@@ -911,11 +911,11 @@ public class InsertProduct implements Command {
 Templateは初期表示処理で作成したものに処理を追記します。
 作成したTemplateを下記のように書き換えてください。
 
-[source, jsp]
+[source,jsp]
 .bulkInsert.jsp
 ----
 <%@ page language="java" pageEncoding="utf-8" trimDirectiveWhitespaces="true"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib prefix="m" uri="http://iplass.org/tags/mtp"%>
 <%@ page import="org.iplass.mtp.entity.GenericEntity"%>
 <%@ page import="org.iplass.mtp.entity.Entity"%>
@@ -932,11 +932,11 @@ Templateは初期表示処理で作成したものに処理を追記します。
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script type="text/javascript">
 function button_onclick(action) {
-    var $form = $("#bulkForm");
+    const $form = $("#bulkForm");
     $form.attr("action", "${m:tcPath()}/" + action).submit();
 }
 function button_onclickAsync(webapi) { <1>
-    var data = "{";
+    let data = "{";
     data += "\"productName\":" + JSON.stringify($("[name='productName']").map(function() {return $(this).val()}).toArray());
     data += ",\"productCategory\":" + JSON.stringify($("[name='productCategory']").map(function() {return $(this).val()}).toArray());
     data += ",\"productPrice\":" + JSON.stringify($("[name='productPrice']").map(function() {return $(this).val()}).toArray());
@@ -1015,7 +1015,7 @@ AdminConsole上で作成したメタデータは `Local` で、テナント固�
 
 また、 `Shared` のメタデータをAdminConsoleで編集して保存すると、アイコン下部が赤に変わります。
 メタデータの種類が `Shared Overwrite` に変わり、テナント固有のメタデータとして扱われるようになります。 +
-`Shared Overwrite` から `Shared` に戻したい場合は、AdminConsoleで対象のメタデータを右クリックして表示されるコンテキストメニューから削除してください。 
+`Shared Overwrite` から `Shared` に戻したい場合は、AdminConsoleで対象のメタデータを右クリックして表示されるコンテキストメニューから削除してください。
 
 
 image::images/java_tree-meta.png[]

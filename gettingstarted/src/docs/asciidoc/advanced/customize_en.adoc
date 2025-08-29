@@ -223,10 +223,9 @@ Similarly, change the project version setting as follows.
 | Item | Setting
 | Type | Expression
 | Result Type | String
-| Expression | (select task.projectAndVer from tutorial.advanced.dailyTask on .this=this) <<1>>
+| Expression | (select task.projectAndVer from tutorial.advanced.dailyTask on .this=this) +
+※ Project version of task master entity
 |===
-
-<<1>>:Project version of task master entity
 
 When the change is complete, save the Entity.
 
@@ -240,10 +239,9 @@ Similarly, change the settings for total man-hour (planned) [h] and total man-ho
 | DisplayName | Total effort (planned) [h]
 | Type | Expression
 | Result Type | Float
-| Expression | (select sum(dailyTask.planedManhour) from tutorial.advanced.dailySchedule on .this=this)<<2>>
+| Expression | (select sum(dailyTask.planedManhour) from tutorial.advanced.dailySchedule on .this=this) +
+※ Get the total value of man-hours (planned) [h] of today's task Entity
 |===
-
-<<2>>: Get the total value of man-hours (planned) [h] of today's task Entity
 
 [options = "header"]
 |===
@@ -252,10 +250,9 @@ Similarly, change the settings for total man-hour (planned) [h] and total man-ho
 | DisplayName | Total effort (actual) [h]
 | Type | Expression
 | Result Type | Float
-| Expression | (select sum(dailyTask.actualManhour) from tutorial.advanced.dailySchedule on .this=this)<<3>>
+| Expression | (select sum(dailyTask.actualManhour) from tutorial.advanced.dailySchedule on .this=this) +
+※ Get the total value of man-hours (actual) [h] of today's task Entity
 |===
-
-<<3>>: Get the total value of man-hours (actual) [h] of today's task Entity
 
 When the change is complete, save the Entity.
 
@@ -309,7 +306,7 @@ Display the editor for editing and enter the following script.
 
 image::images/entity_editeventlistenerscript_en.png[]
 
-[source, groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.Entity;
 entity.setName("Has Task");
@@ -324,7 +321,7 @@ Similarly, add the following script to EventListener.
 
 image::images/entity_eventlistener-dailytask_en.png[]
 
-[source, groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.Entity;
 
@@ -343,7 +340,7 @@ image::images/entity_eventlistener-taskmaster_en.png[]
 
 Get the value of name Property and project name Property from version master entity, combine both and set to project version property.
 
-[source, groovy]
+[source,groovy]
 ----
 import org.iplass.mtp.entity.Entity;
 
@@ -715,7 +712,7 @@ This is because the headers and menus used in the GEM screen such as the Top scr
 
 image::images/view_edit-template_en.png[]
 
-[source, html]
+[source,html]
 ----
 <div align = "left">
 
@@ -853,7 +850,7 @@ Specify the path of the action created earlier in the URL of the image in the te
 
 image::images/top_edit-template_en.png[]
 
-[source, jsp]
+[source,jsp]
 ----
 <%@import org.iplass.mtp.web.template.TemplateUtil%>
 
@@ -1107,7 +1104,7 @@ Enter the subject and message of the email to be sent.
 
 image::images/other_edit-mailtemplate_en.png[]
 
-[source, jsp]
+[source,jsp]
 ----
 Dear Supervisor,
 
@@ -1314,7 +1311,7 @@ Set EQL to search date, total man-hour (planned), total man-hour (actual) from t
 
 image::images/other_aggregationgrid_en.png[]
 
-[source, sql]
+[source,sql]
 ----
 select day, totalPlanedManhour, totalActualManhour
 from tutorial.advanced.dailySchedule

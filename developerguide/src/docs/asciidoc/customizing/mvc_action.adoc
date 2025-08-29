@@ -92,7 +92,7 @@ Tokenのチェックを行う場合は、Tokenの値を送信元画面に埋め�
 TemplateにてTokenの値を埋め込むためのユーティリティを提供しています。詳細は <<JSPTag-EL,JSPカスタムタグ・EL関数>> また、<<groovytemplate,GroovyTemplate>> を参照ください。
 
 .JSPでの実装例
-[source,JSP]
+[source,jsp]
 ----
 <%@ taglib prefix="m" uri="http://iplass.org/tags/mtp"%>
 
@@ -111,7 +111,7 @@ TemplateにてTokenの値を埋め込むためのユーティリティを提供�
 固定Tokenを利用する場合、送信元画面には固定Tokenの値を埋め込む必要があります。
 
 .JSPでの実装例
-[source,JSP]
+[source,jsp]
 ----
 <%@ taglib prefix="m" uri="http://iplass.org/tags/mtp"%>
 
@@ -484,24 +484,24 @@ Commandの `execute()` 実行時に当該の例外が発生した場合、ここ
 
 Template::
 Templateの内容を出力します。
-<<Result-Template , Result: Template>> を参照ください。
+<<Result-Template, Result: Template>> を参照ください。
 
 
 DynamicTemplate::
 動的にTemplateを選択し、内容を出力します。
-<<Result-DynamicTemplate , Result: DynamicTemplate>> を参照ください。
+<<Result-DynamicTemplate, Result: DynamicTemplate>> を参照ください。
 
 Redirect::
 HTTPリダイレクトします。
-<<Result-Redirect , Result: Redirect>> を参照ください。
+<<Result-Redirect, Result: Redirect>> を参照ください。
 
 Stream::
 バイナリストリームを出力します。
-<<Result-Stream , Result: Stream>> を参照ください。
+<<Result-Stream, Result: Stream>> を参照ください。
 
 StaticResource::
 静的リソースを出力します。
-<<Result-StaticResource , Result: StaticResource>> を参照ください。
+<<Result-StaticResource, Result: StaticResource>> を参照ください。
 
 |===
 
@@ -552,7 +552,7 @@ Templateを動的に選択し、その選択されたTemplateを結果として�
 選択したTemplate名をRequestContextに格納します。
 
 .Commandでの実装例
-[source, java]
+[source,java]
 ----
 public class SampleCommand implements Command {
 

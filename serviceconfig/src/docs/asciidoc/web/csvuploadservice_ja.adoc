@@ -4,12 +4,12 @@ CSVアップロードを管理するサービスです
 
 ==== インタフェース名
 ----
-org.iplass.mtp.impl.csv.CsvUploadService
+org.iplass.mtp.impl.fileport.CsvUploadService
 ----
 
 ==== 実装クラス名
 ----
-org.iplass.mtp.impl.csv.CsvUploadService
+org.iplass.mtp.impl.fileport.CsvUploadService
 ----
 
 ==== CsvUploadServiceの設定
@@ -31,11 +31,11 @@ SQLServerの場合、以下の条件に該当するとデータが取得でき�
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
-	<interface>org.iplass.mtp.impl.csv.CsvUploadService</interface>
-	<class>org.iplass.mtp.impl.csv.CsvUploadService</class>
+	<interface>org.iplass.mtp.impl.fileport.CsvUploadService</interface>
+	<class>org.iplass.mtp.impl.fileport.CsvUploadService</class>
 	<!-- CSVアップロードエラー表示件数上限値 (-1は無制限)  -->
 	<property name="showErrorLimitCount" value="100"/>
 

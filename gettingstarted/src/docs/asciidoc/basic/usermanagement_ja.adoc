@@ -72,7 +72,7 @@ image::images/usermanage_flow.png[]
 
 `mtp-service-config.xml` 内の `MailService` の設定に `listener` というプロパティがコメントとして記載されていると思います。
 
-[source, xml]
+[source,xml]
 ----
 <!-- Mail Service Settings -->
 <service>
@@ -93,7 +93,7 @@ image::images/usermanage_flow.png[]
 送信メールを確認する方法としてメールの内容をログに出力するクラスを提供しています。
 今回はローカルPC上でEclipseからTomcatを利用していると想定して、このデバッグ機能を有効にします。（コメントを外してください）
 
-[source, xml]
+[source,xml]
 ----
     <!-- ■ for develop only (additional="true) ■ -->
 	<!-- 送信メールをデバッグ出力する場合、以下を有効にしてください。 -->
@@ -368,7 +368,7 @@ userとしてバインドされる変数には以下のようなメソッドが�
 条件文にバインドされている `user` 変数を利用することで以下のように判定することができます。
 
 .管理者かどうかを判定
-[source, groovy]
+[source,groovy]
 ----
 return user.isAdmin();
 
@@ -376,13 +376,13 @@ return user.isAdmin();
 ----
 
 .グループコード `Group001` に含まれるかを判定
-[source, groovy]
+[source,groovy]
 ----
 return user.memberOf("Group001");
 ----
 
 .ランクが `3` 以上かを判定
-[source, groovy]
+[source,groovy]
 ----
 return user.rank.level >= 3;   // `User` Entityの `rank` Property(RankEntity)の `level` Propertyを参照
 ----

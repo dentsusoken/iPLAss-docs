@@ -3,8 +3,8 @@
 
 ==== 設定方法
 
-管理用画面にカスタムの画面を組み込むことが出来ます。 + 
-マネージャーまたはオペレーターに属するユーザーが商品の在庫状況を一括更新できる機能を例として説明して行きます。
+GEMモジュールで作成された管理画面に独自のカスタムテンプレートを組み込むことが可能です。 +
+マネージャーまたはオペレーターに属するユーザーが、商品の在庫状況を一括更新できる機能を例として説明します。
 
 * Commandの定義
 +
@@ -17,14 +17,14 @@ h|ファイル名|src/main/java/samples/ec01/command/backoffice/stock/StockBulkV
 +
 [source,java]
 ----
-
 @ActionMapping(
 		name = "samples/ec01/backoffice/stock/stockUpdate", <1>
 		displayName = "在庫一括表示", 
 		privileged = false, <2>
 		result = @Result(
 				type = Type.TEMPLATE, 
-				value = "samples/ec01/backoffice/stock/stockUpdate"))
+				value = "samples/ec01/backoffice/stock/stockUpdate"
+		))
 @CommandClass(
 		name = "samples/ec01/backoffice/stock/StockBulkViewCommand", 
 		displayName = "在庫一括表示コマンド")
@@ -64,8 +64,8 @@ public class StockBulkUpdateCommand implements Command {
 <1> 在庫一括更新用Action
 <2> 特権実行モードをfalseに指定します。
 
-* Templateの定義
-** JSPを利用してテンプレートを作成してます。
+* Template定義
+** JSPを利用してテンプレートを作成します。
 +
 [cols="1,2"]
 |===
@@ -94,23 +94,23 @@ h|ファイル名|src/main/resources/samples-ec01-ce-metadata.xml
 	</metaDataEntry>
 	<!-- Backoffice pages end -->
 ----
-<1> 利用するレイアウトテンプレートを管理用画面のものに指定します。
+<1> 利用するレイアウトテンプレートに管理画面用の標準レイアウトを指定します。
 
 * Topメニュー画面
-** 一括更新画面を表示するアクションメニューを新規作成します。
+** 一括更新画面を表示するアクションメニューアイテムを新規作成します。
 +
 image::images/sample-ec_adminconsole-bulkupdate-actionmenu.png[align=left]
 . 在庫一括表示用Actionクラスを指定します。
 
-** 作成したアクションメニューをマネージャーとオペレーター用Topメニューに組み込みます。
+** 作成したアクションメニューアイテムをマネージャーとオペレーター用のメニューに組み込みます。
 +
 image::images/sample-ec_adminconsole-bulkupdate-topmenu.png[align=left]
-. マネージャーに属するユーザー用Topメニュー画面の定義 + 
-. マネージャーに属するユーザー用Topメニュー画面に在庫一括表示用Actionメニューを組み込みます。
+. マネージャーに属するユーザー用のメニュー定義 + 
+. マネージャーに属するユーザー用のメニュー定義に在庫一括表示用アクションメニューアイテムを組み込みます。
 
 ==== 画面表示
 
 image::images/sample-ec_adminconsole-bulkupdate-update.png[align=left]
 
-. EC商品管理メニューを開き、在庫一括更新メニューをクリックします。
-. 更新したい商品の在庫数を入力して一括更新ボタンをクリックします。
+. EC商品管理メニューを開き、「在庫一括更新」をクリックします。
+. 更新したい商品の在庫数を入力して、「一括更新」ボタンをクリックします。

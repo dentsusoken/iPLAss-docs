@@ -21,14 +21,22 @@ InfinispanServiceを設定します。
 [cols="1,1,3", options="header"]
 |===
 | 項目 | 値 | 説明
-| configurationFile | String | Infinispanの設定ファイル。
+| configurationFile | String | Infinispanの設定ファイル （XML）を指定します。設定ファイルはクラスパスリソースパスもしくは、ファイルパスを指定します。設定ファイルの詳細については link:https://infinispan.org/documentation/[Infinispan Document, window="_blank"] の `Schema reference` を参照してください。
+| infinispan.serialization.allowList.class | String、複数指定可 | Infinispan を利用しメッセージ送受信する際、キャッシュ情報を Infinispan クラスターで管理する際に、シリアライズを許可するクラス名を設定します。クラス名は、完全修飾クラス名を設定してください。
+| infinispan.serialization.allowList.regex | String、複数指定可 | Infinispan を利用しメッセージ送受信する際、キャッシュ情報を Infinispan クラスターで管理する際に、シリアライズを許可するクラス名の正規表現パターンを設定します。
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.infinispan.InfinispanService</interface>
-		<property name="configurationFile" value="infinispan.xml" />
+	<property name="configurationFile" value="infinispan.xml" />
+
+	<!-- メッセージ送受信データ、キャッシュ情報に独自クラスを追加する場合はクラスを設定する。class, regex ともに複数指定可能。 -->
+	<!--
+	<property name="infinispan.serialization.allowList.class" value="package.path.Class" />
+	<property name="infinispan.serialization.allowList.regex" value="^(\[L|)package\.path\..*(;|)$" />
+	-->
 </service>
 ----

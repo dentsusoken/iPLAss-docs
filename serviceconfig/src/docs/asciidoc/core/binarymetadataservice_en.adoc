@@ -33,7 +33,7 @@ If not set, the directory path of "java.io.tmpdir" will be used.
 |===
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.metadata.binary.BinaryMetaDataService</interface>

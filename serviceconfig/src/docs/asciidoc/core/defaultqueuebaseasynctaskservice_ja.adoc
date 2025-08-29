@@ -25,7 +25,7 @@ RdbAsyncTaskServiceを設定します。
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service name="DefaultQueueBaseAsyncTaskService">
 	<interface>org.iplass.mtp.impl.async.AsyncTaskService</interface>

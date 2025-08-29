@@ -48,7 +48,7 @@ select /*+ native(q0t0, 'FORCE INDEX(obj_store__USER_ISTR_index_3)') */ propA, p
 You can also obtain the Hint clause as a Java instance by calling the org.iplass.mtp.entity.query.hint.Hint#externalHint (String key) method.
 
 ===== Example
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.query.QueryService</interface>

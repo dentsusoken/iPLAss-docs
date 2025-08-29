@@ -24,7 +24,7 @@ StorageSpaceServiceを設定します。
 |===
 
 ===== 設定例
-[source, xml]
+[source,xml]
 ----
 <service>
 	<interface>org.iplass.mtp.impl.tools.storagespace.StorageSpaceService</interface>
