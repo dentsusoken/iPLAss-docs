@@ -28,6 +28,7 @@ org.iplass.mtp.mdc.MdcConfigService
 
 CAUTION: 後方互換性のための設定フラグです。将来のバージョンでは本設定項目は削除されます。
 | fileSupportType | FileSupportType | ダウンロードで利用するファイル形式。`CSV` `EXCEL` `SPECIFY` から指定します。デフォルト値は `CSV` です。
+| fileSupportTypeForUpload | FileSupportTypeForUpload | アップロードで利用するファイル形式。`CSV` `EXCEL` `SPECIFY` から指定します。デフォルト値は `CSV` です。
 | fileDownloadMaxCount | int | ダウンロード件数の上限値。デフォルト値は65535です。
 | uploadableFileDownloadLoadSize | int | Upload形式のダウンロード時に多重度複数の参照を含むEntityの一括ロード件数。デフォルト値は1です。
 | searchUserResultCacheLimitForFileDownload | int | ダウンロード時User名取得のための検索内部キャッシュサイズ。デフォルト値は300です。
@@ -37,6 +38,7 @@ CAUTION: 後方互換性のための設定フラグです。将来のバージ�
 | csvDownloadQuoteAll | boolean | CSVダウンロードで常時ダブルクォートの出力を行うか。デフォルト値はtrueです。
 | csvDownloadWithFooter | boolean | 汎用検索のCSVダウンロードでフッターを出力するか。デフォルト値はfalseです。
 | csvDownloadFooter | String | 汎用検索のCSVダウンロードのフッター文言。
+| fileUploadCommitCount | int | ファイルアップロードコミット単位。デフォルト値は1000です。
 | recycleBinMaxCount | int | ゴミ箱の表示件数上限値。未指定の場合のデフォルト値は100です。-1を指定した場合は無制限となります。
 | deleteAllCommandBatchSize | int | 一括削除のコミットバッチサイズ件数。未指定の場合のデフォルト値は100です。一括削除コミットタイプがDIVISIONの場合適用されます。
 | shallowCopyLobData | boolean | Lobデータをシャローコピーするか。
@@ -122,6 +124,9 @@ classはorg.iplass.mtp.mdc.BinaryDownloadLoggingTargetPropertyを指定します
 	<!-- Entityデータのサポートファイルタイプ。CSV, EXCEL, SPECIFY -->
 	<property name="fileSupportType" value="CSV" />
 
+    <!-- ファイルアップロード時のサポートファイルタイプ 。CSV, EXCEL, SPECIFY　-->
+    <property name="fileSupportTypeForUpload" value="CSV" />
+		
 	<!-- ファイルダウンロード件数上限値 -->
 	<property name="fileDownloadMaxCount" value="65535" />
 
@@ -149,6 +154,9 @@ classはorg.iplass.mtp.mdc.BinaryDownloadLoggingTargetPropertyを指定します
 	<!-- 汎用検索のCSVダウンロードのフッター文言 -->
 	<property name="csvDownloadFooter" value=""/>
 
+    <!-- ファイルアップロードコミット単位 -->
+    <property name="fileUploadCommitCount" value="1000"/>
+	
 	<!-- ゴミ箱の表示件数上限値 (-1は無制限) -->
 	<property name="recycleBinMaxCount" value="100" />
 
