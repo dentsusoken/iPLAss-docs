@@ -1,8 +1,5 @@
 Copyright (C) 2025 DENTSU SOKEN INC.
 
-The contents of this repository, except for all image files and their source files, are licensed under CC BY-SA 4.0.
-Images and their source files in this repository retain the copyright and licensing terms of their respective authors and owners.
-
 ---
 
 Creative Commons Attribution-ShareAlike 4.0 International
