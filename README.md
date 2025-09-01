@@ -42,3 +42,8 @@ asciidoc ドキュメントを asciidoctorj を利用して HTML5 形式に出�
     * [github](https://github.com/asciidoctor/asciidoctor-gradle-plugin)
 * asciidoctorj
     * [github](https://github.com/asciidoctor/asciidoctorj)
+
+### License
+
+The contents of this repository, except for all image files and their source files, are licensed under CC BY-SA 4.0.
+Images and their source files in this repository retain the copyright and licensing terms of their respective authors and owners.
