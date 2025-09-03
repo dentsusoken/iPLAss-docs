@@ -206,7 +206,7 @@ private void encriptName(ComparisonPredicate predicate) {
 検索画面でのアップロード時に独自の処理を組み込むことができます。
 
 以下のインターフェースを実装したJavaクラスまたはUtilityClassを作成してください。
-作成したクラスを検索条件設定の `カスタムアップロード処理クラス名` に指定します。
+作成したクラスをアップロードボタン設定の `カスタムアップロード処理クラス名` に指定します。
 
 ====
 org.iplass.mtp.mdc.view.entityview.search.SearchFormFileUploadInterrupter
