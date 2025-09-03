@@ -400,8 +400,7 @@ ${fileName}_${yyyy}${MM}${dd}${HH}${mm}${ss}
 |設定内容
 
 |表示
-|未チェックの場合、ボタンを表示しません。
-
+|未チェックの場合、アップロードボタンを表示しません。
 |表示判定スクリプト
 |表示可否を実行時に動的に判定するGroovyScriptを設定します。
 詳細は<<searchview_judgedisplayscript, 表示判定スクリプト>>を参照してください。
@@ -438,21 +437,21 @@ CSVファイルかEXCELファイルのどちらを利用するかを画面で選
 未指定の場合は、<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `fileSupportTypeForUpload` によって動作します。
 
 |アップロードで登録を許可しない
-|アップロードファイル実行でデータベースにデータを登録禁止する場合はチェックします。
+|アップロードでinsertを許可しない場合にチェックします。
 
 |アップロードで更新を許可しない
-|アップロードファイル実行でデータベースにデータを更新禁止する場合はチェックします。
+|アップロードでupdateを許可しない場合にチェックします。
 
 |アップロードで削除を許可しない
-|アップロードファイル実行でデータベースにデータを削除禁止する場合はチェックします。
+|アップロードでdeleteを許可しない場合にチェックします。
 
 |アップロードで登録項目
-|アップロードによる更新を許可するデータ項目。
+|アップロードでinsertする項目を制限したい場合に設定します。カンマ区切りで登録対象のプロパティ名を指定します。
 
 `アップロードで登録を許可しない` がチェックされてる場合は、 `アップロードで登録項目` の設定は設定は無効になります。
 
 |アップロードで更新項目
-|アップロードによる更新を許可するデータ項目。
+|アップロードでupdateする項目を制限したい場合に設定します。カンマ区切りで更新対象のプロパティ名を指定します。
 
 `アップロードで更新を許可しない` がチェックされてる場合は、 `アップロードで更新項目` の設定は設定は無効になります。
 
@@ -463,29 +462,20 @@ ONCE::
 ファイルの全行の処理が終わった時点でコミットされます。
 
 DIVISION::
-<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `fileUploadCommitCount` で設定された単位でコミットされます
+<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `fileUploadCommitCount` で設定された単位でコミットされます。
 
 未指定の場合は、ファイルの全行の処理が終わった時点でコミットされます。
 
-|アップロードサンプルダウンロード時表示名を出力しない
-|Upload形式のダウンロードファイルのヘッダに、表示名を出力しないようにします。
-チェックした場合、ダウンロードダイアログで、「ヘッダ行に表示名を利用しない」選択オプションを表示しません。
-
 |アップロード更新データTargetVersion(非バージョン管理)
-|バージョン管理Entity以外の場合のアップロードの更新データに対するTargetVersionを設定します。
+|バージョン管理対象ではないEntityのアップロード処理で、更新データに対するTargetVersionを設定します。
 
-SPECIFIC::
-データのreference項目のreferenceデータバージョンを指定バージョンに更新する。
-
-CURRENT_VALID::
-データのreference項目のreferenceデータバージョンを現在有効バージョンに更新する。
-
-未指定の場合は、`CURRENT_VALID` を設定値として行います。
+未指定、 `CURRENT_VALID` `SPECIFIC` から指定します。
+未指定の場合は、<<../../../serviceconfig/index.adoc#EntityFileUploadService,EntityFileUploadService>> の `defaultUpdateTargetVersionForNoneVersionedEntity` で設定した値を利用します。
 
 |バージョン管理Entity以外の場合にアップロード画面でTargetVersionの指定を許可
-|`アップロード更新データTargetVersion(非バージョン管理)` の設定値は画面で指定する。
-チェックした場合、「保存時のデータを更新対象にする」オプションが画面に表示されます。当該画面オプションをチックする場合、`アップロード更新データTargetVersion(非バージョン管理)`　の値はSPECIFICに設定します。
-チェックオフの場合は、CURRENT_VALIDに設定します。
+|バージョン管理Entity以外の場合にアップロード画面で更新時のTargetVersionの指定を許可します。
+
+許可した場合、アップロード画面に `保存時のデータを更新対象にする` オプションが表示され、TargetVersionが指定可能になります。
 
 |アップロードWebAPI名
 |アップロードボタンクリックで実行する時アクセスAPIを設定します。
