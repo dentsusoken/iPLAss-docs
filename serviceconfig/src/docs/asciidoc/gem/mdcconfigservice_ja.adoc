@@ -165,7 +165,7 @@ classはorg.iplass.mtp.mdc.BinaryDownloadLoggingTargetPropertyを指定します
 	<property name="fileUploadAsync" value="true"/>
 
 	<!-- ファイルアップロードステータスポーリングのインターバル、指定ミリ秒 -->
-	<property name="fileUploadStatusPollingInterval" value="10000"/
+	<property name="fileUploadStatusPollingInterval" value="10000"/>
 
 	<!-- ゴミ箱の表示件数上限値 (-1は無制限) -->
 	<property name="recycleBinMaxCount" value="100" />

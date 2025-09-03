@@ -227,7 +227,7 @@ image::images/operation_searchview_result_upload.png[]
 image::images/operation_searchview_result_async_upload.png[]
 
 .A.アップロード非同期処理結果履歴
-アップロード非同期処理結果履歴を表示されています。非同期処理機能を利用すると、<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `fileUploadAsync` をtrueに設定してください。
+アップロード非同期処理結果履歴を表示されています。非同期処理機能を利用する場合は、<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `fileUploadAsync` をtrueに設定してください。
 
 ===== アップロード結果画面ダイアログ
 
