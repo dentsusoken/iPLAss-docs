@@ -162,7 +162,7 @@ classはorg.iplass.mtp.mdc.BinaryDownloadLoggingTargetPropertyを指定します
 
 	<!-- ファイルアップロード非同期設定 -->
 	<!-- true(非同期)を設定する場合は、 RdbQueueServiceのuseQueueプロパティをtrueに設定してください。 -->
-	<property name="fileUploadAsync" value="true"/>
+	<property name="fileUploadAsync" value="false"/>
 
 	<!-- ファイルアップロードステータスポーリングのインターバル、指定ミリ秒 -->
 	<property name="fileUploadStatusPollingInterval" value="10000"/>
