@@ -481,7 +481,7 @@ DIVISION::
 |アップロードボタンクリックで実行する時アクセスAPIを設定します。
 
 |カスタムアップロード処理クラス名
-|アップロード時に、行うカスタム登録処理のクラス名を指定します。`org.iplass.mtp.mdc.view.entityview.search.SearchFormFileUploadInterrupter` インターフェースを実装するクラスを指定してください。"
+|アップロード時に、行うカスタム登録処理のクラス名を指定します。`org.iplass.mtp.mdc.view.entityview.search.SearchFormFileUploadInterrupter` インターフェースを実装するクラスを指定してください。
 詳細は<<MdcCustomize_Upload, カスタムアップロード>>を参照してください。
 
 |===
