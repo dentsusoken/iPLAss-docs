@@ -195,7 +195,7 @@ image::images/operation_searchview_result_download.png[]
 .C.詳細オプション
 `EntityView` ファイルダウンロードに関する詳細設定が表示されます。
 
-===== アップロードダイアログ
+===== アップロードダイアログ(同期処理)
 
 image::images/operation_searchview_result_upload.png[]
 
@@ -221,6 +221,13 @@ image::images/operation_searchview_result_upload.png[]
 
 .G.アップロードサンプルダウンロードボタン
 アップロード可能なフォーマットのサンプルファイルをダウンロードします。
+
+===== アップロードダイアログ(非同期処理)
+
+image::images/operation_searchview_result_async_upload.png[]
+
+.A.アップロード非同期処理結果履歴
+アップロード非同期処理結果履歴を表示されています。非同期処理機能を利用すると、<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `fileUploadAsync` をtrueに設定してください。
 
 ===== アップロード結果画面ダイアログ
 
