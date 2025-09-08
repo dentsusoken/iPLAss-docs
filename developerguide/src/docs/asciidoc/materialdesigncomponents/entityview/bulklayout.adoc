@@ -277,7 +277,7 @@ Propertyは `標準セクション` にのみ配置可能です。
 [[bulklayout_section_common_setting]]
 ===== 共通設定項目
 各セクションで共通の設定項目です。
-セクションもエレメントの一種のため、 <<bulkayout_element_common_setting, エレメントの共通設定項目>>を持ちます。
+セクションもエレメントの一種のため、 <<bulklayout_element_common_setting, エレメントの共通設定項目>>を持ちます。
 
 セクション特有の設定項目は以下です。
 
