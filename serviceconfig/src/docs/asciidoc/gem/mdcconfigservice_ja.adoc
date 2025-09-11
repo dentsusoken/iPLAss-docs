@@ -21,7 +21,7 @@ org.iplass.mtp.mdc.MdcConfigService
 |===
 | 項目 | 値 | 説明
 | formatNumberWithComma | boolean | 詳細表示画面で数値プロパティの値をカンマでフォーマットするか。デフォルト値はtrueです。
-| searchResultType | MdcSearchResultType | 検索結果の表示形式 `CARD`, `TABLE`, `SWITCH` から指定します。デフォルト値は `CARD` です。
+| searchResultType | MdcSearchResultType | 検索結果の表示形式 `CARD`、`TABLE`、`SWITCH` から指定します。デフォルト値は `CARD` です。
 | searchResultDetailViewType | MdcDetailViewTypeInSearchResult | 検索結果画面での詳細画面の表示タイプ。 `DIALOG` 、 `TWO_PANE` から指定します。デフォルト値は `DIALOG` です。
 | searchResultDispRowCount | int | 検索結果画面で表示する検索結果の件数。デフォルト値は10です。
 | searchInterval | int | 検索処理のインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
