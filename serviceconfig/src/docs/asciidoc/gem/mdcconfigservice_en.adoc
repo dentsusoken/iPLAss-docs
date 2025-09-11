@@ -21,6 +21,7 @@ org.iplass.mtp.mdc.MdcConfigService
 |===
 | Item | Value | Description
 | formatNumberWithComma | boolean | Whether to format numeric property values ​​with commas in the detail display screen. The default value is true.
+| searchResultType | MdcSearchResultType | Specify the search result display format from CARD, TABLE, or SWITCH. The default value is CARD.
 | searchResultDetailViewType | MdcDetailViewTypeInSearchResult | Detail view type in search result. Specify from `DIALOG` , `TWO_PANE` . The default value is `DIALOG` .
 | searchResultDispRowCount | int |  Number of search results to be displayed on the search screen. The default value is 10.
 | searchInterval | int | Set the search interval to prevent redundant requests. If 0 is set, it will be infinite.(cannot click the search button until the result was retrieved and presented) The default value is 60000 (1 minute).
@@ -111,6 +112,9 @@ This property is the output target of the binary download log. The following ite
 	<interface>org.iplass.mtp.mdc.MdcConfigService</interface>
 	<!--  Whether to format numeric property values ​​with commas in the detail display screen -->
 	<property name="formatNumberWithComma" value="true" />
+
+	<!-- Search result display format: CARD, TABLE, SWITCH -->
+	<property name="searchResultType" value="CARD" />
 
 	<!-- Detail view type in search result. Specify from `DIALOG` , `TWO_PANE` -->
 	<property name="searchResultDetailViewType" value="DIALOG" />
