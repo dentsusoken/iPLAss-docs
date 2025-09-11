@@ -39,6 +39,9 @@ CAUTION: 後方互換性のための設定フラグです。将来のバージ�
 | csvDownloadWithFooter | boolean | 汎用検索のCSVダウンロードでフッターを出力するか。デフォルト値はfalseです。
 | csvDownloadFooter | String | 汎用検索のCSVダウンロードのフッター文言。
 | fileUploadCommitCount | int | ファイルアップロードコミット単位。デフォルト値は1000です。
+| fileUploadAsync | boolean | アップロードを非同期で行うか。デフォルト値はfalseです。 +
+非同期で行う場合は、 <<RdbQueueService>>の `useQueue` をtrueに設定してください。
+| fileUploadStatusPollingInterval | int | 画面からアップロードの非同期実行結果をリクエストする際のインターバル。デフォルト値は10000（10秒）です。
 | recycleBinMaxCount | int | ゴミ箱の表示件数上限値。未指定の場合のデフォルト値は100です。-1を指定した場合は無制限となります。
 | deleteAllCommandBatchSize | int | 一括削除のコミットバッチサイズ件数。未指定の場合のデフォルト値は100です。一括削除コミットタイプがDIVISIONの場合適用されます。
 | shallowCopyLobData | boolean | Lobデータをシャローコピーするか。
@@ -154,9 +157,16 @@ classはorg.iplass.mtp.mdc.BinaryDownloadLoggingTargetPropertyを指定します
 	<!-- 汎用検索のCSVダウンロードのフッター文言 -->
 	<property name="csvDownloadFooter" value=""/>
 
-    <!-- ファイルアップロードコミット単位 -->
-    <property name="fileUploadCommitCount" value="1000"/>
-	
+	<!-- ファイルアップロードコミット単位 -->
+	<property name="fileUploadCommitCount" value="1000"/>
+
+	<!-- ファイルアップロード非同期設定 -->
+	<!-- true(非同期)を設定する場合は、 RdbQueueServiceのuseQueueプロパティをtrueに設定してください。 -->
+	<property name="fileUploadAsync" value="false"/>
+
+	<!-- 画面からアップロードの非同期実行結果をリクエストする際のインターバル、指定ミリ秒 -->
+	<property name="fileUploadStatusPollingInterval" value="10000"/>
+
 	<!-- ゴミ箱の表示件数上限値 (-1は無制限) -->
 	<property name="recycleBinMaxCount" value="100" />
 

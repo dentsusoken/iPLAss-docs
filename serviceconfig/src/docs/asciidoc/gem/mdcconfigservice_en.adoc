@@ -39,6 +39,9 @@ CAUTION: Setting flag for backward compatibility. This setting flag will be dele
 | csvDownloadWithFooter | boolean | Whether to output a footer in CSV downloads of general search. The default value is false.
 | csvDownloadFooter | String | Set CSV download footer wording for general search.
 | fileUploadCommitCount | int | File upload commit unit. The default value is 1000.
+| fileUploadAsync | boolean | Whether to upload file asynchronously. The default value is false.
+When asynchronous is selected, please set `useQueue` of <<RdbQueueService>> to true.
+| fileUploadStatusPollingInterval | int | The interval for requesting the asynchronous upload execution results from the view. The default value is 10000 (10 seconds).
 | recycleBinMaxCount | int | Maximum number of trash cans displayed. If not specified, the default value is 100. If -1 is specified, there is no limit.
 | deleteAllCommandBatchSize | int | Batch size when committing bulk deletion. If not specified, the default value is 100. Applicable when the bulk delete commit type is DIVISION.
 | shallowCopyLobData | boolean | Shallow copy Lob data.
@@ -156,6 +159,13 @@ This property is the output target of the binary download log. The following ite
 
     <!-- File upload commit unit -->
     <property name="fileUploadCommitCount" value="1000"/>
+
+    <!-- Settings on asynchronous file upload  -->
+    <!-- If true(asynchronous) was selected, please also set the useQueue property in RdbQueueService to true. -->
+    <property name="fileUploadAsync" value="false"/>
+
+    <!-- The interval for requesting the asynchronous upload execution results from the view, specified in milliseconds -->
+    <property name="fileUploadStatusPollingInterval" value="10000"/>
 
 	<!-- Maximum number of trash cans displayed -->
 	<property name="recycleBinMaxCount" value="100" />

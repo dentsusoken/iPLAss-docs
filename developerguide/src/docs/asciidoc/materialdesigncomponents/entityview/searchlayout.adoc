@@ -469,7 +469,7 @@ DIVISION::
 |アップロード更新データTargetVersion(非バージョン管理)
 |バージョン管理対象ではないEntityのアップロード処理で、更新データに対するTargetVersionを設定します。
 
-未指定、 `CURRENT_VALID` `SPECIFIC` から指定します。
+未指定、 `CURRENT_VALID`、 `SPECIFIC` から指定します。
 未指定の場合は、<<../../../serviceconfig/index.adoc#EntityFileUploadService,EntityFileUploadService>> の `defaultUpdateTargetVersionForNoneVersionedEntity` で設定した値を利用します。
 
 |バージョン管理Entity以外の場合にアップロード画面でTargetVersionの指定を許可
