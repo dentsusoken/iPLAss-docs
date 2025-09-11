@@ -774,7 +774,8 @@ LAST:: null項目を後尾にソート
 |設定内容
 
 |検索結果の表示タイプ
-|検索結果の表示タイプを設定します。デフォルトは、 `CARD` です。
+|検索結果の表示タイプを設定します。
+未指定の場合は、<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> で定義される `searchResultType` が適用されます。
 
 CARD:: カード形式で表示
 TABLE:: テーブル形式で表示
