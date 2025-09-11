@@ -391,6 +391,101 @@ ${fileName}_${yyyy}${MM}${dd}
 ${fileName}_${yyyy}${MM}${dd}${HH}${mm}${ss}
 ----
 
+[[searchview_uploadbutton_setting]]
+==== アップロードボタン設定
+画面内に追加するアップロードボタンに対して設定を行います。
+[cols="1,4a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|表示
+|未チェックの場合、アップロードボタンを表示しません。
+|表示判定スクリプト
+|表示可否を実行時に動的に判定するGroovyScriptを設定します。
+詳細は<<searchview_judgedisplayscript, 表示判定スクリプト>>を参照してください。
+
+|表示ラベル
+|ボタンに表示するラベルを設定します。
+
+|アイコンタグ
+|タイトルの前に表示するアイコンを設定できます。 +
+link:https://materialdesignicons.com/[Material Design Icons^]のアイコンタグを設定できます。（例：mdi-note）
+
+|CSSクラス名
+|スタイルシートのクラス名を指定します。
+複数指定する場合は半角スペースで区切ってください。
+
+|ツールチップ
+|ツールチップを指定します。
+
+|カスタムクリックイベント
+|ボタンクリック時に実行されるカスタムJavaScriptコードを設定します。
+
+|Entityデータのファイル形式
+|アップロードで利用するファイル形式を指定します。
+
+CSV::
+CSVファイルを利用します。
+
+EXCEL::
+EXCELファイルを利用します。
+
+SPECIFY::
+CSVファイルかEXCELファイルのどちらを利用するかを画面で選択します。
+
+未指定の場合は、<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `fileSupportTypeForUpload` によって動作します。
+
+|アップロードで登録を許可しない
+|アップロードでinsertを許可しない場合にチェックします。
+
+|アップロードで更新を許可しない
+|アップロードでupdateを許可しない場合にチェックします。
+
+|アップロードで削除を許可しない
+|アップロードでdeleteを許可しない場合にチェックします。
+
+|アップロードで登録項目
+|アップロードでinsertする項目を制限したい場合に設定します。カンマ区切りで登録対象のプロパティ名を指定します。
+
+`アップロードで登録を許可しない` がチェックされてる場合は、 `アップロードで登録項目` の設定が無効になります。
+
+|アップロードで更新項目
+|アップロードでupdateする項目を制限したい場合に設定します。カンマ区切りで更新対象のプロパティ名を指定します。
+
+`アップロードで更新を許可しない` がチェックされてる場合は、 `アップロードで更新項目` の設定が無効になります。
+
+|アップロードトランザクションタイプ
+|アップロード時のコミットタイミングを設定します。
+
+ONCE::
+ファイルの全行の処理が終わった時点でコミットされます。
+
+DIVISION::
+<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `fileUploadCommitCount` で設定された単位でコミットされます。
+
+未指定の場合は、ファイルの全行の処理が終わった時点でコミットされます。
+
+|アップロード更新データTargetVersion(非バージョン管理)
+|バージョン管理対象ではないEntityのアップロード処理で、更新データに対するTargetVersionを設定します。
+
+未指定、 `CURRENT_VALID`、 `SPECIFIC` から指定します。
+未指定の場合は、<<../../../serviceconfig/index.adoc#EntityFileUploadService,EntityFileUploadService>> の `defaultUpdateTargetVersionForNoneVersionedEntity` で設定した値を利用します。
+
+|バージョン管理Entity以外の場合にアップロード画面でTargetVersionの指定を許可
+|バージョン管理Entity以外の場合にアップロード画面で更新時のTargetVersionの指定を許可します。
+
+許可した場合、アップロード画面に `保存時のデータを更新対象にする` オプションが表示され、TargetVersionが指定可能になります。
+
+|アップロードWebAPI名
+|アップロードボタンクリックで実行する時アクセスAPIを設定します。
+
+|カスタムアップロード処理クラス名
+|アップロード時に、行うカスタム登録処理のクラス名を指定します。`org.iplass.mtp.mdc.view.entityview.search.SearchFormFileUploadInterrupter` インターフェースを実装するクラスを指定してください。
+詳細は<<MdcCustomize_Upload, カスタムアップロード>>を参照してください。
+
+|===
+
 [[searchview_judgedisplayscript]]
 ==== 表示判定スクリプト
 表示可否を判定するGroovyScriptを設定します。

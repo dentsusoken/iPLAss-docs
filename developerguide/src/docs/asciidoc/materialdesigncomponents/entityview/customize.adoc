@@ -201,6 +201,132 @@ private void encriptName(ComparisonPredicate predicate) {
 }
 ----
 
+[[MdcCustomize_Upload]]
+=== カスタムアップロード処理
+検索画面でのアップロード時に独自の処理を組み込むことができます。
+
+以下のインターフェースを実装したJavaクラスまたはUtilityClassを作成してください。
+作成したクラスをアップロードボタン設定の `カスタムアップロード処理クラス名` に指定します。
+
+====
+org.iplass.mtp.mdc.view.entityview.search.SearchFormFileUploadInterrupter
+====
+
+.処理一覧
+[cols="1,1,1,2a",options="header"]
+|===
+|メソッド
+|引数
+|戻り値
+|処理内容
+
+.4+|dataMapping
+|row(int)
+.4+|なし
+.4+|アップロードファイルから登録用のデータをマッピングします。
+
+CsvRegistrationType で登録の種類を判断できます。
+
+INSERT:: 新規追加。
+UPDATE:: 更新。
+DELETE:: 削除。
+
+|Entity
+|EntityDefinition
+|CsvRegistrationType
+
+.4+|beforeRegister
+|row(int)
+.4+|List<ValidateError>
+.4+|当該メソッド内に設定した処理内容が、Entityの登録・更新・削除前に実施されます。
+|Entity
+|EntityDefinition
+|CsvRegistrationType
+
+.4+|afterRegister
+|row(int)
+.4+|List<ValidateError>
+.4+|当該メソッド内に設定した処理内容が、Entityの登録・更新・削除後に実施されます。
+|Entity
+|EntityDefinition
+|CsvRegistrationType
+
+|insertOption
+|InsertOption
+|InsertOption
+|新規登録時のInsertOptionを制御します。
+
+標準の登録対象プロパティの判定は、アップロードファイルのヘッダ情報または検索条件設定の `アップロード登録項目` により制御されます。登録対象以外のプロパティは null 値が設定されます。
+
+|updateOption
+|UpdateOption
+|UpdateOption
+|更新時のUpdateOptionを制御します。
+標準の更新対象プロパティの判定は、アップロードファイルのヘッダ情報または検索条件設定の `アップロード更新項目` により制御されます。
+
+|deleteOption
+|DeleteOption
+|DeleteOption
+|削除時のDeleteOptionを制御します。
+
+|columnNameMap
+|EntityDefinition
+|Map<String, String>
+|ヘッダ名をカスタマイズしたい場合に指定します。keyをプロパティ名、valueを出力列名としてマッピングを定義します。
+nullを返す場合、またはMapに該当がない場合は、標準の形式で出力します。
+
+.2+|sampleFileData
+|EntityDefinition
+.2+|List<Entity>
+.2+|サンプルファイルとして出力したいEntityデータを返します。引数で出力対象のプロパティが渡されます。nullを返す場合、プロパティ型に応じてランダムな値を出力します。
+|List<PropertyDefinition>
+
+|===
+
+カスタムアップロード処理の各メソッドは以下のように呼ばれます。
+
+. ファイルデータの1行分を読み込みます。
+. `_useCtrl` フラグの有無、ユニークキー値と既存データの有無により、新規、更新、削除を判断します。
+. `dataMapping` が実行され、処理対象のEntityが作成されます。
+. `beforeRegister` が実行されます。
+. Entityを登録します。 +
+新規の場合:: `insertOption` が実行されます。
+更新の場合:: `updateOption` が実行されます。
+削除の場合:: `deleteOption` が実行されます。
+. `afterRegister` が実行されます。
+
+`beforeRegister` `afterRegister` でValidateErrorを返した場合、
+またはいずれかでエラーが発生した場合、ロールバックされます。
+`beforeRegister` でValidateErrorを返した場合にも登録処理は実行しませんが、
+ `afterRegister` 処理は呼び出します。
+
+.ヘッダのカスタマイズ
+`columnNameMap` を実装することで、ヘッダを変更することが可能です。
+Upload形式のダウンロード、サンプルダウンロード、アップロード処理時に参照します。
+
+[source,java]
+----
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.iplass.mtp.entity.definition.EntityDefinition;
+import org.iplass.mtp.mdc.view.entityview.search.SearchFormFileUploadInterrupter;
+
+public class SampleSearchFormFileUploadInterrupter implements SearchFormFileUploadInterrupter {
+
+	@Override
+	public Map<String, String> columnNameMap(EntityDefinition definition) {
+
+		// 列名を表示名だけで出力する
+		return definition.getPropertyList().stream()
+			.collect(Collectors.toMap(
+					property -> property.getName(),
+					property -> property.getDisplayName()));
+	}
+
+}
+----
+
 [[MdcCustomize_Delete]]
 === カスタム一括削除処理
 一括削除処理で複数のEntityに対する一括操作時に独自の処理を組み込むことができます。
