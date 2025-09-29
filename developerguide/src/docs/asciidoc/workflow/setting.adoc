@@ -1473,7 +1473,7 @@ Custom Title ::
 
 |Hide the comment input field in task view.
 |タスク詳細画面のコメント入力欄を表示・非表示を設定します。
-チェックした場合、コメント入力欄を非表示になります。
+チェックした場合、コメント入力欄が非表示になります。
 
 |Show Properties
 |タスク一覧に表示するタスクの項目を指定します。
