@@ -787,7 +787,7 @@ In addition, you can obtain and specify the value of the property of the referen
 groups.name
 ----
 
-For properties with multiplicity specified as multiple (primitive types only, excluding reference properties), you can also specify an array subscript. Note that subscripts start at 0. If you do not specify an array subscript, the values ​​obtained as search results will be returned in array type.
+For properties with multiplicity specified as multiple (primitive types only, excluding reference properties), you can also specify an array subscript. Note that subscripts start at 0. If you do not specify an array subscript, the values obtained as search results will be returned in array type.
 
 [source,sql]
 ----
