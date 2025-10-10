@@ -213,6 +213,9 @@ link:https://materialdesignicons.com/[Material Design Icons^]のアイコンタ�
 |Hide Reload Button
 |本項目がチェックされている場合、検索結果一覧のリロードボタンを非表示にします。
 
+|Hide Show Search Screen Button
+|本項目がチェックされている場合、「検索画面を表示する」ボタンを非表示にします。
+
 |===
 
 [[treegrid]]
