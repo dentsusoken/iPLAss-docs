@@ -713,11 +713,13 @@ Function val = new Function("YEAR", new EntityField("dateTimeValue"));
 
 <within group spec> ::=:: WITHIN GROUP( ORDER BY <sort spec>  {,<sort spec>}*)
 
-<array value> ::=:: "ARRAY[" <value expression> {,<value expression>}* "]"
+<<array-value, "<array value>">> ::=:: "ARRAY[" <value expression> {,<value expression>}* "]"
 
 <<case, "<case>">> ::=:: CASE WHEN <<condition, "<condition>">> THEN <value expression> {WHEN <<condition, "<condition>">> THEN <value expression>}* [ELSE <value expression>] END
 
-<<entity-field, "<entity field>">> ::=:: <property name> | <reference>.<property name> | <correlated entity field>
+<<entity-field, "<entity field>">> ::=:: <property name> [<array index>] | <reference>.<property name> [<array index>] | <correlated entity field>
+
+<array index> ::=:: "[" __""subscript""__ "]"
 
 <reference> ::=:: <reference name>{.<reference name>}*
 
@@ -785,6 +787,14 @@ In addition, you can obtain and specify the value of the property of the referen
 groups.name
 ----
 
+For properties with multiplicity specified as multiple (primitive types only, excluding reference properties), you can also specify an array subscript. Note that subscripts start at 0. If you do not specify an array subscript, the values ​​obtained as search results will be returned in array type.
+
+[source,sql]
+----
+categories[0]
+item.categories[3]
+----
+
 CAUTION: LongText type and Binary type properties can only be specified as <select clause> items.
 If used as a condition in <where clause> or <having clause>, or if an operation or function is applied, the behavior is undefined.
 
@@ -805,6 +815,11 @@ EntityField prop = new EntityField("intProp");
 [source,java]
 ----
 EntityField referenceEntityProp = new EntityField("refProp.strProp");
+----
+
+[source,java]
+----
+EntityField arrayIndexedProp = new EntityField("multiStrProp", 3);
 ----
 
 [source,java]
@@ -973,6 +988,27 @@ NULL
 ----
 
 |===
+
+[[array-value]]
+==== Array Value
+<array value> is an element that represents an array.
+It can be used to set values ​​for properties of entities that are defined as having multiple multiplicity, or to specify them as search conditions.
+
+[source,sql]
+----
+categories = ARRAY['cat1', 'cat2']
+----
+
+When generating using a class that represents EQL,
+org.iplass.mtp.entity.query.value.primary.ArrayValue
+is used.
+
+[source,java]
+----
+ArrayValue arrayValue = new ArrayValue(new Literal("cat1"), new Literal("cat2"));
+----
+
+When performing a bulk update using the EntityManager's updateAll() method, you can use ArrayValue in the UpdateCondition to specify a specific value for the array value of a property with multiple multiplicities.
 
 [[function]]
 ==== Function
