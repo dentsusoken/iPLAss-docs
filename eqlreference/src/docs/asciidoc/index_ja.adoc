@@ -710,11 +710,13 @@ Function val = new Function("YEAR", new EntityField("dateTimeValue"));
 
 <within group spec> ::=:: WITHIN GROUP( ORDER BY <sort spec>  {,<sort spec>}*)
 
-<array value> ::=:: "ARRAY[" <value expression> {,<value expression>}* "]"
+<<array-value, "<array value>">> ::=:: "ARRAY[" <value expression> {,<value expression>}* "]"
 
 <<case, "<case>">> ::=:: CASE WHEN <<condition, "<condition>">> THEN <value expression> {WHEN <<condition, "<condition>">> THEN <value expression>}* [ELSE <value expression>] END
 
-<<entity-field, "<entity field>">> ::=:: <property name> | <reference>.<property name> | <correlated entity field>
+<<entity-field, "<entity field>">> ::=:: <property name> [<array index>] | <reference>.<property name> [<array index>] | <correlated entity field>
+
+<array index> ::=:: "[" __""添え字""__ "]"
 
 <reference> ::=:: <reference name>{.<reference name>}*
 
@@ -782,6 +784,14 @@ name
 groups.name
 ----
 
+多重度が複数と指定されているプロパティ（プリミティブ型のみ。参照プロパティは除く）の場合、配列添え字を指定することも可能です。なお添え字は0始まりです。配列添え字を指定しない場合は検索結果として取得される値は配列型で返却されます。
+
+[source,sql]
+----
+categories[0]
+item.categories[3]
+----
+
 CAUTION: LongText型、Binary型のプロパティは<select clause>の項目としてのみ指定可能です。
 <where clause>、<having clause>での条件として利用、また演算、関数を適用した場合の動作は不定です。
 
@@ -803,6 +813,11 @@ EntityField prop = new EntityField("intProp");
 [source,java]
 ----
 EntityField referenceEntityProp = new EntityField("refProp.strProp");
+----
+
+[source,java]
+----
+EntityField arrayIndexedProp = new EntityField("multiStrProp", 3);
 ----
 
 [source,java]
@@ -971,6 +986,27 @@ NULL
 ----
 
 |===
+
+[[array-value]]
+==== Array Value
+<array value>は配列を表現する要素です。
+多重度が複数と定義されているEntityのプロパティに値をセットしたり、検索条件に指定することが可能です。
+
+[source,sql]
+----
+categories = ARRAY['cat1', 'cat2']
+----
+
+EQLを表現するクラスを利用して生成する場合、
+org.iplass.mtp.entity.query.value.primary.ArrayValue
+を利用します。
+
+[source,java]
+----
+ArrayValue arrayValue = new ArrayValue(new Literal("cat1"), new Literal("cat2"));
+----
+
+EntitiManagerのupdateAll()メソッドによる一括更新の際のUpdateConditionにArrayValueを利用して多重度が複数のプロパティの配列の値に特定の値を指定することが可能です。
 
 [[function]]
 ==== Function
