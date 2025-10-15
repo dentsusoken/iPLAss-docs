@@ -1452,9 +1452,6 @@ Custom Title ::
 |自分以外の人が完了したタスクを表示するかを設定します。
 チェックした場合、 `MYタスク` の `完了を含む` が有効な時に、 `他者が完了したタスクも表示` を選択できるようになります。
 
-|Display only the user who processed the tasks.
-|ワークフロー履歴の詳細にタスクを完了させた人のみ表示するかを設定します。
-
 |Default Sort Setting
 |ソートする項目と種別（昇順、降順）を指定します。
 
@@ -1511,6 +1508,10 @@ Custom Title ::
 
 |Section Configuration
 |タスク詳細で表示する項目のカスタマイズ多言語対応などを設置します。
+
+|Workflow History Settings
+|ワークフロー履歴表示に関する設定を行います。
+詳細は<<taskviewworkflowhistory, ワークフロー履歴設定項目>>を参照してください。
 |===
 
 [[taskviewitem]]
@@ -1623,6 +1624,25 @@ Custom Title ::
 
 |Display in Detail
 |タスク詳細にEntityを表示する場合にチェックします。
+|===
+
+[[taskviewworkflowhistory]]
+.ワークフロー履歴設定項目
+ワークフロー履歴に関する設定項目です。
+
+[cols="1,2a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|Display only the user who processed the task.
+|ワークフロー履歴の詳細にタスクを完了させた人のみ表示するかを設定します。
+
+|Display all history including parent process.
+|`親プロセスを含めた全履歴を表示する` チェックボックスを表示するかを設定します。
+
+|Display all history including parent process in initial view.
+|ワークフロー履歴初期表示時に親プロセスを含めた全履歴を表示するかを設定します。
 |===
 
 ==== Workflowの実行権限
