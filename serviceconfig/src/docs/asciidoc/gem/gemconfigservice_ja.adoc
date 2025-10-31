@@ -64,6 +64,7 @@ CAUTION: 後方互換性のための設定フラグです。将来のバージ�
 
 CAUTION: 後方互換性のための設定フラグです。将来のバージョンでは本設定項目は削除されます。
 | showPulldownPleaseSelectLabel | boolean | プルダウンの未選択時のラベル「選択してください」を表示するか。デフォルト値はtrueです。
+| binaryUploadAsync | boolean | binaryファイルアップロードを非同期処理で行うか。デフォルト値はtrueです。
 | datePickerDefaultOption | String | Datepickerのデフォルトオプション。デフォルト値は以下です。 +
  `changeMonth:true,changeYear:true,yearRange:"c-10:c+10"`
 | recycleBinMaxCount | int | ゴミ箱の表示件数上限値。未指定の場合のデフォルト値は100です。-1を指定した場合は無制限となります。
@@ -379,6 +380,9 @@ classにorg.iplass.gem.EnterpriseEntityViewHelperImplを指定します。
 
 	<!-- プルダウンの「選択してください」を表示するか -->
 	<property name="showPulldownPleaseSelectLabel" value="true" />
+
+	<!-- binaryファイルアップロード非同期設定 -->
+	<property name="binaryUploadAsync" value="true" />
 
 	<property name="binaryDownloadLoggingTargetProperty">
 		<property name="entityName" value="mtp.maintenance.Package" />

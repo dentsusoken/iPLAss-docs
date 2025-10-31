@@ -65,6 +65,7 @@ CAUTION: Setting flag for backward compatibility. This setting flag will be dele
 
 CAUTION: Setting flag for backward compatibility. This setting flag will be deleted in a future version.
 | showPulldownPleaseSelectLabel | boolean | Whether to display the label "Please select" when the pull-down menu is not selected. The default value is true.
+| binaryUploadAsync | boolean | Whether to perform the binary file upload asynchronously. The default value is true.
 | datePickerDefaultOption | String | Datepicker default options. The default value is. +
  `changeMonth:true,changeYear:true,yearRange:"c-10:c+10"`
 | recycleBinMaxCount | int | Maximum number of trash cans displayed. If not specified, the default value is 100. If -1 is specified, there is no limit.
@@ -377,6 +378,9 @@ There is no configurable items.
 
 	<!-- Whether to display the "Please select" pull-down box-->
 	<property name="showPulldownPleaseSelectLabel" value="true" />
+
+	<!-- Binary file upload asynchronous setting -->
+	<property name="binaryUploadAsync" value="true" />
 
 	<property name="binaryDownloadLoggingTargetProperty">
 		<property name="entityName" value="mtp.maintenance.Package" />
