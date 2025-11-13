@@ -245,7 +245,7 @@ import org.iplass.mtp.mail.sendgrid.SendGridMail;
 private void sendMailWithSendGridOptions() {
     MailManager manager = ManagerLocator.manager(MailManager.class);
 
-    Map<String, Object> bindings = new HashMap<String, Object>();
+    Map<String, Object> bindings = new HashMap<>();
 
     // テンプレートのバインド変数を設定する
     // :
