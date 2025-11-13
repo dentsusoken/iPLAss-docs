@@ -262,14 +262,13 @@ private void sendMailWithSendGridOptions() {
 
     // <2> SendGrid固有オプションの設定（putBodyParameter を利用して個別キー毎に指定する）
     // asmオプションの設定例
-    Map<String, Object> asmMap = new HashMap<>();
-    sendGridMail.putBodyParameter("asm", Map.<String,Object>of(
+    sendGridMail.putBodyParameter("asm", Map.of(
         "group_id", 1234,
         "groups_to_display", new int[] {1, 2, 3}
     ));
     // mail_settingsオプションの設定例
-    sendGridMail.putBodyParameter("mail_settings", Map.<String, Object>of(
-        "footer", Map.<String, Object>of(
+    sendGridMail.putBodyParameter("mail_settings", Map.of(
+        "footer", Map.of(
             "enable", true,
             "text", "This is the footer text.",
             "html", "<strong>This is the footer html.</strong>"
