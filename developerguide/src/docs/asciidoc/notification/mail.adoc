@@ -226,7 +226,6 @@ SendGrid固有オプションは以下の手順で設定します。詳しい実
 ==== 注意事項
 固有オプションを設定する場合、以下の点に注意してください。
 
-* SendGridMailServiceImpl（SendGrid Web API v2 Service）サービスでは SendGrid 固有オプションの設定はサポートされていません。SendGridV3MailService(SendGrid V3 Mail Service) を利用してください。
 * Mail インスタンスに設定されている情報から作成するオプション（例: personalizations, content など）は設定できません。設定した場合、そのオプションは上書きされます。
 * 固有オプションを設定した場合、存在の有無にかかわらずSendGridメール送信リクエストのボディに追加されます。
 ** アプリケーションのセキュリティ上のリスク軽減のため、ユーザー入力値を無加工でオプションの値として設定しないでください。
