@@ -201,3 +201,96 @@ MailServiceの「mail.smtp.from」が設定されている場合はその値が�
 |BinaryReference形式|addAttachment(org.iplass.mtp.entity.BinaryReference bin)
 |===
 
+
+[[mail_configure_sendgrid_options]]
+=== [.eeonly]#SendGrid固有オプション設定#
+
+SendGrid を利用してメール送信を行う場合、固有の送信オプションを設定することが可能です。 +
+固有オプションの詳細は、SendGrid の公式ドキュメントを参照してください。
+
+==== 利用条件
+
+* SendGridV3MailService を利用していること
+** ServiceConfig で指定してください。詳細は<<../../serviceconfig/index.adoc#MailService,MailService>>を参照してください。
+
+[[mail_configure_sendgrid_options_configuration]]
+==== 設定方法
+SendGrid固有オプションは以下の手順で設定します。詳しい実装方法は、後述の「<<mail_configure_sendgrid_options_example>>」を参照してください。
+
+. MailManager で作成した Mail オブジェクトを SendGridMail にキャストします。
+. SendGridMail の putBodyParameter メソッドまたは setBodyParameters メソッドを利用して固有オプションを設定します。
+.. putBodyParameter メソッドを利用する場合、オプション名と値を個別に指定します。
+.. setBodyParameters メソッドを利用する場合、オプション名と値のペアを含む Map オブジェクトを一括で指定します。
+. MailManager の sendMail メソッドでメールを送信します。
+
+==== 注意事項
+固有オプションを設定する場合、以下の点に注意してください。
+
+* Mail インスタンスに設定されている情報から作成するオプション（例: personalizations, content など）は設定できません。設定した場合、そのオプションは上書きされます。
+* 固有オプションを設定した場合、存在の有無にかかわらずSendGridメール送信リクエストのボディに追加されます。
+** アプリケーションのセキュリティ上のリスク軽減のため、ユーザー入力値を無加工でオプションの値として設定しないでください。
+** 意図しないオプションが設定されないように、事前にバリデーションを行うことを推奨します。
+* SendGrid 固有オプションは SendGrid の API バージョンや仕様変更により、動作しなくなる可能性があります。SendGrid の最新のドキュメントを確認し、必要に応じてコードを更新してください。
+
+[[mail_configure_sendgrid_options_example]]
+==== SendGrid固有オプション実装例
+実装例のコメント内の <1>～<3> は、前述の「<<mail_configure_sendgrid_options_configuration>>」の手順に対応しています。
+
+[source,java]
+----
+import org.iplass.mtp.mail.Mail;
+import org.iplass.mtp.mail.MailManager;
+import org.iplass.mtp.mail.sendgrid.SendGridMail;
+
+private void sendMailWithSendGridOptions() {
+    MailManager manager = ManagerLocator.manager(MailManager.class);
+
+    Map<String, Object> bindings = new HashMap<>();
+
+    // テンプレートのバインド変数を設定する
+    // :
+    // :
+
+    Mail mail = manager.createMail("templateName", bindings);
+
+    // mail に対して、送信先等を設定する
+    // :
+    // :
+
+    // <1> Mail オブジェクトを SendGridMail にキャスト
+    SendGridMail sendGridMail = (SendGridMail)mail;
+
+    // <2> SendGrid固有オプションの設定（putBodyParameter を利用して個別キー毎に指定する）
+    // asmオプションの設定例
+    sendGridMail.putBodyParameter("asm", Map.of(
+        "group_id", 1234,
+        "groups_to_display", new int[] {1, 2, 3}
+    ));
+    // mail_settingsオプションの設定例
+    sendGridMail.putBodyParameter("mail_settings", Map.of(
+        "footer", Map.of(
+            "enable", true,
+            "text", "This is the footer text.",
+            "html", "<strong>This is the footer html.</strong>"
+        )
+    ));
+    // 上記の指定で、以下のような値が追加されます。
+    // 
+    // {
+    //   "asm": {
+    //     "group_id": 1234,
+    //     "groups_to_display": [1, 2, 3]
+    //   },
+    //   "mail_settings": {
+    //     "footer": {
+    //       "enable": true,
+    //       "text": "This is the footer text.",
+    //       "html": "<strong>This is the footer html.</strong>"
+    //     }
+    //   }
+    // }
+
+    // <3> sendMail メソッドでメールを送信
+    manager.sendMail(sendGridMail);
+}
+----
