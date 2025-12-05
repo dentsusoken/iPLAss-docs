@@ -21,7 +21,7 @@ AdminConsoleから以下の名前のEntityを作成してください。
 TypeがReferenceの項目を参照する際はすでにEntityが作成されている必要があり、
 Entityを設定後、改めてReference項目を追加します。
 
-.タスクマスタEntity
+.タスクマスタEntity(tutorial.advanced.taskMaster)
 [cols="1,1,1,3a", options="header"]
 |===
 |Name|DisplayName|Type|属性値
@@ -34,7 +34,7 @@ Entityを設定後、改めてReference項目を追加します。
 |projectAndVer|プロジェクト・バージョン|String|
 |===
 
-.バージョンマスタEntity
+.バージョンマスタEntity(tutorial.advanced.versionMaster)
 [cols="1,1,1,3a", options="header"]
 |===
 |Name|DisplayName|Type|属性値
@@ -54,7 +54,7 @@ Entityを設定後、改めてReference項目を追加します。
 |projectName|プロジェクト名|String|
 |===
 
-.プロジェクトマスタ
+.プロジェクトマスタEntity(tutorial.advanced.projectMaster)
 [cols="1,1,1,3a", options="header"]
 |===
 |Name|DisplayName|Type|属性値
@@ -69,7 +69,7 @@ Entityを設定後、改めてReference項目を追加します。
 !===
 |===
 
-.今日のタスクEntity
+.今日のタスクEntity(tutorial.advanced.dailyTask)
 [cols="1,1,1,3a", options="header"]
 |===
 |Name|DisplayName|Type|属性値
@@ -88,7 +88,7 @@ Entityを設定後、改めてReference項目を追加します。
 |projectAndVersion|プロジェクト・バージョン|String|
 |===
 
-.今日のスケジュールEntity
+.今日のスケジュールEntity(tutorial.advanced.dailySchedule)
 [cols="1,1,1,3a", options="header"]
 |===
 |Name|DisplayName|Type|属性値
@@ -127,7 +127,7 @@ AutoNumber機能は、一定の文法に従って値を自動採番する機能�
 
 AutoNumberの詳細は<<../../developerguide/datamanagement/index.adoc#ref_property_autonumber, AutoNumber>>を参照してください。
 
-.プロジェクトマスタEntity
+.プロジェクトマスタEntity(tutorial.advanced.projectMaster)
 プロジェクトIDの設定画面を表示し、設定を変更します。
 
 image::images/entity_projectid.png[]
@@ -147,7 +147,7 @@ image::images/entity_projectid.png[]
 
 変更が完了したら、Entityを保存してください。
 
-.タスクマスタEntity
+.タスクマスタEntity(tutorial.advanced.taskMaster)
 同様にタスクIDの設定を以下のように変更してください。
 
 [options="header"]
@@ -196,7 +196,7 @@ EQL についての詳しい説明を知りたい方は<<../../eqlreference/inde
 
 Expression機能の詳細は<<../../developerguide/datamanagement/index.adoc#ref_property_expression, Expression>>を参照してください。
 
-.バージョンマスタEntity
+.バージョンマスタEntity(tutorial.advanced.versionMaster)
 プロジェクト名の設定を以下のように変更してください。
 
 image::images/entity_projectname.png[]
@@ -214,7 +214,7 @@ image::images/entity_projectname.png[]
 
 変更が完了したら、Entityを保存してください。
 
-.今日のタスクEntity
+.今日のタスクEntity(tutorial.advanced.dailyTask)
 同様にプロジェクト・バージョンの設定を以下のように変更してください。
 
 [options="header"]
@@ -228,7 +228,7 @@ image::images/entity_projectname.png[]
 
 変更が完了したら、Entityを保存してください。
 
-.今日のスケジュールEntity
+.今日のスケジュールEntity(tutorial.advanced.dailySchedule)
 こちらも同様に総工数（予定）[h]と総工数（実績）[h]の設定を以下のように変更してください。
 
 [options="header"]
@@ -290,7 +290,7 @@ image::images/entity_view-expression.png[]
 
 EventListener機能の詳細は<<../../developerguide/datamanagement/index.adoc#ref_entity_event_listener, EventListener>>を参照してください。
 
-.今日のスケジュールEntity
+.今日のスケジュールEntity(tutorial.advanced.dailySchedule)
 EventListenerを追加します。
 デフォルトではEventListenersは閉じているので、バーをクリックしてEventListenersを開きます。
 
@@ -315,7 +315,7 @@ OKボタンをクリックして、ダイアログを閉じ、Entityを保存し
 
 image::images/entity_setevent.png[]
 
-.今日のタスクEntity
+.今日のタスクEntity(tutorial.advanced.dailyTask)
 同様にEventListenerに下記スクリプトを追加します。
 
 image::images/entity_eventlistener-dailytask.png[]
@@ -332,7 +332,7 @@ entity.setName(taskName);
 
 変更が完了したら、Entityを保存してください。
 
-.タスクマスタEntity
+.タスクマスタEntity(tutorial.advanced.taskMaster)
 こちらも同様にEventListenerに下記スクリプトを追加します。
 
 image::images/entity_eventlistener-taskmaster.png[]
@@ -409,7 +409,7 @@ Saveボタンをクリックし、メッセージを保存します。
 次に、PropertyにValidatorの設定を行います。
 
 .工数（予定）[h]
-今日のタスクEntityの工数（予定）[h]のPropertySettingから以下の設定を行ってください。
+今日のタスクEntity(tutorial.advanced.dailyTask)の工数（予定）[h]のPropertySettingから以下の設定を行ってください。
 
 image::images/entity_planedmanhour.png[]
 
@@ -453,7 +453,7 @@ image::images/entity_error-validator.png[]
 Entityの更新履歴を記録したい場合には、AuditLog機能を用います。
 ここでは、プロジェクトマスタEntityの更新履歴を記録するよう、AuditLogの設定を行います。
 
-プロジェクトマスタEntityで `save audit log` を有効にします。
+プロジェクトマスタEntity(tutorial.advanced.projectMaster)で `save audit log` を有効にします。
 チェックを入れることで、操作ログが記録されます。
 
 image::images/entity_auditlog.png[]
@@ -520,7 +520,7 @@ GEM画面の `SearchLayout`、 `DetailLayout`  についての詳しい説明を
 
 ==== NestTable
 まずは今日のスケジュールEntityについて、NestTableの設定を行います。
-今日のスケジュールEntityのDetail_Layoutを開いてください。
+今日のスケジュールEntity(tutorial.advanced.dailySchedule)のDetail_Layoutを開いてください。
 レイアウトが読み込まれていない場合は標準ロードを押下してデフォルトレイアウトを読み込んでください。
 タスクの設定を表示します。
 
@@ -590,7 +590,7 @@ image::images/entity_view-nesttable.png[]
 NestTableでは参照先情報を入れ子構造の表形式で表示しましたが、Reference Comboでは、参照先の情報をドロップダウン形式で表示します。
 ここでは、タスクマスタEntityのデータを関連するプロジェクト名からたどって検索できるよう、Reference Comboの設定を行います。
 
-タスクマスタEntityのSearch_Layoutを開いてください。
+タスクマスタEntity(tutorial.advanced.taskMaster)のSearch_Layoutを開いてください。
 レイアウトが読み込まれていない場合は標準ロードを押下してデフォルトレイアウトを読み込んでください。
 
 image::images/view_searchlayout-taskmaster.png[]
@@ -628,7 +628,7 @@ image::images/view_refcombosetting.png[]
 
 OKボタン、保存ボタンを順に押下して、編集内容を保存してください。
 検索画面と同様に、詳細画面についても設定を行っていきます。
-タスクマスタEntityのDetail_Layoutを開いてください。
+タスクマスタEntity(tutorial.advanced.taskMaster)のDetail_Layoutを開いてください。
 
 image::images/view_detaillayout-taskmaster.png[]
 
@@ -655,7 +655,7 @@ image::images/view_detailview-taskmaster.png[]
 デフォルトでは詳細画面ではプロパティ情報が1列の表形式で表示されますが、Detail_Layoutから列数を増やすことが可能です。
 今日のスケジュールEntityのPropertyデータの一部を2列で表示するよう設定を行います。
 
-今日のスケジュールEntityのDetail_Layoutを開いてください。
+今日のスケジュールEntity(tutorial.advanced.dailySchedule)のDetail_Layoutを開いてください。
  `標準セクション` をDetail Viewsにドラッグ&ドロップします。
 
 image::images/view_detaillayout-dailyschedule2.png[]
@@ -680,7 +680,7 @@ image::images/view_dragsection.png[]
 以上で2列表示の設定は完了です。
 
 
-確認のため、今日のスケジュールEntityの詳細画面を開いてください。
+確認のため、今日のスケジュール(tutorial.advanced.dailySchedule)の詳細画面を開いてください。
 総工数セクションが2列で表示されていることが確認できます。
 
 image::images/view_detailview-dailyschedule.png[]
@@ -1214,7 +1214,7 @@ Nameの値をユーザータスクから伸びる矢印に設定することで�
 |===
 
 続いて、ワークフローを起動するための設定をDetail_Layoutから行います。
-今日のスケジュールEntityのDetailLayoutからDetailFormViewの設定を行ってください。
+今日のスケジュール(tutorial.advanced.dailySchedule)のDetailLayoutからDetailFormViewの設定を行ってください。
 
 image::images/other_detailview_workflowsettingf.png[]
 
@@ -1311,7 +1311,7 @@ day（日付）をフィルタ項目に設定します。
 image::images/other_aggregationfilter.png[]
 
 .集計表設定
-今日のスケジュールEntityから日付、総工数（予定）、総工数（実績）を検索するEQLを設定します。
+今日のスケジュールEntity(tutorial.advanced.dailySchedule)から日付、総工数（予定）、総工数（実績）を検索するEQLを設定します。
 
 image::images/other_aggregationgrid.png[]
 

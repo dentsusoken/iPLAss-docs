@@ -69,7 +69,7 @@ After setting the Entity, add a Reference item again.
 !===
 |===
 
-.Today's task Entity
+.Daily task Entity
 [cols = "1,1,1,3a", options = "header"]
 |===
 | Name | DisplayName | Type | Attribute value
@@ -88,7 +88,7 @@ After setting the Entity, add a Reference item again.
 | projectAndVersion | Project Version | String |
 |===
 
-.Today's schedule Entity
+.Daily schedule Entity
 [cols = "1,1,1,3a", options = "header"]
 |===
 | Name | DisplayName | Type | Attribute value
@@ -215,7 +215,7 @@ Here, EQL is written to obtain the value of the name of the project master.
 
 When the change is complete, save the Entity.
 
-.Today's Task Entity
+.Daily Task Entity
 Similarly, change the project version setting as follows.
 
 [options = "header"]
@@ -229,7 +229,7 @@ Similarly, change the project version setting as follows.
 
 When the change is complete, save the Entity.
 
-.Today's Schedule Entity
+.Daily Schedule Entity
 Similarly, change the settings for total man-hour (planned) [h] and total man-hour (actual) [h] as follows.
 
 [options = "header"]
@@ -240,7 +240,7 @@ Similarly, change the settings for total man-hour (planned) [h] and total man-ho
 | Type | Expression
 | Result Type | Float
 | Expression | (select sum(dailyTask.planedManhour) from tutorial.advanced.dailySchedule on .this=this) +
-※ Get the total value of man-hours (planned) [h] of today's task Entity
+※ Get the total value of man-hours (planned) [h] of daily task Entity
 |===
 
 [options = "header"]
@@ -251,7 +251,7 @@ Similarly, change the settings for total man-hour (planned) [h] and total man-ho
 | Type | Expression
 | Result Type | Float
 | Expression | (select sum(dailyTask.actualManhour) from tutorial.advanced.dailySchedule on .this=this) +
-※ Get the total value of man-hours (actual) [h] of today's task Entity
+※ Get the total value of man-hours (actual) [h] of daily task Entity
 |===
 
 When the change is complete, save the Entity.
@@ -286,12 +286,12 @@ Task master entity has version Property, and version Property also has project m
 
 Here, let's use the EventListener function to set the project version Property with custom logic that is called when registering or updating an Entity.
 
-Also, set EventListener to automatically set the name Property for today's schedule entity and today's task entity.
+Also, set EventListener to automatically set the name Property for daily schedule entity and daily task entity.
 This method can also be used in scenes where you do not want the user to enter the required property name Property directly.
 
 For details of EventListener function, refer to <<../../developerguide/datamanagement/index.adoc#ref_entity_event_listener, EventListener>>.
 
-.Today's Schedule Entity
+.Daily Schedule Entity
 Add EventListener.
 By default, EventListeners are closed, so click on the tab bar to open EventListeners.
 
@@ -316,7 +316,7 @@ Click the OK button to close the dialog and save the Entity.
 
 image::images/entity_setevent.png[]
 
-.Today's Task Entity
+.Daily Task Entity
 Similarly, add the following script to EventListener.
 
 image::images/entity_eventlistener-dailytask_en.png[]
@@ -329,7 +329,7 @@ String taskName = entity.getValue("task.name");
 entity.setName(taskName);
 ----
 
-Get the value of name Property from task master entity and set the value to name property of today's task entity.
+Get the value of name Property from task master entity and set the value to name property of daily task entity.
 
 When the change has completed, save the Entity.
 
@@ -369,7 +369,7 @@ image::images/entity_view-eventlistener_en.png[]
 === Input Check Function (Validator)
 Use Validator function when you want to check input of data to be registered in Entity was following the rule.
 
-Here, Validator is assigned so that an error is displayed when a value other than 0 to 24 is entered in the man-hour (planned) [h] and man-hour (actual) [h] of today's task Entity.
+Here, Validator is assigned so that an error is displayed when a value other than 0 to 24 is entered in the man-hour (planned) [h] and man-hour (actual) [h] of daily task Entity.
 
 First, register a message when an input validation error occurs.
 Right-click Message in the Data Model, click「Create Message Category」from the context menu that appears, and create the message below.
@@ -410,7 +410,7 @@ Click the Save button to save the message.
 Next, set Validator to Property.
 
 .plannedManhour
-Perform the following settings from the on the planned Man-hour for today's task Entity.
+Perform the following settings from the on the planned Man-hour for daily task Entity.
 
 image::images/entity_planedmanhour_en.png[]
 
@@ -434,7 +434,7 @@ Set the same for the man-hour (actual) [h] and save the Entity.
 image::images/entity_actualmanhour_en.png[]
 
 
-For confirmation, add data to today's task entity.
+For confirmation, add data to daily task entity.
 Please click new registration from the search screen.
 
 image::images/entity_create-validator_en.png[]
@@ -518,8 +518,8 @@ The following methods can be employed to display the contents of Reference type 
 Here we will deal with RefCombo and NestTable.
 
 ==== NestTable
-First, set NestTable for today's schedule Entity.
-Open Detail_Layout for today's schedule Entity.
+First, set NestTable for daily schedule Entity.
+Open Detail_Layout for daily schedule Entity.
 If the layout is not loaded, press standard load to load the default layout.
 Open the the settings of task .
 
@@ -530,7 +530,7 @@ Click Edit Property Editor.
 image::images/view_property-task_en.png[]
 
 Select `NestTable` as the display type.
-In the reference type display properties, we will add the properties of today's task entity to be displayed in NestTable.
+In the reference type display properties, we will add the properties of daily task entity to be displayed in NestTable.
 
 image::images/view_referencepropertyeditor-nesttable_en.png[]
 
@@ -572,7 +572,7 @@ Please choose corresponding editor type and then click the edit button of the pr
 When you finished adding properties, save the settings.
 This completes the NestTable settings.
 
-To confirm, add data to today's schedule Entity.
+To confirm, add data to daily schedule Entity.
 
 image::images/entity_create-nesttable_en.png[]
 
@@ -652,9 +652,9 @@ This concludes the completion of the operation check.
 
 === 2-Line Display Of Detail Screen
 By default, the property information is displayed in a table format with one column on the detail screen, but the number of columns can be increased from Detail_Layout.
-Set to display part of Property data of today's schedule Entity in 2 columns.
+Set to display part of Property data of daily schedule Entity in 2 columns.
 
-Open Detail_Layout for today's schedule Entity.
+Open Detail_Layout for daily schedule Entity.
 Drag and drop `Default Section` onto Detail Views.
 
 image::images/view_detaillayout-dailyschedule2_en.png[]
@@ -679,7 +679,7 @@ Click the Save button to save the changes.
 This completes the two-column display setting.
 
 
-Please open the details screen of today's schedule Entity for confirmation.
+Please open the details screen of daily schedule Entity for confirmation.
 You can see that the total Man Hour section is displayed in two columns.
 
 image::images/view_detailview-dailyschedule_en.png[]
@@ -910,7 +910,7 @@ image::images/top_createcalendar_en.png[]
 
 Open the created calendar.
 Register the entities you want to display on the calendar.
-Here, we want to display the contents registered in today's schedule Entity in the calendar, so drag and drop today's schedule Entity from Entity Items to Target Items.
+Here, we want to display the contents registered in daily schedule Entity in the calendar, so drag and drop daily schedule Entity from Entity Items to Target Items.
 
 image::images/top_edit-calendar_en.png[]
 
@@ -1210,7 +1210,7 @@ By setting the Name value to an arrow that extends from the user task, you can c
 |===
 
 Next, make settings for starting the workflow from Detail_Layout.
-Please set DetailScreen from DetailLayout of today's schedule Entity.
+Please set DetailScreen from DetailLayout of daily schedule Entity.
 
 image::images/other_detailview_workflowsettingf_en.png[]
 
@@ -1307,7 +1307,7 @@ Set day to the filter item.
 image::images/other_aggregationfilter_en.png[]
 
 .Aggregation Table Settings
-Set EQL to search date, total man-hour (planned), total man-hour (actual) from today's schedule Entity.
+Set EQL to search date, total man-hour (planned), total man-hour (actual) from daily schedule Entity.
 
 image::images/other_aggregationgrid_en.png[]
 
@@ -1384,4 +1384,4 @@ Click the added menu to display the scene.
 image::images/other_aggregation_en.png[]
 
 The item set in the filter item is added to the filter condition.
-You can also see that the data registered in today's schedule Entity is displayed as a line graph and a aggregation table.
+You can also see that the data registered in daily schedule Entity is displayed as a line graph and a aggregation table.
