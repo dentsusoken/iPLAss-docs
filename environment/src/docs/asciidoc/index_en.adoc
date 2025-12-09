@@ -962,6 +962,40 @@ set JAVA_OPTS=%JAVA_OPTS% -Dmtp.install="＜install setting file path＞/my-inst
 
 TIP: If ``setenv.bat`` already exists, add the lines behind instead of overwriting.
 
+[[installer_post_install_checklist]]
+==== Post-Installation Checklist
+After installation is complete, please verify the following items.
+
+. <<installer_post_install_checklist_user_privilege>>
+
+[[installer_post_install_checklist_user_privilege]]
+===== Privilege for users created by the installer
+The privilege for database users created by the installer are set in a simplified manner. +
+When performing system operations, we recommend changing to the appropriate privileges.
+
+For appropriate privileges, refer to the `ddl/${RDBMS_NAME}/readme_en.txt` file of the "iplass-server-setup-kit-x.x.x.zip" file included with the link:https://iplass.org/en/downloads/[iPLAss SDK^]. +
+Example: For MySQL, refer to the `ddl/mysql/readme_en.txt` file within the "iplass-server-setup-kit-x.x.x.zip" file.
+
+.Privilege for users created by the installer in each database
+[cols="1,3",options="header,autowidth"]
+|====
+| RDBMS
+| Explicitly granted privileges
+
+| MySQL
+| ALL PRIVILEGES (For the created database)
+
+| Oracle
+| DBA (Roll)、 CONNECT (Roll)、 RESOURCE (Roll)
+
+| PostgreSQL
+| - (Default)
+
+| SQL Server
+| db_owner (Roll, For the created database)
+|====
+
+
 [[InstallPropertiesFile]]
 === Install Setting File(install.properties)
 [source,ini]

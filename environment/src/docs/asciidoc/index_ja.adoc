@@ -970,6 +970,40 @@ set JAVA_OPTS=%JAVA_OPTS% -Dmtp.install="＜インストール設定ファイル
 
 TIP: 既に``setenv.bat``ファイルが存在する場合は追記してください。
 
+[[installer_post_install_checklist]]
+==== インストール完了後のチェックリスト
+インストール完了後、以下の項目を確認してください。
+
+. <<installer_post_install_checklist_user_privilege>>
+
+[[installer_post_install_checklist_user_privilege]]
+===== インストーラーで作成したユーザーの権限
+インストーラーで作成したデータベースユーザーの権限は簡易的に設定しています。 +
+システム運用を行うにあたり、適切な権限に変更することを推奨します。
+
+適切な権限については、link:https://iplass.org/downloads/[iPLAss SDK^] に同梱されている 「iplass-server-setup-kit-x.x.x.zip」ファイル内の `ddl/${RDBMS名}/readme.txt` ファイルを参照してください。 +
+例：MySQL の場合は 「iplass-server-setup-kit-x.x.x.zip」ファイル内の `ddl/mysql/readme.txt` ファイル
+
+.各データベースにおけるインストーラーで作成したユーザーの権限
+[cols="1,3",options="header,autowidth"]
+|====
+| RDBMS
+| 明示的に付与される権限
+
+| MySQL
+| ALL PRIVILEGES (作成したデータベースに対しての)
+
+| Oracle
+| DBA (ロール)、 CONNECT (ロール)、 RESOURCE (ロール)
+
+| PostgreSQL
+| なし (デフォルト)
+
+| SQL Server
+| db_owner (ロール, 作成したデータベースに対しての)
+|====
+
+
 [[InstallPropertiesFile]]
 === インストール設定ファイル(install.properties)
 [source,ini]
