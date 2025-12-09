@@ -959,6 +959,42 @@ set JAVA_OPTS=%JAVA_OPTS% -Dmtp.install="＜install setting file path＞/my-inst
 
 TIP: If ``setenv.bat`` already exists, add the lines behind instead of overwriting.
 
+[[installer_post_install_checklist]]
+==== Post-Installation Checklist
+After installation is complete, please verify the following items.
+
+. <<installer_post_install_checklist_user_privilege>>
+
+[[installer_post_install_checklist_user_privilege]]
+===== Privilege for users created by the installer
+The privilege for database users created by the installer are set in a simplified manner. +
+When performing system operations, we recommend changing to the appropriate privileges.
+
+.Privilege for users created by the installer in each database
+[cols="1,2,2",options="header,autowidth"]
+|====
+| RDBMS
+| Explicitly granted privileges
+| Minimum required privileges
+
+| MySQL
+| ALL PRIVILEGES (For the created database)
+| Operations on created tables
+
+| Oracle
+| DBA (Roll)、 CONNECT (Roll)、 RESOURCE (Roll)
+| Operations on created tables and sequences
+
+| PostgreSQL
+| - (Default)
+| Operations on created tables, sequences, and stored procedures
+
+| SQL Server
+| db_owner (Roll, For the created database)
+| Operations on created tables and sequences
+|====
+
+
 [[InstallPropertiesFile]]
 === Install Setting File(install.properties)
 [source,ini]
