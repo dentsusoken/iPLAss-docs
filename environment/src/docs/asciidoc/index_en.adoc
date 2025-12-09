@@ -970,28 +970,26 @@ After installation is complete, please verify the following items.
 The privilege for database users created by the installer are set in a simplified manner. +
 When performing system operations, we recommend changing to the appropriate privileges.
 
+For appropriate privileges, refer to the `ddl/${RDBMS_NAME}/readme_en.txt` file of the "iplass-server-setup-kit-x.x.x.zip" file included with the link:https://iplass.org/en/downloads/[iPLAss SDK^]. +
+Example: For MySQL, refer to the `ddl/mysql/readme_en.txt` file within the "iplass-server-setup-kit-x.x.x.zip" file.
+
 .Privilege for users created by the installer in each database
-[cols="1,2,2",options="header,autowidth"]
+[cols="1,3",options="header,autowidth"]
 |====
 | RDBMS
 | Explicitly granted privileges
-| Minimum required privileges
 
 | MySQL
 | ALL PRIVILEGES (For the created database)
-| Operations on created tables
 
 | Oracle
 | DBA (Roll)、 CONNECT (Roll)、 RESOURCE (Roll)
-| Operations on created tables and sequences
 
 | PostgreSQL
 | - (Default)
-| Operations on created tables, sequences, and stored procedures
 
 | SQL Server
 | db_owner (Roll, For the created database)
-| Operations on created tables and sequences
 |====
 
 
