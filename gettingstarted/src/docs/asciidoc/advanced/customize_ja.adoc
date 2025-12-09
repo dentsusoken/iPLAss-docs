@@ -1214,7 +1214,7 @@ Nameの値をユーザータスクから伸びる矢印に設定することで�
 |===
 
 続いて、ワークフローを起動するための設定をDetail_Layoutから行います。
-今日のスケジュール(tutorial.advanced.dailySchedule)のDetailLayoutからDetailFormViewの設定を行ってください。
+今日のスケジュールEntity(tutorial.advanced.dailySchedule)のDetailLayoutからDetailFormViewの設定を行ってください。
 
 image::images/other_detailview_workflowsettingf.png[]
 

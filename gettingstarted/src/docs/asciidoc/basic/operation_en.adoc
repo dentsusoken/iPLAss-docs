@@ -1837,7 +1837,7 @@ image::images/topview_dropseparator_en.png[]
 `Separator` has no setting items, so there is no edit button.
 
 Drop two of the `SearchResult List` used earlier on this` Separator`.
-On the left side, specify `Product` Entity (tutorial.product.Product), and on the right side, specify `Property confirmation 2` (tutorial.properties.Properties2).
+On the left side, specify `Product` Entity, and on the right side, specify `Properties2` Entity.
 
 image::images/topview_droptwosearchresultlist_en.png[]
 
