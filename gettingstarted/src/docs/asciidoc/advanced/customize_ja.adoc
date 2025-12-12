@@ -680,7 +680,7 @@ image::images/view_dragsection.png[]
 以上で2列表示の設定は完了です。
 
 
-確認のため、今日のスケジュール(tutorial.advanced.dailySchedule)の詳細画面を開いてください。
+確認のため、今日のスケジュールEntity(tutorial.advanced.dailySchedule)の詳細画面を開いてください。
 総工数セクションが2列で表示されていることが確認できます。
 
 image::images/view_detailview-dailyschedule.png[]
