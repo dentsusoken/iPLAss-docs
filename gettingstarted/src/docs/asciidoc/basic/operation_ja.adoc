@@ -1834,7 +1834,7 @@ image::images/topview_dropseparator.png[]
 `Separator` には設定項目は無いので編集ボタンがありません。
 
 この `Separator` の上に先ほど利用した `SearchResult List` を２つドロップします。
-左側を `商品` Entity（tutorial.product.Product）、右側を`プロパティ確認用２` Entity（tutorial.properties.Properties2）と指定してください。
+左側を `商品` Entity（tutorial.product.Product）、右側を `プロパティ確認用２` Entity（tutorial.properties.Properties2）と指定してください。
 
 image::images/topview_droptwosearchresultlist.png[]
 
