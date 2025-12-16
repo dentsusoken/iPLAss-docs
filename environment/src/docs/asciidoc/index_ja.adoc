@@ -947,7 +947,7 @@ TIP: ユーザーIDには４文字以上の「英数字」および「-」(マ�
 .手順
 . <<InstallPropertiesFile>>を作成します。
 . 作成したインストール設定ファイルを環境に合わせて修正します。
-. 作成したインストール設定ファイルを``%USERPROFILE%(or $HOME)/.iplass/``下に配置するか、JVMオプション``-Dmtp.install=＜インストール設定ファイルのパス＞``を指定しAPサーバを起動します。
+. 作成したインストール設定ファイルを``%USERPROFILE%(or $HOME)/.iplass/``下に配置するか、JVMオプション``-Dmtp.install=<インストール設定ファイルのパス>``を指定しAPサーバを起動します。
 . iPLAssのURLにアクセスします。
 . 準備中画面の表示後、iPLAssのログイン画面が表示されます。
 
@@ -965,7 +965,7 @@ TIP: ユーザーIDには４文字以上の「英数字」および「-」(マ�
 +
 [source,bat]
 ----
-set JAVA_OPTS=%JAVA_OPTS% -Dmtp.install="＜インストール設定ファイルの配置場所＞/my-install.properties"
+set JAVA_OPTS=%JAVA_OPTS% -Dmtp.install="<インストール設定ファイルの配置場所>/my-install.properties"
 ----
 
 TIP: 既に``setenv.bat``ファイルが存在する場合は追記してください。

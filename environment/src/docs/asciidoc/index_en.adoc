@@ -938,7 +938,7 @@ By starting the AP server with the installation setting file specified, the inst
 .Procedure
 . Create <<InstallPropertiesFile>>.
 . Modify the created install setting file corresponding to the environments.
-. Place the created install setting file under the path of ``%USERPROFILE%(or $HOME)/.iplass/`` and start the server with JVM option:``-Dmtp.install=＜install setting file path＞``.
+. Place the created install setting file under the path of ``%USERPROFILE%(or $HOME)/.iplass/`` and start the server with JVM option:``-Dmtp.install=<install setting file path>``.
 . Access iPLAss URL.
 . The "in preparation" page will show up, then it will redirect to the iPLAss login page.
 
@@ -956,7 +956,7 @@ Assuming the created setting file is ``my-install.properties``, and we will spec
 +
 [source,bat]
 ----
-set JAVA_OPTS=%JAVA_OPTS% -Dmtp.install="＜install setting file path＞/my-install.properties"
+set JAVA_OPTS=%JAVA_OPTS% -Dmtp.install="<install setting file path>/my-install.properties"
 ----
 
 TIP: If ``setenv.bat`` already exists, add the lines behind instead of overwriting.
