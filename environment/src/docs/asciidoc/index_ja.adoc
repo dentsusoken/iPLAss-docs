@@ -871,9 +871,11 @@ MySQL及びパーティション対応のPostgreSQLを利用の場合、「audit
 
 ==== ウィザードインストール
 セットアップ画面にて情報を入力しインストールを行います。
+APサーバ上にデプロイされたiPLAssに初回アクセスすることでウィザード画面が表示されます。
 
 .手順
-. iPLAssのURLにアクセスします。
+. iPLAssのURLにアクセスします。 +
+例： http(s)://<サーバ名>:<ポート>/iplass
 . セットアップ画面に必要な情報を入力し``セットアップ開始``ボタンを押下します。
 . セットアップ画面に従いAPサーバを再起動します。
 . 再度、iPLAssのURLにアクセスします。
@@ -945,13 +947,13 @@ TIP: ユーザーIDには４文字以上の「英数字」および「-」(マ�
 .手順
 . <<InstallPropertiesFile>>を作成します。
 . 作成したインストール設定ファイルを環境に合わせて修正します。
-. 作成したインストール設定ファイルを``%USERPROFILE%/.iplass/``下に配置するか、JVMオプション``-Dmtp.install=＜インストール設定ファイルのパス＞``を指定しAPサーバを起動します。
+. 作成したインストール設定ファイルを``%USERPROFILE%(or $HOME)/.iplass/``下に配置するか、JVMオプション``-Dmtp.install=<インストール設定ファイルのパス>``を指定しAPサーバを起動します。
 . iPLAssのURLにアクセスします。
 . 準備中画面の表示後、iPLAssのログイン画面が表示されます。
 
 [IMPORTANT]
 ====
-``%USERPROFILE%/.iplass/``下に配置する場合、インストール設定ファイルのファイル名は必ず``install.properties``である必要があります。
+``%USERPROFILE%(or $HOME)/.iplass/``下に配置する場合、インストール設定ファイルのファイル名は必ず``install.properties``である必要があります。
 但し、``mtp.install``オプションで指定する場合は任意のファイル名で構いません。
 ====
 
@@ -963,7 +965,7 @@ TIP: ユーザーIDには４文字以上の「英数字」および「-」(マ�
 +
 [source,bat]
 ----
-set JAVA_OPTS=%JAVA_OPTS% -Dmtp.install="＜インストール設定ファイルの配置場所＞/my-install.properties"
+set JAVA_OPTS=%JAVA_OPTS% -Dmtp.install="<インストール設定ファイルの配置場所>/my-install.properties"
 ----
 
 TIP: 既に``setenv.bat``ファイルが存在する場合は追記してください。
@@ -1112,15 +1114,29 @@ tenant.admin.id=admin
 tenant.admin.password=password
 ----
 
+=== iPLAssホームディレクトリ
+セットアップ完了後に、iPLAssホームディレクトリが作成されています。 +
+環境変数「IPLASS_HOME」が指定されている場合はそのディレクトリがiPLAssホームディレクトリとなります。 +
+指定がない場合は、 `%USERPROFILE%(or $HOME)/.iplass` がiPLAssホームディレクトリとなります。
+
+TIP: インストーラをリセットし、再度インストールを実行したい場合には、iPLAssホームディレクトリを削除してください。
+
+iPLAssホームディレクトリ配下に設定ファイル類が格納されます。 +
+`iplass-service-config.xml` がiPLAssの動作を決める設定ファイルの本体です。 +
+設定ファイルの詳細は <<../serviceconfig/index.adoc#, 設定（service-config）リファレンス>> を参照してください。
+
+NOTE: インストーラによって作成されるiplass-service-config.xmlはプリプロセス処理が有効化されています。iplass-service-config.xmlを編集する際に `$` や `\` を記述する際にはエスケープ処理が必要になります。 +
+詳しくは<<../serviceconfig/index.adoc#preprocess, プリプロセッサ>>を参照してください。
+
 === カスタムservice-config
 カスタマイズしたservice-configファイルを指定しインストールすることで、インストール後のservice-configファイルの設定が不要になります。
 
-通常、インストール後に``%USERPROFILE%/.iplass/``下に作成されるservice-configファイル``iplass-service-config.xml``を編集しservice-configを設定しますが、
+通常、インストール後に``%USERPROFILE%(or $HOME)/.iplass/``下に作成されるservice-configファイル``iplass-service-config.xml``を編集しservice-configを設定しますが、
 あらかじめ設定し用意したカスタムservice-configを指定することにより、インストール後にservice-configを設定する必要が無くなります。
 
 なお、カスタムservice-configはインストール後に指定することも指定を止めることも可能です。
 
-指定を止めた場合は``%USERPROFILE%/.iplass/``下の``iplass-service-config.xml``が使用されます。
+指定を止めた場合は``%USERPROFILE%(or $HOME)/.iplass/``下の``iplass-service-config.xml``が使用されます。
 
 ==== カスタムservice-configの作成
 カスタムservice-configは必ず``/iplass-service-config.xml``を継承して作成してください。

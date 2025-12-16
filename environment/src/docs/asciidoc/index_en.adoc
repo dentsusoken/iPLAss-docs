@@ -860,9 +860,11 @@ There are two ways to install. The user can install with our setup interface: [w
 
 ==== Wizard Install
 This section we will instal via the setup interface.
+The first time you access iPLAss deployed on the AP server, a wizard screen will be displayed.
 
 .Procedure
-. Access the iPLAss URL.
+. Access the iPLAss URL. +
+Example: http(s)://<server name>:<port>/iplass
 . Enter the necessary information on the setup screen and click the ``Start setup`` button.
 . Restart the AP server according to the setup page.
 . Access the iPLAss URL again.
@@ -936,13 +938,13 @@ By starting the AP server with the installation setting file specified, the inst
 .Procedure
 . Create <<InstallPropertiesFile>>.
 . Modify the created install setting file corresponding to the environments.
-. Place the created install setting file under the path of ``%USERPROFILE%/.iplass/`` and start the server with JVM option:``-Dmtp.install=＜install setting file path＞``.
+. Place the created install setting file under the path of ``%USERPROFILE%(or $HOME)/.iplass/`` and start the server with JVM option:``-Dmtp.install=<install setting file path>``.
 . Access iPLAss URL.
 . The "in preparation" page will show up, then it will redirect to the iPLAss login page.
 
 [IMPORTANT]
 ====
-When placing the file under ``%USERPROFILE%/.iplass/``, the file name have to be ``install.properties``.
+When placing the file under ``%USERPROFILE%(or $HOME)/.iplass/``, the file name have to be ``install.properties``.
 However,``mtp.install``command can specify any file names.
 ====
 
@@ -954,7 +956,7 @@ Assuming the created setting file is ``my-install.properties``, and we will spec
 +
 [source,bat]
 ----
-set JAVA_OPTS=%JAVA_OPTS% -Dmtp.install="＜install setting file path＞/my-install.properties"
+set JAVA_OPTS=%JAVA_OPTS% -Dmtp.install="<install setting file path>/my-install.properties"
 ----
 
 TIP: If ``setenv.bat`` already exists, add the lines behind instead of overwriting.
@@ -1103,15 +1105,29 @@ tenant.admin.id=admin
 tenant.admin.password=password
 ----
 
+=== iPLAss Home Directory
+After setup is complete, the iPLAss home directory will be created. +
+If the environment variable "IPLASS_HOME" is specified, that directory will be the iPLAss home directory. +
+If not specified, `%USERPROFILE%(or $HOME)/.iplass` will be the iPLAss home directory.
+
+TIP: If you want to reset the installer and run the installation again, delete the iPLAss home directory.
+
+Configuration files are stored under the iPLAss home directory. +
+`iplass-service-config.xml` is the main configuration file that determines the behavior of iPLAss. +
+For details about the configuration file, see <<../serviceconfig/index.adoc#, Configuration (service-config) References>>.
+
+NOTE: The iplass-service-config.xml created by the installer has preprocessing enabled. When editing iplass-service-config.xml, you must escape `$` and `\` characters. +
+For more information, see <<../serviceconfig/index.adoc#preprocess, Preprocessor>>.
+
 === Custom service-config
 By specifying the custom service-config file to install, there will be no need to modify the service-config after the installation.
 
-Usually, we will modify the generated ``iplass-service-config.xml`` under ``%USERPROFILE%/.iplass/`` after installation, to perform further configurations.
+Usually, we will modify the generated ``iplass-service-config.xml`` under ``%USERPROFILE%(or $HOME)/.iplass/`` after installation, to perform further configurations.
 If we specify the service-config beforehand, we can save the works after  the installations.
 
 In addition, you can specify or cancel the custom service-config after installation.
 
-If the specified config file was canceled, the ``iplass-service-config.xml`` under ``%USERPROFILE%/.iplass/`` will be used instead.
+If the specified config file was canceled, the ``iplass-service-config.xml`` under ``%USERPROFILE%(or $HOME)/.iplass/`` will be used instead.
 
 ==== Creating Custom service-config
 Custom service-config have to inherit the ``/iplass-service-config.xml``.

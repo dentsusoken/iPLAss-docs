@@ -907,8 +907,8 @@ When preprocessing is enabled (true is specified for the preprocess attribute of
 For example, environment-dependent settings can be obtained from system properties and environment variables.
 
 CAUTION: `$` and `\` are reserved words in GroovyTemplate. +
-When enabling preprocessing, `$` in the configuration file needs to be escaped like `\$` and `\` needs to be escaped like `\\` .
-
+When enabling preprocessing, `$` in the configuration file needs to be escaped like `\$` and `\` needs to be escaped like `\\` . +
+The relevant characters in XML comments also need to be escaped.
 
 .Example of Preprocessing (Obtained From System Properties)
 [source,xml]
