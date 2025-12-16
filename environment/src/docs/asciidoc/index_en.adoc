@@ -1108,7 +1108,7 @@ tenant.admin.password=password
 === iPLAss Home Directory
 After setup is complete, the iPLAss home directory will be created. +
 If the environment variable "IPLASS_HOME" is specified, that directory will be the iPLAss home directory. +
-If not specified, `%USERPROFILE%\.iplass` will be the iPLAss home directory.
+If not specified, `%USERPROFILE%/.iplass` will be the iPLAss home directory.
 
 TIP: If you want to reset the installer and run the installation again, delete the iPLAss home directory.
 
