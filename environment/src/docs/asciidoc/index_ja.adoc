@@ -1125,7 +1125,7 @@ iPLAssホームディレクトリ配下に設定ファイル類が格納され�
 `iplass-service-config.xml` がiPLAssの動作を決める設定ファイルの本体です。 +
 設定ファイルの詳細は <<../serviceconfig/index.adoc#, 設定（service-config）リファレンス>> を参照してください。
 
-NOTE: インストーラによって作成されるiplass-service-config.xmlはプロプロセス処理が有効化されています。iplass-service-config.xmlを編集する際に `$` や `\` を記述する際にはエスケープ処理が必要になります。 +
+NOTE: インストーラによって作成されるiplass-service-config.xmlはプリプロセス処理が有効化されています。iplass-service-config.xmlを編集する際に `$` や `\` を記述する際にはエスケープ処理が必要になります。 +
 詳しくは<<../serviceconfig/index.adoc#preprocess, プリプロセッサ>>を参照してください。
 
 === カスタムservice-config
