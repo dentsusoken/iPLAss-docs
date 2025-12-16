@@ -1117,7 +1117,7 @@ tenant.admin.password=password
 === iPLAssホームディレクトリ
 セットアップ完了後に、iPLAssホームディレクトリが作成されています。 +
 環境変数「IPLASS_HOME」が指定されている場合はそのディレクトリがiPLAssホームディレクトリとなります。 +
-指定がない場合は、 `%USERPROFILE%\.iplass` がiPLAssホームディレクトリとなります。
+指定がない場合は、 `%USERPROFILE%/.iplass` がiPLAssホームディレクトリとなります。
 
 TIP: インストーラをリセットし、再度インストールを実行したい場合には、iPLAssホームディレクトリを削除してください。
 
