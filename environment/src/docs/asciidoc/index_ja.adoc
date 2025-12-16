@@ -947,13 +947,13 @@ TIP: ユーザーIDには４文字以上の「英数字」および「-」(マ�
 .手順
 . <<InstallPropertiesFile>>を作成します。
 . 作成したインストール設定ファイルを環境に合わせて修正します。
-. 作成したインストール設定ファイルを``%USERPROFILE%/.iplass/``下に配置するか、JVMオプション``-Dmtp.install=＜インストール設定ファイルのパス＞``を指定しAPサーバを起動します。
+. 作成したインストール設定ファイルを``%USERPROFILE%(or $HOME)/.iplass/``下に配置するか、JVMオプション``-Dmtp.install=＜インストール設定ファイルのパス＞``を指定しAPサーバを起動します。
 . iPLAssのURLにアクセスします。
 . 準備中画面の表示後、iPLAssのログイン画面が表示されます。
 
 [IMPORTANT]
 ====
-``%USERPROFILE%/.iplass/``下に配置する場合、インストール設定ファイルのファイル名は必ず``install.properties``である必要があります。
+``%USERPROFILE%(or $HOME)/.iplass/``下に配置する場合、インストール設定ファイルのファイル名は必ず``install.properties``である必要があります。
 但し、``mtp.install``オプションで指定する場合は任意のファイル名で構いません。
 ====
 
@@ -1117,7 +1117,7 @@ tenant.admin.password=password
 === iPLAssホームディレクトリ
 セットアップ完了後に、iPLAssホームディレクトリが作成されています。 +
 環境変数「IPLASS_HOME」が指定されている場合はそのディレクトリがiPLAssホームディレクトリとなります。 +
-指定がない場合は、 `%USERPROFILE%/.iplass` がiPLAssホームディレクトリとなります。
+指定がない場合は、 `%USERPROFILE%(or $HOME)/.iplass` がiPLAssホームディレクトリとなります。
 
 TIP: インストーラをリセットし、再度インストールを実行したい場合には、iPLAssホームディレクトリを削除してください。
 
@@ -1131,12 +1131,12 @@ NOTE: インストーラによって作成されるiplass-service-config.xmlは�
 === カスタムservice-config
 カスタマイズしたservice-configファイルを指定しインストールすることで、インストール後のservice-configファイルの設定が不要になります。
 
-通常、インストール後に``%USERPROFILE%/.iplass/``下に作成されるservice-configファイル``iplass-service-config.xml``を編集しservice-configを設定しますが、
+通常、インストール後に``%USERPROFILE%(or $HOME)/.iplass/``下に作成されるservice-configファイル``iplass-service-config.xml``を編集しservice-configを設定しますが、
 あらかじめ設定し用意したカスタムservice-configを指定することにより、インストール後にservice-configを設定する必要が無くなります。
 
 なお、カスタムservice-configはインストール後に指定することも指定を止めることも可能です。
 
-指定を止めた場合は``%USERPROFILE%/.iplass/``下の``iplass-service-config.xml``が使用されます。
+指定を止めた場合は``%USERPROFILE%(or $HOME)/.iplass/``下の``iplass-service-config.xml``が使用されます。
 
 ==== カスタムservice-configの作成
 カスタムservice-configは必ず``/iplass-service-config.xml``を継承して作成してください。

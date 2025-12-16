@@ -938,13 +938,13 @@ By starting the AP server with the installation setting file specified, the inst
 .Procedure
 . Create <<InstallPropertiesFile>>.
 . Modify the created install setting file corresponding to the environments.
-. Place the created install setting file under the path of ``%USERPROFILE%/.iplass/`` and start the server with JVM option:``-Dmtp.install=＜install setting file path＞``.
+. Place the created install setting file under the path of ``%USERPROFILE%(or $HOME)/.iplass/`` and start the server with JVM option:``-Dmtp.install=＜install setting file path＞``.
 . Access iPLAss URL.
 . The "in preparation" page will show up, then it will redirect to the iPLAss login page.
 
 [IMPORTANT]
 ====
-When placing the file under ``%USERPROFILE%/.iplass/``, the file name have to be ``install.properties``.
+When placing the file under ``%USERPROFILE%(or $HOME)/.iplass/``, the file name have to be ``install.properties``.
 However,``mtp.install``command can specify any file names.
 ====
 
@@ -1108,7 +1108,7 @@ tenant.admin.password=password
 === iPLAss Home Directory
 After setup is complete, the iPLAss home directory will be created. +
 If the environment variable "IPLASS_HOME" is specified, that directory will be the iPLAss home directory. +
-If not specified, `%USERPROFILE%/.iplass` will be the iPLAss home directory.
+If not specified, `%USERPROFILE%(or $HOME)/.iplass` will be the iPLAss home directory.
 
 TIP: If you want to reset the installer and run the installation again, delete the iPLAss home directory.
 
@@ -1122,12 +1122,12 @@ For more information, see <<../serviceconfig/index.adoc#preprocess, Preprocessor
 === Custom service-config
 By specifying the custom service-config file to install, there will be no need to modify the service-config after the installation.
 
-Usually, we will modify the generated ``iplass-service-config.xml`` under ``%USERPROFILE%/.iplass/`` after installation, to perform further configurations.
+Usually, we will modify the generated ``iplass-service-config.xml`` under ``%USERPROFILE%(or $HOME)/.iplass/`` after installation, to perform further configurations.
 If we specify the service-config beforehand, we can save the works after  the installations.
 
 In addition, you can specify or cancel the custom service-config after installation.
 
-If the specified config file was canceled, the ``iplass-service-config.xml`` under ``%USERPROFILE%/.iplass/`` will be used instead.
+If the specified config file was canceled, the ``iplass-service-config.xml`` under ``%USERPROFILE%(or $HOME)/.iplass/`` will be used instead.
 
 ==== Creating Custom service-config
 Custom service-config have to inherit the ``/iplass-service-config.xml``.
