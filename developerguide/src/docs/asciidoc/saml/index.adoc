@@ -27,7 +27,9 @@ SAMLのメタデータ定義にて次の項目を設定します。
 |===
 |設定項目|必須|設定値
 |Enable Single Logout||シングルログアウトを有効にする場合チェック
-|Enable Unsolicited Response||非要求応答(他サービス契機のシングルログアウトによるログアウト要求)を有効にする場合チェック
+|Enable Unsolicited Response||非要求応答（IdP-initiated SSO）を有効にする場合チェック
+
+CAUTION: IdP-initiated SSOのフローはCSRFなどの攻撃に対する脆弱性が確認されています。特別な要件がない限り当フラグは有効化せずSP-initiated SSOを使用することを強く推奨します。
 |My SAML Entity id||自身を表す固有の識別子。未指定の場合は、SAMLメタデータURLをEntity idとして設定
 |Base URL||テナントコンテキストまでのURL。未指定の場合は自動解決。Apache等にてサーバ名、パスの変換を行っている場合に指定
 |Signature Algorithm||署名アルゴリズム、未指定の場合のデフォルトは「SHA256withRSA」
@@ -96,7 +98,7 @@ IdProviderとして利用する外部サービスの設定
 [cols="2,^1,4a", options="header"]
 |===
 |設定項目|必須|設定値
-|Endpoint URL|○|AssertionConsumerServiceのエンドポイントURL(Location)
+|Endpoint URL|○|SingleSignOnServiceのエンドポイントURL(Location)
 |Request Binding|○|リクエストの送信方式(Binding)
 
 HTTP_REDIRECT:: urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect
