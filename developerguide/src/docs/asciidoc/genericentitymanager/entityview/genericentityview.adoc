@@ -60,7 +60,7 @@ TopViewの設定画面を表示し、 `SearchResult List` を配置します。
 |Class
 |スタイルシートのクラス名を指定します。複数指定する場合は半角スペースで区切って下さい。
 
-|Table Hight
+|Table Height
 |Main Areaに配置した場合の一覧の高さを指定します。
 
 |Max Height
