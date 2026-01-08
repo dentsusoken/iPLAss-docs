@@ -406,6 +406,7 @@ AdminConsoleなどを介して次の項目を設定します。
 |Iss Parameter Supported |issパラメーターをサポートするか指定します。trueの場合、issパラメーターの値がIssuerの設定値と一致しているか検証します。
 |Validate Sign |IDトークンの署名を検証するか指定します。trueにする場合、Jwks EndpointかJwks Contentsのどちらかを指定する必要があります。
 |Response Mode |レスポンスモードを指定します。
+|Prompt |OpenID Providerへの認証リクエストに含めるpromptパラメータを指定します。複数指定する場合はスペース区切りで指定します。
 |Subject Name Claim |Subject Nameとして利用するクレームを指定します。デフォルト値は `preferred_username` です。
 |AutoUserProvisioningHandler|org.iplass.mtp.auth.oidc.AutoUserProvisioningHandlerを実装したクラス名を指定します。iPLAss内に存在しないユーザーを自動的に作成する場合に指定します。
 |Enable Transient User |仮のユーザーを利用するか指定します。trueの場合、iPLAss内に存在しない仮のユーザーで一時的なログインを許可します。
