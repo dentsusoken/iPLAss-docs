@@ -125,7 +125,7 @@ EntityのNameに対して `.` （ドット）を使用すると、階層を表�
 
 ===== Propertyの新規作成
 作成したEntityに対してPropertyを追加していきます。
-今回は商品Entityから参照されている商品カテゴリEntityを先に編集します。
+今回は商品Entity(tutorial.product.Product)から参照されている商品カテゴリEntity(tutorial.product.ProductCategory)を先に編集します。
 
 ////
 階層が足りない、=6個(h6)で暫定対応
@@ -200,7 +200,7 @@ image::images/createentity_saveproductcategory.png[]
 階層が足りない、=6個(h6)で暫定対応
 ////
 ====== 商品Entityの定義
-商品Entityですが、こちらの `商品コード` 、 `商品名` についても商品カテゴリEntityと同様に `oid` と `name` を利用することとします。
+商品Entity(tutorial.product.Product)ですが、こちらの `商品コード` 、 `商品名` についても商品カテゴリEntity(tutorial.product.ProductCategory)と同様に `oid` と `name` を利用することとします。
 残りの属性となる `価格` と `商品カテゴリ` への参照用Propertyを追加します。
 商品カテゴリEntityと同様に `Add` ボタンから追加します。
 
@@ -1834,7 +1834,7 @@ image::images/topview_dropseparator.png[]
 `Separator` には設定項目は無いので編集ボタンがありません。
 
 この `Separator` の上に先ほど利用した `SearchResult List` を２つドロップします。
-左側を `商品` Entity（tutorial.product.Product）、右側を `プロパティ確認用２` （tutorial.properties.Properties2）と指定してください。
+左側を `商品` Entity（tutorial.product.Product）、右側を `プロパティ確認用２` Entity（tutorial.properties.Properties2）と指定してください。
 
 image::images/topview_droptwosearchresultlist.png[]
 
@@ -1877,7 +1877,7 @@ image::images/topview_searchresult-dialog.png[]
 先ほどの操作では `ResultList View` の設定は `default` となっていました。
 ここでは `プロパティ確認用２` EntityのSearchLayoutに対してTop画面用のViewを追加して、それを `ResultList View` で利用してみます。
 
-まずは `プロパティ確認用２` EntityのSearchLayoutを表示します。
+まずは `プロパティ確認用２` Entity（tutorial.properties.Properties2）のSearchLayoutを表示します。
 既に `default` のViewは定義してありますので、今回はこれをコピーして表示するPropertyを整理しましょう。
 `コピー` ボタンをクリックしてください。
 
@@ -1937,7 +1937,7 @@ image::images/topview_searchresultlist-topview.png[]
 image::images/topview_detailtoolbar.png[]
 
 続いて、 `Detail Action View` の設定を利用して、一覧上の `詳細` リンク（または `編集` リンク）で表示されるViewを変更してみます。
-`プロパティ確認用２` EntityのDetailLayoutを開いてください。
+`プロパティ確認用２` Entity（tutorial.properties.Properties2）のDetailLayoutを開いてください。
 
 image::images/topview_entitycontextmenu-detaillayout.png[]
 
@@ -2007,7 +2007,7 @@ image::images/topview_searchresultlist-topview.png[]
 image::images/topview_detaillayout-topview2.png[]
 
 次に `Link Action View` の設定を利用して、一覧内の `検索結果を表示する` ボタンを押下した際に表示されるViewを変更してみます。
-`プロパティ確認用２` EntityのSearchLayoutを開いてください。
+`プロパティ確認用２` Entity（tutorial.properties.Properties2）のSearchLayoutを開いてください。
 
 image::images/topview_entitycontextmenu-searchlayout.png[]
 
@@ -2166,7 +2166,7 @@ image::images/entitymenu_searchlayout-topview2.png[]
 それぞれの画面にアイコンを設定してみましょう。
 
 ==== メニュー
-`Menu` の `DEFAULT` 設定を開き、 `商品` Entityの設定画面を開いてください。
+`Menu` の `DEFAULT` 設定を開き、 `商品` Entity(tutorial.product.Product)の設定画面を開いてください。
 `Icon Tag` の項目があるので、ここにhtmlタグを設定します。
 
 image::images/icon_menu_setting.png[]
@@ -2190,7 +2190,7 @@ image::images/icon_top.png[]
 Top画面のお知らせ情報にアイコンが表示されました。
 
 ==== 検索画面
-`商品` Entityの `SearchLayout` を開き、検索画面の設定画面を開いてください。
+`商品` Entity(tutorial.product.Product)の `SearchLayout` を開き、検索画面の設定画面を開いてください。
 `アイコンタグ` の項目があるので、ここにhtmlタグを設定します。
 
 image::images/icon_searchlayout_setting.png[]
@@ -2202,7 +2202,7 @@ image::images/icon_searchlayout.png[]
 `商品` Entityの検索画面にアイコンが表示されました。
 
 ==== 詳細画面
-`商品` Entityの `DetailLayout` を開き、詳細画面の設定画面を開いてください。
+`商品` Entity(tutorial.product.Product)の `DetailLayout` を開き、詳細画面の設定画面を開いてください。
 `アイコンタグ` の項目があるので、ここにhtmlタグを設定します。
 
 image::images/icon_detaillayout_setting.png[]

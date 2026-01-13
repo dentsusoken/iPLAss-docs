@@ -1806,7 +1806,7 @@ Once you droped the item, a dialog to set search target etc. will be displayed.
 image::images/topview_searchresultlistdialog_en.png[]
 
 Select the Entity to be searched.
-Select the `Testing Property` Entity that we created earlier.
+Select the `Properties` Entity that we created earlier.
 (If it does not exist, it can be another Entity)
 If selected, `Result` will be set to `ResultListView` and `LinkActionView` respectively.
 Since this setting is explained separately, just click the `OK` button.
@@ -1837,7 +1837,7 @@ image::images/topview_dropseparator_en.png[]
 `Separator` has no setting items, so there is no edit button.
 
 Drop two of the `SearchResult List` used earlier on this` Separator`.
-On the left side, specify `Product` Entity (tutorial.product.Product), and on the right side, specify `Property confirmation 2` (tutorial.properties.Properties2).
+On the left side, specify `Product` Entity, and on the right side, specify `Properties2` Entity.
 
 image::images/topview_droptwosearchresultlist_en.png[]
 
@@ -1853,7 +1853,7 @@ If you look closely, only the list of `Testing Customization` does not show the 
 image::images/topview_hidelink_en.png[]
 
 This is because the layout definition of the list displayed in SearchResultList is controlled by Entity's SearchLayout setting (search result part).
-Since `ResultList View` is registered as `default` on the settings earlier, `default` definition of SearchLayout setting of `Testing Property 2` Entity (tutorial.properties.Properties2) is used.
+Since `ResultList View` is registered as `default` on the settings earlier, `default` definition of SearchLayout setting of `Properties2` Entity is used.
 
 image::images/topview_searchresultlistdialog-properties2_en.png[]
 
@@ -1878,9 +1878,9 @@ There are cases where you want to narrow down the display items for the Top scre
 This can be achieved by defining a View to be displayed on the Top screen in the Entity SearchLayout.
 
 In the previous operation, the `ResultList View` setting was `default`.
-Here, add View for Top screen to SearchLayout of Entity for `Testing Property 2` Entity and use it with `ResultList View`.
+Here, add View for Top screen to SearchLayout of Entity for `Properties2` Entity and use it with `ResultList View`.
 
-First, display the property search layout for the `Property check 2` Entity.
+First, display the property search layout for the `Properties2` Entity.
 Since the view of `default` has already been defined, let's organize the Property to copy and display this time.
 Click the `Copy` button.
 
@@ -1914,7 +1914,7 @@ When you have finished deleting, click the `Save` button in View.
 
 image::images/topview_savesearchlayout_en.png[]
 
-In the same way, add a view to the DetailLayout of the `Property Check 2` Entity.
+In the same way, add a view to the DetailLayout of the `Properties2` Entity.
 Let the view name to be added the same as SearchLayout, which is `topview`.
 
 Let's delete all sections excepet for the basic section at the top.
@@ -1940,7 +1940,7 @@ If you click the `Detail` link here, the View definition of `topview` defibed in
 image::images/topview_detailtoolbar_en.png[]
 
 Next, use the settings of `Detail Action View` to change the View displayed in the `Detail` link (or `Edit` link) on the list.
-`Check Property 2` Open Entity DetailLayout.
+`Properties2` Open Entity DetailLayout.
 
 image::images/topview_entitycontextmenu-detaillayout_en.png[]
 
@@ -2010,7 +2010,7 @@ View definition (DetailLayout) of `topview2` specified in `Detail Action View` i
 image::images/topview_detaillayout-topview2_en.png[]
 
 Next, use the settings of `Link Action View` to change the View displayed in the `Search` button  on the list.
-`Check Property 2` Open Entity SearchLayout.
+`Properties2` Open Entity SearchLayout.
 
 image::images/topview_entitycontextmenu-searchlayout_en.png[]
 
