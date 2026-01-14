@@ -87,7 +87,7 @@ NodeMenuItemを配置した場合、3階層以降はコンテキストメニュ�
 上記以外（actionなどの指定含む）の場合:: テナントコンテキストパスからの指定と判断
 
 |Icon Tag
-|Fontawsomeによるアイコン用のタグを設定できます。
+|Font Awesomeによるアイコン用のタグを設定できます。
 
 |Image Color
 |メニューの色をblue, green, red, yellowの4色から選択できます。
@@ -121,7 +121,7 @@ NodeMenuItemを配置した場合、3階層以降はコンテキストメニュ�
 上記以外（actionなどの指定含む）の場合:: テナントコンテキストパスからの指定と判断
 
 |Icon Tag
-|Fontawsomeによるアイコン用のタグを設定できます。
+|Font Awesomeによるアイコン用のタグを設定できます。
 
 |Execute Action
 |メニューがクリックされた際に実行するAction定義を選択します。
@@ -170,7 +170,7 @@ AdminConsole上からエンティティを作成した場合は、自動的に�
 上記以外（actionなどの指定含む）の場合:: テナントコンテキストパスからの指定と判断
 
 |Icon Tag
-|Fontawsomeによるアイコン用のタグを設定できます。
+|Font Awesomeによるアイコン用のタグを設定できます。
 
 |Image Color
 |メニューの表示色を指定します。
@@ -235,7 +235,7 @@ menu.executeSearch:: show with execute searchで設定した値
 上記以外（actionなどの指定含む）の場合:: テナントコンテキストパスからの指定と判断
 
 |Icon Tag
-|Fontawsomeによるアイコン用のタグを設定できます。
+|Font Awesomeによるアイコン用のタグを設定できます。
 
 |Image Color
 |メニューの表示色を指定します。
