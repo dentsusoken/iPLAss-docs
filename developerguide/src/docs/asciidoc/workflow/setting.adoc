@@ -1489,7 +1489,9 @@ Custom Title ::
 チェックした場合、コメント入力欄が非表示になります。
 
 |Show Properties
-|タスク一覧に表示するタスクの項目を指定します。ドラッグ&ドロップで順番を入れ替えることでタスク一覧での表示順を変更できます。
+|タスク一覧に表示するタスクの項目を指定します。 + 
+ユーザータスクカスタムプロパティEntity（mtp.workflow.UserTaskCustomProperty）に定義したプロパティを選択することが出来ます。 + 
+ドラッグ&ドロップで順番を入れ替えることでタスク一覧での表示順を変更することが出来ます。
 
 |Filter Condition Setting
 |フィルター条件に表示する項目を指定します。詳細は<<taskfilterconditionsetting, フィルター条件設定項目>>を参照してください。
@@ -1539,184 +1541,14 @@ PropertyEditorSetting:: プロパティエディタを設定することで項�
 プロパティエディタについて、詳細は<<taskpropertyeditor, フィルター条件プロパティエディタ>>を参照してください。
 |===
 
-.タスク詳細
-タスク詳細画面の表示項目を設定します。
-
-[cols="1,2a", options="header"]
-|===
-|設定項目
-|設定内容
-
-|Show Section Properties
-|タスク詳細で表示する項目を選択します。カスタマイズ多言語対応可能です。
-詳細は<<taskviewitem, タスク詳細項目>>を参照してください。
-
-|Variable Entity View Names
-|リンクまたはタスク詳細内で表示するタスク対象データの表示設定を行います。
-詳細は<<variableentityviewname, Variable Entity View Name>>を参照してください。
-
-|Section Configuration
-|タスク詳細で表示する項目のカスタマイズ多言語対応などを設置します。
-
-|Workflow History Settings
-|ワークフロー履歴表示に関する設定を行います。
-詳細は<<taskviewworkflowhistory, ワークフロー履歴設定項目>>を参照してください。
-|===
-
-[[taskviewitem]]
-.タスク詳細項目
-タスク詳細画面に表示される項目です。
-
-[cols="1,2,2", options="header"]
-|===
-|Property
-|Section
-|詳細画面の項目名
-
-|Variable Item
-|Task Target
-|タスク対象データ
-
-|Status
-|Detail
-|詳細情報 - ステータス
-
-|Workflow
-|Detail
-|詳細情報 - ワークフロー名
-
-|Workflow Status
-|Detail
-|詳細情報 - ワークフロー状態
-
-|Task Result
-|Detail
-|詳細情報 - 処理結果
-
-|QueueName
-|Detail
-|詳細情報 - タスクキュー名
-
-|CompletionDate
-|Detail
-|詳細情報 - 完了日
-
-|User
-|Propsessing reseult of the user assignment
-|割当ユーザーの処理結果 - ユーザー
-
-|Task
-|Propsessing reseult of the user assignment
-|割当ユーザーの処理結果 - 処理結果
-
-|Assign State
-|Propsessing reseult of the user assignment
-|割当ユーザーの処理結果 - アサイン状態
-
-|CompletionDate
-|Propsessing reseult of the user assignment
-|割当ユーザーの処理結果 - 完了日
-
-|Comment
-|Propsessing reseult of the user assignment
-|割当ユーザーの処理結果 - コメント
-
-|Process Name
-|Workflow History
-|ワークフロー履歴 - 処理名
-
-|Task Status
-|Workflow History
-|ワークフロー履歴 - ステータス
-
-|Task Result
-|Workflow History
-|ワークフロー履歴 - 処理結果
-
-|ProcessBy
-|Workflow History
-|ワークフロー履歴 - プロセス実行者
-
-|CompletionDate
-|Workflow History
-|ワークフロー履歴 - 完了日
-
-|Detail
-|Workflow History
-|ワークフロー履歴 - 詳細
-|===
-
-[[variableentityviewname]]
-.Variable Entity View Name
-タスク詳細内でタスク対象データを表示する際の設定を行います。
-`Display in Detail` をチェックした場合、Entityの詳細画面をタスク詳細内に表示します。
-未チェックの場合はリンクで表示され、リンククリックでEntityの詳細画面を表示します。
-
-[cols="1,2a", options="header"]
-|===
-|設定項目
-|設定内容
-
-|Workflow
-|表示設定を行うワークフローを選択します。
-
-|Variable
-|表示設定を行う変数を選択します。
-
-|Entity
-|表示設定を行うEntityを選択します。
-
-|Entity View Name
-|上記で選択したワークフロー、変数、Entityが一致するタスク対象データに使用するビュー名を設定します。
-タスク詳細からのリンク、タスク詳細内での表示を行う際に利用されます。
-※GroovyTemplate書式で記述してください。
-
-|Display in Detail
-|タスク詳細にEntityを表示する場合にチェックします。
-|===
-
-[[taskviewworkflowhistory]]
-.ワークフロー履歴設定項目
-ワークフロー履歴に関する設定項目です。
-
-[cols="1,2a", options="header"]
-|===
-|設定項目
-|設定内容
-
-|Display only the user who processed the task.
-|ワークフロー履歴の詳細にタスクを完了させた人のみ表示するかを設定します。
-
-|Display all history including parent process.
-|`親プロセスを含めた全履歴を表示する` チェックボックスを表示するかを設定します。
-
-|Display all history including parent process in initial view.
-|ワークフロー履歴初期表示時に親プロセスを含めた全履歴を表示するかを設定します。
-|===
-
-==== Workflowの実行権限
-Workflowを実行できるユーザーをロールをベースに制御できます。
-Entityの詳細画面では、この設定により実行ボタンの表示・非表示が自動的に制御されます。
-
-連携方法については、<<../authorization/index.adoc#en_workflowperm, Workflow権限>>を参照してください。
-
-==== UserTaskの管理権限
-タスク詳細からタスクを操作できるのは、タスクを割り当てられたユーザーだけですが、管理権限がある場合、割り当てられたユーザーの代わりにタスクの操作を行ったり、ユーザーの割り当てを変更出来るようになります。
-
-タスク一覧の `管理可能なタスク` タブをクリックすると、管理可能な未処理のタスクが表示されます。
-ここから編集画面を表示することで代理でタスクの処理が行えます。
-
-連携方法については、<<../authorization/index.adoc#en_usertaskperm, UserTask権限>>を参照してください。
-
-
 [[taskpropertyeditor]]
-=== フィルター条件プロパティエディタ
+.フィルター条件プロパティエディタ
 フィルター条件プロパティエディタは各フィルター条件プロパティの入力表示設定になります。
 TOP画面パーツ `タスク一覧フィルター条件設定`の`Show Filter Condition Property` に配置した各プロパティの設定を変更をすることができます。 +
 フィルター条件設定について、詳細は<<taskfilterconditionsetting, フィルター条件設定項目>>を参照してください。
 
 [[taskpropertyeditorcommon]]
-==== 共通設定項目
+.共通設定項目
 各プロパティエディタで共通の設定項目です。
 [cols="1,1,8a", options="header"]
 |===
@@ -1732,7 +1564,7 @@ GroovyTemplate書式で設定します。 バインド変数についてはScrip
 |===
 
 [[taskpropertyeditorautonumber]]
-==== AutoNumberPropertyEditor
+.AutoNumberPropertyEditor
 `AutoNumber` 型用のプロパティエディタです。
 
 [cols="1,1,8a", options="header"]
@@ -1757,7 +1589,7 @@ Text:: テキストフィールドを表示
 |===
 
 [[taskpropertyeditorbinary]]
-==== BinaryPropertyEditor
+.BinaryPropertyEditor
 `Binary` 型用のプロパティエディタです。
 
 [cols="1,1,8a", options="header"]
@@ -1778,7 +1610,7 @@ Binary:: テキストフィールドを表示
 |===
 
 [[taskpropertyeditorboolean]]
-==== BooleanPropertyEditor
+.BooleanPropertyEditor
 `Boolean` 型用のプロパティエディタです。
 
 [cols="1,1,8a", options="header"]
@@ -1816,7 +1648,7 @@ Select:: 選択リストを表示
 |===
 
 [[taskpropertyeditordate]]
-==== DatePropertyEditor
+.DatePropertyEditor
 `Date` 型用のプロパティエディタです。
 
 [cols="1,1,8a", options="header"]
@@ -1874,7 +1706,7 @@ Toのみ入力時 → `プロパティ &lE; To入力値`
 |===
 
 [[taskpropertyeditordecimal]]
-==== DecimalPropertyEditor
+.DecimalPropertyEditor
 `Decimal` 型用のプロパティエディタです。
 
 [cols="1,1,8a", options="header"]
@@ -1926,7 +1758,7 @@ Toのみ入力時 → `プロパティ &lE; To入力値`
 |===
 
 [[taskpropertyeditorexpression]]
-==== ExpressionropertyEditor
+.ExpressionropertyEditor
 `Expression` 型用のプロパティエディタです。
 
 [cols="1,1,8a", options="header"]
@@ -1958,7 +1790,7 @@ ExpressionプロパティのResultTypeに設定されている内容に合わせ
 |===
 
 [[taskpropertyeditorfloat]]
-==== FloatPropertyEditor
+.FloatPropertyEditor
 `Float` 型用のプロパティエディタです。
 
 [cols="1,1,8a", options="header"]
@@ -2010,7 +1842,7 @@ Toのみ入力時 → `プロパティ &lE; To入力値`
 |===
 
 [[taskpropertyeditorinteger]]
-==== IntegerPropertyEditor
+.IntegerPropertyEditor
 `Integer` 型用のプロパティエディタです。
 
 [cols="1,1,8a", options="header"]
@@ -2062,7 +1894,7 @@ Toのみ入力時 → `プロパティ &lE; To入力値`
 |===
 
 [[taskpropertyeditorreference]]
-==== ReferencePropertyEditor
+.ReferencePropertyEditor
 `Reference` 型用のプロパティエディタです。
 
 [cols="1,1,8a", options="header"]
@@ -2344,7 +2176,7 @@ image::parts_tasklist_setting-reftree-searchlayout-category.png[]
 
 
 [[taskpropertyeditorselect]]
-==== SelectPropertyEditor
+.SelectPropertyEditor
 `Select` 型用のプロパティエディタです。
 
 [cols="1,1,8a", options="header"]
@@ -2384,6 +2216,7 @@ NOTE: 「値なし」を選択する場合、値として「isNull」が使用�
 
 [[taskpropertyeditoreditorvalue]]
 .選択値設定
+選択値を設定します。
 
 [cols="1,8a", options="header"]
 |===
@@ -2403,7 +2236,7 @@ NOTE: 「値なし」を選択する場合、値として「isNull」が使用�
 
 
 [[taskpropertyeditorstring]]
-==== StringPropertyEditor
+.StringPropertyEditor
 `String` 型用のプロパティエディタです。
 
 [cols="1,1,8a", options="header"]
@@ -2469,7 +2302,7 @@ NOTE: 「値なし」を選択する場合、値として「isNull」が使用�
 |===
 
 [[taskpropertyeditortime]]
-==== TimePropertyEditor
+.TimePropertyEditor
 `Time` 型用のプロパティエディタです。
 
 [cols="1,1,8a", options="header"]
@@ -2532,7 +2365,7 @@ _30MIN:: 30分
 |===
 
 [[taskpropertyeditortimestamp]]
-==== TimestampPropertyEditor
+.TimestampPropertyEditor
 `Timestamp` 型用のプロパティエディタです。
 
 [cols="1,1,8a", options="header"]
@@ -2606,3 +2439,173 @@ _30MIN:: 30分
 |
 |<<taskpropertyeditorcommon, 共通設定項目>>を参照してください。
 |===
+
+.タスク詳細
+タスク詳細画面の表示項目を設定します。
+
+[cols="1,2a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|Show Section Properties
+|タスク詳細で表示する項目を選択します。カスタマイズ多言語対応可能です。
+詳細は<<taskviewitem, タスク詳細項目>>を参照してください。
+
+|Variable Entity View Names
+|リンクまたはタスク詳細内で表示するタスク対象データの表示設定を行います。
+詳細は<<variableentityviewname, Variable Entity View Name>>を参照してください。
+
+|Section Configuration
+|タスク詳細で表示する項目のカスタマイズ多言語対応などを設置します。
+
+|Workflow History Settings
+|ワークフロー履歴表示に関する設定を行います。
+詳細は<<taskviewworkflowhistory, ワークフロー履歴設定項目>>を参照してください。
+|===
+
+[[taskviewitem]]
+.タスク詳細項目
+タスク詳細画面に表示される項目です。
+
+[cols="1,2,2", options="header"]
+|===
+|Property
+|Section
+|詳細画面の項目名
+
+|Variable Item
+|Task Target
+|タスク対象データ
+
+|Status
+|Detail
+|詳細情報 - ステータス
+
+|Workflow
+|Detail
+|詳細情報 - ワークフロー名
+
+|Workflow Status
+|Detail
+|詳細情報 - ワークフロー状態
+
+|Task Result
+|Detail
+|詳細情報 - 処理結果
+
+|QueueName
+|Detail
+|詳細情報 - タスクキュー名
+
+|CompletionDate
+|Detail
+|詳細情報 - 完了日
+
+|User
+|Propsessing reseult of the user assignment
+|割当ユーザーの処理結果 - ユーザー
+
+|Task
+|Propsessing reseult of the user assignment
+|割当ユーザーの処理結果 - 処理結果
+
+|Assign State
+|Propsessing reseult of the user assignment
+|割当ユーザーの処理結果 - アサイン状態
+
+|CompletionDate
+|Propsessing reseult of the user assignment
+|割当ユーザーの処理結果 - 完了日
+
+|Comment
+|Propsessing reseult of the user assignment
+|割当ユーザーの処理結果 - コメント
+
+|Process Name
+|Workflow History
+|ワークフロー履歴 - 処理名
+
+|Task Status
+|Workflow History
+|ワークフロー履歴 - ステータス
+
+|Task Result
+|Workflow History
+|ワークフロー履歴 - 処理結果
+
+|ProcessBy
+|Workflow History
+|ワークフロー履歴 - プロセス実行者
+
+|CompletionDate
+|Workflow History
+|ワークフロー履歴 - 完了日
+
+|Detail
+|Workflow History
+|ワークフロー履歴 - 詳細
+|===
+
+[[variableentityviewname]]
+.Variable Entity View Name
+タスク詳細内でタスク対象データを表示する際の設定を行います。
+`Display in Detail` をチェックした場合、Entityの詳細画面をタスク詳細内に表示します。
+未チェックの場合はリンクで表示され、リンククリックでEntityの詳細画面を表示します。
+
+[cols="1,2a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|Workflow
+|表示設定を行うワークフローを選択します。
+
+|Variable
+|表示設定を行う変数を選択します。
+
+|Entity
+|表示設定を行うEntityを選択します。
+
+|Entity View Name
+|上記で選択したワークフロー、変数、Entityが一致するタスク対象データに使用するビュー名を設定します。
+タスク詳細からのリンク、タスク詳細内での表示を行う際に利用されます。
+※GroovyTemplate書式で記述してください。
+
+|Display in Detail
+|タスク詳細にEntityを表示する場合にチェックします。
+|===
+
+[[taskviewworkflowhistory]]
+.ワークフロー履歴設定項目
+ワークフロー履歴に関する設定項目です。
+
+[cols="1,2a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|Display only the user who processed the task.
+|ワークフロー履歴の詳細にタスクを完了させた人のみ表示するかを設定します。
+
+|Display all history including parent process.
+|`親プロセスを含めた全履歴を表示する` チェックボックスを表示するかを設定します。
+
+|Display all history including parent process in initial view.
+|ワークフロー履歴初期表示時に親プロセスを含めた全履歴を表示するかを設定します。
+|===
+
+==== Workflowの実行権限
+Workflowを実行できるユーザーをロールをベースに制御できます。
+Entityの詳細画面では、この設定により実行ボタンの表示・非表示が自動的に制御されます。
+
+連携方法については、<<../authorization/index.adoc#en_workflowperm, Workflow権限>>を参照してください。
+
+==== UserTaskの管理権限
+タスク詳細からタスクを操作できるのは、タスクを割り当てられたユーザーだけですが、管理権限がある場合、割り当てられたユーザーの代わりにタスクの操作を行ったり、ユーザーの割り当てを変更出来るようになります。
+
+タスク一覧の `管理可能なタスク` タブをクリックすると、管理可能な未処理のタスクが表示されます。
+ここから編集画面を表示することで代理でタスクの処理が行えます。
+
+連携方法については、<<../authorization/index.adoc#en_usertaskperm, UserTask権限>>を参照してください。
+
