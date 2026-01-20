@@ -326,6 +326,7 @@ The following MdcValueResolver is provided as standard.
 - <<HttpHeaderMdcValueResolver>>
 - <<SessionIdMdcValueResolver>>
 - <<AmznTraceIdMdcValueResolver>>
+- <<aws2_AmznTraceIdMdcValueResolver>>
 
 
 [[UuidMdcValueResolver]]
@@ -386,8 +387,27 @@ In the setting of WebFrontendService to mdc, in String,
 SessionIdMdcValueResolver is set by specifying `sessionId`.
 
 [[AmznTraceIdMdcValueResolver]]
-.[.eeonly]#AmznTraceIdMdcValueResolver#
+.[.eeonly]#(Deprecated) AmznTraceIdMdcValueResolver#
 Please specify org.iplass.mtp.impl.aws.web.mdc.AmznTraceIdMdcValueResolver for class.
+
+[CAUTION]
+====
+AWS SDK for Java 1.x is in maintenance mode and will be discontinued in December 2025. +
+iPLAss recommends deprecating the AWS SDK for Java 1.x-based library iplass-ee-aws and moving to the AWS SDK for Java 2.x-based library iplass-ee-aws2. +
+If you are using this function, please migrate your settings to <<aws2_AmznTraceIdMdcValueResolver>> in the library iplass-ee-aws2. +
+The library iplass-ee-aws will be removed in the future.
+====
+
+Gets the specific field value of the X-Amzn-Trace-Id value set in the HTTP header. The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| field | String | The field name to get. Specify Root or Self.
+|===
+
+[[aws2_AmznTraceIdMdcValueResolver]]
+.[.eeonly]#AmznTraceIdMdcValueResolver#
+Please specify org.iplass.mtp.impl.web.mdc.awsv2.AmznTraceIdMdcValueResolver for class.
 
 Gets the specific field value of the X-Amzn-Trace-Id value set in the HTTP header. The following items can be configured.
 [cols="1,1,3", options="header"]
@@ -623,7 +643,7 @@ Gets the specific field value of the X-Amzn-Trace-Id value set in the HTTP heade
 
 	<!-- Configurations about MDC -->
 	<property name="mdc">
-		<property name="traceId" class="org.iplass.mtp.impl.aws.web.mdc.AmznTraceIdMdcValueResolver">
+		<property name="traceId" class="org.iplass.mtp.impl.web.mdc.awsv2.AmznTraceIdMdcValueResolver">
 			<property name="field" value="Root" />
 		</property>
 		<property name="ipaddress" value="remoteAddr" />

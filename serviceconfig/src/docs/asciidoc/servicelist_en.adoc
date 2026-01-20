@@ -112,7 +112,8 @@ The service group for other plug-in modules.
 [cols="1,3", options="header"]
 |===
 | Name | Description
-| <<index.adoc#AWSSetting, [.eeonly]#AWSSetting#>> | This service manages AWS settings.
+| <<index.adoc#AWSSetting, [.eeonly]#(Deprecated)AWSSetting#>> | This service manages AWS settings. Manage AWS SDK for Java 1.x settings.
+| <<index.adoc#aws2_AWSSetting, [.eeonly]#AWSSetting#>> | This service manages AWS settings. Manage AWS SDK for Java 2.x settings.
 | <<index.adoc#InfinispanService, InfinispanService>> | The service to manage InfinispanService.
 | <<index.adoc#RedisService, RedisService>> | The service to manage RedisService.
 | <<index.adoc#CaptchaService, [.eeonly]#CaptchaService#>> | The service to manage robot-access prevention by reCAPTCHA.

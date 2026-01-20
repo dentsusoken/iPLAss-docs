@@ -14,9 +14,14 @@ org.iplass.mtp.impl.mail.MailService
 org.iplass.mtp.impl.mail.MailServiceImpl
 ----
 
+.[.eeonly]#（非推奨）Amazon SESを利用したメール送信#
+----
+org.iplass.mtp.impl.aws.AWSMailService
+----
+
 .[.eeonly]#Amazon SESを利用したメール送信#
 ----
-org.iplass.mtp.impl.mail.AWSMailService
+org.iplass.mtp.impl.mail.ses.awsv2.SesMailService
 ----
 
 .[.eeonly]#SendGridを利用したメール送信#
@@ -220,9 +225,17 @@ KeyStoreに格納されている証明書はクライアントの証明書も含
 </service>
 ----
 
-==== [.eeonly]#AWSMailServiceの設定#
+==== [.eeonly]#（非推奨）AWSMailServiceの設定#
 Amazon SESを利用する場合、AWSMailServiceを設定します。 +
 AWSMailServiceを利用する場合、AWSSettingにてAWSの認証設定が行われている必要があります。ただし、注意点としてAWSSettingのclientConfigurationは適用できません。
+
+[CAUTION]
+====
+AWS SDK for Java 1.x はメンテナンスモードになっており、2025年12月 にサポートを終了する予定です。 +
+iPLAss では AWS SDK for Java 1.x ベースのライブラリ iplass-ee-aws を非推奨とし、AWS SDK for Java 2.x ベースのライブラリ iplass-ee-aws2 への移行を推奨します。 +
+本機能を利用している場合は、ライブラリ iplass-ee-aws2 の <<aws2_SesMailService>> へ設定を移行してください。 +
+ライブラリ iplass-ee-aws は将来削除される予定です。
+====
 
 ===== 設定項目
 [cols="1,1,3", options="header"]
@@ -246,6 +259,46 @@ MailServiceImplの<<SendMailListener>>と同様です。
 
 ===== 設定例
 MailServiceImplと同様です。
+
+[[aws2_SesMailService]]
+==== [.eeonly]#SesMailServiceの設定#
+Amazon SESを利用する場合、SesMailService を設定します。 +
+<<aws2_AWSSetting>> で管理されている認証情報、クライアント設定を利用します。以下の項目が設定可能です。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| mail.charset | String | メールのデフォルトのcharsetです。 +
+例えば `utf-8` を指定します。 +
+| mail.encoding | String | メールのデフォルトのencodingです。 +
+例えば `base64` を指定します。 +
+| listener | <<SendMailListener>>、複数指定可 | メール送信時のListener。
+| smimeHandler | <<SmimeHandler>> | S/MIME利用時のハンドラです。
+| retryIntervalMillis | long | メール送信失敗時のリトライ間隔（ミリ秒）。
+| retryCount | int | メール送信失敗時のリトライ回数。
+| clientConfig | <<aws2_AWSSetting_AWSClientConfig>> | SES クライアントの設定を管理します。AWSリージョンや通信設定を設定します。
+|===
+
+===== 設定例
+[source,xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.mail.MailService</interface>
+	<class>org.iplass.mtp.impl.mail.ses.awsv2.SesMailService</class>
+	<depend>org.iplass.mtp.impl.awsv2.AWSSetting</depend>
+	
+	<property name="mail.charset" value="utf-8"/>
+	<property name="mail.encoding" value="base64"/>
+
+	<property name="retryIntervalMillis" value="0" />
+	<property name="retryCount" value="0" />
+	
+	<property name="clientConfig" class="org.iplass.mtp.impl.awsv2.AWSClientConfig">
+		<property name="region" value="[setYourSesRegion]" />
+	</property>
+</service>
+----
 
 ==== [.eeonly]#SendGridMailServiceImplの設定#
 SendGridを利用する場合、SendGridMailServiceImplを設定します。

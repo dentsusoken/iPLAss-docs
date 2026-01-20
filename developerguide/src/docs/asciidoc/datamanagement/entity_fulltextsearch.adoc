@@ -291,11 +291,20 @@ Entity定義単位でAnalyzerを切り替えたい場合、Entity名とAnalyzerP
 
 |===
 
-==== [.eeonly]#OpenSearch設定#
+==== [.eeonly]#(非推奨)OpenSearch設定#
 
 全文検索に関する設定をFulltextSearchServiceに設定します。
 サーバURL、Analyzerなどに関する設定などを行います。
 詳細は <<../../serviceconfig/index.adoc#FulltextSearchService, FulltextSearchService>> を参照してください。
+
+[CAUTION]
+====
+AWS SDK for Java 1.x はメンテナンスモードになっており、2025年12月 にサポートを終了する予定です。 +
+iPLAss では AWS SDK for Java 1.x ベースのライブラリ iplass-ee-aws を非推奨とし、AWS SDK for Java 2.x ベースのライブラリ iplass-ee-aws2 への移行を推奨します。 +
+iplass-ee-aws2 の対応に伴い、opensearch の機能は iplass-ee-opensearch へ移管しました。 +
+本機能を利用している場合は、ライブラリ iplass-ee-opensearch の <<datamanagement_fulltextsearch_opensearch_opensearch>> へ設定を移行してください。 +
+ライブラリ iplass-ee-aws は将来削除される予定です。
+====
 
 次に設定ファイルの設定例を示します。
 
@@ -307,7 +316,7 @@ Entity定義単位でAnalyzerを切り替えたい場合、Entity名とAnalyzerP
 <service>
     <interface>org.iplass.mtp.impl.fulltextsearch.FulltextSearchService</interface>
 
-    <class>org.iplass.mtp.impl.aws.fulltextsearch.opensearch.OpenSearchFulltextSearchService/class> <1>
+    <class>org.iplass.mtp.impl.aws.fulltextsearch.opensearch.OpenSearchFulltextSearchService</class> <1>
     <property name="useFulltextSearch" value="true" /> <2>
     <property name="restClientFactory"  class="org.iplass.mtp.impl.aws.fulltextsearch.opensearch.DefaultRestClientFactory">
         <property name="openSearchUrl" value="{SCHEME}://{ADDRESS}:{PORT}"/> <3>
@@ -390,6 +399,117 @@ Apache Tikaを利用して、特定のバイナリ内もインデックスする
 classには `org.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.DefaultAnalysisFactory` を指定します。
 
 |defaultAnalyzerProperty| デフォルトで利用するAnalyzer名を指定します。 classには `org.iplass.mtp.impl.aws.fulltextsearch.opensearch.mappings.AnalyzerProperty` を指定します。Analyzer名にはデフォルトで提供されているAnalyzerやカスタムで定義したAnalyzerを指定することができます。 + 
+デフォルトで提供されているAnalyzerについては、OpenSearchのドキュメントを参照してください。
+
+|analyzerPropertyPerEntity|
+Entity定義単位でAnalyzerを切り替えたい場合、Entity名とAnalyzerPropertyをMap形式で指定します。
+
+|===
+
+[[datamanagement_fulltextsearch_opensearch_opensearch]]
+==== [.eeonly]#OpenSearch設定#
+
+全文検索に関する設定をFulltextSearchServiceに設定します。
+サーバURL、Analyzerなどに関する設定などを行います。
+詳細は <<../../serviceconfig/index.adoc#FulltextSearchService, FulltextSearchService>> を参照してください。
+
+次に設定ファイルの設定例を示します。
+
+.mtp-service-config.xmlの設定例（必要最低限の設定）
+デフォルト値を利用し、必要最低限の設定のみを行った設定例を以下に示します。
+
+[source,xml]
+----
+<service>
+    <interface>org.iplass.mtp.impl.fulltextsearch.FulltextSearchService</interface>
+
+    <class>org.iplass.mtp.impl.fulltextsearch.opensearch.OpenSearchFulltextSearchService</class> <1>
+    <property name="useFulltextSearch" value="true" /> <2>
+    <property name="restClientFactory"  class="org.iplass.mtp.impl.fulltextsearch.opensearch.DefaultRestClientFactory">
+        <property name="openSearchUrl" value="{SCHEME}://{ADDRESS}:{PORT}"/> <3>
+    </property>
+</service>
+----
+<1> 実装クラスとしてOpenSearchFulltextSearchServiceを指定します
+<2> 全文検索機能を有効化する場合trueを指定します
+<3> OpenSearchのサーバURLを指定します
+
+.mtp-service-config.xmlの設定例（主要な項目を設定）
+
+主要な設定項目を設定した例を以下に示します。
+
+[source,xml]
+----
+<service>
+    <interface>org.iplass.mtp.impl.fulltextsearch.FulltextSearchService</interface>
+    <class>org.iplass.mtp.impl.fulltextsearch.opensearch.OpenSearchFulltextSearchService</class>
+    <property name="useFulltextSearch" value="true" />
+    <property name="restClientFactory"  class="org.iplass.mtp.impl.fulltextsearch.opensearch.DefaultRestClientFactory">
+        <property name="openSearchUrl" value="{SCHEME}://{ADDRESS}:{PORT}"/>
+		<property name="httpRequestInterceptorFactory" class="org.iplass.mtp.impl.fulltextsearch.opensearch.awsv2.AWSRequestSigningApacheInterceptorFactory" >
+            <!-- es:マネージド型クラスター、 aoss：サーバーレス -->
+			<property name="serviceName" value="es"/>
+			<property name="region" value="ap-northeast-1"/>
+		</property>
+    </property>
+
+	<property name="maxRows" value="1000" />
+	<property name="throwExceptionWhenOverLimit" value="true"/>
+
+	<property name="analysisFactory" class="org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.DefaultAnalysisFactory">
+        <property name="analyzer" >
+            <property name="my_kuromoji" class="org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.analyzer.KuromojiAnalyzerFactory">
+                <property name="mode" value="Search"/>
+                <property name="method" value="Nfc"/>
+            </property>
+        </property>
+    </property>
+    <property name="defaultAnalyzerProperty" >
+        <property name="analyzer" value="kuromoji"/>
+    </property>
+    <property name="analyzerPropertyPerEntity" >
+        <property name="testEntity" class="org.iplass.mtp.impl.fulltextsearch.opensearch.mappings.AnalyzerProperty">
+            <property name="analyzer" value="my_kuromoji"/>
+        </property>
+    </property>
+</service>
+----
+
+各設定項目の概要を以下に説明します。
+
+[cols="1,3a",options="header"]
+|===
+|プロパティ名|内容説明
+|useFulltextSearch|全文検索機能を有効にする場合は `true` にします。
+|restClientFactory|OpenSearchのサーバURLを指定します。
+|httpRequestInterceptorFactory| httpRequestInterceptorを生成するFactoryクラスを設定します。
+BASIC認証ではなく、<<../../serviceconfig/index.adoc#aws2_AWSSetting, AWSSetting>>で設定したIAM認証情報を使用してリクエストを署名したい場合に、 +
+実装クラス  `org.iplass.mtp.impl.fulltextsearch.opensearch.awsv2.AWSRequestSigningApacheInterceptorFactory` を指定します。 
+|maxRows|
+全文検索サーバから取得する検索結果の最大件数を設定します。 +
+
+NOTE: 件数が1000件以上で、かつ、Oracleを利用する場合は、
+Oracle設定の `enableInPartitioning` プロパティ値を `true` へ変更してください。
+
+|throwExceptionWhenOverLimit|
+false：maxRowsの設定値以上に検索結果件数が取得できた場合でも、maxRowsの設定値分の件数は結果を表示します。
+
+下記の画面は設定値以上に取得出来た場合となります。設定値未満の場合、メッセージ表示はありません。
+
+image::images/FulltextSearch_Lucene_SearchResult_False.png[]
+
+true：maxRowsの設定値以上に検索結果件数が取得できた場合、結果を表示せずに条件を絞り込むようメッセージで催促されます。
+
+image::images/FulltextSearch_Lucene_SearchResult_True.png[]
+
+|binaryParser| 
+BinaryReference解析用のParserを設定します。
+Apache Tikaを利用して、特定のバイナリ内もインデックスすることができます。
+
+|analysisFactory| カスタムでAnalyzer等を定義したい場合に利用します。
+classには `org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.DefaultAnalysisFactory` を指定します。
+
+|defaultAnalyzerProperty| デフォルトで利用するAnalyzer名を指定します。 classには `org.iplass.mtp.impl.fulltextsearch.opensearch.mappings.AnalyzerProperty` を指定します。Analyzer名にはデフォルト提供されているAnalyzerやカスタムで定義したAnalyzerを指定することができます。 + 
 デフォルトで提供されているAnalyzerについては、OpenSearchのドキュメントを参照してください。
 
 |analyzerPropertyPerEntity|

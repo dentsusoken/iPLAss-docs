@@ -169,6 +169,7 @@ NOTE: 標準メトリクスの収集には、Micrometerのcoreモジュールを
 **** `bucket_name`：S3のバケット名
 **** `method`：HTTPメソッド
 **** `status`：レスポンスのHTTPステータスコード
+**** `operation_name`：S3操作名（GetObject, PutObject, HeadObject, GetObjectTagging, DeleteObject）(iplass-ee-aws2 モジュール利用時)
 
 * メール系のログ
 ** メール送信処理に対する成功回数/失敗回数

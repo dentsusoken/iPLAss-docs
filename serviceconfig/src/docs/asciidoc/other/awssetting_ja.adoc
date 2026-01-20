@@ -1,6 +1,14 @@
 [[AWSSetting]]
-=== [.eeonly]#AWSSetting#
+=== [.eeonly]#(非推奨)AWSSetting#
 AWSの設定を管理するサービスです。
+
+[CAUTION]
+====
+AWS SDK for Java 1.x はメンテナンスモードになっており、2025年12月 にサポートを終了する予定です。 +
+iPLAss では AWS SDK for Java 1.x ベースのライブラリ iplass-ee-aws を非推奨とし、AWS SDK for Java 2.x ベースのライブラリ iplass-ee-aws2 への移行を推奨します。 +
+本機能を利用している場合は、ライブラリ iplass-ee-aws2 の <<aws2_AWSSetting>> へ設定を移行してください。 +
+ライブラリ iplass-ee-aws は将来削除される予定です。
+====
 
 ==== インタフェース名
 ----

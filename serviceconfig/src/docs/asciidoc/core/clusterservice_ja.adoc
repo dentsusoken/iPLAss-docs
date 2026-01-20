@@ -31,6 +31,7 @@ classはorg.iplass.mtp.impl.cluster.channel.MessageChannelの実装クラスを�
 - <<HttpMessageChannel>>
 - <<JGroupsMessageChannel>>
 - <<InfinispanMessageChannel>>
+- <<JGroups5MessageChannel>>
 
 [[HttpMessageChannel]]
 .HttpMessageChannel
@@ -106,6 +107,34 @@ InfinispanMessageChannelを利用する場合は、別途 <<InfinispanService,In
 | sync | boolean | メッセージの送信を同期して行うかを設定します。
 |===
 
+[[JGroups5MessageChannel]]
+.[.eeonly]#JGroups5MessageChannel#
+JGroups 5 系を介してメッセージ送受信するメッセージチャネルです。iPLAss 3.2 限定機能です。 +
+iPLAss 3.2 では JGroups のバージョンは通常 4 系ですが、以下の条件に当てはまる場合は 5 系にする必要があります。
+
+.条件
+- iplass-ee-aws2 モジュールを利用する
+- jgroups-aws（aws.S3_PING） を利用する
+
+上記の条件に当てはまる場合は、以下のライブラリを追加してください。
+
+.ライブラリ
+- `org.jgroups.aws:jgroups-aws:3.0.0.Final`
+- `org.jgroups:jgroups:5.3.6.Final`
+
+classはorg.iplass.mtp.impl.cluster.channel.jgroups.JGroups5MessageChannelを指定します。以下の項目を設定可能です。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| configFilePath | String a| JGroupsの設定ファイルへのパスを指定します。
+指定されたパスを元に、次の順にファイルを検索します。
+
+. リソースパス（classpath配下）
+. ファイルパス（OS上のファイルとして）
+| clusterName | String | JGroupsのクラスタ名を指定します。同一のクラスタ名が指定されたノードがクラスタメンバとなります。
+|===
+
 
 ===== 設定例
 .HttpMessageChannel
@@ -146,6 +175,18 @@ InfinispanMessageChannelを利用する場合は、別途 <<InfinispanService,In
 	<depend>org.iplass.mtp.impl.infinispan.InfinispanService</depend>
 	<property name="messageChannel" class="org.iplass.mtp.impl.infinispan.cluster.channel.InfinispanMessageChannel">
 		<property name="sync" value="false" />
+	</property>
+</service>
+----
+
+.JGroups5MessageChannel
+[source, xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.cluster.ClusterService</interface>
+	<property name="messageChannel" class="org.iplass.mtp.impl.cluster.channel.jgroups.JGroups5MessageChannel">
+		<property name="configFilePath" value="/udp.xml" />
+		<property name="clusterName" value="yourOwnClusterName" />
 	</property>
 </service>
 ----

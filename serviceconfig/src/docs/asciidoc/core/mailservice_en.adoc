@@ -14,9 +14,14 @@ org.iplass.mtp.impl.mail.MailService
 org.iplass.mtp.impl.mail.MailServiceImpl
 ----
 
-.[.eeonly]#Mail transmission by Amazon SES#
+.[.eeonly]#(Deprecated) Mail transmission by Amazon SES#
 ----
 org.iplass.mtp.impl.mail.AWSMailService
+----
+
+.[.eeonly]#Mail transmission by Amazon SES#
+----
+org.iplass.mtp.impl.mail.ses.awsv2.SesMailService
 ----
 
 .[.eeonly]#Mail transmission by SendGrid#
@@ -106,7 +111,7 @@ When using MailServiceImpl, the standard class to support digital signature and 
 The following configurable items are available:
 |====================
 | Item | Value | Description
-cmsAlgorithmName | String | CMS (Cryptographic Message Syntax) cryptographic algorithm name. The default value is `AES128_CBC`.
+| cmsAlgorithmName | String | CMS (Cryptographic Message Syntax) cryptographic algorithm name. The default value is `AES128_CBC`.
 | signatureAlgorithmMap | <<SignatureAlgorithmMap>> | Mapping of digital signature algorithm.
 | certStore | <<SmimeCertStore>> | Store class that stores certificates and private keys used in S / MIME.
 |====================
@@ -220,9 +225,17 @@ The following items can be configured.
 </service>
 ----
 
-==== [.eeonly]#Settings of AWSMailService#
+==== [.eeonly]#(Deprecated) Settings of AWSMailService#
 When using Amazon SES, it is needed to configure about AWSMailService. +
 When using AWSMailService, AWS authentication settings must be made in AWSSetting. However, note that the clientConfiguration of AWSSetting cannot be applied.
+
+[CAUTION]
+====
+AWS SDK for Java 1.x is in maintenance mode and will be discontinued in December 2025. +
+iPLAss recommends deprecating the AWS SDK for Java 1.x-based library iplass-ee-aws and moving to the AWS SDK for Java 2.x-based library iplass-ee-aws2. +
+If you are using this function, please migrate your settings to <<aws2_SesMailService>> in the library iplass-ee-aws2. +
+The library iplass-ee-aws will be removed in the future.
+====
 
 ===== Configurable Items
 [cols="1,1,3", options="header"]
@@ -246,6 +259,46 @@ It is similar to the <<SendMailListener>> in MailServiceImpl.
 
 ===== Example
 Similar to MailServiceImpl.
+
+[[aws2_SesMailService]]
+==== [.eeonly]#Settings of SesMailService#
+When using Amazon SES, it is needed to configure about SesMailService. +
+Uses authentication information and client settings managed in <<aws2_AWSSetting>>. The following items can be configured.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| mail.charset | String | The default charset for mail. +
+For example, specify `utf-8`. +
+| mail.encoding | String | Default encoding for mail. +
+For example, specify `base64`. +
+| listener | <<SendMailListener_a>>, Multiple | Listener for outgoing mail.
+| smimeHandler | <<SmimeHandler>> | Handler when using S/MIME.
+| retryIntervalMillis | long | Retry interval when email transmission fails (milliseconds).
+| retryCount | int | The number of retry attempts for email transmission to fail.
+| clientConfig | <<aws2_AWSSetting_AWSClientConfig>> | Manage SES client settings. Configure AWS regions and communication settings.
+|===
+
+===== Example
+[source,xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.mail.MailService</interface>
+	<class>org.iplass.mtp.impl.mail.ses.awsv2.SesMailService</class>
+	<depend>org.iplass.mtp.impl.awsv2.AWSSetting</depend>
+	
+	<property name="mail.charset" value="utf-8"/>
+	<property name="mail.encoding" value="base64"/>
+
+	<property name="retryIntervalMillis" value="0" />
+	<property name="retryCount" value="0" />
+	
+	<property name="clientConfig" class="org.iplass.mtp.impl.awsv2.AWSClientConfig">
+		<property name="region" value="[setYourSesRegion]" />
+	</property>
+</service>
+----
 
 ==== [.eeonly]#Settings of SendGridMailServiceImpl#
 To use SendGrid, please specify and configure the SendGridMailServiceImpl.
