@@ -19,9 +19,14 @@ org.iplass.mtp.impl.fulltextsearch.lucene.LuceneFulltextSearchService
 org.iplass.mtp.impl.fulltextsearch.elasticsearch.ElasticsearchFulltextSearchService
 ----
 
-.[.eeonly]#OpenSearchを利用した全文検索#
+.[.eeonly]#（非推奨）OpenSearchを利用した全文検索#
 ----
 org.iplass.mtp.impl.aws.fulltextsearch.opensearch.OpenSearchFulltextSearchService
+----
+
+.[.eeonly]#OpenSearchを利用した全文検索#
+----
+org.iplass.mtp.impl.fulltextsearch.opensearch.OpenSearchFulltextSearchService
 ----
 
 .[.eeonly]#（非推奨）Solrを利用した全文検索#
@@ -372,8 +377,18 @@ classはorg.iplass.mtp.impl.fulltextsearch.elasticsearch.mappings.AnalyzerProper
 |===
 
 [[OpenSearchFulltextSearchService]]
-==== [.eeonly]#OpenSearchFulltextSearchServiceの設定#
-OpenSearchを利用した全文検索の項目を設定します。
+==== [.eeonly]#（非推奨）OpenSearchFulltextSearchServiceの設定#
+OpenSearchを利用した全文検索の項目を設定します。 +
+本機能を利用する場合は、ライブラリ iplass-ee-aws を追加してください。
+
+[CAUTION]
+====
+AWS SDK for Java 1.x はメンテナンスモードになっており、2025年12月 にサポートを終了する予定です。 +
+iPLAss では AWS SDK for Java 1.x ベースのライブラリ iplass-ee-aws を非推奨とし、AWS SDK for Java 2.x ベースのライブラリ iplass-ee-aws2 への移行を推奨します。 +
+iplass-ee-aws2 の対応に伴い、opensearch の機能は iplass-ee-opensearch へ移管しました。 +
+本機能を利用している場合は、ライブラリ iplass-ee-opensearch の <<opensearch_OpenSearchFulltextSearchService>> へ設定を移行してください。 +
+ライブラリ iplass-ee-aws は将来削除される予定です。
+====
 
 ===== 設定項目
 [cols="1,1,3", options="header"]
@@ -495,7 +510,7 @@ classはorg.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.analyzer.Kuro
 [cols="1,1,3", options="header"]
 |===
 | 項目 | 値 | 説明
-| mode | co.elastic.clients.opensearch._types.analysis.KuromojiTokenizationMode | tokenizationモードの設定
+| mode | org.opensearch.client.opensearch._types.analysis.KuromojiTokenizationMode | tokenizationモードの設定
 | userDictionary | String | ユーザー辞書
 |===
 
@@ -518,6 +533,173 @@ classはorg.iplass.mtp.impl.aws.fulltextsearch.opensearch.analysis.tokenizer.Tok
 .AnalyzerProperty
 Analyzerを指定する際に利用します。
 classはorg.iplass.mtp.impl.aws.fulltextsearch.opensearch.mappings.AnalyzerPropertyを指定します。 + 
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| analyzer | String | デフォルトで利用するAnalyzer名
+| searchAnalyzer | String | 検索で利用するAnalyzer名
+| searchQuoteAnalyzer | String | フレーズを利用した検索で利用するAnalyzer名
+|===
+
+[[opensearch_OpenSearchFulltextSearchService]]
+==== [.eeonly]#OpenSearchFulltextSearchServiceの設定#
+OpenSearchを利用した全文検索の項目を設定します。 +
+本機能を利用する場合は、ライブラリ iplass-ee-opensearch を追加してください。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| restClientFactory | <<org.iplass.mtp.impl.fulltextsearch.opensearch.RestClientFactory>> | RestClientFactoryの設定です。
+| transportFactory | <<org.iplass.mtp.impl.fulltextsearch.opensearch.OpenSearchTransportFactory>> | OpenSearchTransport インスタンスを生成するクラスを設定する。restClientFactory と同時に設定された場合、restClientFactory の設定値が優先される。
+| analysisFactory | <<org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.AnalysisFactory>> | AnalysisFactoryの設定です。
+| defaultAnalyzerProperty | <<org.iplass.mtp.impl.fulltextsearch.opensearch.mappings.AnalyzerProperty>> | AnalyzerPropertyの設定です。
+| analyzerPropertyPerEntity | <<org.iplass.mtp.impl.fulltextsearch.opensearch.mappings.AnalyzerProperty>>、Map形式 | keyとしてEntity定義名を指定し、valueとしてAnalyzerPropertyのインスタンスを設定します。
+| defaultOperator | Operator | 演算子。設定可能な演算子は `AND`, `OR`, `And`, `Or` のいずれかです。
+|===
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.RestClientFactory]]
+.RestClientFactory
+classはorg.iplass.mtp.impl.fulltextsearch.opensearch.RestClientFactoryの実装クラスを指定します。 + 
+
+標準で以下のRestClientFactoryを提供します。
+
+- <<org.iplass.mtp.impl.fulltextsearch.opensearch.DefaultRestClientFactory>>
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.DefaultRestClientFactory]]
+.DefaultRestClientFactory
+classはorg.iplass.mtp.impl.fulltextsearch.opensearch.DefaultRestClientFactoryを指定します。 + 
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| openSearchUrl | String、複数指定可 | OpenSearchサーバのURL
+| headers | String、Map形式 | リクエスト時に設定できるHeader。Map形式で指定可能です。
+| connectionTimeout | int | http通信確立時のConnectionTimeout値（ミリ秒）。デフォルト値は-1です。
+| soTimeout | int | http通信確立時のSoTimeout値（ミリ秒）。デフォルト値は-1です。
+| proxyHost | String | http通信する際のproxyHost。
+| proxyPort | int | http通信する際のproxyPort。
+| userName | String | BASIC認証で利用するユーザー名
+| password | String | BASIC認証で利用するパスワード
+| httpRequestInterceptorFactory | <<org.iplass.mtp.impl.fulltextsearch.opensearch.HttpRequestInterceptorFactory>> | HttpRequestInterceptorFactoryの設定です。userNameとpasswordの値が設定されていない場合に適用されます。
+|===
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.HttpRequestInterceptorFactory]]
+.HttpRequestInterceptorFactory
+classはorg.iplass.mtp.impl.fulltextsearch.opensearch.HttpRequestInterceptorFactoryの実装クラスを指定します。 +
+Apache HttpComponents4 の `org.apache.http.HttpRequestInterceptor` を生成するFactoryクラスです。 +
+標準で以下の HttpRequestInterceptorFactory を提供します。
+
+- <<aws2_AWSRequestSigningApacheInterceptorFactory>>
+
+[[aws2_AWSRequestSigningApacheInterceptorFactory]]
+.AWSRequestSigningApacheInterceptorFactory
+AWS IAM 認証情報でリクエストに署名する場合に利用します。 認証情報は <<aws2_AWSSetting>> の設定を利用します。
+iPLAss 3.2 限定の機能です。
+
+classはorg.iplass.mtp.impl.fulltextsearch.opensearch.awsv2.AWSRequestSigningApacheInterceptorFactoryを指定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| serviceName | String a| サービス名。利用するサービスで設定値を決定します。
+
+- `es` (Amazon OpenSearch)
+- `aoss` (Amazon OpenSearch Serverless)
+
+| region | String | リージョン名
+|===
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.OpenSearchTransportFactory]]
+.OpenSearchTransportFactory
+classはorg.iplass.mtp.impl.fulltextsearch.opensearch.OpenSearchTransportFactoryの実装クラスを指定します。 +
+OpenSearch Client の `org.opensearch.client.transport.OpenSearchTransport` を生成する Factory クラスです。 +
+標準提供する機能はありません。
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.AnalysisFactory]]
+.AnalysisFactory
+カスタムでAnalyzer等を定義したい場合に利用するクラスです。
+
+classはorg.iplass.mtp.impl.fulltextsearch.opensearch.analysis.AnalysisFactoryの実装クラスを指定します。
+
+標準で以下のAnalysisFactoryを提供します。
+
+- <<org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.DefaultAnalysisFactory>>
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.DefaultAnalysisFactory]]
+.DefaultAnalysisFactory
+classはorg.iplass.mtp.impl.fulltextsearch.opensearch.analysis.DefaultAnalysisFactoryを指定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| analyzer | <<org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.AnalyzerFactory>>、Map形式 | keyとして定義名を指定し、valueとしてAnalyzerFactoryのインスタンスを設定します。
+| charFilter | <<org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.charfilter.CharFilterFactory>>、Map形式 | keyとして定義名を指定し、valueとしてCharFilterFactoryのインスタンスを設定します。
+| filter | <<org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.filter.TokenFilterFactory>>、Map形式 | keyとして定義名を指定し、valueとしてTokenFilterFactoryのインスタンスを設定します。
+| tokenizer | <<org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.tokenizer.TokenizerFactory>>、Map形式 | keyとして定義名を指定し、valueとしてTokenizerFactoryのインスタンスを設定します。
+|===
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.AnalyzerFactory]]
+.AnalyzerFactory
+カスタムでAnalyzerを定義したい場合に利用するクラスです。
+classはorg.iplass.mtp.impl.fulltextsearch.opensearch.analysis.AnalyzerFactoryの実装クラスを指定します。
+
+標準で以下のAnalysisFactoryを提供します。
+
+- <<org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.analyzer.CustomAnalyzerFactory>>
+- <<org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.analyzer.KuromojiAnalyzerFactory>>
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.analyzer.CustomAnalyzerFactory]]
+.CustomAnalyzerFactory
+charFilter、tokenizer、filterを組み合わせてAnalyzerを定義することができます。
+classはorg.iplass.mtp.impl.fulltextsearch.opensearch.analysis.analyzer.CustomAnalyzerFactoryを指定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| charFilter | String、複数指定可 | charFilterの定義名
+| filter | String、複数指定可 | filterの定義名
+| tokenizer | String、必須 | tokenizerの定義名
+|===
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.analyzer.KuromojiAnalyzerFactory]]
+.KuromojiAnalyzerFactory
+カスタマイズされたKuromojiAnalyzerを定義することができます。
+classはorg.iplass.mtp.impl.fulltextsearch.opensearch.analysis.analyzer.KuromojiAnalyzerFactoryを指定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| mode | org.opensearch.client.opensearch._types.analysis.KuromojiTokenizationMode | tokenizationモードの設定
+| userDictionary | String | ユーザー辞書
+|===
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.charfilter.CharFilterFactory]]
+.CharFilterFactory
+カスタムでCharFilterを定義したい場合に利用するFactoryクラスです。
+classはorg.iplass.mtp.impl.fulltextsearch.opensearch.analysis.AnalyzerFactoryの実装クラスを指定します。
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.filter.TokenFilterFactory]]
+.TokenFilterFactory
+カスタムでTokenFilterを定義したい場合に利用するFactoryクラスです。
+classはorg.iplass.mtp.impl.fulltextsearch.opensearch.analysis.filter.TokenFilterFactoryの実装クラスを指定します。
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.tokenizer.TokenizerFactory]]
+.TokenizerFactory
+カスタムでTokenizerを定義したい場合に利用するFactoryクラスです。
+classはorg.iplass.mtp.impl.fulltextsearch.opensearch.analysis.tokenizer.TokenizerFactoryの実装クラスを指定します。
+
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.mappings.AnalyzerProperty]]
+.AnalyzerProperty
+Analyzerを指定する際に利用します。
+classはorg.iplass.mtp.impl.fulltextsearch.opensearch.mappings.AnalyzerPropertyを指定します。 + 
 
 ===== 設定項目
 [cols="1,1,3", options="header"]
@@ -655,9 +837,10 @@ Solrを利用した全文検索の項目を設定します。
 </service>
 ----
 
-===== 設定例（OpenSearchFulltextSearchService利用の場合）
+===== 設定例（非推奨）（OpenSearchFulltextSearchService利用の場合）
 [source, xml]
 ----
+<!-- iplass-ee-aws プロジェクトのクラスを利用したOpenSearch構成。本構成は非推奨です。 -->
 <service>
 	<interface>org.iplass.mtp.impl.fulltextsearch.FulltextSearchService</interface>
 	<class>org.iplass.mtp.impl.aws.fulltextsearch.opensearch.OpenSearchFulltextSearchService</class>
@@ -711,6 +894,63 @@ Solrを利用した全文検索の項目を設定します。
 </service>
 ----
 
+===== 設定例（OpenSearchFulltextSearchService利用の場合）
+[source, xml]
+----
+<!-- iplass-ee-opensearch プロジェクトのクラスを利用したOpenSearch構成。 -->
+<service>
+	<interface>org.iplass.mtp.impl.fulltextsearch.FulltextSearchService</interface>
+	<class>org.iplass.mtp.impl.fulltextsearch.opensearch.OpenSearchFulltextSearchService</class>
+	
+	<property name="useFulltextSearch" value="true" />
+	<property name="maxRows" value="1000" />
+    <property name="throwExceptionWhenOverLimit" value="true"/>
+
+	<property name="restClientFactory" class="org.iplass.mtp.impl.fulltextsearch.opensearch.DefaultRestClientFactory" >
+		<property name="openSearchUrl" value="{SCHEME}://{ADDRESS}:{PORT}"/>
+		<!-- AWS 認証を利用する場合、AWSSetting の設定も必要。 -->
+		<property name="httpRequestInterceptorFactory" class="org.iplass.mtp.impl.fulltextsearch.opensearch.awsv2.AWSRequestSigningApacheInterceptorFactory" >
+			<property name="serviceName" value="es"/>
+			<property name="region" value="ap-northeast-1"/>
+		</property>
+	</property>
+	
+	<property name="analysisFactory" class="org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.DefaultAnalysisFactory">
+        <property name="analyzer" >
+            <property name="my_kuromoji" class="org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.analyzer.KuromojiAnalyzerFactory">
+                <property name="mode" value="Search"/>
+                <property name="method" value="Nfc"/>
+            </property>
+        </property>
+    </property>
+	
+	<!--
+	testEntityの場合、my_kuromojiを利用し、それ以外の場合はkuromojiを利用する設定例
+	-->
+    <property name="defaultAnalyzerProperty" >
+        <property name="analyzer" value="kuromoji"/>
+    </property>
+    <property name="analyzerPropertyPerEntity" >
+        <property name="testEntity" class="org.iplass.mtp.impl.fulltextsearch.opensearch.mappings.AnalyzerProperty">
+            <property name="analyzer" value="my_kuromoji"/>
+        </property>
+    </property>
+
+	<property name="defaultOperator" value="AND" />
+
+	<property name="binaryParseLimitLength" value="100000"/>
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryPDFParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryOOXMLParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryOfficeParser">
+		<property name="continuableExceptions" value="org.apache.poi.poifs.filesystem.NotOLE2FileException" />
+	</property>
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryHtmlParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryTextParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryXMLParser" />
+	<property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryNameTypeParser" />
+</service>
+----
+
 ===== 設定例
 [source, xml]
 ----
@@ -741,9 +981,16 @@ Solrを利用した全文検索の項目を設定します。
 	defaultAnalyzerProperty：
 		利用するanalyzerを指定してください。
 
-	□ OpenSearch利用の場合
+	□ （非推奨）OpenSearch利用の場合
 	openSearchUrl：
 		用意したOpenSearchサーバのURLを指定してください。
+	defaultAnalyzerProperty：
+		利用するanalyzerを指定してください。
+
+	□ OpenSearch利用の場合
+	restClientFactory に DefaultRestClientFactory を設定する場合
+		openSearchUrl：
+			用意したOpenSearchサーバのURLを指定してください。
 	defaultAnalyzerProperty：
 		利用するanalyzerを指定してください。
 
@@ -774,9 +1021,16 @@ Solrを利用した全文検索の項目を設定します。
 	defaultAnalyzerProperty：
 		Set the analyzer to use
 
-	□ use to OpenSearch
+	□ (Deprecated) use to OpenSearch
 	openSearchUrl：
 		Set url of OpenSearch server.
+	defaultAnalyzerProperty：
+		Set the analyzer to use
+
+	□ use to OpenSearch
+	When setting DefaultRestClientFactory to restClientFactory
+		openSearchUrl：
+			Set url of OpenSearch server.
 	defaultAnalyzerProperty：
 		Set the analyzer to use
 -->
@@ -872,7 +1126,7 @@ Solrを利用した全文検索の項目を設定します。
     </property>
 	-->
 
-	<!-- OpenSearch利用 -->
+	<!-- （非推奨）OpenSearch利用 -->
 	<!--
 	<class>org.iplass.mtp.impl.aws.fulltextsearch.opensearch.OpenSearchFulltextSearchService</class>
 	<property name="restClientFactory" class="org.iplass.mtp.impl.aws.fulltextsearch.opensearch.DefaultRestClientFactory" >
@@ -896,6 +1150,37 @@ Solrを利用した全文検索の項目を設定します。
     </property>
     <property name="analyzerPropertyPerEntity" >
         <property name="testEntity" class="org.iplass.mtp.impl.aws.fulltextsearch.opensearch.mappings.AnalyzerProperty">
+            <property name="analyzer" value="my_kuromoji"/>
+        </property>
+    </property>
+	-->
+
+	<!-- OpenSearch利用 -->
+	<!--
+	<class>org.iplass.mtp.impl.fulltextsearch.opensearch.OpenSearchFulltextSearchService</class>
+	<depend>org.iplass.mtp.impl.awsv2.AWSSetting</depend>
+
+	<property name="restClientFactory" class="org.iplass.mtp.impl.fulltextsearch.opensearch.DefaultRestClientFactory" >
+		<property name="openSearchUrl" value="{SCHEME}://{ADDRESS}:{PORT}"/>
+		<property name="httpRequestInterceptorFactory" class="org.iplass.mtp.impl.fulltextsearch.opensearch.awsv2.AWSRequestSigningApacheInterceptorFactory" >
+			<property name="serviceName" value="es or aoss"/>
+			<property name="region" value="ap-northeast-1"/>
+		</property>
+	</property>
+
+	<property name="analysisFactory" class="org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.DefaultAnalysisFactory">
+        <property name="analyzer" >
+            <property name="my_kuromoji" class="org.iplass.mtp.impl.fulltextsearch.opensearch.analysis.analyzer.KuromojiAnalyzerFactory">
+                <property name="mode" value="Search"/>
+                <property name="method" value="Nfc"/>
+            </property>
+        </property>
+    </property>
+    <property name="defaultAnalyzerProperty" >
+        <property name="analyzer" value="kuromoji"/>
+    </property>
+    <property name="analyzerPropertyPerEntity" >
+        <property name="testEntity" class="org.iplass.mtp.impl.fulltextsearch.opensearch.mappings.AnalyzerProperty">
             <property name="analyzer" value="my_kuromoji"/>
         </property>
     </property>

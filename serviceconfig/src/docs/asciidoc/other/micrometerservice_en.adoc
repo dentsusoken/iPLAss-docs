@@ -43,7 +43,8 @@ To actually collect the metrics, the `loggers` of the AuthLoggerService must inc
 | enableAsyncMetrics | boolean | Specify whether to record the number of successful/unsuccessful asynchronous execution, the number of timeout, execution time as metrics. The default value is true. +
 To actually collect the metrics, the `workerFactory` of the RdbQueueService must include the Micrometer module <<MetricsWorkerFactory>>.
 | enableS3Metrics | boolean | Specify whether to record the request duration and number of requests of AWS S3 as metrics. The default value is true. +
-To actually collect the metrics, the `binaryStore` of the LobStoreService must include the Micrometer module <<MetricsS3LobStore>>.
+To actually collect metrics, the LobStoreService `binaryStore` must be set to <<aws2_S3LobStore>> and the configuration item `requestConfigureList` of the <<aws2_S3Controller>> must contain the Micrometer module <<aws2_micrometer_S3RequestMetricPublisherConfigure>>. +
+The functionality for AWS SDK for Java 1.x requires that the Micrometer module <<MetricsS3LobStore>> be included in the `binaryStore` of the LobStoreService in order to actually collect metrics.
 | enableMailMetrics | boolean | Specify whether to record  the number of successful/unsuccessful attempts and execution time of the mail transmission events as metrics. The default value is true. +
 To actually collect the metrics, the `listener` of the MailService must include the Micrometer module <<MetricsSendMailListener>>.
 | enablePushMetrics | boolean | Specify whether to record  the number of successful/unsuccessful attempts and execution time of the push transmission events as metrics. The default value is true. +
@@ -246,6 +247,7 @@ The following MeterRegistryFactory are provided in the standard.
 * <<JmxMeterRegistryFactory>>
 * <<PrometheusMeterRegistryFactory>>
 * <<CloudWatchMeterRegistryFactory>>
+* <<aws2_CloudWatchMeterRegistryFactory>>
 * <<NewRelicMeterRegistryFactory>>
 * <<LoggingMeterRegistryFactory>>
 
@@ -265,22 +267,31 @@ Factory class of io.micrometer.elastic.ElasticMeterRegistry that supports Elasti
 * `step` ： Metrics transmission interval (default value is "1m").
 
 For details of all the possible settings, please see JavaDoc of the  link:https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-elastic/src/main/java/io/micrometer/elastic/ElasticConfig.java[ElasticConfig^].
-| httpSender | <<HttpSender, HttpSender>> | A Class that controls how perform Http calls.
+| httpSender | <<HttpSender>> | A Class that controls how perform Http calls.
 |====================
 
 [[HttpSender]]
 .HttpSender
 Please specify the implementation class of io.micrometer.core.ipc.http.HttpSender to the class.
 
-The following HttpSender is provided in the standard. If not specified, <<HttpUrlConnectionSender, HttpUrlConnectionSender>> will be used.
+The following HttpSender is provided in the standard. If not specified, <<HttpUrlConnectionSender>> will be used.
 
 * <<AWSHttpSender>>
+* <<aws2_AWSHttpSender>>
 
 [[AWSHttpSender]]
-.AWSHttpSender
-Please specify org.iplass.mtp.impl.aws.micrometer.AWSHttpSender to the class.
+.(Deprecated)AWSHttpSender
+Please specify org.iplass.mtp.impl.micrometer.aws.AWSHttpSender to the class.
 
 This is an implementation class of HttpSender that supports Amazon OpenSearch Service. The access key, secret key, and AWSClient side settings can be configured in <<AWSSetting, [.eeonly]#AWSSetting#>>. The following items can be configured.
+
+[CAUTION]
+====
+AWS SDK for Java 1.x is in maintenance mode and will be discontinued in December 2025. +
+iPLAss recommends deprecating the AWS SDK for Java 1.x-based library iplass-ee-aws and moving to the AWS SDK for Java 2.x-based library iplass-ee-aws2. +
+If you are using this function, please migrate your settings to <<aws2_AWSHttpSender>> that uses the function of the library iplass-ee-aws2. +
+The library iplass-ee-aws will be removed in the future.
+====
 
 [cols="1,1,3", options="header"]
 |====================
@@ -288,6 +299,50 @@ This is an implementation class of HttpSender that supports Amazon OpenSearch Se
 | serviceName | String | Service name. The default value is "es".  +
 If you are using Amazon OpenSearch Service, do not change the default value.
 | region | String | Region of Amazon OpenSearch Service.
+|====================
+
+[[aws2_AWSHttpSender]]
+.AWSHttpSender(AWSHttpSenderBuilder)
+Specify the class org.iplass.mtp.impl.micrometer.awsv2.AWSHttpSenderBuilder. +
+Use the AWSHttpSenderBuilder, a feature exclusive to iPLAss 3.2, to generate an instance of org.iplass.mtp.impl.micrometer.awsv2.AWSHttpSender. +
+When applying to service-config, set it in the builder attribute. 
+
+HttpSender implementation class for Amazon OpenSearch Service. Access key, secret key, and default client settings are available in <<aws2_AWSSetting>>. The following items can be set
+
+[CAUTION]
+====
+Do not set org.iplass.mtp.impl.micrometer.awsv2.AWSHttpSender in the class attribute of service-config in iPLAss 3.2.
+
+.EXAMPLE
+[source,xml]
+----
+<!-- Correct Configuration Example -->
+<property name="meterRegistryFactory" class="org.iplass.mtp.impl.micrometer.registry.elastic.ElasticMeterRegistryFactory">
+	<property name="httpSender" builder="org.iplass.mtp.impl.micrometer.awsv2.AWSHttpSenderBuilder"> <1>
+		: 
+	</property>
+</property>
+
+<!-- Incorrect Configuration Example -->
+<property name="meterRegistryFactory" class="org.iplass.mtp.impl.micrometer.registry.elastic.ElasticMeterRegistryFactory">
+	<property name="httpSender" class="org.iplass.mtp.impl.micrometer.awsv2.AWSHttpSender"> <2>
+		: 
+	</property>
+</property>
+----
+<1> Use the builder attribute.
+<2> Use the class attribute.
+
+====
+
+[cols="1,1,3", options="header"]
+|====================
+| Item | Value | Description
+| serviceName | String | Service Name. The service name is implemented in the AWS Service Client. +
+Specify `es` if you are using the Amazon OpenSearch Service managed cluster.
+| region | String | Set the region for the AWS service. 
+| clientConfig | <<aws2_AWSSetting_AWSClientConfig>> | Configure AWS client settings, including AWS regions and communication settings.
+| defaultCharset | String | Default character set for response parsing. Used when Content-Type is not present in the response. The default value is "UTF-8".
 |====================
 
 [[HttpUrlConnectionSender]]
@@ -339,11 +394,19 @@ For details of all the possible settings, please see JavaDoc of the  link:https:
 |====================
 
 [[CloudWatchMeterRegistryFactory]]
-.CloudWatchMeterRegistryFactory
+.(Deprecated)CloudWatchMeterRegistryFactory
 Please specify org.iplass.mtp.impl.aws.micrometer.registry.cloudwatch.CloudWatchMeterRegistryFactory to the class.
 
 Factory class of io.micrometer.cloudwatch.CloudWatchMeterRegistry that supports Amazon CloudWatch. This class can be specified when an AWS module is added to a dependency. To specify this class, please add `io.micrometer:micrometer-registry-cloudwatch` to a runtime dependency. +
 The access key, secret key, and AWSClient side settings can be configured in <<AWSSetting, [.eeonly]#AWSSetting#>>. The following items can be configured.
+
+[CAUTION]
+====
+AWS SDK for Java 1.x is in maintenance mode and will be discontinued in December 2025. +
+iPLAss recommends deprecating the AWS SDK for Java 1.x-based library iplass-ee-aws and moving to the AWS SDK for Java 2.x-based library iplass-ee-aws2. +
+If you are using this function, please migrate your configuration to <<aws2_CloudWatchMeterRegistryFactory>> that uses the function of the library iplass-ee-aws2. +
+The library iplass-ee-aws will be removed in the future.
+====
 
 [cols="1,1,3a", options="header"]
 |====================
@@ -354,7 +417,27 @@ The access key, secret key, and AWSClient side settings can be configured in <<A
 * `namespace` ： Namespace to store the submitted custom metrics (default value is "micrometer-namespace").
 * `step` ： Metrics transmission interval (default value is "1m").
 
-For details of all the possible settings, please see JavaDoc of the  link:https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-cloudwatch/src/main/java/io/micrometer/cloudwatch/CloudWatchConfig.java[CloudWatchConfig^].
+For details of all the possible settings, please see JavaDoc of the  link:https://github.com/micrometer-metrics/micrometer/blob/1.12.x/implementations/micrometer-registry-cloudwatch/src/main/java/io/micrometer/cloudwatch/CloudWatchConfig.java[CloudWatchConfig^].
+|====================
+
+[[aws2_CloudWatchMeterRegistryFactory]]
+.CloudWatchMeterRegistryFactory
+Please specify org.iplass.mtp.impl.aws.micrometer.registry.cloudwatch.awsv2.CloudWatchMeterRegistryFactory to the class.
+
+Factory class for io.micrometer.cloudwatch2.CloudWatchMeterRegistry for Amazon CloudWatch, can be specified if AWS2 module is added to the dependency. If you specify this class, add `io.micrometer:micrometer-registry-cloudwatch2` to your runtime dependencies. +
+<<aws2_AWSSetting>> allows access key, secret key, and default client settings. The following items can be set
+
+[cols="1,1,3a", options="header"]
+|====================
+| Item | Value | Description
+| configMap | String, in format of Map | Configuration parameters for CloudWatchMeterRegistry. The main settings are as follows.
+
+* `region` ： CloudWatch Region.
+* `namespace` ： Namespace to store the submitted custom metrics (default value is "micrometer-namespace").
+* `step` ： Metrics transmission interval (default value is "1m").
+
+For details of all the possible settings, please see JavaDoc of the  link:https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-cloudwatch2/src/main/java/io/micrometer/cloudwatch2/CloudWatchConfig.java[CloudWatchConfig^].
+| clientConfig | <<aws2_AWSSetting_AWSClientConfig>> | Configure AWS client settings, including AWS regions and communication settings.
 |====================
 
 [[NewRelicMeterRegistryFactory]]
@@ -512,9 +595,9 @@ For details of all the possible settings, please see JavaDoc of the  link:https:
 		<property name="tagKey2" value="tagValue2" />
 		<property name="tagKey3" value="tagValue3" />
 	</property>
-	 -->
+	-->
 
-	 <!-- ■ PathResolver Settings ■ -->
+	<!-- ■ PathResolver Settings ■ -->
 	<property name="actionPathResolver" class="org.iplass.mtp.impl.micrometer.metrics.web.action.DefaultActionPathResolver" />
 	<property name="webApiPathResolver" class="org.iplass.mtp.impl.micrometer.metrics.web.webapi.DefaultWebApiPathResolver" />
 
@@ -533,10 +616,10 @@ For details of all the possible settings, please see JavaDoc of the  link:https:
 	</property>
 	-->
 
-	 <!-- ■ Customizer Settings ■ -->
+	<!-- ■ Customizer Settings ■ -->
 	<!--
 	<property name="customizerClass" value="yourCustomizerClassName" />
-	 -->
+	-->
 
 	<!-- ■ MeterRegistry Settings ■ -->
 	<!--
@@ -546,11 +629,20 @@ For details of all the possible settings, please see JavaDoc of the  link:https:
 	<!--
 	<property name="meterRegistryFactory" class="org.iplass.mtp.impl.micrometer.registry.elastic.ElasticMeterRegistryFactory">
 	-->
-		<!-- ■ If want to use Amazon OpenSearch Service, uncomment the following and change the properties. ■ -->
+		<!-- ■ If want to use Amazon OpenSearch Service, uncomment the following and change the property httpSender. ■ -->
+		<!-- (Deprecated) Example of using AWS SDK for Java 1.x. -->
 		<!--
-		<property name="httpSender" class="org.iplass.mtp.impl.aws.micrometer.AWSHttpSender">
+		<property name="httpSender" class="org.iplass.mtp.impl.micrometer.aws.AWSHttpSender">
 			<property name="serviceName" value="es" />
 			<property name="region" value="yourESRegion" />
+		</property>
+		-->
+		<!-- Example of using AWS SDK for Java 2.x. Depends on org.iplass.mtp.impl.awsv2.AWSSetting. Set it to the builder attribute. -->
+		<!--
+		<property name="httpSender" builder="org.iplass.mtp.impl.micrometer.awsv2.AWSHttpSenderBuilder">
+			<property name="serviceName" value="es" />
+			<property name="region" value="yourESRegion" />
+			<property name="defaultCharset" value="UTF-8" />
 		</property>
 		-->
 	<!--
@@ -571,7 +663,7 @@ For details of all the possible settings, please see JavaDoc of the  link:https:
 		</property>
 		<property name="tagsAsPrefix" value="prefix1" />
 	</property>
-	 -->
+	-->
 
 	<!-- for Prometheus -->
 	<!--
@@ -581,9 +673,21 @@ For details of all the possible settings, please see JavaDoc of the  link:https:
 	</property>
 	-->
 	
-	<!-- for CloudWatch -->
+	<!-- (Deprecated) for CloudWatch -->
+	<!-- Functions using AWS SDK for Java 1.x are deprecated; please change to functions using AWS SDK for Java 2.x. -->
 	<!--
 	<property name="meterRegistryFactory" class="org.iplass.mtp.impl.aws.micrometer.registry.cloudwatch.CloudWatchMeterRegistryFactory">
+		<property name="configMap" >
+			<property name="step" value="1m" />
+			<property name="region" value="yourRegion" />
+			<property name="namespace" value="micrometer-namespace" />
+		</property>
+	</property>
+	-->
+
+	<!-- for CloudWatch (AWS SDK for Java 2.x). Depends on org.iplass.mtp.impl.awsv2.AWSSetting. -->
+	<!--
+	<property name="meterRegistryFactory" class="org.iplass.mtp.impl.micrometer.registry.cloudwatch.awsv2.CloudWatchMeterRegistryFactory">
 		<property name="configMap" >
 			<property name="step" value="1m" />
 			<property name="region" value="yourRegion" />

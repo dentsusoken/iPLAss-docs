@@ -112,7 +112,8 @@ Gem(Generic Entity Manager)画面に関するサービス群です。
 [cols="1,3", options="header"]
 |===
 | 名前 | 概要
-| <<index.adoc#AWSSetting, [.eeonly]#AWSSetting#>> | AWSの設定を管理する サービスです。
+| <<index.adoc#AWSSetting, [.eeonly]#(非推奨)AWSSetting#>> | AWSの設定を管理する サービスです。AWS SDK for Java 1.x の設定を管理します。
+| <<index.adoc#aws2_AWSSetting, [.eeonly]#AWSSetting#>> | AWSの設定を管理する サービスです。AWS SDK for Java 2.x の設定を管理します。
 | <<index.adoc#InfinispanService, InfinispanService>> | InfinispanServiceを管理する サービスです。
 | <<index.adoc#RedisService, RedisService>> | RedisServiceを管理する サービスです。
 | <<index.adoc#CaptchaService, [.eeonly]#CaptchaService#>> | reCAPTCHAによるロボット排除を管理するためのサービスです。

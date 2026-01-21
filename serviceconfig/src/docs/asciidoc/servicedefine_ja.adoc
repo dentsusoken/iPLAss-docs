@@ -123,7 +123,16 @@ service-configファイルは、定義の一部を別ファイルに分割して
 | /infinispan-service-config.xml | infinispanに関するデフォルト設定です。
 | /redis-service-config.xml | redisに関するデフォルト設定です。
 | [.eeonly]#/appconsole-service-config.xml# | appConsoleに関するデフォルト設定です。Enterprise Editionで利用可能です。
-| [.eeonly]#/aws-service-config.xml# | awsに関するデフォルト設定です。Enterprise Editionで利用可能です。
+| [.eeonly]#/aws-service-config.xml# a| awsに関するデフォルト設定です。Enterprise Editionで利用可能です。iplass-ee-aws ライブラリに同梱されています。
+
+[CAUTION]
+====
+AWS SDK for Java 1.x はメンテナンスモードになっており、2025年12月 にサポートを終了する予定です。 +
+iPLAss では AWS SDK for Java 1.x ベースのライブラリ iplass-ee-aws を非推奨とし、AWS SDK for Java 2.x ベースのライブラリ iplass-ee-aws2 への移行を推奨します。 +
+本設定を利用している場合は、ライブラリ iplass-ee-aws2 の設定へ移行してください。 +
+ライブラリ iplass-ee-aws は将来削除される予定です。
+====
+| [.eeonly]#/aws2-service-config.xml# | awsに関するデフォルト設定です。Enterprise Editionで利用可能です。iplass-ee-aws2 ライブラリに同梱されています。
 | [.eeonly]#/wam-service-config.xml# | wamモジュールに関するデフォルト設定です。Enterprise Editionで利用可能です。
 | [.eeonly]#/micrometer-service-config.xml# | micrometerモジュールに関するデフォルト設定です。Enterprise Editionで利用可能です。
 |===
@@ -642,7 +651,14 @@ PropertyValueCoderには文字列をエンコード/デコードする処理を�
 パスフレーズより難読化された値をエンコード/デコード
 
 <<SecretsManagerPropertyValueCoder>>::
-AWS Secrets Managerのシークレットに登録された設定値を取得
+AWS Secrets Managerのシークレットに登録された設定値を取得。クラスは iplass-ee-aws ライブラリに含まれています。 +
+AWS認証情報として、デフォルトの認証情報プロバイダーチェーンを使用しています。 +
+詳細は link:https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html#credentials-default[AWS SDK for Java 1.x デフォルトの認証情報プロバイダチェーンの使用^]を参照してください。
+
+<<obfuscation_aws2_SecretsManagerPropertyValueCoder>>::
+AWS Secrets Managerのシークレットに登録された設定値を取得。クラスは iplass-ee-aws2 ライブラリに含まれています。 +
+AWS認証情報として、デフォルトの認証情報プロバイダーチェーンを使用しています。 +
+詳細は link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/credentials-chain.html[AWS SDK for Java 2.x デフォルトの認証情報プロバイダーチェーン^]を参照してください。
 
 未指定の場合はDefaultPropertyValueCoderが適用される。
 |===
@@ -678,38 +694,109 @@ org.iplass.mtp.impl.core.config.SystemEnvironmentVariablePassphraseSupplier::
 システム環境変数（MTP_CONFIG_PASSPHRASE）にてパスフレーズを指定。
 （javaシステム変数ではない）
 
-[.eeonly]#org.iplass.mtp.impl.aws.secretsmanager.SecretsManagerPassphraseSupplier#::
-AWS Secrets Managerのシークレットに登録されているpassphraseより取得。
+[.eeonly]#（非推奨）org.iplass.mtp.impl.aws.secretsmanager.SecretsManagerPassphraseSupplier#::
+AWS Secrets Managerのシークレットに登録されているpassphraseより取得。クラスは iplass-ee-aws ライブラリに含まれています。 +
+AWS認証情報として、デフォルトの認証情報プロバイダーチェーンを使用しています。 +
+詳細は link:https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html#credentials-default[AWS SDK for Java 1.x デフォルトの認証情報プロバイダチェーンの使用^]を参照してください。
+
+[CAUTION]
+====
+AWS SDK for Java 1.x はメンテナンスモードになっており、2025年12月 にサポートを終了する予定です。 +
+iPLAss では AWS SDK for Java 1.x ベースのライブラリ iplass-ee-aws を非推奨とし、AWS SDK for Java 2.x ベースのライブラリ iplass-ee-aws2 への移行を推奨します。 +
+本機能を利用している場合は、ライブラリ iplass-ee-aws2 の org.iplass.mtp.impl.core.config.secretsmanager.awsv2.SecretsManagerPassphraseSupplier へ設定を移行してください。 +
+ライブラリ iplass-ee-aws は将来削除される予定です。
+====
+
+[.eeonly]#org.iplass.mtp.impl.core.config.secretsmanager.awsv2.SecretsManagerPassphraseSupplier#::
+AWS Secrets Managerのシークレットに登録されているpassphraseより取得。クラスは iplass-ee-aws2 ライブラリに含まれています。 +
+AWS認証情報として、デフォルトの認証情報プロバイダーチェーンを使用しています。 +
+詳細は link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/credentials-chain.html[AWS SDK for Java 2.x デフォルトの認証情報プロバイダーチェーン^]を参照してください。
 
 未指定の場合はPropertyFilePassphraseSupplierが適用される。
 |passphrase|PropertyFilePassphraseSupplierを利用する場合、パスフレーズを指定。
-|aws.secretName|SecretsManagerPassphraseSupplierを利用する場合、シークレット名を指定。AWS認証情報として、デフォルトの認証情報プロバイダーチェーンを使用しています。
+|aws.secretName|SecretsManagerPassphraseSupplierを利用する場合、シークレット名を指定。
 |===
 
-例として、デフォルトの難読化設定を利用する場合、以下のように設定します。
+[[obfuscation_passphrase_example1]]
+.例１：デフォルトの難読化設定を利用
+パスフレーズのみを設定する例です。
 
 .crypt.propertiesの設定例
 ----
 passphrase=hogehoge
 ----
 
+[[obfuscation_passphrase_example2]]
+.例２：SecretsManagerPassphraseSupplier の難読化設定を利用
+AWS Secrets Manager にパスフレーズを定義し、その値を利用する例です。
+
+.AWS Secrets Manager の設定例 ( SecretName = test/passphrase/example2 )
+[source,json]
+----
+{ "passphrase": "passphrase_value" } //<1>
+----
+<1> SecretsManager で passphrase というKey／Valueを定義する。
+
+.crypt.propertiesの設定例
+[source,properties]
+----
+passphraseSupplier=org.iplass.mtp.impl.core.config.secretsmanager.awsv2.SecretsManagerPassphraseSupplier
+aws.secretName=test/passphrase/example2 #<1>
+----
+<1> AWS Secrets Manager に登録したシークレット名 `test/passphrase/example2` を設定することで、当該シークレットを取得することが可能。本例では、`passphrase_value` がパスフレーズとなる。
+
 [[SecretsManagerPropertyValueCoder]]
-.[.eeonly]#SecretsManagerPropertyValueCoder#
+.[.eeonly]#（非推奨）SecretsManagerPropertyValueCoder#
 classはorg.iplass.mtp.impl.aws.secretsmanager.SecretsManagerPropertyValueCoderを指定します。
+
+[CAUTION]
+====
+AWS SDK for Java 1.x はメンテナンスモードになっており、2025年12月 にサポートを終了する予定です。 +
+iPLAss では AWS SDK for Java 1.x ベースのライブラリ iplass-ee-aws を非推奨とし、AWS SDK for Java 2.x ベースのライブラリ iplass-ee-aws2 への移行を推奨します。 +
+本機能を利用している場合は、ライブラリ iplass-ee-aws2 の <<obfuscation_aws2_SecretsManagerPropertyValueCoder>> へ設定を移行してください。 +
+ライブラリ iplass-ee-aws は将来削除される予定です。
+====
 
 [cols="1,4a", options="header"]
 |===
 |項目名|設定値
-|aws.secretName|シークレット名を指定。AWS認証情報として、デフォルトの認証情報プロバイダーチェーンを使用しています。
+|aws.secretName|シークレット名を指定。
 |===
 
 例として、AWS Secrets Managerのシークレットに登録された設定値を取得する場合、以下のように設定します。
 
 .crypt.propertiesの設定例
+[source,properties]
 ----
 propertyValueCoder=org.iplass.mtp.impl.aws.secretsmanager.SecretsManagerPropertyValueCoder
-aws.secretName=test
+aws.secretName=test/propertyValueCoder/example #<1>
 ----
+<1> AWS Secrets Manager に登録したシークレット名 `test/propertyValueCoder/example` を設定することで、当該シークレットを取得することが可能。
+
+併せて、<<obfuscation_retrieving_values_with_aws_secrets_manager>> も確認ください。
+
+[[obfuscation_aws2_SecretsManagerPropertyValueCoder]]
+.[.eeonly]#SecretsManagerPropertyValueCoder#
+classはorg.iplass.mtp.impl.core.config.secretsmanager.awsv2.SecretsManagerPropertyValueCoderを指定します。
+
+[cols="1,4a", options="header"]
+|===
+|項目名|設定値
+|aws.secretName|シークレット名を指定。
+|===
+
+例として、AWS Secrets Managerのシークレットに登録された設定値を取得する場合、以下のように設定します。
+
+.crypt.propertiesの設定例
+[source,properties]
+----
+propertyValueCoder=org.iplass.mtp.impl.core.config.secretsmanager.awsv2.SecretsManagerPropertyValueCoder
+aws.secretName=test/propertyValueCoder/example #<1>
+----
+<1> AWS Secrets Manager に登録したシークレット名 `test/propertyValueCoder/example` を設定することで、当該シークレットを取得することが可能。
+
+併せて、<<obfuscation_retrieving_values_with_aws_secrets_manager>> も確認ください。
+
 
 .プロパティファイルの指定
 VM引数、もしくはweb.xmlのcontext-paramでpropertiesファイルへのパス（ClassLoaderのResourceとしてのパス、もしくはfileパス）を指定します。
@@ -760,16 +847,53 @@ passphraseについてはコンソールから直接入力で指定します。
 <property name="password" value="39y04KVcitPsSAQtXgvc=" encrypted="true" />
 ----
 
+[[obfuscation_retrieving_values_with_aws_secrets_manager]]
 .[.eeonly]#AWS Secrets Managerによる設定値の取得#
-SecretsManagerPropertyValueCoderを利用し、AWS Secrets Managerのシークレットに登録された設定値を取得します。AWS Secrets Managerのシークレットに設定値をKey-Value形式で事前に登録しておきます。
+SecretsManagerPropertyValueCoderを利用し、AWS Secrets Managerのシークレットに登録された設定値を取得します。
+
+.AWS Secrets Manager の設定
+Key-Value形式で事前に登録しておきます。本例では、シークレット名を `test/propertyValueCoder/example` として設定した想定です。
+
+[source,json]
+----
+{ 
+    "xxxservice_secret_password": "secret_password_value", 
+    "xxxservice_secret_key": "secret_key_value" 
+}
+----
+
+.crypt.propertiesの設定
+SecretsManagerPropertyValueCoder と、登録したシークレット名を設定します。
+
+[source,properties]
+----
+propertyValueCoder=org.iplass.mtp.impl.core.config.secretsmanager.awsv2.SecretsManagerPropertyValueCoder #<1>
+aws.secretName=test/propertyValueCoder/example #<2>
+----
+<1> 本例では、SecretsManagerPropertyValueCoder を設定しています。
+<2> AWS Secrets Manager に登録したシークレット名 `test/propertyValueCoder/example` を設定する。
 
 .service-configへ設定
 AWS Secrets Managerのシークレットに登録されている設定値のキーをservice-configファイルに設定します。
 併せてpropertyの属性としてencrypted="true"を指定します。
 
+[source,xml]
 ----
-<property name="password" value="passwordKey" encrypted="true" />
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE serviceDefinition>
+<serviceDefinition>
+    <service>
+        <interface>org.iplass.mtp....XxxService</interface>
+        <class>org.iplass.mtp....XxxService</interface>
+
+        <property name="simpleValue" value="value123" />
+        <property name="password" value="xxxservice_secret_password" encrypted="true" /> <!--1-->
+        <property name="key" value="xxxservice_secret_key" encrypted="true" /> <!--2-->
+    </service>
+</serviceDefinition>
 ----
+<1> property 要素の value 属性に設定された "xxxservice_secret_password" が AWS Secrets Manager のキーとなります。値は `secret_password_value` が設定されます。
+<2> property 要素の value 属性に設定された "xxxservice_secret_key" が AWS Secrets Manager のキーとなります。値は `secret_key_value` が設定されます。
 
 [[preprocess]]
 === プリプロセッサ
@@ -851,7 +975,7 @@ CAUTION: `$` `\` はGroovyTemplateでは予約語となります。 +
 
 	<inherits>/mtp-core-service-config-${rdb}.xml</inherits>
 	<inherits>/mtp-web-service-config.xml</inherits>
- 	<inherits>/mtp-tools-service-config.xml</inherits>
+	<inherits>/mtp-tools-service-config.xml</inherits>
 	<inherits>/gem-service-config.xml</inherits>
 	<!-- <% if (includeAdmin == 'true') {%> -->
 	<inherits>/adminconsole-service-config.xml</inherits>
