@@ -978,7 +978,7 @@ Reference型用のプロパティエディタです。
 |
 |
 |画面に表示する方法を下記から選択します。 +
-`Link` `Select` `Checkbox` `RefCombo` `Tree` `NestTable` `Label` `Unique` `Hidden`
+`Link` `Select` `Checkbox` `RefCombo` `Tree` `NestTable` `Label` `Unique` `Hidden` `SelectFilter`
 
 
 `Checkbox` は多重度1の場合はラジオボタン、それ以外はチェックボックスになります。
@@ -1013,7 +1013,8 @@ Select +
 Checkbox +
 RefCombo +
 Tree +
-Label
+Label +
+SelectFilter
 |表示ラベルとして扱うプロパティを設定します。
 `name` 以外のプロパティを画面にラベルとして表示できます。
 
@@ -1322,6 +1323,13 @@ Checkbox(多重度1のみ)
 詳細・編集画面
 |Unique
 |参照エンティティを検索するためのユニークキープロパティを指定します。
+
+|選択フィルター参照設定
+|検索条件 +
+一括更新画面 +
+詳細・編集画面
+|SelectFilter
+|選択フィルターの条件を設定します。
 
 |操作ログリンクを表示
 |詳細画面
@@ -1802,6 +1810,103 @@ image::images/entityview_setting-linkproperty-searchcondition5.png[]
 この場合多重度1限定のためRadio表示されます。
 
 なお、検索条件については、多重度１の場合でもCheckbox表示され、In条件となるため非対象としています。
+
+[[selectFilter]]
+===== 選択フィルターの設定
+表示タイプを selectFilter に設定することで、文字列によりEditorの選択値を絞り込みながら選択することが可能になります。
+
+====== 検索一覧
+文字列に合わせて選択可能な項目を絞り込みます。
+
+image::images/entityview_setting-selectfilterproperty-searchcondition2.png[]
+
+====== 編集画面
+検索一覧と同様に選択可能な項目を絞り込みます。
+
+image::images/entityview_setting-selectfilterproperty-detail1.png[]
+
+image::images/entityview_setting-selectfilterproperty-detail2.png[]
+
+.設定項目
+[cols="1,8a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|プロパティ
+|選択フィルターに使用するプロパティを指定します。  
+指定したプロパティに入力された値を基に、参照データを絞り込みます。
+
+|検索条件
+|選択肢を検索する際に適用する条件を指定します。
+
+|ソートアイテム
+|選択可能項目をソートする項目を設定します。
+
+|ソート種別
+|選択可能項目をソートする種別を設定します。
+
+|検索件数
+|選択フィルターで、1回の検索処理あたりに取得する件数を指定します。  
+
+未指定の場合、または0の場合は、<<../../../serviceconfig/index.adoc#GemConfigService, GemConfigService>>
+で定義される `selectFilterSearchPageSizeDefault` が適用されます。
+
+|検索パターン
+|検索時の一致方法を指定します。
+
+PREFIX:: 前方一致  
+PARTIAL:: 部分一致  
+POSTFIX:: 後方一致  
+
+|再度検索パターン
+|再検索（ページング以外の検索）実行時に、既存の選択状態を維持するか解除するかを指定します。  
+
+KEEP:: 選択状態を保持
+CLEAR:: 選択状態を解除
+|===
+
+
+.画面動作
+文字列入力により、Editor の選択値を絞り込みながら選択することができます。
+
+初期表示時点では検索値は未入力の状態となり、選択可能な項目は表示されません。
+
+image::images/entityview_setting-selectfilterproperty-detail1.png[]
+
+*検索動作*
+
+- 入力欄からフォーカスアウト、または Enter キー押下時に検索を実行します。
+
+*検索結果の表示*
+
+* 検索条件に一致した候補を選択肢リストに表示します。
+* すべての候補を表示できない場合、リスト末尾に `...` を表示します。
+
+image::images/entityview_setting-selectfilterproperty-detail2.png[]
+
+*ページング（`...`）*
+
+* `...` をクリックすると、同一検索条件で次ページのデータを取得し、リスト末尾に追記表示します。
+* さらに未表示のデータが存在する場合は `...` を表示したままとします。
+* 全件の表示が完了した時点で `...` は非表示となります。
+
+image::images/entityview_setting-selectfilterproperty-actionconfirm1.png[]
+
+*選択動作*
+
+多重度 = 1
+
+* 検索結果の候補が1件のみの場合、自動的に選択され、入力欄が補完されます。
+* 候補を選択すると、検索対象（ラベル、コード等）が入力欄に自動補完されます。
+* 他の選択肢はすべてクリアされます。
+
+多重度 > 1
+
+* 選択肢を選択しても、入力欄の検索条件は変更されません。
+* 既に選択されている他の選択肢は保持されます。
+
+image::images/entityview_setting-selectfilterproperty-actionconfirm2.png[]
 
 [[selectpropertyeditor]]
 ==== SelectPropertyEditor

@@ -81,7 +81,7 @@ CAUTION: 後方互換性のための設定フラグです。将来のバージ�
 * PDFと画像のアップロード許可 `^(application/pdf\|image/.*)$`
 
 検証対象となる MIME Type の決定方法については、<<WebFrontendService, WebFrontendService uploadFileTypeDetector>>, <<FileTypeDetector, FileTypeDetector>> を参照してください。
-
+| selectFilterSearchPageSizeDefault | int | 参照型選択フィルターの毎回検索件数。未指定の場合のデフォルト値は40です。
 | richTextLibrary | String | StringPropertyEditorの `RichText` タイプで利用するデフォルトのリッチテキストライブラリ。 `QUILL` または `CKEDITOR` を指定します。デフォルト値は `QUILL` です。
 | imageColors | <<ImageColorSetting>>、複数指定可 | 検索画面や詳細画面、メニュー等に設定するイメージカラーの設定。
 | skins | <<Skin>>、複数指定可 | スキン。

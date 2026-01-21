@@ -82,7 +82,7 @@ Configuration example
 * Accept PDFs and images `^(application/pdf\|image/.*)$`
 
 See <<WebFrontendService, WebFrontendService uploadFileTypeDetector>>, <<FileTypeDetector, FileTypeDetector>> for information on how to determine the MIME Type to be validated.
-
+| selectFilterSearchPageSizeDefault | int | The number of records retrieved each time by the reference-type selectFilter. The default value is 40.
 | richTextLibrary | String | Default rich text library to be used with StringPropertyEditor's `RichText` type. Specifies `QUILL` or `CKEDITOR`. The default value is `QUILL`.
 | ImageColors | <<ImageColorSetting>>, Multiple | Change the image colors on the search screen, detail screen, menu, etc.
 | skins | <<Skin>>, Multiple | Skins.
