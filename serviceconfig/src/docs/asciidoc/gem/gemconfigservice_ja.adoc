@@ -134,7 +134,7 @@ CAUTION: 後方互換性のための設定フラグです。将来のバージ�
 | aggregationRawdataFileDownloadFooter| String | 集計のローデータのファイルダウンロードのフッター文言。
 | confirmUserTaskSubmit| boolean | ワークフローのタスク編集画面でタスク確認ダイアログを表示するか。デフォルト値はfalseです。
 | confirmUserTaskCancel| boolean | ワークフローのタスク編集画面でキャンセル確認ダイアログを表示するか。デフォルト値はfalseです。
-| showUserTaskSeachCondResetButton| boolean | ワークフローのタスク一覧画面でリセットボタンを表示するか。デフォルト値はtrueです。
+| showUserTaskSearchCondResetButton| boolean | ワークフローのタスク一覧画面でリセットボタンを表示するか。デフォルト値はtrueです。
 | showUserTaskPulldownPleaseSelectLabel| boolean | ワークフローのタスク一覧画面でプルダウンの未選択時のラベル「選択してください」を表示するか。デフォルト値はtrueです。
 |===
 
@@ -374,7 +374,7 @@ classにorg.iplass.gem.EnterpriseEntityViewHelperImplを指定します。
 	<property name="confirmUserTaskCancel" value="false"/>
 
 	<!-- ワークフローのタスク検索画面でリセットボタンを表示するか -->
-	<property name="showUserTaskSeachCondResetButton" value="true"/>
+	<property name="showUserTaskSearchCondResetButton" value="true"/>
 
 	<!-- ワークフローのタスク検索画面でプルダウンの「選択してください」を表示するか -->
 	<property name="showUserTaskPulldownPleaseSelectLabel" value="true" />
