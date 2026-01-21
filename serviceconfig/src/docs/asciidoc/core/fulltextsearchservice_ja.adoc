@@ -596,11 +596,11 @@ classはorg.iplass.mtp.impl.fulltextsearch.opensearch.OpenSearchTransportFactory
 OpenSearch Client の `org.opensearch.client.transport.OpenSearchTransport` を生成する Factory クラスです。 +
 標準で以下の OpenSearchTransportFactory を提供します。
 
-- <<org.iplass.mtp.impl.fulltextsearch.openserarch.awsv2.AwsSdk2OpenSearchTransportFactory>>
+- <<org.iplass.mtp.impl.fulltextsearch.opensearch.awsv2.AwsSdk2OpenSearchTransportFactory>>
 
-[[org.iplass.mtp.impl.fulltextsearch.openserarch.awsv2.AwsSdk2OpenSearchTransportFactory]]
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.awsv2.AwsSdk2OpenSearchTransportFactory]]
 .AwsSdk2OpenSearchTransportFactory
-class は org.iplass.mtp.impl.fulltextsearch.openserarch.awsv2.AwsSdk2OpenSearchTransportFactory を指定します。 +
+class は org.iplass.mtp.impl.fulltextsearch.opensearch.awsv2.AwsSdk2OpenSearchTransportFactory を指定します。 +
 AWS IAM 認証情報でリクエストに署名する場合に利用します。 認証情報は <<aws2_AWSSetting>> の設定を利用します。 +
 以下の項目を設定可能です。
 
@@ -897,7 +897,7 @@ classはorg.iplass.mtp.impl.fulltextsearch.opensearch.mappings.AnalyzerProperty�
 
 	<!-- AWS 認証を利用する場合は、restClientFactory をコメントアウトし、以下の設定を有効化する。AWSSetting の設定も必要。 -->
 	<!--
-	<property name="transportFactory"  class="org.iplass.mtp.impl.fulltextsearch.openserarch.awsv2.AwsSdk2OpenSearchTransportFactory">
+	<property name="transportFactory"  class="org.iplass.mtp.impl.fulltextsearch.opensearch.awsv2.AwsSdk2OpenSearchTransportFactory">
 		<property name="host" value="{ADDRESS}:{PORT}" />
 		<property name="serviceName" value="es or aoss" />
 		<property name="region" value="ap-northeast-1" />
@@ -1142,7 +1142,7 @@ classはorg.iplass.mtp.impl.fulltextsearch.opensearch.mappings.AnalyzerProperty�
 	<class>org.iplass.mtp.impl.fulltextsearch.opensearch.OpenSearchFulltextSearchService</class>
 	<depend>org.iplass.mtp.impl.awsv2.AWSSetting</depend>
 
-	<property name="transportFactory"  class="org.iplass.mtp.impl.fulltextsearch.openserarch.awsv2.AwsSdk2OpenSearchTransportFactory">
+	<property name="transportFactory"  class="org.iplass.mtp.impl.fulltextsearch.opensearch.awsv2.AwsSdk2OpenSearchTransportFactory">
 		<property name="host" value="{ADDRESS}:{PORT}" />
 		<property name="serviceName" value="es or aoss" />
 		<property name="region" value="ap-northeast-1" />

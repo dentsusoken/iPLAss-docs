@@ -448,7 +448,7 @@ Entity定義単位でAnalyzerを切り替えたい場合、Entity名とAnalyzerP
         <property name="openSearchUrl" value="{SCHEME}://{ADDRESS}:{PORT}"/>
     </property>
     -->
-    <property name="transportFactory"  class="org.iplass.mtp.impl.fulltextsearch.openserarch.awsv2.AwsSdk2OpenSearchTransportFactory">
+    <property name="transportFactory"  class="org.iplass.mtp.impl.fulltextsearch.opensearch.awsv2.AwsSdk2OpenSearchTransportFactory">
         <property name="host" value="{ADDRESS}:{PORT}" />
         <!-- es:マネージド型クラスター、 aoss：サーバーレス -->
         <property name="serviceName" value="es" />
