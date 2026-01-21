@@ -1532,7 +1532,7 @@ Custom Title ::
 `Show Filter Condition Property` に表示対象のプロパティをドラッグ&ドロップすることでタスク一覧のフィルター条件項目となります。
 
 |Show Filter Condition Property
-|スク一覧のフィルター条件に表示する項目です。
+|タスク一覧のフィルター条件に表示する項目です。
 `UserTask Property` からドラッグ&ドロップで表示対象を指定します。 +
 ドラッグ&ドロップで順番を入れ替えることでフィルター条件の表示順を変更できます。
 
@@ -1758,7 +1758,7 @@ Toのみ入力時 → `プロパティ &lE; To入力値`
 |===
 
 [[taskpropertyeditorexpression]]
-.ExpressionropertyEditor
+.ExpressionPropertyEditor
 `Expression` 型用のプロパティエディタです。
 
 [cols="1,1,8a", options="header"]
