@@ -600,11 +600,11 @@ Please specify the implementing class of org.iplass.mtp.impl.fulltextsearch.open
 Factory class that generates `org.opensearch.client.transport.OpenSearchTransport` for OpenSearch Client. +
 The following OpenSearchTransportFactory is provided by default.
 
-- <<org.iplass.mtp.impl.fulltextsearch.openserarch.awsv2.AwsSdk2OpenSearchTransportFactory>>
+- <<org.iplass.mtp.impl.fulltextsearch.opensearch.awsv2.AwsSdk2OpenSearchTransportFactory>>
 
-[[org.iplass.mtp.impl.fulltextsearch.openserarch.awsv2.AwsSdk2OpenSearchTransportFactory]]
+[[org.iplass.mtp.impl.fulltextsearch.opensearch.awsv2.AwsSdk2OpenSearchTransportFactory]]
 .AwsSdk2OpenSearchTransportFactory
-Please specify the implementing class of org.iplass.mtp.impl.fulltextsearch.openserarch.awsv2.AwsSdk2OpenSearchTransportFactory. +
+Please specify the implementing class of org.iplass.mtp.impl.fulltextsearch.opensearch.awsv2.AwsSdk2OpenSearchTransportFactory. +
 Used to sign requests with AWS IAM credentials. Authentication information uses the <<aws2_AWSSetting>> setting. +
 The following items can be set
 
@@ -902,7 +902,7 @@ Please specify org.iplass.mtp.impl.fulltextsearch.opensearch.mappings.AnalyzerPr
 
 	<!-- To use AWS authentication, comment out restClientFactory and enable the following settings. AWSSetting must also be set. -->
 	<!--
-	<property name="transportFactory"  class="org.iplass.mtp.impl.fulltextsearch.openserarch.awsv2.AwsSdk2OpenSearchTransportFactory">
+	<property name="transportFactory"  class="org.iplass.mtp.impl.fulltextsearch.opensearch.awsv2.AwsSdk2OpenSearchTransportFactory">
 		<property name="host" value="{ADDRESS}:{PORT}" />
 		<property name="serviceName" value="es or aoss" />
 		<property name="region" value="ap-northeast-1" />
@@ -1108,7 +1108,7 @@ Please specify org.iplass.mtp.impl.fulltextsearch.opensearch.mappings.AnalyzerPr
 	<class>org.iplass.mtp.impl.fulltextsearch.opensearch.OpenSearchFulltextSearchService</class>
 	<depend>org.iplass.mtp.impl.awsv2.AWSSetting</depend>
 
-	<property name="transportFactory"  class="org.iplass.mtp.impl.fulltextsearch.openserarch.awsv2.AwsSdk2OpenSearchTransportFactory">
+	<property name="transportFactory"  class="org.iplass.mtp.impl.fulltextsearch.opensearch.awsv2.AwsSdk2OpenSearchTransportFactory">
 		<property name="host" value="{ADDRESS}:{PORT}" />
 		<property name="serviceName" value="es or aoss" />
 		<property name="region" value="ap-northeast-1" />
