@@ -647,11 +647,20 @@ Binary型及びLongText型のデータの保存先は、ファイル形式、RDB
 ====
 RDB内で保存の場合は、org.iplass.mtp.impl.lob.lobstore.rdb.RdbLobStoreを指定 +
 ファイル形式で保存の場合は、org.iplass.mtp.impl.lob.lobstore.file.FileLobStoreを指定 +
-AWS S3で保存の場合は、org.iplass.mtp.impl.aws.lobstore.s3.S3LobStoreを指定
+AWS S3で保存の場合は、org.iplass.mtp.impl.lob.lobstore.s3.awsv2.S3LobStoreを指定
 ====
 +
 CAUTION: RDBとしてMySQL、PostgreSQLを利用する場合、binaryStoreはFileLobStoreもしくはS3LobStoreの利用を推奨します。
 これらのDBへJDBC経由でアクセスした場合、バイナリデータはストリーム処理されないため、OutOfMemoryErrorの危険性が増します。
++
+[CAUTION]
+====
+AWS SDK for Java 1.x はメンテナンスモードになっており、2025年12月 にサポートを終了する予定です。 +
+iPLAss では AWS SDK for Java 1.x ベースのライブラリ iplass-ee-aws を非推奨とし、AWS SDK for Java 2.x ベースのライブラリ iplass-ee-aws2 への移行を推奨します。 +
+ライブラリ iplass-ee-aws の `org.iplass.mtp.impl.aws.lobstore.s3.S3LobStore` を利用している場合は、 +
+ライブラリ iplass-ee-aws2 の `org.iplass.mtp.impl.lob.lobstore.s3.awsv2.S3LobStore` へ設定を移行してください。 +
+ライブラリ iplass-ee-aws は将来削除される予定です。
+====
 +
 [source,xml]
 .設定例１
@@ -664,6 +673,7 @@ CAUTION: RDBとしてMySQL、PostgreSQLを利用する場合、binaryStoreはFil
   <property name="longTextStore" class="org.iplass.mtp.impl.lob.lobstore.rdb.RdbLobStore" />
 </service>
 ----
++
 この設定では、Binary型のデータを「D:\tmp\fileLobStore」フォルダ下にファイル形式で保存、LongText型のデータをDB内に保存します。
 +
 [source,xml]
@@ -671,10 +681,12 @@ CAUTION: RDBとしてMySQL、PostgreSQLを利用する場合、binaryStoreはFil
 ----
 <service>
   <interface>org.iplass.mtp.impl.lob.LobStoreService</interface>
-  <property name="binaryStore" class="org.iplass.mtp.impl.aws.lobstore.s3.S3LobStore">
-    <property name="region" value="ap-northeast-1" />
-    <property name="endpoint" value="s3.ap-northeast-1.amazonaws.com" />
+  <depend>org.iplass.mtp.impl.awsv2.AWSSetting</depend>
+  <property name="binaryStore" class="org.iplass.mtp.impl.lob.lobstore.s3.awsv2.S3LobStore">
     <property name="bucketName" value="yourBucketName" />
+    <property name="clientConfig" class="org.iplass.mtp.impl.awsv2.AWSClientConfig">
+      <property name="region" value="ap-northeast-1" />
+    </property>
   </property>
   <property name="longTextStore" class="org.iplass.mtp.impl.lob.lobstore.rdb.RdbLobStore" />
 </service>
