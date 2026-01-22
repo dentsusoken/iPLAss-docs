@@ -639,11 +639,20 @@ To change the method to store the data, please do the following configurations. 
 ====
 To store in RDB, specify org.iplass.mtp.impl.lob.lobstore.rdb.RdbLobStore +
 To store in files, specify org.iplass.mtp.impl.lob.lobstore.file.FileLobStore +
-To store in AWS S3, specify org.iplass.mtp.impl.aws.lobstore.s3.S3LobStore
+To store in AWS S3, specify org.iplass.mtp.impl.lob.lobstore.s3.awsv2.S3LobStore
 ====
 +
 CAUTION: If the RDB in the context is MySQL or PostgreSQL, we recommend to use FileLobStore or S3LobStore for binaryStore.
 As when the DB was accessed via JDBC, the binary data will be processed as data stream, which may cause OutOfMemoryError.
++
+[CAUTION]
+====
+The AWS SDK for Java 1.x is in maintenance mode and is scheduled to reach end of life in December 2025. +
+iPLAss is deprecating the iplass-ee-aws library based on AWS SDK for Java 1.x and recommends migrating to the iplass-ee-aws2 library based on AWS SDK for Java 2.x. +
+If you are using the `org.iplass.mtp.impl.aws.lobstore.s3.S3LobStore` class from the iplass-ee-aws library, +
+please migrate your configuration to the `org.iplass.mtp.impl.lob.lobstore.s3.awsv2.S3LobStore` class in the iplass-ee-aws2 library. +
+The iplass-ee-aws library is scheduled for future removal.
+====
 +
 [source,xml]
 .Example 1
@@ -656,6 +665,7 @@ As when the DB was accessed via JDBC, the binary data will be processed as data 
   <property name="longTextStore" class="org.iplass.mtp.impl.lob.lobstore.rdb.RdbLobStore" />
 </service>
 ----
++
 With this setting, Binary type data is saved in the files under the path of "D:\tmp\fileLobStore" folder, while LongText type data is saved in the DB.
 +
 [source,xml]
@@ -663,10 +673,12 @@ With this setting, Binary type data is saved in the files under the path of "D:\
 ----
 <service>
   <interface>org.iplass.mtp.impl.lob.LobStoreService</interface>
-  <property name="binaryStore" class="org.iplass.mtp.impl.aws.lobstore.s3.S3LobStore">
-    <property name="region" value="ap-northeast-1" />
-    <property name="endpoint" value="s3.ap-northeast-1.amazonaws.com" />
+  <depend>org.iplass.mtp.impl.awsv2.AWSSetting</depend>
+  <property name="binaryStore" class="org.iplass.mtp.impl.lob.lobstore.s3.awsv2.S3LobStore">
     <property name="bucketName" value="yourBucketName" />
+    <property name="clientConfig" class="org.iplass.mtp.impl.awsv2.AWSClientConfig">
+      <property name="region" value="ap-northeast-1" />
+    </property>
   </property>
   <property name="longTextStore" class="org.iplass.mtp.impl.lob.lobstore.rdb.RdbLobStore" />
 </service>
