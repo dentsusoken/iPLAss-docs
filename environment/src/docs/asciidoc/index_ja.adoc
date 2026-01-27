@@ -880,6 +880,115 @@ MySQL及びパーティション対応のPostgreSQLを利用の場合、「audit
 インストーラにてiPLAssのセットアップを行います。
 インストーラではiPLAssの動作に必要な情報を画面または設定ファイルにて指定することによりiPLAssの動作環境を作成します。
 
+[[Installer-bundled-modules]]
+=== バンドルモジュール
+インストーラには、以下のモジュールがバンドルされています。
+
+.バンドルモジュール一覧
+[cols=">1,2,2,5a",options="header,autowidth"]
+|===
+| No.
+| Community Edition
+| Enterprise Edition
+| 備考
+
+| 1
+| iplass-admin
+| iplass-ee-admin
+| 
+
+| 2
+| iplass-core
+| iplass-ee-core
+| 
+
+| 3
+| iplass-gem
+| iplass-ee-gem
+| 
+
+| 4
+| iplass-tools
+| iplass-ee-tools
+| 
+
+| 5
+| iplass-web
+| iplass-ee-web
+| 
+
+| 6
+| iplass-googlecloud
+| iplass-ee-googlecloud
+| 3.2.23 以降のバージョンにバンドルされています。
+
+| 7
+| iplass-infinispan
+| iplass-ee-infinispan
+| 
+
+| 8
+| iplass-redis
+| iplass-ee-redis
+| 
+
+| 9
+| 
+| iplass-ee-admin-mdc
+| 3.2.1 以降のバージョンにバンドルされています。
+
+| 10
+| 
+| iplass-ee-appconsole
+| 
+
+| 11
+| 
+| iplass-ee-aws2
+| 3.2.39 以降のバージョンにバンドルされています。 +
+3.2.38 以前のバージョンでは iplass-ee-aws がバンドルされます。
+
+| 12
+| 
+| iplass-ee-elasticsearch
+| 
+
+| 13
+| 
+| iplass-ee-mdc
+| 
+
+| 14
+| 
+| iplass-ee-micrometer
+| 
+
+| 15
+| 
+| iplass-ee-opensearch
+| 3.2.39 以降のバージョンにバンドルされています。
+
+| 16
+| 
+| iplass-ee-sendgrid
+| 
+
+| 17
+| 
+| iplass-ee-solr
+| 
+
+| 18
+| 
+| iplass-ee-twilio
+| 
+
+| 19
+| 
+| iplass-ee-wam
+| 
+|===
+
 === インストール方式
 インストールの方式には、セットアップ画面にてインストールを行う「ウィザードインストール」と、セットアップ画面を介さずセットアップに必要な情報を予め設定したインストール設定ファイルを用いてインストールを行う「サイレントインストール」の２通りの方式があります。
 
