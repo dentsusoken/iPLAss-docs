@@ -137,6 +137,8 @@ Please configure these items along with the settings from community editions.
 | aggregationRawdataFileDownloadFooter | String | Footer wording of raw data aggregate file downloads.
 | confirmUserTaskSubmit | boolean | Whether to display the task confirmation dialog on the workflow task edit screen. The default value is true.
 | confirmUserTaskCancel | boolean | Whether to display a cancellation confirmation dialog on the workflow task edit screen. The default value is true.
+| showUserTaskSearchCondResetButton| boolean | Whether to display the reset button on the workflow task list screen. The default value is true.
+| showUserTaskPulldownPleaseSelectLabel| boolean | Whether to display the label "Please select" when no selection is made in the dropdown on the workflow task list screen. The default value is true.
 |===
 
 [[BinaryDownloadLoggingTargetProperty]]
@@ -368,6 +370,12 @@ There is no configurable items.
 	It is set to display by default. Set to false if you want to hide it.
 	-->
 	<property name="confirmUserTaskCancel" value="true"/>
+
+	<!-- Whether to display the reset button on the workflow task search screen -->
+	<property name="showUserTaskSearchCondResetButton" value="true"/>
+
+	<!-- Whether to display the "Please select" dropdown on the workflow task search screen -->
+	<property name="showUserTaskPulldownPleaseSelectLabel" value="true" />
 
 	<!-- Settings on asynchronous file upload  -->
 	<!-- If true(asynchronous) was selected, please also set the useQueue property in RdbQueueService to true. -->

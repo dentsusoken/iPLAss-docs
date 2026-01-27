@@ -290,9 +290,9 @@ link:https://materialdesignicons.com/[Material Design Icons^]のアイコンタ�
 |タブの表示を設定します。
 カスタマイズ・多言語対応可能です。
 
-Show ::
+Show::
 表示するタブを選択します。
-Custom Title ::
+Custom Title::
 タブのタイトルを変更する場合に指定します。
 
 |Search Limit
@@ -346,13 +346,18 @@ Custom Title ::
 
 |Show Properties
 |タスク一覧に表示するタスクの項目を指定します。
-カスタマイズ・多言語対応可能です。
+カスタマイズ・多言語対応可能です。 + 
+ユーザータスクカスタムプロパティEntity（mtp.workflow.UserTaskCustomProperty）に定義したプロパティを選択することが出来ます。 + 
+ドラッグ&ドロップで順番を入れ替えることでタスク一覧での表示順を変更することが出来ます。
 詳細は<<taskviewlistitem, タスク一覧項目>>を参照してください。
 
-Show ::
+Show::
 表示する項目を選択します。
-Custom Display Name ::
+Custom Display Name::
 一覧項目名を変更する場合に指定します。
+
+|Filter Condition Setting
+|フィルター条件に表示する項目を指定します。詳細は<<taskfilterconditionsetting, フィルター条件設定項目>>を参照してください。
 
 |Custom Properties
 |タスク一覧に表示するタスク対象Entityの項目を指定します。
@@ -394,6 +399,674 @@ Custom Display Name ::
 
 |QueueName
 |タスクキュー名
+
+|ユーザータスクカスタムプロパティ
+|ユーザータスクカスタムプロパティEntity（mtp.workflow.UserTaskCustomProperty）に定義したプロパティ
+|===
+
+[[taskfilterconditionsetting]]
+.フィルター条件設定項目
+フィルター条件設定項目です。
+
+[cols="1,2a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|Show Filter Condition
+|タスク一覧画面のフィルター条件の表示・非表示を設定します。
+チェックした場合、フィルター条件が表示されます。
+
+|Custom Filter Title
+|フィルター条件のタイトルを変更する場合に指定します。カスタマイズ多言語対応可能です。
+
+|UserTask Property
+|UserTaskプロパティ、UserTaskカスタムプロパティが表示されます。
+`Show Filter Condition Property` に表示対象のプロパティをドラッグ&ドロップすることでタスク一覧のフィルター条件項目となります。
+
+|Show Filter Condition Property
+|タスク一覧のフィルター条件に表示する項目です。
+`UserTask Property` からドラッグ&ドロップで表示対象を指定します。 +
+ドラッグ&ドロップで順番を入れ替えることでフィルター条件の表示順を変更することが出来ます。
+
+Required:: フィルター条件の必須項目にする場合はチェックします。
+PropertyEditorSetting:: プロパティエディタを設定することで項目の表示方法をカスタマイズ可能です。
+プロパティエディタについて、詳細は<<taskpropertyeditor, フィルター条件プロパティエディタ>>を参照してください。
+|===
+
+[[taskpropertyeditor]]
+.フィルター条件プロパティエディタ
+フィルター条件プロパティエディタは各フィルター条件プロパティの入力表示設定になります。
+TOP画面パーツ `タスク一覧フィルター条件設定`の`Show Filter Condition Property` に配置した各プロパティの設定を変更をすることができます。 +
+フィルター条件設定について、詳細は<<taskfilterconditionsetting, フィルター条件設定項目>>を参照してください。
+
+[[taskpropertyeditorcommon]]
+.共通設定項目
+各プロパティエディタで共通の設定項目です。
+[cols="1,1,8a", options="header"]
+|===
+|設定項目
+|表示タイプ
+|設定内容
+
+|入力カスタムスタイル
+|
+|各プロパティのinput要素に対して、直接style属性を指定することが可能です。 
+例えば入力用のinputの幅を調整したい場合などに利用します。
+詳細は<<inputcustomstyle_pe, 入力カスタムスタイル>>を参照してください。
+|===
+
+[[inputcustomstyle_pe]]
+.入力カスタムスタイル
+GroovyTemplate書式で設定します。
+以下の値がバインドされます。
+====
+.基本変数
+request:: リクエスト
+session:: セッション
+====
+====
+.個別変数
+today:: 現在日時(java.sql.Timestamp)
+====
+
+.設定例
+[source,groovy]
+----
+<% //入力テキストの幅を100pxに、背景色を赤に変更
+%>
+background-color:#FFCCCC; width:100px;
+----
+
+Editorの表示タイプが選択可能な場合、タイプによって適用されるinputが異なります。
+====
+TEXT:: `.mdc-input-field` に対して指定したスタイルを適用します。
+SELECT:: `.mdc-select-field` に対して指定したスタイルを適用します。
+RADIO:: radioを囲む `.mdc-radio-group` に対して指定したスタイルを適用します。
+CHECKBOX:: checkboxを囲む `.mdc-checkbox-group` に対して指定したスタイルを適用します。
+====
+
+[[taskpropertyeditorautonumber]]
+.AutoNumberPropertyEditor
+フィルター条件のAutoNumber型用のプロパティエディタです。
+[cols="1,1,6a", options="header"]
+|===
+|設定項目
+|表示タイプ
+|設定内容
+
+|表示タイプ
+|TEXT
+|画面に表示する方法を下記から選択します。
+
+TEXT:: テキストフィールドを表示
+
+|完全一致で検索
+|TEXT
+|検索画面での検索処理時に完全一致検索とする場合はチェックを入れます。
+
+|検索条件入力カスタムスタイル
+|TEXT
+|<<taskpropertyeditorcommon, 共通設定項目>>を参照してください。
+|===
+
+[[taskpropertyeditorbinary]]
+.BinaryPropertyEditor
+フィルター条件のBinary型用のプロパティエディタです。
+[cols="1,1,6a", options="header"]
+|===
+|設定項目
+|表示タイプ
+|設定内容
+
+|表示タイプ
+|
+|画面に表示する方法を設定します。
+
+TEXT:: テキストフィールドを表示（名前検索）
+
+|検索条件入力カスタムスタイル
+|TEXT
+|<<taskpropertyeditorcommon, 共通設定項目>>を参照してください。
+|===
+
+[[taskpropertyeditorboolean]]
+.BooleanPropertyEditor
+フィルター条件のBoolean型用のプロパティエディタです。
+[cols="1,1,6a", options="header"]
+|===
+|設定項目
+|表示タイプ
+|設定内容
+
+|表示タイプ
+|
+|画面に表示する方法を下記から選択します。
+
+RADIO:: ラジオボタンを表示
+CHECKBOX:: チェックボックスを表示
+SELECT:: 選択リストを表示
+
+|真の表示ラベル
+|RADIO +
+CHECKBOX +
+SELECT
+|真の選択肢に表示するラベルを設定します。
+
+|偽の表示ラベル
+|RADIO +
+CHECKBOX +
+SELECT
+|偽の選択肢に表示するラベルを設定します。
+
+|RADIO、CHECKBOX形式の場合にアイテムを横に並べる
+|RADIO +
+CHECKBOX
+|チェックした場合、RADIO、CHECKBOX形式のアイテムを横に並べるかを指定します。
+
+|「値なし」を検索条件の選択肢に追加するか
+|RADIO +
+CHECKBOX +
+SELECT
+|「値なし」を検索条件の選択肢に追加するかを指定します。値なしが選択された場合、IS NULLを検索条件として指定します。
+
+NOTE: 「値なし」を選択する場合、値として「isNull」が使用されるため、他の選択肢にはこのキーワードを値として使用しないでください。
+
+|検索条件入力カスタムスタイル
+|RADIO +
+CHECKBOX +
+SELECT
+|<<taskpropertyeditorcommon, 共通設定項目>>を参照してください。
+|===
+
+[[taskpropertyeditordate]]
+.DatePropertyEditor
+フィルター条件のDate型用のプロパティエディタです。
+[cols="1,1,6a", options="header"]
+|===
+|設定項目
+|表示タイプ
+|設定内容
+
+|表示タイプ
+|
+|画面に表示する方法を下記から選択します。
+
+TEXT:: 日付入力フィールドを表示
+
+|範囲検索
+|TEXT
+|チェックした場合、日付の検索を範囲指定で行います。
+
+|検索条件入力カスタムスタイル
+|TEXT
+|<<taskpropertyeditorcommon, 共通設定項目>>を参照してください。
+|===
+
+[[taskpropertyeditordecimal]]
+.DecimalPropertyEditor
+フィルター条件のDecimal型用のプロパティエディタです。
+[cols="1,1,6a", options="header"]
+|===
+|設定項目
+|表示タイプ
+|設定内容
+
+|表示タイプ
+|
+|画面に表示する方法を下記から選択します。
+
+TEXT:: 数値入力フィールドを表示
+
+|カンマ表示
+|TEXT
+|テキストフィールドからフォーカスアウトした際に入力値をカンマ区切りで表示します。
+
+|範囲検索
+|TEXT
+|チェックした場合、数値の検索を範囲指定で行います。
+
+|検索条件入力カスタムスタイル
+|TEXT
+|<<taskpropertyeditorcommon, 共通設定項目>>を参照してください。
+|===
+
+[[taskpropertyeditorexpression]]
+.ExpressionPropertyEditor
+フィルター条件のExpression型用のプロパティエディタです。
+[cols="1,1,6a", options="header"]
+|===
+|設定項目
+|表示タイプ
+|設定内容
+
+|表示タイプ
+|
+|画面に表示する方法を下記から選択します。
+
+LABEL:: プロパティエディタの項目で設定された表示タイプの表示内容を表示
+
+|プロパティエディタ
+|
+|プロパティエディタを設定します。
+ExpressionプロパティのResultTypeに設定されている内容に合わせて設定してください。
+設定した場合、そのEditor設定にあわせて画面表示を行います。
+未設定の場合は、値を文字列として表示します。
+
+|検索条件入力カスタムスタイル
+|
+|プロパティエディタの項目が未設定の場合、こちらで入力されたスタイルが適用されます。 +
+詳細は<<taskpropertyeditorcommon, 共通設定項目>>を参照してください。
+|===
+
+[[taskpropertyeditorfloat]]
+.FloatPropertyEditor
+フィルター条件のFloat型用のプロパティエディタです。
+[cols="1,1,6a", options="header"]
+|===
+|設定項目
+|表示タイプ
+|設定内容
+
+|表示タイプ
+|
+|画面に表示する方法を下記から選択します。
+
+TEXT:: 数値入力フィールドを表示
+
+|カンマ表示
+|TEXT
+|テキストフィールドからフォーカスアウトした際に入力値をカンマ区切りで表示します。
+
+|範囲検索
+|TEXT
+|チェックした場合、数値の検索を範囲指定で行います。
+
+|検索条件入力カスタムスタイル
+|TEXT
+|<<taskpropertyeditorcommon, 共通設定項目>>を参照してください。
+|===
+
+[[taskpropertyeditorinteger]]
+.IntegerPropertyEditor
+フィルター条件のInteger型用のプロパティエディタです。
+[cols="1,1,6a", options="header"]
+|===
+|設定項目
+|表示タイプ
+|設定内容
+
+|表示タイプ
+|
+|画面に表示する方法を下記から選択します。
+
+TEXT:: 数値入力フィールドを表示
+
+|カンマ表示
+|TEXT
+|テキストフィールドからフォーカスアウトした際に入力値をカンマ区切りで表示します。
+
+|範囲検索
+|TEXT
+|チェックした場合、数値の検索を範囲指定で行います。
+
+|検索条件入力カスタムスタイル
+|TEXT
+|<<taskpropertyeditorcommon, 共通設定項目>>を参照してください。
+|===
+
+[[taskpropertyeditorreference]]
+.ReferencePropertyEditor
+フィルター条件のReference型用のプロパティエディタです。
+[cols="1,1,6a", options="header"]
+|===
+|設定項目
+|表示タイプ
+|設定内容
+
+|表示タイプ
+|
+|画面に表示する方法を下記から選択します。
+
+TEXT:: テキストフィールドを表示
+LINK:: 選択ボタンを表示
+SELECT:: 選択リストを表示
+CHECKBOX:: チェックボックスを表示
+
+|表示ラベルとして扱うプロパティ
+|LINK +
+SELECT +
+CHECKBOX
+|表示ラベルとして扱うプロパティを設定します。
+`name` 以外のプロパティを画面にラベルとして表示できます。
+`StringProperty` にのみ適用されます。それ以外のプロパティを指定すると、正常に表示されません。
+
+|検索条件で単一選択にするか
+|LINK
+|チェックした場合、検索画面での条件指定時に、選択画面でのレコード選択方法を複数選択から単一選択に変更します。
+
+|検索条件での全選択を許可するか
+|LINK
+|チェックした場合、参照先の選択画面で複数選択が可能な場合、全選択時の範囲を選択します。
+
+チェックあり:: 検索条件に一致する全てのデータ(前後のページを含む) が対象
+チェックなし:: 現在のページの全てのデータが対象
+
+|CHECKBOX形式の場合にアイテムを横に並べる
+|CHECKBOX
+|チェックした場合、CHECKBOX形式のアイテムを横に並べるかを指定します。
+
+|「値なし」を検索条件の選択肢に追加するか
+|SELECT +
+CHECKBOX
+|「値なし」を検索条件の選択肢に追加するかを指定します。値なしが選択された場合、IS NULLを検索条件として指定します。
+
+NOTE: 「値なし」を選択する場合、値として「isNull」が使用されるため、他の選択肢にはこのキーワードを値として使用しないでください。
+
+|参照先のViewName
+|LINK
+|参照先エンティティのView定義名を設定します。
+未指定の場合はデフォルトのView定義を使用します。
+
+|選択画面パラメータ生成スクリプト
+|LINK
+|選択画面に渡すカスタムパラメータをGroovyScript形式で記述します。
+バインドされている `paramMap` に対して、
+
+====
+key:: sc_プロパティ名
+value:: 検索条件とする値
+====
+
+として値を設定すると、選択画面の初期検索条件として設定されます。
+
+.独自のバインド変数
+独自に以下の変数がバインドされています。
+====
+paramMap:: Map<String, String>
+====
+
+|選択画面カスタムパラメータJavaScript
+|LINK
+|選択画面に渡すパラメータをカスタマイズするJavascriptを記述します。
+JavaScriptのパラメータとして渡される `parameter` オブジェクトに対して、
+
+====
+key:: sc_プロパティ名
+value:: 検索条件とする値
+====
+
+として値を設定すると、選択画面の初期検索条件として設定されます。
+パラメータには、 `選択画面パラメータ生成スクリプト` で設定された値が予め指定されています。
+
+.JavaScriptの変数
+JavaScriptには、以下の変数がバインドされます。
+====
+parameter:: 送信するパラメータオブジェクト
+propertyName:: プロパティ名
+====
+
+|検索条件
+|SELECT +
+CHECKBOX
+|選択可能項目を検索する際の条件に依存しない検索条件を設定します。
+
+|ソートアイテム
+|SELECT +
+CHECKBOX
+|プルダウンの参照データをソートする項目を指定します。
+
+|ソート種別
+|SELECT +
+CHECKBOX
+|プルダウンの参照データをソートする順序を指定します。
+
+|検索条件入力カスタムスタイル
+|TEXT +
+SELECT +
+CHECKBOX
+|<<taskpropertyeditorcommon, 共通設定項目>>を参照してください。
+|===
+
+[[taskpropertyeditorselect]]
+.SelectPropertyEditor
+フィルター条件のSelect型用のプロパティエディタです。
+[cols="1,1,6a", options="header"]
+|===
+|設定項目
+|表示タイプ
+|設定内容
+
+|表示タイプ
+|
+|画面に表示する方法を下記から選択します。
+
+RADIO:: ラジオボタンを表示
+CHECKBOX:: チェックボックスを表示
+SELECT:: 選択リストを表示
+
+|選択値
+|
+|選択値を指定できます。詳細は<<taskpropertyeditoreditorvalue, 選択値設定>>を参照してください。未指定の場合、エンティティ定義から選択値を取得します。 +
+選択された選択肢の値を条件として完全一致で検索します。 +
+画面個別に選択値をカスタマイズしたい場合に設定してください。
+
+|RADIO、CHECKBOX形式の場合にアイテムを横に並べる
+|RADIO +
+CHECKBOX
+|チェックした場合、RADIO、CHECKBOX形式のアイテムを横に並べるかを指定します。
+
+|「値なし」を検索条件の選択肢に追加するか
+|RADIO +
+CHECKBOX +
+SELECT
+|「値なし」を検索条件の選択肢に追加するかを指定します。値なしが選択された場合、IS NULLを検索条件として指定します。
+
+NOTE: 「値なし」を選択する場合、値として「isNull」が使用されるため、他の選択肢にはこのキーワードを値として使用しないでください。
+
+|検索条件入力カスタムスタイル
+|RADIO +
+CHECKBOX +
+SELECT
+|<<taskpropertyeditorcommon, 共通設定項目>>を参照してください。
+|===
+
+[[taskpropertyeditorstring]]
+.StringPropertyEditor
+フィルター条件のString型用のプロパティエディタです。
+[cols="1,1,6a", options="header"]
+|===
+|設定項目
+|表示タイプ
+|設定内容
+
+|表示タイプ
+|
+|画面に表示する方法を下記から選択します。
+
+TEXT:: テキストフィールドを表示
+SELECT:: 選択リストを表示
+
+|範囲で検索
+|TEXT +
+SELECT
+|チェックした場合、通常検索（検索一覧の検索タブ）の検索条件でFromToの入力フィールドを表示し、範囲検索を行います。
+
+.範囲検索がONの場合
+表示タイプが `SELECT` の場合でも、 `TEXT` の場合と同様にテキストフィールドが表示されます。 + 
+また、 `検索条件完全一致設定` の状態に関係なく、検索条件は以下のようになります。 +
+From、To入力時(入力string値数字を含まれている場合) → `プロパティ between From入力値 and To入力値` +
+Fromのみ入力時(入力string値数字を含まれている場合) → `プロパティ &ge; From入力値` +
+Toのみ入力時(入力string値数字を含まれている場合) → `プロパティ &le; To入力値`
+
+
+|検索条件完全一致設定
+|TEXT
+|チェックした場合、検索画面で条件を設定した時に完全一致で検索します。
+表示タイプが `SELECT` の場合は、当該項目に関係なく、完全一致検索を行います。
+
+|「値なし」を検索条件の選択肢に追加するか
+|SELECT
+|「値なし」を検索条件の選択肢に追加するかを指定します。値なしが選択された場合、IS NULLを検索条件として指定します。
+
+NOTE: 「値なし」を選択する場合、値として「isNull」が使用されるため、他の選択肢にはこのキーワードを値として使用しないでください。
+
+|選択値
+|SELECT
+|選択値を指定できます。詳細は<<taskpropertyeditoreditorvalue, 選択値設定>>を参照してください。 +
+選択された選択肢の値を条件として完全一致で検索します。 +
+String型のプロパティとして値を保持するが、入力値を固定させたいような場合に利用します。
+
+|検索条件入力カスタムスタイル
+|TEXT +
+SELECT
+|<<taskpropertyeditorcommon, 共通設定項目>>を参照してください。
+|===
+
+[[taskpropertyeditoreditorvalue]]
+.選択値設定
+選択値を設定します。
+
+[cols="1,8a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|表示名
+|選択肢のラベルを設定します。
+
+|値
+|選択肢の値を設定します。
+
+|CSSクラス名
+|スタイルシートのクラス名を指定します。
+複数指定する場合は半角スペースで区切って下さい。
+|===
+
+[[taskpropertyeditortime]]
+.TimePropertyEditor
+フィルター条件のTime型用のプロパティエディタです。
+[cols="1,1,6a", options="header"]
+|===
+|設定項目
+|表示タイプ
+|設定内容
+
+|表示タイプ
+|
+|画面に表示する方法を下記から選択します。
+
+TEXT:: 時刻入力フィールドを表示
+
+|時間の表示範囲
+|TEXT
+|時間の各リストをどこまで表示するか設定します。 +
+フォーマットが指定されている場合はフォーマットを優先します。
+未指定の場合秒まで表示します。
+
+SEC:: 秒まで表示
+MIN:: 分まで表示
+HOUR:: 時まで表示
+NONE:: 非表示
+
+|分の入力間隔
+|TEXT
+|秒まで表示する場合は無効になります。
+
+MIN1:: 1分毎に表示
+MIN5:: 5分毎に表示
+MIN10:: 10分毎に表示
+MIN15:: 15分毎に表示
+MIN30:: 30分毎に表示
+
+|分の端数処理モード
+|TEXT
+|分の端数処理方法を設定します。pickerなどで入力された値を分の間隔で端数制御します。
+
+UP:: 0から離れるようにする
+DOWN:: 0に近づける
+NONE:: 制御しない
+
+|範囲検索
+|TEXT
+|チェックした場合、時刻の検索を範囲指定で行います。
+
+|検索条件入力カスタムスタイル
+|TEXT
+|<<taskpropertyeditorcommon, 共通設定項目>>を参照してください。
+|===
+
+[[taskpropertyeditortimestamp]]
+.TimestampPropertyEditor
+フィルター条件のTimestamp型用のプロパティエディタです。
+[cols="1,1,6a", options="header"]
+|===
+|設定項目
+|表示タイプ
+|設定内容
+
+|表示タイプ
+|
+|画面に表示する方法を下記から選択します。
+
+TEXT:: 日付時刻入力フィールドを表示
+
+|時間の表示範囲
+|TEXT
+|時間の各リストをどこまで表示するか設定します。 +
+フォーマットが指定されている場合はフォーマットを優先します。
+未指定の場合秒まで表示します。
+
+SEC:: 秒まで表示
+MIN:: 分まで表示
+HOUR:: 時まで表示
+NONE:: 非表示
+
+|分の入力間隔
+|TEXT
+|秒まで表示する場合は無効になります。
+
+MIN1:: 1分毎に表示
+MIN5:: 5分毎に表示
+MIN10:: 10分毎に表示
+MIN15:: 15分毎に表示
+MIN30:: 30分毎に表示
+
+|分の端数処理モード
+|TEXT
+|分の端数処理方法を設定します。pickerなどで入力された値を分の間隔で端数制御します。
+
+UP:: 0から離れるようにする
+DOWN:: 0に近づける
+NONE:: 制御しない
+
+|範囲検索
+|TEXT
+|チェックした場合、日付時刻の検索を範囲指定で行います。
+
+|検索条件入力カスタムスタイル
+|TEXT
+|<<taskpropertyeditorcommon, 共通設定項目>>を参照してください。
+|===
+
+[[taskpropertyeditoruser]]
+.UserPropertyEditor
+フィルター条件で `createBy` や `updateBy` 等、Userエンティティの `oid` （String）を持つプロパティに対して、oidの代わりにユーザー名（name）で検索するためのプロパティエディタです。
+[cols="1,1,6a", options="header"]
+|===
+|設定項目
+|表示タイプ
+|設定内容
+
+|表示タイプ
+|
+|画面に表示する方法を下記から選択します。
+
+TEXT:: テキストフィールドを表示
+
+|検索条件入力カスタムスタイル
+|TEXT
+|<<taskpropertyeditorcommon, 共通設定項目>>を参照してください。
 |===
 
 [[taskviewlistcustomitem]]
