@@ -867,6 +867,105 @@ To create additional partition, please use the partition management features fro
 We will use the installer to set up the iPLAss environments.
 The installer will create the iPLAss environments by specifying the necessary information with the interface or by the setting file.
 
+[[Installer-bundled-modules]]
+=== Bundled modules
+The installer bundle the following modules.
+
+.List of bundled modules
+[cols=">1,2,2,5a",options="header,autowidth"]
+|===
+| No.
+| Community Edition
+| Enterprise Edition
+| Notes
+
+| 1
+| iplass-admin
+| iplass-ee-admin
+| 
+
+| 2
+| iplass-core
+| iplass-ee-core
+| 
+
+| 3
+| iplass-gem
+| iplass-ee-gem
+| 
+
+| 4
+| iplass-tools
+| iplass-ee-tools
+| 
+
+| 5
+| iplass-web
+| iplass-ee-web
+| 
+
+| 6
+| iplass-googlecloud
+| iplass-ee-googlecloud
+| 
+
+| 7
+| iplass-infinispan
+| iplass-ee-infinispan
+| 
+
+| 8
+| iplass-redis
+| iplass-ee-redis
+| 
+
+| 9
+| 
+| iplass-ee-admin-mdc
+| 
+
+| 10
+| 
+| iplass-ee-aws2
+| Bundled in version 4.0.16 and later. +
+Versions prior to 4.0.15 bundle iplass-ee-aws.
+
+| 11
+| 
+| iplass-ee-elasticsearch
+| 
+
+| 12
+| 
+| iplass-ee-mdc
+| 
+
+| 13
+| 
+| iplass-ee-micrometer
+| 
+
+| 14
+| 
+| iplass-ee-opensearch
+| Bundled in version 4.0.1 and later.
+
+| 15
+| 
+| iplass-ee-sendgrid
+| 
+
+| 16
+| 
+| iplass-ee-twilio
+| 
+
+| 17
+| 
+| iplass-ee-wam
+| 
+|===
+
 === Install methods
 There are two ways to install. The user can install with our setup interface: [wizard installer]. The user can also install without such interface, instead they will have to fill the necessary information in the preset setting file and so to install the environment, which we denote by [silent install].
 
