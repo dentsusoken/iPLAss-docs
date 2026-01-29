@@ -1110,13 +1110,13 @@ public class SampleUserTaskVariableNotification implements UserTaskVariableNotif
 			return;
 		}
 
-        // ワークフロー変数【item】に格納されているワークフロー対象Entityデータを取得する
+		// ワークフロー変数【item】に格納されているワークフロー対象Entityデータを取得する
 		GenericEntity item = (GenericEntity) variables.get("item");
-        if (item == null) {
-            return;
-        }
+		if (item == null) {
+			return;
+		}
 
-        System.out.println("entity data:" + item.toString());
+		System.out.println("entity data:" + item.toString());
 	}
 }
 ----
