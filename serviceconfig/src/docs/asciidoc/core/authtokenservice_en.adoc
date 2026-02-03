@@ -165,9 +165,10 @@ The following items can be configured.
 |===
 | Item | Value | Description
 | store | String | The name of the AuthTokenStore to use. If not specified, `default` AuthTokenStore is used.
-| type | String | Type. If it is not set, it will be `TSK`.
+| type | String | Type. If not set, it will be `TSK`.
 | timeStepWindowSize | int | Validity period of the time step. If 1 is set, one step before and after the currently valid one-time password will also be considered valid. Default value is 1. +
 The time for one step is fixed at 30 seconds.
+| backwardTimeStepWindowSize | int | Number of previous time steps to consider when verifying codes. If set to -1 (default), the handler will use the same value as `timeStepWindowSize`, allowing you to configure the backward window independently from the forward window when needed. |
 |===
 
 [[AccessTokenHandler]]

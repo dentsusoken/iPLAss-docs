@@ -169,6 +169,7 @@ classはorg.iplass.mtp.impl.auth.authenticate.timebased.TimeBasedOneTimePassword
 | type | String | 種別。未設定の場合、 `TSK` となります。
 | timeStepWindowSize | int | time stepの有効期間。1を設定した場合、現在のtime stepの前後1ステップのワンタイムパスワードも有効とみなします。デフォルト値は1です。 +
 1ステップの時間は30秒固定です。
+| backwardTimeStepWindowSize | int | 過去方向の有効なtime step数。デフォルトは-1で、その場合 `timeStepWindowSize` と同じ値が使用されます。forward側（将来のウィンドウ）とは独立してバックワードウィンドウの大きさを設定できます。 |
 |===
 
 [[AccessTokenHandler]]
