@@ -144,7 +144,7 @@ update処理はEntityのインスタンスのプロパティの値を更新す�
 
 `org.iplass.mtp.entity.EntityEventListener` にて、更新時のカスタム処理を組み込むことが可能です。EntityEventListenerの詳細は <<../datamanagement/index.adoc#ref_entity_event_listener, EventListener>> を参照ください。
 
-* 更新を行う場合はSELECT句にoidを設定する必要があります
+* update処理にて更新するEntityインスタンスには、oidプロパティが設定されている必要があります
 
 === 削除 (delete)
 delete処理はEntityのインスタンスを削除する処理です。 +
@@ -152,7 +152,7 @@ delete処理はEntityのインスタンスを削除する処理です。 +
 
 `org.iplass.mtp.entity.EntityEventListener` にて、削除時のカスタム処理を組み込むことが可能です。EntityEventListenerの詳細は <<../datamanagement/index.adoc#ref_entity_event_listener, EventListener>> を参照ください。
 
-* 削除を行う場合はSELECT句にoidを設定する必要があります
+* delete処理にて削除するEntityインスタンスには、oidプロパティが設定されている必要があります
 
 === 一括更新 (updateAll)
 updateAll処理は更新対象のEntityの条件を指定し、一括でプロパティの値を更新する処理です。 +
@@ -190,6 +190,7 @@ int updateCount = em.updateAll(cond);
 * EventListenerは呼び出されません
 * Binary、LongText、AutoNumber、Referenceは更新できません
 * NamePropertyに指定しているプロパティは更新できません
+* UpdateConditionには、更新値(values)の設定が必要
 
 
 === 一括削除 (deleteAll)
