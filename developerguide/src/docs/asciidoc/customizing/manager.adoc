@@ -142,21 +142,22 @@ update処理はEntityのインスタンスのプロパティの値を更新す�
 更新対象のプロパティは、 `org.iplass.mtp.entity.UpdateOption` で指定します。
 また、処理時のタイムスタンプによる楽観ロック制御の有無などを制御可能です。
 
-`org.iplass.mtp.entity.EntityEventListener` にて、更新時のカスタム処理を組み込むことが可能です。EntityEventListenerの詳細は <<../datamanagement/index.adoc#ref_entity_event_listener, EventListener>> を参照ください。
+`org.iplass.mtp.entity.EntityEventListener` にて、更新時のカスタム処理を組み込むことが可能です。EntityEventListenerの詳細は <<../datamanagement/index.adoc#ref_entity_event_listener, EventListener>> を参照ください。 +
 
-* update処理にて更新するEntityインスタンスには、oidプロパティが設定されている必要があります
+update処理にて更新するEntityインスタンスには、oidプロパティが設定されている必要があります。
 
 === 削除 (delete)
 delete処理はEntityのインスタンスを削除する処理です。 +
 `org.iplass.mtp.entity.DeleteOption` にて、処理時のタイムスタンプによる楽観ロック制御、論理削除とするか否か（ごみ箱に入れるか否か）などを制御可能です。
 
-`org.iplass.mtp.entity.EntityEventListener` にて、削除時のカスタム処理を組み込むことが可能です。EntityEventListenerの詳細は <<../datamanagement/index.adoc#ref_entity_event_listener, EventListener>> を参照ください。
+`org.iplass.mtp.entity.EntityEventListener` にて、削除時のカスタム処理を組み込むことが可能です。EntityEventListenerの詳細は <<../datamanagement/index.adoc#ref_entity_event_listener, EventListener>> を参照ください。 +
 
-* delete処理にて削除するEntityインスタンスには、oidプロパティが設定されている必要があります
+delete処理にて削除するEntityインスタンスには、oidプロパティが設定されている必要があります。
 
 === 一括更新 (updateAll)
 updateAll処理は更新対象のEntityの条件を指定し、一括でプロパティの値を更新する処理です。 +
-更新対象の条件、更新する値は `org.iplass.mtp.entity.UpdateCondition` で指定します。
+更新対象の条件、更新する値は `org.iplass.mtp.entity.UpdateCondition` で指定します。 +
+UpdateConditionには、更新時に設定するプロパティの値（values）を指定する必要があります。
 
 .一括更新の例
 [source,java]
@@ -190,7 +191,6 @@ int updateCount = em.updateAll(cond);
 * EventListenerは呼び出されません
 * Binary、LongText、AutoNumber、Referenceは更新できません
 * NamePropertyに指定しているプロパティは更新できません
-* UpdateConditionには、更新値(values)の設定が必要
 
 
 === 一括削除 (deleteAll)
