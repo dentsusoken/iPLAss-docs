@@ -655,6 +655,7 @@ link:#ref_usertask_delegate[委譲の設定]
 |×
 |
 |ユーザーへのタスクの割り当てが発生した際に独自の処理を組み込む場合、 `UserTaskNotification` インターフェースを実装したクラスの名前を指定します。 +
+独自処理内でワークフロー変数を利用したい場合は、`UserTaskVariableNotification` インターフェースを実装したクラスの名前を指定します。 +
 link:#ref_usertask_notification[カスタム処理の設定]
 |customPropertySetting
 |×
@@ -1086,6 +1087,39 @@ public class SampleUserTaskNotification implements UserTaskNotification {
 }
 ----
 
+カスタム処理内でワークフロー変数を利用したい場合は、`org.iplass.mtp.workflow.UserTaskVariableNotification` インターフェースを実装したクラスの名前を指定します。
+
+.（例）UserTaskVariableNotificationの実装サンプル
+[source,Java]
+----
+package sample;
+
+import java.util.Map;
+
+import org.iplass.mtp.entity.GenericEntity;
+import org.iplass.mtp.util.CollectionUtil;
+import org.iplass.mtp.workflow.Assignment;
+import org.iplass.mtp.workflow.UserTask;
+import org.iplass.mtp.workflow.UserTaskVariableNotification;
+
+public class SampleUserTaskVariableNotification implements UserTaskVariableNotification {
+
+	@Override
+	public void assigned(UserTask userTask, Assignment[] assignments, Map<String, Object> variables) {
+		if (CollectionUtil.isEmpty(variables)) {
+			return;
+		}
+
+		// ワークフロー変数【item】に格納されているワークフロー対象Entityデータを取得する
+		GenericEntity item = (GenericEntity) variables.get("item");
+		if (item == null) {
+			return;
+		}
+
+		System.out.println("entity data:" + item.toString());
+	}
+}
+----
 
 ===== UpdateEntityTask
 Entityが格納されている変数(VariableItem)を指定して、格納されているEntityを更新するタスク定義。
