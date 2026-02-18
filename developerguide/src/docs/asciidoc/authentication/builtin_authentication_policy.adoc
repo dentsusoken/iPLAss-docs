@@ -61,7 +61,7 @@ Userエンティティに紐づく情報は `${user.プロパティ名}` と記�
 GroovyScript形式でTimestampのインスタンスを返却するように実装します。
 未指定の場合、ユーザーの終了日にはnull（有効期限なし）が設定されます。
 |password history count|過去入力したパスワードを覚えておく個数。履歴に残っているパスワードは設定できなくなります。
-|password history period|過去入力したパスワードを覚えておく期間 （日）。履歴に残っている期間内のパスワードは設定できなくなります。
+|password history period|過去入力したパスワードを覚えておく期間 （日）。履歴に残っている期間内のパスワードは設定できなくなります。設定値が0の場合は未設定と同義です。
 |create account with specific password|アカウント作成の際、初期パスワードを指定可能とするか。
 |reset password with specific password|パスワードリセットの際、パスワードを指定可能とするか。
 |===
