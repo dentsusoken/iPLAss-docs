@@ -414,6 +414,7 @@ It is similar to the <<SendMailListener>> in MailServiceImpl.
 </service>
 ----
 
+[[MailService_SendGridV3MailService]]
 ==== [.eeonly]#Settings of SendGridV3MailService#
 
 To use SendGrid Web API v3, please specify and configure the SendGridV3MailService.
@@ -428,6 +429,14 @@ To use SendGrid Web API v3, please specify and configure the SendGridV3MailServi
 | listener | <<SendMailListener_s_v3, SendMailListener>>, Multiple | The listener for sending the mail.
 | retryIntervalMillis | long | The retry interval when the transmission fails.(in millisecond)
 | retryCount | int | The number of retry attempts for email transmission to fail.
+| canOverwriteBodyParameter | boolean | Whether to allow overwriting the body parameters in the SendGrid Web API v3 request. The default value is false. +
+The Mail class used in the SendGrid Web API v3 request is SendGridMail. +
+SendGridMail has the putBodyParameter and setBodyParameters methods, which can be used to set API-specific parameters.
+The added specific parameters are added to the body of the SendGrid Web API v3 request. +
+If this parameter is false, the body parameters created from the information set in SendGridMail (e.g., personalizations, content, etc.) will be sanitized if they exist in the added specific parameters. +
+By setting this parameter to true, the specific parameters can be used without sanitization.
+
+In cases where you need to embed different strings in the body or subject for each recipient, and the standard settings cannot handle it, you may consider setting this parameter to true.
 |===
 
 [[HttpClientConfig]]
@@ -483,6 +492,9 @@ It is similar to the <<SendMailListener>> in MailServiceImpl.
 	
 	<!-- The charset of the mail -->
 	<property name="charset" value="UTF-8" />
+
+	<!-- Whether to allow overwriting the body parameters in the SendGrid Web API v3 request -->
+	<property name="canOverwriteBodyParameter" value="false" />
 
 	<!-- ■ for develop only (additional="true") ■ -->
 	<!-- 

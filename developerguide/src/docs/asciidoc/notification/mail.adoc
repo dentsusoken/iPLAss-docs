@@ -226,7 +226,10 @@ SendGrid固有オプションは以下の手順で設定します。詳しい実
 ==== 注意事項
 固有オプションを設定する場合、以下の点に注意してください。
 
-* Mail インスタンスに設定されている情報から作成するオプション（例: personalizations, content など）は設定できません。設定した場合、そのオプションは上書きされます。
+* Mail インスタンスに設定されている情報から作成するオプション（例: personalizations, content など）は設定できません。設定した場合、そのオプションは削除されます。
+** 標準の機能では対応できない設定を行いたい場合（ `personalizations[n].substitutions` の設定など ）は、固有オプションを設定する必要がありますが、通常 personalizations, content など特定の固有オプション値は削除されてしまいます。 +
+SendGridV3MailService の `canOverwriteBodyParameter` プロパティを true に設定することで、固有オプションの設定値を削除せずに利用することができます。 +
+SendGridV3MailService の設定の詳細は <<../../serviceconfig/index.adoc#MailService_SendGridV3MailService, MailService - SendGridV3MailService>> を参照してください。
 * 固有オプションを設定した場合、存在の有無にかかわらずSendGridメール送信リクエストのボディに追加されます。
 ** アプリケーションのセキュリティ上のリスク軽減のため、ユーザー入力値を無加工でオプションの値として設定しないでください。
 ** 意図しないオプションが設定されないように、事前にバリデーションを行うことを推奨します。
@@ -274,7 +277,8 @@ private void sendMailWithSendGridOptions() {
             "html", "<strong>This is the footer html.</strong>"
         )
     ));
-    // 上記の指定で、以下のような値が追加されます。
+
+    // 上記の指定で、メール送信時のリクエストボディに以下のような値が追加されます。
     // 
     // {
     //   "asm": {
