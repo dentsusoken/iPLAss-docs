@@ -316,7 +316,7 @@ import org.iplass.mtp.mail.sendgrid.SendGridMail;
 private void sendMailWithSendGridOptions() {
     MailManager manager = ManagerLocator.manager(MailManager.class);
 
-    Mail mail = manager.createMail();;
+    Mail mail = manager.createMail();
 
     // mail に対して、送信先等を設定する
     // :
@@ -327,7 +327,7 @@ private void sendMailWithSendGridOptions() {
     // Mail オブジェクトを SendGridMail にキャスト
     SendGridMail sendGridMail = (SendGridMail)mail;
 
-    // <b> SendGrid固有オプションのとして content を設定する
+    // <b> SendGrid固有オプションとして content を設定する
     sendGridMail.putBodyParameter("content", List.of(Map.of(
         "type", "text/plain",
         "value", "SendGrid固有オプションで設定した本文です"
