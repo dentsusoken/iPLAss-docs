@@ -62,11 +62,20 @@ XLSX(POI Streaming)	※POIのSXSSFWorkbook形式のWorkbookを生成します。
 未指定の場合は、既に登録済の「Saved File」が利用されます。
 
 |Password Attribute Name|
-出力するレポートに対してパスワードを設定する場合に、そのパスワード値をセットしたRequestのAttribute名を指定します。
+出力するレポートに対して閲覧パスワードを設定する場合に、そのパスワード値をセットしたRequestのAttribute名を指定します。
 
 パスワードは、ユーザーに画面上で指定させてリクエストでもらったり、システム内部で固定したり、ランダムで設定してメール通知したり要件に応じて実装し、このTemplateを利用する前のCommandでここで指定したAttributeに対して、パスワードをセットしてください。
 
+NOTE: `Password Attribute Name`を設定し、`Owner Password Attribute Name`を設定していない場合、編集パスワードも`Password Attribute Name`で指定したAttributeの値に設定されます。
+
 ※パスワードは、いずれのReportTypeにおいてもXLS形式には対応していません。Excelに対してパスワード指定する場合はXLSX形式を利用してください。
+
+|Owner Password Attribute Name|
+出力するレポートに対して編集パスワードを設定する場合に、そのパスワード値をセットしたRequestのAttribute名を指定します。
+
+設定方法は`Password Attribute Name`と同様です。
+
+NOTE: `Owner Password Attribute Name`を設定し、`Password Attribute Name`を設定していない場合、閲覧パスワードは設定されず編集パスワードのみ設定されます。
 
 |DataSource Attribute Name|
 Report Typeが `JasperReports` 形式用の設定です。 +
