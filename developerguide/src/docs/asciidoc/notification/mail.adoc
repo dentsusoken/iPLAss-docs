@@ -227,9 +227,9 @@ SendGrid固有オプションは以下の手順で設定します。詳しい実
 固有オプションを設定する場合、以下の点に注意してください。
 
 * Mail インスタンスに設定されている情報から作成される本文パラメータ（例: `personalizations`, `content` など）と同名の SendGrid 固有オプション値を設定した場合、Mail インスタンスから生成される本文パラメータが優先され、同名で追加した固有オプション値はサニタイズ（無効化）されます。
-** 標準の機能では対応できない設定を行いたい場合（例: `personalizations[n].substitutions` の設定など）には固有オプションを利用しますが、デフォルトでは `personalizations`, `content` など既存の本文パラメータと衝突する特定の固有オプション値はサニタイズされ、メール送信リクエストには反映されません。 +
-SendGridV3MailService の `canOverwriteBodyParameter` プロパティを `true` に設定すると、これらの固有オプション値はサニタイズされず、固有オプションで指定した値で既存の本文パラメータを上書きできるようになります。 +
-SendGridV3MailService の設定の詳細は <<../../serviceconfig/index.adoc#MailService_SendGridV3MailService, MailService - SendGridV3MailService>> を参照してください。
+** 標準の機能では対応できない設定を行いたい場合は固有オプションを利用しますが、デフォルトでは `personalizations`, `content` など既存の本文パラメータと衝突する特定の固有オプション値はサニタイズされ、メール送信リクエストには反映されません。 +
+メール送信リクエストには反映したい場合は SendGridV3MailService の `canOverwriteBodyParameter` プロパティを `true` に設定することで、これらの固有オプション値はサニタイズされず、固有オプションで指定した値で既存の本文パラメータを上書きできるようになります。 +
+実装と結果については、後述の「<<mail_configure_SendGridV3MailService_canOverwriteBodyParameter_example>>」を参照してください。
 * 固有オプションを設定した場合、存在の有無にかかわらずSendGridメール送信リクエストのボディに追加されます。
 ** アプリケーションのセキュリティ上のリスク軽減のため、ユーザー入力値を無加工でオプションの値として設定しないでください。
 ** 意図しないオプションが設定されないように、事前にバリデーションを行うことを推奨します。
@@ -295,6 +295,70 @@ private void sendMailWithSendGridOptions() {
     // }
 
     // <3> sendMail メソッドでメールを送信
+    manager.sendMail(sendGridMail);
+}
+----
+
+[[mail_configure_SendGridV3MailService_canOverwriteBodyParameter_example]]
+==== SendGridV3MailService のプロパティ canOverwriteBodyParameter 設定による動作の変化
+SendGridV3MailService のプロパティ `canOverwriteBodyParameter` の設定によって、優先する項目を制御できます。 +
+`false` に設定した場合、Mail オブジェクトから生成される本文パラメータが優先され、同名の固有オプション値はサニタイズされます。 +
+`true` に設定した場合、Mail オブジェクトから生成される本文パラメータを SendGrid 固有オプションで上書きできます。
+
+ServiceConfig SendGridV3MailService の設定の詳細は <<../../serviceconfig/index.adoc#MailService_SendGridV3MailService, MailService - SendGridV3MailService>> を参照してください。
+
+[source,java]
+----
+import org.iplass.mtp.mail.Mail;
+import org.iplass.mtp.mail.MailManager;
+import org.iplass.mtp.mail.sendgrid.SendGridMail;
+
+private void sendMailWithSendGridOptions() {
+    MailManager manager = ManagerLocator.manager(MailManager.class);
+
+    Mail mail = manager.createMail();;
+
+    // mail に対して、送信先等を設定する
+    // :
+    // :
+    // <a> Mail オブジェクトに本文を設定する
+	mail.setMessage("これは本文です");
+
+    // Mail オブジェクトを SendGridMail にキャスト
+    SendGridMail sendGridMail = (SendGridMail)mail;
+
+    // <b> SendGrid固有オプションのとして content を設定する
+    sendGridMail.putBodyParameter("content", List.of(Map.of(
+        "type", "text/plain",
+        "value", "SendGrid固有オプションで設定した本文です"
+    )));
+
+    // 上記の実装で canOverwriteBodyParameter の設定により、SendGrid API実行時のリクエストボディは以下のように変化します。
+    // 
+    // ＜ デフォルトの設定（canOverwriteBodyParameter = false）の場合 ＞
+    // <a> で設定した Mail オブジェクトから生成される content パラメータが優先されます。<b> で設定した同名の固有オプションの値はサニタイズされます。
+    // 
+    // {
+    //   "content": [
+    //     {
+    //       "type": "text/plain",
+    //       "value": "これは本文です"
+    //     }
+    //   ]
+    // }
+
+    // ＜ canOverwriteBodyParameter を true に設定した場合 ＞
+    // <a> で設定した Mail オブジェクトから生成される content パラメータが上書きされ、<b> で設定した固有オプションの値が利用されます。
+    //
+    // {
+    //   "content": [
+    //     {
+    //       "type": "text/plain",
+    //       "value": "SendGrid固有オプションで設定した本文です"
+    //     }
+    //   ]
+    // }
+
     manager.sendMail(sendGridMail);
 }
 ----

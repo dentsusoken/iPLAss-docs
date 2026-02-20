@@ -430,14 +430,14 @@ SendGrid Web API v3を利用する場合、SendGridV3MailServiceを設定しま�
 | listener | <<SendMailListener_s_v3, SendMailListener>>、複数指定可 | メール送信時のListener。
 | retryIntervalMillis | long | 送信失敗時のリトライ間隔（ミリ秒）。
 | retryCount | int | 送信失敗時のリトライ回数。
-| canOverwriteBodyParameter | boolean | SendGrid Web API v3のリクエストで、メール設定から生成される競合するボディパラメータ（例: personalizations, content など）をAPI固有のボディパラメータで上書きするかどうかを指定します。デフォルト値は false です。 +
+| canOverwriteBodyParameter | boolean | SendGrid Web API v3のリクエストで、メール設定から生成される競合するボディパラメータ（例: personalizations, content など）を固有オプションパラメータで上書きするかを設定します。デフォルト値は `false` です。 +
 SendGrid Web API v3のリクエストで利用する Mail クラスは SendGridMail です。 +
-SendGridMail には putBodyParameter メソッドと setBodyParameters メソッドがあり、これを利用して API 固有パラメータを設定することができます。
-追加した固有パラメータは SendGrid Web API v3 のリクエストのボディに追加されます。 +
-この際、本パラメータが false の場合、追加した固有パラメータのうち、SendGridMail に設定されている情報から作成される本文パラメータ（例: personalizations, content など）と同名のものはサニタイズされ、SendGridMail から生成された本文パラメータ側が優先されます。 +
-本パラメータを true に設定すると、これら同名の追加した固有パラメータはサニタイズされずに優先的に利用され、SendGridMail から生成される本文パラメータを上書きします。
+SendGridMail には putBodyParameter メソッドと setBodyParameters メソッドがあり、これを利用して固有オプションパラメータを設定することができます。
+追加した固有オプションパラメータは SendGrid Web API v3 のリクエストのボディに追加されます。 +
+この際、本パラメータが false の場合、追加した固有オプションパラメータのうち、SendGridMail に設定されている情報から作成される本文パラメータ（例: personalizations, content など）と同名のものはサニタイズされ、SendGridMail から生成された本文パラメータ側が優先されます。 +
+本パラメータを true に設定すると、これら同名の追加した固有オプションパラメータはサニタイズされずに優先的に利用され、SendGridMail から生成される本文パラメータを上書きします。
 
-宛先ごとに異なる文字列を本文や件名に埋め込んで送信する場合など、標準の設定では対応できない場合に本パラメータを true に設定してください。
+<<../developerguide/notification/index.adoc#mail_configure_SendGridV3MailService_canOverwriteBodyParameter_example, SendGridV3MailService のプロパティ canOverwriteBodyParameter 設定による動作の変化>>も参照してください。
 |===
 
 [[HttpClientConfig]]
