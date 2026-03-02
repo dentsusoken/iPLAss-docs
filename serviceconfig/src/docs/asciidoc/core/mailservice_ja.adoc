@@ -80,7 +80,7 @@ iPLAssにて拡張されたプロパティです。
 | mail.encoding | String | メールのデフォルトのencodingです。 +
 例えば `base64` を指定します。 +
 iPLAssにて拡張されたプロパティです。
-| mail.customheaderMap | String、Map形式 | メールヘッダーにセットする値をMap形式で指定します。nameにはヘッダー名、valueにはヘッダー値を設定します。 +
+| mail.customheaderMap | String、Map形式 | メールヘッダーにセットする値をMap形式で指定します。Map形式で指定する場合は、ネストした `<property>` 要素の `name`（=key）および `value` 属性として、それぞれヘッダー名とヘッダー値を設定します。 +
 iPLAssにて拡張されたプロパティです。
 | debug | boolean | デバッグを有効にした場合、標準出力にトレースを出力します。
 | listener | <<SendMailListener>>、複数指定可 | メール送信時のListener。

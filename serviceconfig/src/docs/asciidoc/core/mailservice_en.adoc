@@ -79,7 +79,7 @@ Properties extended with iPLAss.
 | mail.encoding | String | Default encoding for mail. +
 For example, specify `base64`. +
 Properties extended with iPLAss.
-| mail.customheaderMap | String, in format of Map | Specify the value to be set in the email header in Map format. Set the header name in name and the header value in value. +
+| mail.customheaderMap | String, in format of Map | Specify the values to be set in the email header in Map format. For each entry, set the header name in the nested `<property>` 's. `name` attribute (key) and the header value in its `value` attribute. +
 Properties extended with iPLAss.
 | debug | boolean | When debugging is enabled, trace is print to the standard output console.
 | listener | <<SendMailListener>>, Multiple | Listener for outgoing mail.
