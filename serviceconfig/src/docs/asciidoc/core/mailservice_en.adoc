@@ -79,6 +79,8 @@ Properties extended with iPLAss.
 | mail.encoding | String | Default encoding for mail. +
 For example, specify `base64`. +
 Properties extended with iPLAss.
+| mail.customHeaderMap | String, in format of Map | Specify the values to be set in the email header in Map format. For each entry, set the header name in the nested `<property>` 's. `name` attribute (key) and the header value in its `value` attribute. +
+Properties extended with iPLAss.
 | debug | boolean | When debugging is enabled, trace is print to the standard output console.
 | listener | <<SendMailListener>>, Multiple | Listener for outgoing mail.
 | retryIntervalMillis | long | Retry interval when email transmission fails (milliseconds).
@@ -198,6 +200,13 @@ The following items can be configured.
 	<property name="mail.charset" value="utf-8"/>
 
 	<property name="mail.encoding" value="base64"/>
+
+	<!-- Custom Header -->
+	<property name="mail.customHeaderMap">
+		<property name="headerName1" value="headerValue1"/>
+		<property name="headerName2" value="headerValue2"/>
+		<property name="headerName3" value="headerValue3"/>
+	</property>
 
 	<!-- S/MIME Settings -->
 	<!-- Use the digital signature and encryption features of  -->
