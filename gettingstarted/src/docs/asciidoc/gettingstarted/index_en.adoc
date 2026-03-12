@@ -252,7 +252,12 @@ If you need to manually change the URl, please check the `Edit`.
 TIP: If setup fails, you may need to reinstall iPLAss. +
 After deleting the iPLAss home directory set in the previous chapter, perform the installation procedure again.
 
+[[tenant_info_en]]
 ... iPLAss Input The Tenant Information.
++
+Tenant is like the conceptual division of the server. +
+This tenant allows you to operate data, settings, user management, and other functions completely separately. +
+Here, enter the information for the first tenant to use iPLAss.
 +
 [cols="1,2",options="autowidth"]
 |===
