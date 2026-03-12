@@ -255,9 +255,9 @@ After deleting the iPLAss home directory set in the previous chapter, perform th
 [[tenant_info_en]]
 ... iPLAss Input The Tenant Information.
 +
-Tenant is like the conceptual division of the server. +
-This tenant allows you to operate data, settings, user management, and other functions completely separately. +
-Here, enter the information for the first tenant to use iPLAss.
+A tenant is a logical partition (isolation unit) in iPLAss. +
+It separates application data, settings, user management, and other functions for each organization or environment. +
+Here, enter the information for the first tenant that will use iPLAss.
 +
 [cols="1,2",options="autowidth"]
 |===
