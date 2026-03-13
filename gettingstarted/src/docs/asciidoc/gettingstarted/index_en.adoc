@@ -252,7 +252,7 @@ If you need to manually change the URl, please check the `Edit`.
 TIP: If setup fails, you may need to reinstall iPLAss. +
 After deleting the iPLAss home directory set in the previous chapter, perform the installation procedure again.
 
-[[tenant_info_en]]
+[[tenant_info]]
 ... iPLAss Input The Tenant Information.
 +
 A tenant is a mechanism for securing an “independent usage domain” for each organization or environment. +
