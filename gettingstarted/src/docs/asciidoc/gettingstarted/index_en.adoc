@@ -255,9 +255,9 @@ After deleting the iPLAss home directory set in the previous chapter, perform th
 [[tenant_info]]
 ... iPLAss Input The Tenant Information.
 +
-A tenant is a mechanism for securing an “independent usage domain” for each organization or environment. +
-With iPLAss, this tenant allows for the complete separation and operation of data, settings, user management, and more. +
-Here, you will enter the information for your first tenant to begin using iPLAss. +
+A tenant provides an “independent usage domain” for each organization or environment. +
+With iPLAss, tenants provide complete separation of data, configuration, user management, and more between organizations and environments. +
+Here, you will enter the information for the first tenant that will be used with iPLAss. +
 +
 [cols="1,2",options="autowidth"]
 |===
