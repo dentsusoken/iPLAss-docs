@@ -7,7 +7,7 @@ Please go through this tutorial to have a glance of the basics to utilize the GU
 
 [[gem_and_adminconsole]]
 === GEM Module and AdminConsole
-The Tenant created by iPLAss has two applications ready to use, `GEM Module` and `AdminConsole`.
+The <<../gettingstarted/index.adoc#tenant_info,Tenant>> created by iPLAss has two applications ready to use, `GEM Module` and `AdminConsole`.
 
 GEM Module::
 A collection of views mainly for end users. It has login page, and GEM pages that can search/view/modify the Entity data.
