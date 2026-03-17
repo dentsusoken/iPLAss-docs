@@ -1930,7 +1930,7 @@ The `topview` s (the view definition named "topview") that were added earlier ar
 
 image::images/topview_searchresultlistdialog-topview_en.png[]
 
-In this state TopView　save and display the Top screen.
+In this state TopView save and display the Top screen.
 Only the `object ID` and `name` are displayed.
 
 image::images/topview_searchresultlist-topview_en.png[]
