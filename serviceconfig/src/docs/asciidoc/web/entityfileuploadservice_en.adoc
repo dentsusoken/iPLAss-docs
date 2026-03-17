@@ -28,6 +28,7 @@ In the case of SQLServer, the following conditions will result in a situation wh
 
 * Limiting the number of downloads.
 * The specified search condition contains conditions for multiple References.
+| defaultIgnoreNotExistsProperty | boolean | Default value for ignoring properties not defined in the Entity during upload. Default value is `false`.
 |===
 
 ===== Example
@@ -50,5 +51,10 @@ In the case of SQLServer, the following conditions will result in a situation wh
 		For SQLServer, specify true.
 	-->
 	<property name="mustOrderByWithLimit" value="false"/>
+	</service>
+	<!--
+		Default value for ignoring properties not defined in the Entity during upload.
+	-->
+	<property name="defaultIgnoreNotExistsProperty" value="false"/>
 </service>
 ----
