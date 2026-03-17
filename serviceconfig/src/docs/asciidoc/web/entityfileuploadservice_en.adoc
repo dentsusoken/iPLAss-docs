@@ -51,7 +51,6 @@ In the case of SQLServer, the following conditions will result in a situation wh
 		For SQLServer, specify true.
 	-->
 	<property name="mustOrderByWithLimit" value="false"/>
-	</service>
 	<!--
 		Default value for ignoring properties not defined in the Entity during upload.
 	-->
