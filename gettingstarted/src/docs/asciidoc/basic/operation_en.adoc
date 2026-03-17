@@ -2044,7 +2044,7 @@ Save it now.
 image::images/topview_savedetaillayout2_en.png[]
 
 Next time, create `topview3` on the DetailLayout side.
-Like `SearchLayout`, the copy of View defined in` topview` is used as it is, so just change the screen title to `Customization confirmation 3`.
+Like `SearchLayout`, the copy of View defined in `topview` is used as it is, so just change the screen title to `Customization confirmation 3`.
 
 image::images/topview_copydetaillayout_en.png[]
 

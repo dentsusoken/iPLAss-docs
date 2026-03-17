@@ -1924,7 +1924,7 @@ image::images/topview_detaillayout-topview1.png[]
 
 image::images/topview_searchresultlistsetting.png[]
 
-`ResultList View` と `Detail Action View` に先ほど追加した view定義である`topview` が追加されているので、それを選択してください。
+`ResultList View` と `Detail Action View` に先ほど追加した view定義である `topview` が追加されているので、それを選択してください。
 
 image::images/topview_searchresultlistdialog-topview.png[]
 
