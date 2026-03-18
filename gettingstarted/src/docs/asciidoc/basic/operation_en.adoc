@@ -1922,15 +1922,15 @@ When you have finished deleting, click the `Save` button in View.
 
 image::images/topview_detaillayout-topview1_en.png[]
 
-Next, go back to TopView and click the edit button for the `SearchResult List` displayed at the bottom right.
+Next, go back to TopView of MetaDataSettings and click the edit button for the `SearchResult List` displayed at the bottom right.
 
 image::images/topview_searchresultlistsetting_en.png[]
 
-The `topview` s that were added earlier are now available in the `ResultList` View and `Detail Action View`, so please select them.
+The `topview` views (view definitions named `topview`) that were added earlier are now available in the `ResultList` View and `Detail Action View`, so please select them.
 
 image::images/topview_searchresultlistdialog-topview_en.png[]
 
-In this state TopViSave ew and display the Top screen.
+In this state, save TopView and display the Top screen.
 Only the `object ID` and `name` are displayed.
 
 image::images/topview_searchresultlist-topview_en.png[]
@@ -2000,7 +2000,7 @@ Now you can select `topview2`.
 image::images/topview_searchresultlist-topview2_en.png[]
 
 Save TopView and check the Top screen.
-The top screen shows the `topview` specified in `ResultList View`.
+The top screen displays `topview`, which is the view definition specified in the `ResultList View`.
 Click the details link to display the details screen.
 
 image::images/topview_searchresultlist-topview_en.png[]
@@ -2014,8 +2014,8 @@ Next, use the settings of `Link Action View` to change the View displayed in the
 
 image::images/topview_entitycontextmenu-searchlayout_en.png[]
 
-This time, use the copy of View defined in `topview`.
-Change the view name to `topview3`.
+For this exercise, please copy and use the View definition named `topview`.
+Please rename the View to `topview3`.
 
 image::images/topview_viewnamedialog-topview3_en.png[]
 
@@ -2044,7 +2044,7 @@ Save it now.
 image::images/topview_savedetaillayout2_en.png[]
 
 Next time, create `topview3` on the DetailLayout side.
-Like `SearchLayout`, the copy of View defined in` topview` is used as it is, so just change the screen title to `Customization confirmation 3`.
+Like `SearchLayout`, the copy of View defined in `topview` is used as it is, so just change the screen title to `Customization confirmation 3`.
 
 image::images/topview_copydetaillayout_en.png[]
 
