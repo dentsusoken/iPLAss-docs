@@ -1926,7 +1926,7 @@ Next, go back to TopView of MetaDataSettings and click the edit button for the `
 
 image::images/topview_searchresultlistsetting_en.png[]
 
-The `topview` s (the view definition named "topview") that were added earlier are now available in the `ResultList` View and `Detail Action View`, so please select them.
+The `topview` views (view definitions named `topview`) that were added earlier are now available in the `ResultList` View and `Detail Action View`, so please select them.
 
 image::images/topview_searchresultlistdialog-topview_en.png[]
 
