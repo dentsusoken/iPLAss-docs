@@ -220,10 +220,10 @@ This property is the output target of the binary download log. The following ite
 	<property name="binaryUploadAcceptMimeTypesPattern" value="^(image/.*|application/pdf|text/csv)$" />
 	-->
 
-	<!-- Aggregation file support type. CSV, EXCEL -->
+	<!-- Aggregation file support type. CSV, EXCEL, SPECIFY  -->
 	<property name="aggregationFileSupportType" value="CSV" />
 
-	<!-- Raw data aggregation file support type. CSV, EXCEL -->
+	<!-- Raw data aggregation file support type. CSV, EXCEL, SPECIFY  -->
 	<property name="rawDataAggregationFileSupportType" value="CSV" />
 
 	<!-- Whether to output a footer in aggregation file download -->

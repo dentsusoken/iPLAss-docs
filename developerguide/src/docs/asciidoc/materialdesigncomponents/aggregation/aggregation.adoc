@@ -140,25 +140,25 @@ ${csvName}_${yyyy}${MM}${dd}${HH}${mm}${ss}
 |xxxConditionCount
 |同一の項目で複数の条件を指定する場合の件数を指定します。
 
-.18+|xxx_ope_y
-|フィルタ時の比較演算子、指定できるのは以下となります。
+ |xxx_ope_y
+ a|フィルタ時の比較演算子、指定できるのは以下となります。
 
-|EQ: 等しい
-|NE: 等しくない
-|SW: 前方一致
-|LW: 後方一致
-|IC: 含む
-|NIC: 含まない
-|IN: いずれかと等しい
-|LT: より小さい
-|GT: より大きい
-|LE: 以下
-|GE: 以上
-|RG: 範囲指定範囲指定の場合のみ下記のようにtoパラメータが必要となります。
-|RD: 相対範囲(日付)
-|RDT: 相対範囲(日時)
-|NNL: 値が設定されている
-|NL: 値が設定されていない
+ * EQ: 等しい
+ * NE: 等しくない
+ * SW: 前方一致
+ * LW: 後方一致
+ * IC: 含む
+ * NIC: 含まない
+ * IN: いずれかと等しい
+ * LT: より小さい
+ * GT: より大きい
+ * LE: 以下
+ * GE: 以上
+ * RG: 範囲指定（範囲指定の場合のみ下記のように to パラメータが必要となります）
+ * RD: 相対範囲(日付)
+ * RDT: 相対範囲(日時)
+ * NNL: 値が設定されている
+ * NL: 値が設定されていない
 
 |xxx_y
 |フィルタ時の値、型によって指定の際の制約あり
@@ -473,7 +473,7 @@ nullのままの場合、グラフ上には表示されません。
 |設定値
 
 |nullを0に変換
-|X軸、軸Yに指定された項目の値で、データがnullのものを0として扱います。
+|X軸、Y軸に指定された項目の値で、データがnullのものを0として扱います。
 nullのままの場合、グラフ上には表示されません。
 
 |X軸列
@@ -821,7 +821,7 @@ org.iplass.mtp.impl.mdc.view.aggregation.SimpleAggregationViewInterrupter
 
 .2+|afterAggregate
 |condition : MdcSimpleCrosstabAggregationCondition
-.2+|List<Object[]>
+.2+|List<Map<String, Object>>
 .2+|集計結果を元にデータを編集します。
 編集した結果を返します。
 |data :List<Map<String, Object>>
@@ -1072,7 +1072,7 @@ nullのままの場合、グラフ上には表示されません。
 |凡例を非表示にする場合にチェックします。
 
 |凡例の表示位置(location)
-|凡例の表示位置を以下の8パターンから選択します。
+|凡例の表示位置を以下の4パターンから選択します。
 
 `上` 、 `下` 、 `左` 、  `右`
 |===
@@ -1172,7 +1172,7 @@ import java.util.List;
 import org.iplass.mtp.mdc.command.view.aggregation.condition.MdcSimpleCrosstabAggregationCondition;
 
 
-public class SampleCorsstabInterrupter implements CrosstabAggregationViewInterrupter {
+public class SampleCrosstabInterrupter implements CrosstabAggregationViewInterrupter {
 
 	@Override
 	public List<List<Object>> afterAggregate(MdcSimpleCrosstabAggregationCondition condition, List<List<Object>> data) {
