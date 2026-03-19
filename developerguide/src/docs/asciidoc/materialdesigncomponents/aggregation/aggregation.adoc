@@ -68,7 +68,7 @@ EXCELファイルを利用します。
 SPECIFY::
 CSVファイルかEXCELファイルのどちらを利用するかを画面で選択します。
 
-未指定の場合は、<<../../../serviceconfig/index.adoc#MdcConfigService,MdcConfigService>> の `aggregationFileSupportType` によって動作します。
+未指定の場合は、<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `aggregationFileSupportType` によって動作します。
 
 |File name format
 |ファイルダウンロード時のファイル名をGroovyTemplate書式を利用して指定します。
@@ -140,8 +140,8 @@ ${csvName}_${yyyy}${MM}${dd}${HH}${mm}${ss}
 |xxxConditionCount
 |同一の項目で複数の条件を指定する場合の件数を指定します。
 
- |xxx_ope_y
- a|フィルタ時の比較演算子、指定できるのは以下となります。
+|xxx_ope_y
+a|フィルタ時の比較演算子、指定できるのは以下となります。
 
  * EQ: 等しい
  * NE: 等しくない
@@ -752,8 +752,7 @@ EXCELファイルを利用します。
 SPECIFY::
 CSVファイルかEXCELファイルのどちらを利用するかを画面で選択します。
 
-未指定の場合は、<<../../../serviceconfig/index.adoc#MdcConfigService,MdcConfigService>> の `rawDataAggregationFileSupportType` によって動作します。
-
+未指定の場合は、<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `rawDataAggregationFileSupportType` によって動作します。
 
 |File name format
 |ファイルダウンロード時のファイル名をGroovyTemplate書式を利用して指定します。
@@ -1105,7 +1104,7 @@ EXCELファイルを利用します。
 SPECIFY::
 CSVファイルかEXCELファイルのどちらを利用するかを画面で選択します。
 
-未指定の場合は、<<../../../serviceconfig/index.adoc#MdcConfigService,MdcConfigService>> の `rawDataAggregationFileSupportType` によって動作します。
+未指定の場合は、<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `rawDataAggregationFileSupportType` によって動作します。
 
 
 |File name format
