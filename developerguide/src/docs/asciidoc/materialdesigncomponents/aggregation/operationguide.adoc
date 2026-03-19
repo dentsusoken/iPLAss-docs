@@ -3,8 +3,8 @@
 
 MDCモジュールにおける集計画面の操作説明です。 +
 エンティティのデータを集計し、集計データやグラフとして表示する画面です。 +
-MDC版ではPCモードとモバイルモードの两种表示モードをサポートしています。
-
+MDC版ではPCモードとモバイルモードの2種類の表示モードをサポートしています。
+ 
 === 単純集計/クロス集計
 
 エンティティのデータを集計し、集計データやグラフとして表示する画面です。
@@ -20,7 +20,7 @@ image:images/aggregation_view.png[]
 
 集計画面の操作ボタンと集計対象データの絞り込み条件を設定します。
 
-===== フィルタ条件ダウンロード
+===== フィルタ条件ダイアログ
 
 image:images/aggregation_filter_dialog.png[]
 
@@ -40,7 +40,7 @@ image:images/aggregation_filter_dialog.png[]
 `クリア` をクリックすると、画面表示時のフィルタ条件に戻ります。
 
 
-===== ファイルダウンロードダウンロード
+===== ファイルダウンロード
 
 集計結果をファイルとしてダウンロードします。
 
@@ -78,16 +78,27 @@ image:images/aggregation_chart.png[]
 集計データを視覚的に表現します。
 以下のグラフタイプをサポートしています。
 
-* 折れ線グラフ
-* 棒グラフ
-* 円グラフ
-* エリアグラフ
-* ドーナツグラフ
-* バブルチャート
-* 散布図
-* ピラミッド
-* レーダーチャート
-* 極座標グラフ
+* 折れ線グラフ +
+image:images/aggregation_chart_line.png[]
+* 棒グラフ +
+image:images/aggregation_chart_bar.png[]
+* 円グラフ +
+image:images/aggregation_chart_pie.png[]
+* エリアグラフ +
+image:images/aggregation_chart_area.png[]
+* ドーナツグラフ +
+image:images/aggregation_chart_doughnut.png[]
+* バブルチャート +
+image:images/aggregation_chart_bubble.png[]
+* 散布図 +
+image:images/aggregation_chart_scatter.png[]
+* ピラミッド +
+image:images/aggregation_chart_pyramid.png[]
+* レーダーチャート +
+image:images/aggregation_chart_radar.png[]
+* 極座標グラフ +
+image:images/aggregation_chart_polar.png[]
+
 
 
 === メニュー
@@ -99,7 +110,7 @@ image:images/aggregation_chart.png[]
 
 image:images/aggregation_context_menu.png[]
 
-==== テプラの操作
+==== テーブルの操作
 
 .選択解除
 集計結果の選択行またはセルを未選択状態にします。

@@ -74,8 +74,8 @@ CSVファイルかEXCELファイルのどちらを利用するかを画面で選
 |ファイルダウンロード時のファイル名をGroovyTemplate書式を利用して指定します。
 詳細は<<ag_filenameformat, File name format>>を参照してください。
 
-|フィルタ項目|
-集計画面で利用可能なフィルタ項目を設定します。
+|フィルタ項目
+|集計画面で利用可能なフィルタ項目を設定します。
 詳細は<<ag_filter, フィルタ項目>>を参照してください。
 
 |Edit default filter
@@ -503,7 +503,7 @@ nullのままの場合、グラフ上には表示されません。
 未指定の場合は1となります。
 
 |マーカーサイズ(散布図のみ)
-|散布図の円のサイズを制定します。
+|散布図の円のサイズを指定します。
 |===
 
 .ピラミッド
@@ -1155,7 +1155,7 @@ org.iplass.mtp.impl.mdc.view.aggregation.CrosstabAggregationViewInterrupter
 
 .2+|afterAggregate
 |condition : MdcSimpleCrosstabAggregationCondition
-.2+|CrosstabResultSet
+.2+|data :List<List<Object>>
 .2+|集計結果を元にデータを編集します。
 編集した結果を返します。
 |data :List<List<Object>>
@@ -1177,16 +1177,17 @@ public class SampleCorsstabInterrupter implements CrosstabAggregationViewInterru
 	@Override
 	public List<List<Object>> afterAggregate(MdcSimpleCrosstabAggregationCondition condition, List<List<Object>> data) {
 		List<Object> lastRow = data.get(data.size() - 1);
-		lastRow.forEach(value -> {
-			// パーセント表記に変換
-			if (value instanceof Number) {
-				Number num = (Number) value;
-				value = num.doubleValue() * 100 + "%";
-			} else {
-				value = "0%";
-			}
-		});
-		data.set(data.size() - 1, lastRow);
+		for (int i = 0; i < lastRow.size(); i++) {
+ 			Object value = lastRow.get(i);
+ 			// パーセント表記に変換
+ 			if (value instanceof Number) {
+ 				Number num = (Number) value;
+ 				lastRow.set(i, num.doubleValue() * 100 + "%");
+ 			} else {
+ 				lastRow.set(i, "0%");
+ 			}
+ 		}
+ 		data.set(data.size() - 1, lastRow);
 
 		return data;
 	}
