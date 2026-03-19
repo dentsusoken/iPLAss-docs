@@ -65,6 +65,16 @@ Configuration example
 
 See <<WebFrontendService, WebFrontendService uploadFileTypeDetector>>, <<FileTypeDetector, FileTypeDetector>> for information on how to determine the MIME Type to be validated.
 
+| aggregationFileSupportType | AggregationFileSupportType | Aggregation file support type. Specify from `CSV` `EXCEL`. The default value is `CSV`.
+| rawDataAggregationFileSupportType | AggregationFileSupportType | Raw data aggregation file support type. Specify from `CSV` `EXCEL`. The default value is `CSV`.
+| aggregationFileDownloadWithFooter | boolean | Whether to output a footer in aggregation file download. The default value is false.
+| aggregationFileDownloadFooter | String | Footer wording for aggregation file download.
+| aggregationRawDataFileDownloadWithFooter | boolean | Whether to output a footer in raw data file download. The default value is false.
+| aggregationRawDataFileDownloadFooter | String | Footer wording for raw data file download.
+| dividingTableSideAtCrosstabFileDownload | boolean | Whether to divide table side in crosstab file download. The default value is false.
+| dividingTableHeadAtCrosstabFileDownload | boolean | Whether to divide table head in crosstab file download. The default value is false.
+| outputItemLabelCrosstabFileDownload | boolean | Whether to output item label in crosstab file download. The default value is false.
+
 |===
 
 [[DisplayBreakpoint]]
@@ -209,5 +219,32 @@ This property is the output target of the binary download log. The following ite
 	<!-- Configuration example
 	<property name="binaryUploadAcceptMimeTypesPattern" value="^(image/.*|application/pdf|text/csv)$" />
 	-->
+
+	<!-- Aggregation file support type. CSV, EXCEL -->
+	<property name="aggregationFileSupportType" value="CSV" />
+
+	<!-- Raw data aggregation file support type. CSV, EXCEL -->
+	<property name="rawDataAggregationFileSupportType" value="CSV" />
+
+	<!-- Whether to output a footer in aggregation file download -->
+	<property name="aggregationFileDownloadWithFooter" value="false"/>
+
+	<!-- Footer wording for aggregation file download -->
+	<property name="aggregationFileDownloadFooter" value=""/>
+
+	<!-- Whether to output a footer in raw data file download -->
+	<property name="aggregationRawDataFileDownloadWithFooter" value="false"/>
+
+	<!-- Footer wording for raw data file download -->
+	<property name="aggregationRawDataFileDownloadFooter" value=""/>
+
+	<!-- Whether to divide table side in crosstab file download -->
+	<property name="dividingTableSideAtCrosstabFileDownload" value="false"/>
+
+	<!-- Whether to divide table head in crosstab file download -->
+	<property name="dividingTableHeadAtCrosstabFileDownload" value="false"/>
+
+	<!-- Whether to output item label in crosstab file download -->
+	<property name="outputItemLabelCrosstabFileDownload" value="false"/>
 </service>
 ----

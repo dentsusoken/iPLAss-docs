@@ -28,6 +28,9 @@ MDCモジュールにおけるTop画面の設定です。
 == <<./calendar/index.adoc#, Calendar>>
 MDCモジュールにおけるカレンダー画面の設定です。単一または複数のEntityデータをカレンダー形式で表示することができます。
 
+== <<./aggregation/index.adoc#, Aggregation>>
+MDCモジュールにおける定型集計画面の設定です。予め設定された集計方式、検索条件を元に、データの集計やグラフ表示を行います。単純集計とクロス集計をサポートしています。
+
 == <<./mdcauth/index.adoc#, 権限制御>>
 MDC機能に対する権限制御Utilityの提供や、EntityViewの管理設定によるView単位での参照制御をすることができます。
 
