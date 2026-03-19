@@ -65,8 +65,8 @@ Configuration example
 
 See <<WebFrontendService, WebFrontendService uploadFileTypeDetector>>, <<FileTypeDetector, FileTypeDetector>> for information on how to determine the MIME Type to be validated.
 
-| aggregationFileSupportType | AggregationFileSupportType | Aggregation file support type. Specify from `CSV` `EXCEL`. The default value is `CSV`.
-| rawDataAggregationFileSupportType | AggregationFileSupportType | Raw data aggregation file support type. Specify from `CSV` `EXCEL`. The default value is `CSV`.
+| aggregationFileSupportType | AggregationFileSupportType | Aggregation file support type. Specify from `CSV` `EXCEL` `SPECIFY`. The default value is `CSV`.
+| rawDataAggregationFileSupportType | AggregationFileSupportType | Raw data aggregation file support type. Specify from `CSV` `EXCEL` `SPECIFY`. The default value is `CSV`.
 | aggregationFileDownloadWithFooter | boolean | Whether to output a footer in aggregation file download. The default value is false.
 | aggregationFileDownloadFooter | String | Footer wording for aggregation file download.
 | aggregationRawDataFileDownloadWithFooter | boolean | Whether to output a footer in raw data file download. The default value is false.
