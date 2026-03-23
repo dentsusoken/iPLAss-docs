@@ -2500,6 +2500,10 @@ _30MIN:: 30分
 |Workflow History Settings
 |ワークフロー履歴表示に関する設定を行います。
 詳細は<<taskviewworkflowhistory, ワークフロー履歴設定項目>>を参照してください。
+
+|Detail Layout Setting
+|タスク詳細カスタムレイアウト表示に関する設定を行います。
+詳細は<<taskviewdetaillayout, タスク詳細カスタムレイアウト設定項目>>を参照してください。
 |===
 
 [[taskviewitem]]
@@ -2631,6 +2635,217 @@ _30MIN:: 30分
 
 |Display all history including parent process in initial view.
 |ワークフロー履歴初期表示時に親プロセスを含めた全履歴を表示するかを設定します。
+|===
+
+[[taskviewdetaillayout]]
+.タスク詳細カスタムレイアウト設定項目
+タスク詳細レイアウトをカスタマイズする際の設定を行います。 
+
+image::parts_taskview_setting-layout.png[align="left"]
+
+[cols="1,2a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|Workflow
+|タスク詳細レイアウト設定を行うワークフローを選択します。
+
+|UserTask
+|タスク詳細レイアウト設定を行うユーザータスクを選択します。
+
+|タスク詳細レイアウトの設定
+|図の①部分をクリックするとタスク詳細全体に対する設定を行うダイアログが表示されます。
+
+ボタン:: カスタムで表示したいボタンを追加します。 詳細は<<taskviewdetaillayout_button, タスク詳細ボタン設定>>をを参照してください。
+JavaScriptコード:: タスク詳細のScriptタグ内に出力するJavaScriptコードを入力します。
+編集でJavaScriptコードを有効化:: チェックした場合、`Javascriptコード` に設定したJavascriptが編集画面で有効になります。
+詳細でJavaScriptコードを有効化:: チェックした場合、`Javascriptコード` に設定したJavascriptが詳細画面で有効になります。
+カスタムステータス更新処理クラス名:: ステータス更新時にカスタマイズ処理を行いたい場合は `org.iplass.mtp.view.top.parts.workflow.UpdateAssignStateInterrupter` インターフェースを実装するクラスを指定してください。 詳細は<<taskviewdetaillayout_customstatusupdate, タスク詳細カスタムステータス更新処理>>を参照してください。
+
+|カスタムスクリプトセクション配置エリア
+|緑枠の部分はタスク詳細画面の該当部分にカスタマイズを入れるための設定です。
+画面右側の `Section` 内の部品をドラッグ&ドロップで配置できます。
+定義済みのテンプレートやHTMLベースのスクリプトを組み込むことができます。 +
+配置できるカスタムスクリプトセクションについて詳しくは<<taskviewdetaillayout_customscript, タスク詳細カスタムスクリプトセクション設定>>を参照してください。
+|===
+
+[[taskviewdetaillayout_button]]
+.タスク詳細ボタン設定
+タスク詳細画面に追加するカスタムボタンに対する設定を行います。
+
+[cols="1,2a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|表示
+|チェックした場合、カスタムボタンを表示します。
+
+|表示判定スクリプト
+|表示可否を判定するスクリプトを設定します。
+詳細は<<taskviewdetaillayout_judgedisplayscript, タスク詳細表示判定スクリプト>>を参照してください。
+
+|表示タイプ
+|編集画面、詳細画面のどちらに表示するかを設定できます。
+表示タイプが指定されていない場合は、編集画面、詳細画面に表示されます。
+
+Edit:: 編集画面に表示する
+View:: 詳細画面に表示する
+Both:: 編集画面、詳細画面に表示する
+
+|表示ラベル
+|ボタンに表示するラベルを設定します。カスタマイズ多言語対応可能です。
+
+|クラス名
+|ボタンに設定するスタイルシートのクラス名を指定します。
+複数指定する場合は半角スペースで区切ってください。
+
+|id
+|画面上で一意になるidを指定します。
+
+|プライマリー
+|設定するとボタンを強調表示します。
+
+|クリックイベント
+|ボタンクリック時に実行されるJavascriptコードを設定します。
+
+|カスタムスタイル
+|表示されるボタンに対して直接style属性を指定できます。
+詳細は<<taskviewdetaillayout_buttoncustomstyle, ユーザタスク詳細ボタンカスタムスタイル>>を参照してください。
+|===
+
+[[taskviewdetaillayout_judgedisplayscript]]
+.タスク詳細表示判定スクリプト
+タスク詳細画面のカスタムボタン表示可否を判定するGroovyScriptを設定します。
+スクリプトが未指定か、スクリプトの実行結果がtrueの場合、表示されます。
+
+以下のオブジェクトがバインドされています。
+
+====
+request:: リクエスト
+session:: セッション
+user:: ユーザー
+outputType:: 表示タイプ。以下の値によって画面毎の制御が可能です。 +
+EDIT : 編集画面 +
+VIEW : 詳細画面
+userTask:: 表示対象のUserTaskエンティティ。エンティティにはoidとversionがバインドされます。
+====
+
+[[taskviewdetaillayout_buttoncustomstyle]]
+.タスク詳細ボタンカスタムスタイル
+表示されるボタンに対して直接style属性を指定できます。
+GroovyTemplate書式で設定します。
+
+以下のオブジェクトがバインドされています。
+
+====
+out:: Writer
+em:: EntityManasger
+edm:: EntityDefinitionManager
+auth:: AuthContext
+====
+
+[source,groovy]
+----
+color: #ffffff;
+border:1px solid #976161;
+background:#831f1f;
+background:-webkit-linear-gradient(top, #d6363a 0%, #831f1f 100%);
+background:-moz-linear-gradient(top, #d6363a 0%, #831f1f 100%);
+----
+
+[[taskviewdetaillayout_customstatusupdate]]
+.タスク詳細カスタムステータス更新処理
+タスク編集画面でのステータス更新時に独自の処理を組み込むことができます。
+
+以下のインターフェースを実装したJavaクラスまたはUtilityClassを作成してください。
+作成したクラスをタスク詳細画面のカスタムステータス更新処理クラスに指定します。
+
+====
+org.iplass.mtp.view.top.parts.workflow.UpdateAssignStateInterrupter
+====
+
+[[taskviewdetaillayout_customscript]]
+.タスク詳細カスタムスクリプトセクション設定
+タスク詳細画面に追加するカスタムスクリプトに対する設定を行います。
+
+[[taskviewdetaillayout_customscript_common]]
+.共通設定項目
+各セクションで共通の設定項目です。
+
+[cols="1,4a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|表示
+|チェックした場合、画面に表示します。
+
+|表示判定スクリプト
+|表示可否を判定するスクリプトを設定します。
+詳細は<<taskviewdetaillayout_judgedisplayscript, タスク詳細表示判定スクリプト>>を参照してください。
+
+|編集画面で非表示
+|チェックした場合、編集画面で当該セクションを非表示にします。
+
+|詳細画面で非表示
+|チェックした場合、詳細画面で当該セクションを非表示にします。
+
+|クラス名
+|セクションに設定するスタイルシートのクラス名を指定します。
+複数指定する場合は半角スペースで区切って下さい。
+
+|id
+|画面上で一意となるidを設定します。
+|===
+
+[[taskviewdetaillayout_customscript_script]]
+.スクリプトセクション
+詳細画面や編集画面の出力内容を独自に組み込む場合に設定します。
+GroovyTemplate形式で定義します。
+
+[cols="1,4a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|スクリプト
+|HTMLコードを含むスクリプトを設定します。
+
+[source,html]
+----
+<script type="text/Javascript">alert("Hello");</script>
+----
+
+以下のオブジェクトがバインドされています。
+
+====
+request:: リクエスト
+session:: セッション
+outputType:: 表示タイプ。以下の値によって画面毎の制御が可能です。 +
+EDIT : 編集画面 +
+VIEW : 詳細画面
+====
+
+|===
+
+[[taskviewdetaillayout_customscript_template]]
+.テンプレートセクション
+
+詳細画面や編集画面の出力内容を独自に組み込む場合に設定します。
+出力内容は別途テンプレートとして定義されているものを指定します。
+スクリプトとの違いは、スクリプトは対象のタスク詳細定義でのみ利用できますが、
+テンプレートとして定義することで、GroovyTemplate形式以外のJSP形式での実装や、
+他のタスク詳細定義でも利用することが可能になります。
+
+[cols="1,4a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|テンプレート名
+|登録済テンプレート名を設定します。
 |===
 
 ==== Workflowの実行権限
