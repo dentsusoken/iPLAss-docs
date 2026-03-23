@@ -2657,10 +2657,10 @@ image::parts_taskview_setting-layout.png[align="left"]
 |タスク詳細レイアウトの設定
 |図の①部分をクリックするとタスク詳細全体に対する設定を行うダイアログが表示されます。
 
-ボタン:: カスタムで表示したいボタンを追加します。 詳細は<<taskviewdetaillayout_button, タスク詳細ボタン設定>>をを参照してください。
+ボタン:: カスタムで表示したいボタンを追加します。 詳細は<<taskviewdetaillayout_button, タスク詳細ボタン設定>>を参照してください。
 JavaScriptコード:: タスク詳細のScriptタグ内に出力するJavaScriptコードを入力します。
-編集でJavaScriptコードを有効化:: チェックした場合、`Javascriptコード` に設定したJavascriptが編集画面で有効になります。
-詳細でJavaScriptコードを有効化:: チェックした場合、`Javascriptコード` に設定したJavascriptが詳細画面で有効になります。
+編集でJavaScriptコードを有効化:: チェックした場合、`JavaScriptコード` に設定したJavaScriptが編集画面で有効になります。
+詳細でJavaScriptコードを有効化:: チェックした場合、`JavaScriptコード` に設定したJavaScriptが詳細画面で有効になります。
 カスタムステータス更新処理クラス名:: ステータス更新時にカスタマイズ処理を行いたい場合は `org.iplass.mtp.view.top.parts.workflow.UpdateAssignStateInterrupter` インターフェースを実装するクラスを指定してください。 詳細は<<taskviewdetaillayout_customstatusupdate, タスク詳細カスタムステータス更新処理>>を参照してください。
 
 |カスタムスクリプトセクション配置エリア
@@ -2741,7 +2741,7 @@ GroovyTemplate書式で設定します。
 
 ====
 out:: Writer
-em:: EntityManasger
+em:: EntityManager
 edm:: EntityDefinitionManager
 auth:: AuthContext
 ====
@@ -2815,7 +2815,7 @@ GroovyTemplate形式で定義します。
 
 [source,html]
 ----
-<script type="text/Javascript">alert("Hello");</script>
+<script type="text/javascript">alert("Hello");</script>
 ----
 
 以下のオブジェクトがバインドされています。
