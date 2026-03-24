@@ -33,9 +33,11 @@ The available settings for WarmupService are listed below.
 
 | taskMap | in format of Map <String, <<WarmupTask>>> | Specify the name of the warm-up task in the name attribute (key) and the implementation class of org.iplass.mtp.impl.warmup.WarmupTask in the value attribute (value). +
 The `defaultMetaDataWarmupTask` is defined as the basic metadata loading process, which can be specified by the value attribute of the tenantTaskMap property.
-| applicationTask | String | Specifies the name of the warm-up task set in the taskMap property. Multiple tasks can be specified by separating them with commas.
+| applicationTask | String | Specifies the name of the warm-up task set in the taskMap property. Multiple tasks can be specified by separating them with commas. +
+In applicationTask, configure tasks that run per server and are independent of the tenant (such as <<TomcatJasperJspPreCompileWarmupTask>>).
 | tenantTaskMap | in format of Map <String, String> | Specify the tenant ID in the name attribute (key) and the warm-up task name set in the taskMap property in the value attribute (value). Multiple tenant IDs and warm-up task names can be specified as comma-separated values. +
-The special character `{asterisk}` can be specified in the tenant ID to represent all tenant IDs.
+The special character `{asterisk}` can be specified in the tenant ID to represent all tenant IDs. +
+In tenantTaskMap, configure tasks to be executed per tenant (such as <<MetaDataWarmupTask>>).
 |===
 
 [[WarmupTask]]
@@ -54,6 +56,7 @@ The following classes are provided by default.
 .MetaDataWarmupTask
 
 Pre-read metadata.。 +
+This task is executed per tenant. Configure it in the tenantTaskMap property of WarmupService. +
 Specify org.iplass.mtp.impl.warmup.MetaDataWarmupTask for class.
 
 The following items can be set
@@ -72,6 +75,7 @@ The following items can be set
 [[TomcatJasperJspPreCompileWarmupTask]]
 .[.eeonly]#TomcatJasperJspPreCompileWarmupTask#
 Search and precompile JSP files according to the configuration. +
+This task is executed per server. Configure it in the applicationTask property of WarmupService. +
 class specifies org.iplass.mtp.impl.web.warmup.TomcatJasperJspPreCompileWarmupTask.
 
 The following items can be set
