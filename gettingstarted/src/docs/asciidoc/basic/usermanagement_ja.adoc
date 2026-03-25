@@ -164,8 +164,8 @@ image::images/usermanage_passwordchange.png[]
 変更後、ログインが行われTop画面が表示されます。
 
 もしこのタイミングでエラーのダイアログが表示された場合、ここまでに作成した各Entityの<<save_defaultlayout, DetailLayoutとSearchLayoutの画面定義を作成>>してください。
-作成後に再度ログインを行い、エラーが解消されることを確認してください。
-(※ここでエラーが起きる原因としては、Adminユーザーしか権限がないTopviewのview定義を別のユーザーで閲覧しようとするからです。)
+作成後に再度ログインを行い、エラーが解消されることを確認してください。 +
+※このエラーは、Topview のビュー定義が Admin ユーザーのみ参照可能な権限設定になっているため、他のユーザーで閲覧しようとした際に発生します。
 
 image::images/usermanage_user001error.png[]
 
