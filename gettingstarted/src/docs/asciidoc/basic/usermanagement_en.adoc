@@ -163,8 +163,9 @@ image::images/usermanage_passwordchange_en.png[]
 
 After the change, login process is performed and the top screen is displayed.
 
-If an error dialog is displayed at this time, please <<save_defaultlayout, create screen definition >> for each entity created so far.
+If an error dialog appears at this point, please <<save_defaultlayout, create screen definitions for DetailLayout and SearchLayout >> for each entity you have created so far.
 Please log in again after creating and confirm that the error is resolved.
+(※This error occurs because you are attempting to view a Topview definition that is restricted to Admin users using a different user account.)
 
 image::images/usermanage_user001error_en.png[]
 
