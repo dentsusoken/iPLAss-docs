@@ -165,8 +165,7 @@ image::images/usermanage_passwordchange.png[]
 
 もしこのタイミングでエラーのダイアログが表示された場合、ここまでに作成した各Entityの<<save_defaultlayout, DetailLayoutとSearchLayoutの画面定義を作成>>してください。
 作成後に再度ログインを行い、エラーが解消されることを確認してください。 +
-※このエラーは、Topview のビュー定義が Admin ユーザーのみ参照可能な権限設定になっているため、他のユーザーで閲覧しようとした際に発生します。
-
+※このエラーは、Top画面で利用しているビュー定義に対応する各Entityの標準 `Search_Layout` / `Detail_Layout` の画面定義が未作成であるため、Adminユーザー以外では画面を表示できないことが原因です。
 image::images/usermanage_user001error.png[]
 
 ここで作成したユーザーは管理者ユーザーではないため、 `管理・設定` メニュー（AdminConsole遷移）が表示されません。
