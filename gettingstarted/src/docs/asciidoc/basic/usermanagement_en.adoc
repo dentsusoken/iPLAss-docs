@@ -165,7 +165,7 @@ After the change, login process is performed and the top screen is displayed.
 
 If an error dialog appears at this point, please <<save_defaultlayout, create screen definitions for DetailLayout and SearchLayout>> for each entity you have created so far.
 Please log in again after creating and confirm that the error is resolved. +
-\*This error occurs when you attempt to view the Topview view definition using a user account other than the Admin account, because the view definition is set to be accessible only to the Admin user.
+pass:[*]This error occurs when you attempt to view the Topview view definition using a user account other than the Admin account, because the view definition is set to be accessible only to the Admin user.
 
 image::images/usermanage_user001error_en.png[]
 
