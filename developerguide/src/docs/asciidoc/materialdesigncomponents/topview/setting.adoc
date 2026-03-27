@@ -430,16 +430,14 @@ Custom Display Name::
 ドラッグ&ドロップで順番を入れ替えることでフィルター条件の表示順を変更することが出来ます。
 
 Required fields in filter conditions:: フィルター条件の必須項目にする場合はチェックします。
-Column Info:: フィルター条件の表示領域を設定します。
-列情報の詳細については<<columninfo, 列情報>>を参照してください。
-Property Editor:: プロパティエディタを設定することで項目の表示方法をカスタマイズ可能です。
-プロパティエディタについて、詳細は<<taskpropertyeditor, フィルター条件プロパティエディタ>>を参照してください。
+Column Info:: フィルター条件の表示領域を設定します。列情報の詳細については<<columninfo, 列情報>>を参照してください。
+Property Editor:: プロパティエディタを設定することで項目の表示方法をカスタマイズ可能です。プロパティエディタについて、詳細は<<taskpropertyeditor, フィルター条件プロパティエディタ>>を参照してください。
 |===
 
 [[taskpropertyeditor]]
 .フィルター条件プロパティエディタ
 フィルター条件プロパティエディタは各フィルター条件プロパティの入力表示設定になります。
-TOP画面パーツ `タスク一覧フィルター条件設定`の`Show Filter Condition Property` に配置した各プロパティの設定を変更をすることができます。 +
+TOP画面パーツ `タスク一覧フィルター条件設定` の `Show Filter Condition Property` に配置した各プロパティの設定を変更をすることができます。 +
 フィルター条件設定について、詳細は<<taskfilterconditionsetting, フィルター条件設定項目>>を参照してください。
 
 [[taskpropertyeditorcommon]]
