@@ -429,8 +429,10 @@ Custom Display Name::
 `UserTask Property` からドラッグ&ドロップで表示対象を指定します。 +
 ドラッグ&ドロップで順番を入れ替えることでフィルター条件の表示順を変更することが出来ます。
 
-Required:: フィルター条件の必須項目にする場合はチェックします。
-PropertyEditorSetting:: プロパティエディタを設定することで項目の表示方法をカスタマイズ可能です。
+Required fields in filter conditions:: フィルター条件の必須項目にする場合はチェックします。
+Column Info:: フィルター条件の表示領域を設定します。
+列情報の詳細については<<columninfo, 列情報>>を参照してください。
+Property Editor:: プロパティエディタを設定することで項目の表示方法をカスタマイズ可能です。
 プロパティエディタについて、詳細は<<taskpropertyeditor, フィルター条件プロパティエディタ>>を参照してください。
 |===
 
