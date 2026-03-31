@@ -96,7 +96,7 @@ image:images/aggregation_chart_scatter.png[]
 image:images/aggregation_chart_pyramid.png[]
 * レーダーチャート +
 image:images/aggregation_chart_radar.png[]
-* 極座標グラフ +
+* ポーラーチャート +
 image:images/aggregation_chart_polar.png[]
 
 
@@ -111,6 +111,9 @@ image:images/aggregation_chart_polar.png[]
 image:images/aggregation_context_menu.png[]
 
 ==== テーブルの操作
+
+.コピー
+集計結果の選択行またはセルの内容をコピーする。
 
 .選択解除
 集計結果の選択行またはセルを未選択状態にします。
