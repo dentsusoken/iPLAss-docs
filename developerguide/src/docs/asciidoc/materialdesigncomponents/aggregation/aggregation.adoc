@@ -1175,6 +1175,10 @@ public class SampleCrosstabInterrupter implements CrosstabAggregationViewInterru
 
 	@Override
 	public List<List<Object>> afterAggregate(MdcSimpleCrosstabAggregationCondition condition, List<List<Object>> data) {
+	   // 集計結果が0件またはnullの場合はそのまま返す
+		if (data == null || data.isEmpty()) {
+			return data;
+		}
 		List<Object> lastRow = data.get(data.size() - 1);
 		for (int i = 0; i < lastRow.size(); i++) {
  			Object value = lastRow.get(i);
