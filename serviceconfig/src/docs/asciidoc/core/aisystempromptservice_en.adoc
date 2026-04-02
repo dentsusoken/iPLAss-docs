@@ -1,0 +1,27 @@
+[[AiSystemPromptService]]
+=== [.eeonly]#AiSystemPromptService#
+AI System Prompt Service.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.ai.prompt.AiSystemPromptService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.ai.prompt.AiSystemPromptService
+----
+
+==== Settings for AiSystemPromptService
+Configures the AiSystemPromptService.
+There are no configuration items.
+
+===== Example
+[source,xml]
+----
+<!-- AI System Prompt -->
+<service>
+    <interface>org.iplass.mtp.impl.ai.prompt.AiSystemPromptService</interface>
+    <class>org.iplass.mtp.impl.ai.prompt.AiSystemPromptService</class>
+</service>
+----

@@ -102,6 +102,8 @@ In addition, the output value can be set with WebFrontendService.
 ID for asynchronous processing sent to cluster nodes using Infinispan. A unique ID is assigned for each transmission unit.
 | scimDistributeId | %X{scimDistributeId} | Available when [.eeonly]#iplass-ee-web# module is applied. +
 Available in the Scheduler task of the SCIM Service Provider function. An ID used to deliver SCIM requests to the Service Provider, with a unique ID assigned on a per-message basis.
+| aiPromptRequestId | %X{aiPromptRequestId} | [.eeonly]#iplass-ee-core# module is applied, output the AI prompt request ID.
+| aiDataConnectExecuteId | %X{aiDataConnectExecuteId} | [.eeonly]#iplass-ee-core# module is applied, output the AI Data Connect execution ID.
 |===
 
 === filter

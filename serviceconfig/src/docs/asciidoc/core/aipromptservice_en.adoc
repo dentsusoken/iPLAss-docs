@@ -1,0 +1,46 @@
+[[AiPromptService]]
+=== [.eeonly]#AiPromptService#
+AI Prompt Service.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.ai.prompt.AiPromptService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.ai.prompt.AiPromptService
+----
+
+==== Settings for AiPromptService
+Configures the AiPromptService.
+
+===== Configuration Items
+[cols="1,1,3", options="header"]
+|===
+| Item
+| Value
+| Description
+
+| definitionMetaClassMap
+| String, in format of Map
+| Sets the mapping between AI platform definition classes and metadata classes in AI prompt. +
+This configuration value should be defined by the system and does not need to be set by the user. +
+In the Map format, the name property should be set to the fully qualified class name of a subclass of `org.iplass.mtp.ai.prompt.AiPlatformDefinition`. +
+In the Map format, the value property should be set to the fully qualified class name of a subclass of `org.iplass.mtp.impl.ai.prompt.MetaAiPlatform`.
+|===
+
+===== Example
+[source,xml]
+----
+<!-- AI Prompt -->
+<service>
+    <interface>org.iplass.mtp.impl.ai.prompt.AiPromptService</interface>
+    <class>org.iplass.mtp.impl.ai.prompt.AiPromptService</class>
+
+    <property name="definitionMetaClassMap">
+        <property name="org.iplass.mtp.ai.prompt.AiPlatformDefinition" value="org.iplass.mtp.impl.ai.prompt.MetaAiPlatform" />
+        <property name="org.iplass.mtp.ai.prompt.AiPlatformCustomDefinition" value="org.iplass.mtp.impl.ai.prompt.MetaAiPlatformCustom" />
+    </property>
+</service>
+----
