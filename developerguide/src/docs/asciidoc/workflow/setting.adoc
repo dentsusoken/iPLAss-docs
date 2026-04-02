@@ -1565,6 +1565,9 @@ Custom Title ::
 |Custom Filter Title
 |フィルター条件のタイトルを変更する場合に指定します。カスタマイズ多言語対応可能です。
 
+|Number of Columns
+|フィルター条件項目の列数を設定します（設定範囲は1~10）。
+
 |UserTask Property
 |UserTaskプロパティ、UserTaskカスタムプロパティが表示されます。
 `Show Filter Condition Property` に表示対象のプロパティをドラッグ&ドロップすることでタスク一覧のフィルター条件項目となります。
@@ -1574,15 +1577,14 @@ Custom Title ::
 `UserTask Property` からドラッグ&ドロップで表示対象を指定します。 +
 ドラッグ&ドロップで順番を入れ替えることでフィルター条件の表示順を変更できます。
 
-Required:: フィルター条件の必須項目にする場合はチェックします。
-PropertyEditorSetting:: プロパティエディタを設定することで項目の表示方法をカスタマイズ可能です。
-プロパティエディタについて、詳細は<<taskpropertyeditor, フィルター条件プロパティエディタ>>を参照してください。
+Required fields in filter conditions:: フィルター条件の必須項目にする場合はチェックします。
+Property Editor:: プロパティエディタを設定することで項目の表示方法をカスタマイズ可能です。プロパティエディタについて、詳細は<<taskpropertyeditor, フィルター条件プロパティエディタ>>を参照してください。
 |===
 
 [[taskpropertyeditor]]
 .フィルター条件プロパティエディタ
 フィルター条件プロパティエディタは各フィルター条件プロパティの入力表示設定になります。
-TOP画面パーツ `タスク一覧フィルター条件設定`の`Show Filter Condition Property` に配置した各プロパティの設定を変更をすることができます。 +
+TOP画面パーツ `タスク一覧フィルター条件設定` の `Show Filter Condition Property` に配置した各プロパティの設定を変更をすることができます。 +
 フィルター条件設定について、詳細は<<taskfilterconditionsetting, フィルター条件設定項目>>を参照してください。
 
 [[taskpropertyeditorcommon]]
