@@ -1011,10 +1011,11 @@ VariableItemと各ユーザーの回答結果がバインドされます。
 .完了条件のカスタマイズ
 割当種別が `ALL` かつ完了条件が `CUSTOM` の場合、完了条件のカスタムロジックを設定できます。
 
-完了条件のカスタムロジックはGroovyScriptを利用して定義します。戻り値としてタスクの `taskResultStatus` のnameを返すよう実装します。VariableItemと各ユーザーの回答結果がバインドされます。
+完了条件のカスタムロジックはGroovyScriptを利用して定義します。戻り値としてタスクの `taskResultStatus` のnameを返すよう実装します。VariableItemと各ユーザーの回答結果（アカウントIDと回答結果のMap）がバインドされます。 +
+VariableItemのバインド変数名はVariableItem名、各ユーザーの回答結果のバインド変数名は `results` となります。
 
-完了条件のカスタムロジックが実行されると、戻り値をタスク結果としてUserTaskが完了します。戻り値としてNULLが返却された場合、UserTaskは未完了のまま待機します。 +
-割り当てられたユーザー全員のタスクが完了しても完了条件のカスタムロジックからNULL、または `taskResultStatus` 以外の値が返された場合は、 `CONFLICTED` をタスク結果としてUserTaskは未完了のまま待機します。
+完了条件のカスタムロジックが実行されると、戻り値をタスク結果としてUserTaskが完了します。戻り値として `null` が返却された場合、UserTaskは未完了のまま待機します。 +
+割り当てられたユーザー全員のタスクが完了しても完了条件のカスタムロジックから `null` 、または `taskResultStatus` 以外の値が返された場合は、 `CONFLICTED` をタスク結果としてUserTaskは未完了のまま待機します。
 
 .（例）完了条件のカスタマイズ
 [source,groovy]
@@ -1022,8 +1023,6 @@ VariableItemと各ユーザーの回答結果がバインドされます。
 /*
  * Entityデータのユーザーが回答したらタスクの回答結果として完了にする
  */
-
-import java.util.Objects;
 
 import org.iplass.mtp.ManagerLocator;
 import org.iplass.mtp.auth.User;
@@ -1033,7 +1032,7 @@ import org.iplass.mtp.entity.query.condition.predicate.Equals;
 
 EntityManager em = ManagerLocator.manager(EntityManager.class);
 
-// VariableItemで保持しているEntityデータのUser取得
+// VariableItem（VariableItem名【item】）で保持しているEntityデータのUser取得
 User user = (User) item.getValue("user");
 if (user == null) {
     return null;
@@ -1045,10 +1044,10 @@ query.from(User.DEFINITION_NAME);
 query.where(new Equals(User.OID, user.getOid()));
 
 String accountId = null;
-em.search(query, data -> {
+em.search(query) { data ->
     accountId = (String) data[0];
     return false;
-});
+}
 
 if (accountId == null) {
     return null;
