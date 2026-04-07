@@ -84,8 +84,6 @@ image:images/aggregation_chart_line.png[]
 image:images/aggregation_chart_bar.png[]
 * 円グラフ +
 image:images/aggregation_chart_pie.png[]
-* エリアグラフ +
-image:images/aggregation_chart_area.png[]
 * ドーナツグラフ +
 image:images/aggregation_chart_doughnut.png[]
 * バブルチャート +
