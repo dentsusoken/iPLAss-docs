@@ -815,6 +815,9 @@ VOTE ::
 割り当てられたユーザー全員のタスクが完了したタイミングで処理を終了します。
 多いほうの結果がタスク結果になります。
 同一の投票数の場合、競合解決ロジックによりタスク結果を決定します。
+CUSTOM ::
+完了条件をカスタマイズします。完了条件カスタムロジックによりタスク結果を決定します。 +
+詳細は<<ref_usertask_assign_rule_complete_condition_custom, 完了条件のカスタマイズ>>を参照してください。
 |===
 
 .割当種類と完了条件
@@ -1003,6 +1006,60 @@ VariableItemと各ユーザーの回答結果がバインドされます。
 
 競合解決ロジックが実行されると、戻り値をタスク結果としてUserTaskが完了します。 +
 競合解決ロジックが未設定、または競合解決ロジックから `taskResultStatus` 以外の値が返された場合は、 `CONFLICTED` をタスク結果としてUserTaskは未完了のまま待機します。
+
+[[ref_usertask_assign_rule_complete_condition_custom]]
+.完了条件のカスタマイズ
+割当種別が `ALL` かつ完了条件が `CUSTOM` の場合、完了条件のカスタムロジックを設定できます。
+
+完了条件のカスタムロジックはGroovyScriptを利用して定義します。戻り値としてタスクの `taskResultStatus` のnameを返すよう実装します。VariableItemと各ユーザーの回答結果（アカウントIDと回答結果のMap）がバインドされます。 +
+VariableItemのバインド変数名はVariableItem名、各ユーザーの回答結果のバインド変数名は `results` となります。
+
+完了条件のカスタムロジックは割り当てられたユーザーが回答するたびに実行され、戻り値として `taskResultStatus` の値が返された場合は、タスク結果としてUserTaskが完了します。戻り値として `null` 、または `taskResultStatus` 以外の値が返却された場合、UserTaskは未完了のまま待機します。 +
+割り当てられたユーザー全員のタスクが完了しても完了条件のカスタムロジックから `null` 、または `taskResultStatus` 以外の値が返された場合は、 `CONFLICTED` をタスク結果としてUserTaskは未完了のまま待機します。
+
+.（例）完了条件のカスタマイズ
+[source,groovy]
+----
+/*
+ * Entityデータのユーザーが回答したらタスクの回答結果として完了にする
+ */
+
+import org.iplass.mtp.ManagerLocator;
+import org.iplass.mtp.auth.User;
+import org.iplass.mtp.entity.EntityManager;
+import org.iplass.mtp.entity.query.Query;
+import org.iplass.mtp.entity.query.condition.predicate.Equals;
+
+EntityManager em = ManagerLocator.manager(EntityManager.class);
+
+// VariableItem（VariableItem名【item】）で保持しているEntityデータのUser取得
+User user = (User) item.getValue("user");
+if (user == null) {
+    return null;
+}
+
+Query query = new Query();
+query.select(User.ACCOUNT_ID);
+query.from(User.DEFINITION_NAME);
+query.where(new Equals(User.OID, user.getOid()));
+
+String accountId = null;
+em.search(query) { data ->
+    accountId = (String) data[0];
+    return false;
+}
+
+if (accountId == null) {
+    return null;
+}
+
+// Entityデータのユーザーが回答したらタスクの回答結果として完了にする
+if (results.containsKey(accountId)) {
+    return results.get(accountId);
+}
+
+return null;
+----
 
 [[ref_usertask_result_status]]
 ====== タスク結果の設定
