@@ -1,0 +1,10 @@
+= 汎用検索（Entity Listing）
+:_hreflang-path: developerguide/materialdesigncomponents/entitylisting/index.html
+:_relative-root-path: ../../../
+:_menu-title-ee-only: true
+
+include::about.adoc[]
+
+include::operationguide.adoc[]
+
+include::setting.adoc[]

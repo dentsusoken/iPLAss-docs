@@ -1,0 +1,32 @@
+== 汎用検索（Entity Listing）
+汎用検索（Entity Listing）は、エンティティデータの柔軟な検索・抽出機能を提供する画面群です。
+
+=== 主な機能
+
+.検索条件の動的指定
+登録されているエンティティに対して、抽出項目（Select）やフィルター条件（Where）や絞り込み(Having)を画面上で自由に指定することができます。
+
+.ファイル出力
+指定した検索条件や検索結果ファイルをCSVまたはEXCELファイルとして出力することがが可能です。
+
+=== システム構成
+
+EntityListingは、以下のコンポーネントで構成されています。
+
+.画面コンポーネント（Vue）
+* `MEntityListing` - メインページコンポーネント
+* `MIEntityListingMenu` - エンティティ・プロパティ選択メニュー
+* `MIEntityListingCondition` - 検索条件編集エリア
+* `MIEntityListingResultTable` - 検索結果テーブル
+* `MIEntityListingDownloadDialog` - ファイルダウンロードダイアログ
+
+.サーバサイド（Java）
+* `MdcEntityListingHandler` - 検索処理のメインランタイム
+* `MetaMdcEntityListing` - メタデータ定義
+* `MetaMdcCustomEntitySetting` - エンティティ別設定のメタデータ
+* `MdcEntityListingManager` - マネージャクラス
+
+=== 利用シーン
+
+* エンドユーザーが自分自身で抽出項目やフィルター条件を指定してデータ検索
+* システム管理者が定期的なデータ抽出作業用の定型フィルター条件を作成
