@@ -1104,6 +1104,17 @@ TEXT:: テキストフィールドを表示
 |設定項目
 |設定内容
 
+|Detail Layout Setting
+|タスク詳細レイアウトをカスタマイズする際の設定を行います。
+
+Workflow ::
+タスク詳細レイアウト設定を行うワークフローを選択します。
+UserTask ::
+タスク詳細レイアウト設定を行うユーザータスクを選択します。
+Custom Template Setting ::
+タスク詳細レイアウトのカスタマイズ設定を行います。
+詳細は<<taskviewdetaillayout, タスク詳細レイアウト設定>>を参照してください。
+
 |Task Target Section
 |タスク対象データセクションの表示を設定します。
 カスタマイズ・多言語対応可能です。
@@ -1283,6 +1294,280 @@ Section Properties ::
 |Display in Detail
 |タスク詳細にEntityを表示する場合にチェックします。
 |===
+
+[[taskviewdetaillayout]]
+.タスク詳細レイアウト設定
+タスク詳細レイアウトのカスタマイズ設定を行います。
+
+image::images/parts_taskview_setting-layout.png[]
+
+図の①部分をクリックするとタスク詳細全体に対する設定を行うダイアログが表示されます。
+
+[cols="1,2a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|ボタン
+|カスタムで表示したいボタンを追加します。 詳細は<<taskviewdetaillayout_button, タスク詳細ボタン設定>>を参照してください。
+
+|カスタムステータス更新処理クラス名
+|ステータス更新時にカスタマイズ処理を行いたい場合は `org.iplass.mtp.mdc.view.topview.workflow.UpdateAssignStatusInterrupter` インターフェースを実装するクラスを指定してください。 詳細は<<taskviewdetaillayout_custom_status_update, タスク詳細カスタムステータス更新処理>>を参照してください。
+|===
+
+[[taskviewdetaillayout_custom_script_area]]
+.カスタムスクリプトセクション配置エリア
+
+緑枠の部分はタスク詳細画面の該当部分にカスタマイズを入れるための設定です。
+画面右側の `Section` 内の部品をドラッグ&ドロップで配置できます。
+定義済みのテンプレートやHTMLベースのスクリプトを組み込むことができます。 +
+配置できるカスタムスクリプトセクションについて詳しくは<<taskviewdetaillayout_custom_script, タスク詳細カスタムスクリプトセクション設定>>を参照してください。
+
+[[taskviewdetaillayout_button]]
+.タスク詳細ボタン設定
+タスク詳細画面内に表示するカスタムボタンの設定を行います。
+
+[cols="1,2a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|表示
+|チェックした場合、ボタンを表示します。
+
+|詳細画面で表示
+|チェックした場合、詳細画面でボタンを表示します。
+
+|編集画面で表示
+|チェックした場合、編集画面でボタンを表示します。
+
+|表示判定スクリプト
+|表示可否を実行時に動的に判定するGroovyScriptを設定します。
+詳細は<<taskviewdetaillayout_judge_display_script, 表示判定スクリプト>>を参照してください。
+
+|表示ラベル
+|ボタンに表示するラベルを設定します。
+
+|表示方法
+|ボタンの表示方法を設定します。
+
+SOLO:: 単一ボタンとして表示
+MENU:: メニューから選択するボタンとして表示
+
+|列情報
+|ボタンの表示領域を設定します。
+詳細は<<columninfo, 列情報>>を参照してください。
+
+|CSSクラス名
+|スタイルシートのクラス名を指定します。
+複数指定する場合は半角スペースで区切ってください。
+
+|アイコンタグ
+|タイトルの前に表示するアイコンを設定できます。 +
+link:https://materialdesignicons.com/[Material Design Icons^]のアイコンタグを設定できます。（例：mdi-note）
+
+|プライマリー
+|設定するとボタンを強調表示します。
+
+|クリックイベント
+|ボタンクリック時に実行されるJavaScriptコードを設定します。 +
+クリックイベントとして実行するJavaScriptには、以下の変数がバインドされます。
+====
+executeMode:: <<taskviewdetaillayout_execute_mode, 実行モード>>
+userTask:: 対象のUserTaskデータ
+- activity : ユーザータスクのアクティビティ
+- workflowTarget : タスク対象データ
+- detail : ユーザータスクの詳細
+- userAssignment : ユーザータスクの割当ユーザー
+- assignmentProcessResult : 割当ユーザーの処理結果
+- workflowHistory : ワークフロー履歴
+customProperty:: カスタムプロパティの値を格納するMapオブジェクト。
+====
+
+|===
+
+[[taskviewdetaillayout_judge_display_script]]
+.タスク詳細表示判定スクリプト
+表示可否を判定するGroovyScriptを設定します。
+スクリプトが未指定か、スクリプトの実行結果がtrueの場合、表示されます。 +
+
+以下の変数がバインドされています。
+====
+request:: リクエスト
+session:: セッション
+user:: ユーザー
+executeMode:: <<taskviewdetaillayout_execute_mode, 実行モード>>
+userTask:: 対象のUserTaskエンティティデータ
+====
+
+[[taskviewdetaillayout_execute_mode]]
+.タスク詳細実行モード
+実行モードは実行されている画面のモードを表します。
+
+`org.iplass.mtp.mdc.view.topview.definition.parts.workflow.detail.MdcUserTaskExecuteMode`
+
+====
+VIEW:: 詳細画面
+EDIT:: 編集画面
+====
+
+[[taskviewdetaillayout_custom_script]]
+.タスク詳細カスタムスクリプトセクション設定
+タスク詳細画面に追加するカスタムスクリプトに対する設定を行います。
+
+[[taskviewdetaillayout_custom_script_common]]
+.共通設定項目
+各カスタムスクリプトセクションで共通の設定項目です。
+
+[cols="1,2a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|表示
+|チェックした場合、セクションを表示します。
+
+|詳細画面で表示
+|チェックした場合、詳細画面でセクションを表示します。
+
+|編集画面で表示
+|チェックした場合、編集画面でセクションを表示します。
+
+|表示判定スクリプト
+|表示可否を実行時に動的に判定するGroovyScriptを設定します。
+詳細は<<taskviewdetaillayout_judge_display_script, 表示判定スクリプト>>を参照してください。
+
+|表示ラベル
+|画面に表示するラベルを設定します。
+
+|列情報
+|セクションの表示領域を設定します。
+詳細は<<columninfo, 列情報>>を参照してください。
+
+|CSSクラス名
+|スタイルシートのクラス名を指定します。
+複数指定する場合は半角スペースで区切ってください。
+
+|テンプレート文字列の解釈タイプ
+|記述されたテンプレート文字列の解釈タイプです。以下の３つから選択できます。
+
+HTML:: HTMLとして解釈します。HTMLやスクリプトの記述が可能です。
+VUE_SFC:: Vue.jsのSFC形式（単一ファイルコンポーネント形式）で記述されたコンポーネントとして解釈します。
+VUE_SFC_LIKE:: Vue.jsのランタイムを用いてコンポーネントとして解釈します。MDCでは、Vue.jsのランタイムに加えてコンパイラもバンドルしており、Vue.jsのテンプレート構文を利用することが可能です。
+
+|コンポーネント名
+|コンポーネント名を設定します。 コンポーネント名は、英文字のみを利用したパスカルケースでの命名を推奨します。
+テンプレート文字列の解釈タイプが `VUE_SFC_LIKE` の場合、コンポーネント名の指定は必須です。 テンプレート文字列の解釈タイプが `VUE_SFC` でコンポーネント名が未入力の場合、自動でランダムなコンポーネント名を割り当てます。
+|VUE_SFC形式のテンプレートをプリコンパイルするか
+|Vue.jsのSFC形式のテンプレートをプリコンパイルするかを指定します。`テンプレート文字列の解釈タイプ` が `VUE_SFC` であり、Vue.jsのSFC形式のテンプレートを定義保存時にプリコンパイルしておきたい場合にチェックします。プリコンパイルしておくことで、コンポーネントの初期化処理を高速化できます。
+
+[NOTE]
+====
+プリコンパイルの注意点::
+- プリコンパイルを実行したい場合には、 `コンポーネント名` の指定が必須となります。
+- `スクリプト` に記述したGroovyTemplateは、UserTaskList定義保存時に実行されてプリコンパイルされるため、リクエスト情報やセッション情報、ユーザー固有情報などを使用しないように注意してください。
+====
+
+|詳細画面 テンプレート文字列の解釈タイプ
+|詳細画面と編集画面で出力タイプを分けたい場合に指定します。
+
+|詳細画面 コンポーネント名
+|詳細画面と編集画面でコンポーネント名を分けたい場合に指定します。
+
+|詳細画面 VUE_SFC形式のテンプレートをプリコンパイルするか
+|Vue.jsのSFC形式の詳細画面用テンプレートをプリコンパイルするかを指定します。`テンプレート文字列の解釈タイプ` または `詳細画面 テンプレート文字列の解釈タイプ` が `VUE_SFC` であり、Vue.jsのSFC形式のテンプレートを定義保存時にプリコンパイルしておきたい場合にチェックします。プリコンパイルしておくことで、コンポーネントの初期化処理を高速化できます。
+
+[NOTE]
+====
+プリコンパイルの注意点::
+- 詳細画面のテンプレートのプリコンパイルを実行したい場合には、 `コンポーネント名` と `詳細画面 コンポーネント名` の指定が必須となります。
+- `詳細画面 スクリプト` に記述したGroovyTemplateは、UserTaskList定義保存時に実行されてプリコンパイルされるため、リクエスト情報やセッション情報、ユーザー固有情報などを使用しないように注意してください。
+====
+
+|===
+
+.VUE_SFC形式、VUE_SFC_LIKE形式の場合のコンポーネントとのデータ受け渡し（props/emit）
+
+以下のデータがpropsとしてコンポーネントに引き渡されます。
+====
+contextMap:: コンテキストマップ。リアクティブなMapオブジェクト。次のデータが格納されています。
+* executeMode : <<taskviewdetaillayout_execute_mode, 実行モード>>
+* userTask : 処理対象のユーザータスクデータ
+** activity : ユーザータスクのアクティビティ
+** workflowTarget : タスク対象データ
+** detail : ユーザータスクの詳細
+** userAssignment : ユーザータスクの割当ユーザー
+** assignmentProcessResult : 割当ユーザーの処理結果
+** workflowHistory : ワークフロー履歴
+* customProperty : カスタムプロパティの値を格納するMapオブジェクト。
+====
+
+以下のイベント通知をリスニングします。
+[cols="1,1",options="header"]
+|===
+|イベント名
+|通知値
+
+|update:modelValue
+|カスタムプロパティの更新値
+|===
+
+[[taskviewdetaillayout_custom_script_script]]
+.スクリプトセクション
+GroovyTemplateで記述されたテンプレートを画面に組み込みます。
+HTMLやスクリプト、Vue.jsのSFC形式（単一ファイルコンポーネント形式）などでテンプレートを記述できます。 +
+テンプレートの実装方法の詳細については、link:../../../storybook/index.html?path=/docs/開発者ドキュメント-オリジナルテンプレート[コンポーネントカタログ^]を参照してください。
+
+[cols="1,2a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|スクリプト
+|スクリプト編集画面を表示してGroovyTemplateの文法に従って記述します。
+詳細は<<../../customizing/index.adoc#groovytemplate, GroovyTemplate>>を参照してください。 +
+
+request変数には以下の変数がバインドされています。
+====
+request.componentName:: 指定したコンポーネント名(VUE_SFC_LIKEの場合)
+request.executeMode:: <<taskviewdetaillayout_execute_mode, 実行モード>>
+====
+
+|詳細画面 スクリプト
+|詳細画面と編集画面でスクリプトを分けたい場合に指定します。
+
+|===
+
+[[taskviewdetaillayout_custom_script_template]]
+.テンプレートセクション
+
+別途定義したテンプレートを画面に組み込みます。 +
+テンプレートの実装方法の詳細については、link:../../../storybook/index.html?path=/docs/開発者ドキュメント-オリジナルテンプレート[コンポーネントカタログ^]を参照してください。
+
+[cols="1,2a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|テンプレート名
+|登録済テンプレート名を設定します。
+
+|詳細画面 テンプレート名
+|詳細画面と編集画面でテンプレートを分けたい場合に指定します。
+
+|===
+
+[[taskviewdetaillayout_custom_status_update]]
+.タスク詳細カスタムステータス更新処理
+タスク編集画面でのステータス更新時に独自の処理を組み込むことができます。
+
+以下のインターフェースを実装したJavaクラスまたはUtilityClassを作成してください。
+作成したクラスをタスク詳細画面のカスタムステータス更新処理クラスに指定します。
+
+====
+org.iplass.mtp.mdc.view.topview.workflow.UpdateAssignStatusInterrupter
+====
+
 
 [[space]]
 ==== Space
