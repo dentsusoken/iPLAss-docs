@@ -37,7 +37,7 @@ Crosstab:: 定型集計、エンティティのデータをクロス集計、表
 
 |集計結果を表示する
 |集計結果の表を表示したい場合にチェックします。
-グラフは表示したいが、結果表は表示したくない、またはその逆の場合に利用します。
+グラフは表示したいが、集計表は表示したくない、またはその逆の場合に利用します。
 
 |グラフを表示する
 |グラフを表示したい場合にチェックします。
@@ -54,7 +54,7 @@ Crosstab:: 定型集計、エンティティのデータをクロス集計、表
 `集計表の上にグラフを表示する` がチェックされている場合は、 `右：グラフ、左：集計表` になります。
 
 |ファイルダウンロードを許可する
-|集計画面でファイルダウンロードボタンが表示したい場合にチェックします。
+|集計画面でファイルダウンロードボタンを表示したい場合にチェックします。
 
 |File type
 |ダウンロードで利用するファイル形式を指定します。
@@ -83,7 +83,7 @@ CSVファイルかEXCELファイルのどちらを利用するかを画面で選
 詳細は<<ag_editdefaultfilter, Edit default filter>>を参照してください。
 
 |Edit Custom ViewScript
-|集計画面内に埋め込むカスタムEdit Custom ViewScriptを設定できます。
+|集計画面内に埋め込むEdit Custom ViewScriptを設定できます。
 詳細は<<ag_editcustomviewScript, Edit Custom ViewScript>>を参照してください。
 |===
 
@@ -321,7 +321,7 @@ X軸の設定のグラフタイプにより設定項目が変わります。
 
 [[line_bar_chart]]
 .折れ線/棒グラフ
-折れ線グラフ、棒グラの設定項目です。
+折れ線グラフ、棒グラフの設定項目です。
 
 [cols="1,4a", options="header"]
 |===
@@ -445,7 +445,7 @@ nullのままの場合、グラフ上には表示されません。
 数値を入力します。
 
 |曲線で表示
-|線を曲線する場合にチェックします。
+|線を曲線にする場合にチェックします。
 グラフタイプが `線グラフ` の場合のみ指定できます。
 
 |===
@@ -520,7 +520,7 @@ nullのままの場合、グラフ上には表示されません。
 プルダウンには集計表設定の集計項目で指定した表示ラベルが選択可能な状態になっています。
 
 |集計項目
-|プルダウンから集計項目選択します。
+|プルダウンから集計項目を選択します。
 プルダウンには集計表設定の集計項目で指定した表示ラベルが選択可能な状態になっています。
 
 |対比項目
@@ -830,20 +830,21 @@ org.iplass.mtp.mdc.view.aggregation.SimpleAggregationViewInterrupter
 
 [source,java]
 ----
-package org.iplass.mtp.mdc.view.aggregation;
+package sample.aggregation;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.iplass.mtp.mdc.command.view.aggregation.condition.MdcSimpleCrosstabAggregationCondition;
+import org.iplass.mtp.mdc.view.aggregation.SimpleAggregationViewInterrupter;
 
 public class SampleSimpleInterrupter implements SimpleAggregationViewInterrupter {
 
 	@Override
 	public List<Map<String, Object>> afterAggregate(MdcSimpleCrosstabAggregationCondition condition, List<Map<String, Object>> data) {
 		Map<String, Object> row = new HashMap<>();
-		row.put("Company", "青葉精機株式会社");
+		row.put("Company", "東京○○支社B");
 		row.put("Year", "2026");
 		row.put("Income", "485");
 		data.add(row);
@@ -1166,12 +1167,12 @@ org.iplass.mtp.mdc.view.aggregation.CrosstabAggregationViewInterrupter
 
 [source,java]
 ----
-package org.iplass.mtp.mdc.view.aggregation;
+package sample.aggregation;
 
 import java.util.List;
 
 import org.iplass.mtp.mdc.command.view.aggregation.condition.MdcSimpleCrosstabAggregationCondition;
-
+import org.iplass.mtp.mdc.view.aggregation.CrosstabAggregationViewInterrupter;
 
 public class SampleCrosstabInterrupter implements CrosstabAggregationViewInterrupter {
 
@@ -1196,7 +1197,6 @@ public class SampleCrosstabInterrupter implements CrosstabAggregationViewInterru
 
 		return data;
 	}
-
 }
 ----
 

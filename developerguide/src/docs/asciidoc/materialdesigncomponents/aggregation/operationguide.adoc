@@ -126,7 +126,6 @@ image:images/aggregation_context_menu.png[]
 
 .ズーム操作
 
-* PCモード: マウスホイールでズーム
 * モバイルモード: ピンチイン/ピンチアウトでズーム
 
 .ズーム解除
