@@ -1,0 +1,15 @@
+= Material Design Components (Aggregation)
+:_hreflang-path: developerguide/materialdesigncomponents/aggregation/index.html
+:_relative-root-path: ../../../
+:_menu-title-ee-only: true
+
+[[mdc_aggregation]]
+== Aggregation
+
+MDCモジュールにおける定型集計画面の設定です。 +
+定型集計は予め設定された集計方式、検索条件を元に、データの集計やグラフ表示を行います。 +
+MDC版では単純集計とクロス集計をサポートしています。
+
+include::operationguide.adoc[]
+
+include::aggregation.adoc[]
