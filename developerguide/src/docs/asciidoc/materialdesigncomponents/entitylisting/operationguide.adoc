@@ -289,8 +289,6 @@ image::images/mdc_entitylisting_ope_resultfilter_inline.png[]
 
 検索条件を設定後、 `検索` ボタンをクリックすることで検索を実行します。
 
-NOTE: 検索処理にはインターバル制御が設定されています。連続検索を防止するため、前回の検索から一定時間（デフォルト：60秒。<<mdc_entitylisting_service_config, MdcConfigService>> で変更可能）経過するまで再検索が制限されます。
-
 [[mdc_entitylisting_ope_result]]
 ==== 検索結果一覧
 
