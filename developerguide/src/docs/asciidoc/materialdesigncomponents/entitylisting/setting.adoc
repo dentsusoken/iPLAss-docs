@@ -466,10 +466,10 @@ EntityListingメタデータの `File type` が未指定の場合に適用され
 |false
 |EntityListingのファイルダウンロードでフッターを出力するかを指定します。
 
-|entitylistingFileDownloadFooter
+|entityListingFileDownloadFooter
 |（空文字）
 |EntityListingのファイルダウンロードで出力するフッター文言を指定します。
-`entitylistingFileDownloadWithFooter` が `true` の場合に有効です。
+`entityListingFileDownloadWithFooter` が `true` の場合に有効です。
 
 |formatNumberWithComma
 |true
