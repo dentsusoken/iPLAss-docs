@@ -462,7 +462,7 @@ MdcConfigServiceのEntityListing関連の設定一覧です。
 EntityListingメタデータの `File type` が未指定の場合に適用されます。 +
 設定値: `CSV` , `EXCEL` , `SPECIFY`
 
-|entitylistingFileDownloadWithFooter
+|entityListingFileDownloadWithFooter
 |false
 |EntityListingのファイルダウンロードでフッターを出力するかを指定します。
 
