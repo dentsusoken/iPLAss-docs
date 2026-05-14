@@ -89,6 +89,7 @@ Gem(Generic Entity Manager)画面に関するサービス群です。
 | <<index.adoc#EntityListingService, [.eeonly]#EntityListingService#>> | EntityListing機能のサービスです。
 | <<index.adoc#GemConfigService, GemConfigService>> | 汎用画面全般の設定を行うサービスです。
 | <<index.adoc#MdcConfigService, [.eeonly]#MdcConfigService#>> | MDC版汎用画面全般の設定を行うサービスです。
+| <<index.adoc#MdcRelativeRangeService, [.eeonly]#MdcRelativeRangeService#>> | MDC版の相対範囲を独自に追加するためのサービスです。
 | <<index.adoc#MdcDetailViewService, [.eeonly]#MdcDetailViewService#>> | MDC版の詳細画面の設定を行うサービスです。
 | <<index.adoc#MdcSearchViewService, [.eeonly]#MdcSearchViewService#>> | MDC版の検索画面の設定を行うサービスです。
 | <<index.adoc#RelativeRangeService, [.eeonly]#RelativeRangeService#>> | 集計機能やEntityListingの日付の検索条件で、相対範囲を独自に追加するためのサービスです。

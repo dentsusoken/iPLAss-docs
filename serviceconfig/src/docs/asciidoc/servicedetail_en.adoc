@@ -81,6 +81,8 @@ include::core/mailservice_en.adoc[]
 
 include::gem/mdcconfigservice_en.adoc[]
 
+include::gem/mdcrelativerangeservice_en.adoc[]
+
 include::gem/mdcdetailviewservice_en.adoc[]
 
 include::gem/mdcsearchviewservice_en.adoc[]

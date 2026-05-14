@@ -89,6 +89,7 @@ Gem(Generic Entity Manager) page related services.
 | <<index.adoc#EntityListingService, [.eeonly]#EntityListingService#>> | The service to manage EntityListing mechanism.
 | <<index.adoc#GemConfigService, GemConfigService>> | The service for general settings for GEM pages.
 | <<index.adoc#MdcConfigService, [.eeonly]#MdcConfigService#>> | This service for general settings for the MDC version of the GEM pages.
+| <<index.adoc#MdcRelativeRangeService, [.eeonly]#MdcRelativeRangeService#>> | This is a service for adding your own relative range in the MDC version.
 | <<index.adoc#MdcDetailViewService, [.eeonly]#MdcDetailViewService#>> | This service for settings for the MDC version of the Detail pages.
 | <<index.adoc#MdcSearchViewService, [.eeonly]#MdcSearchViewService#>> | This service for settings for the MDC version of the Search pages.
 | <<index.adoc#RelativeRangeService, [.eeonly]#RelativeRangeService#>> | This is a service for adding your own relative range in the search conditions of Aggregation and EntityListing.

@@ -1,4 +1,4 @@
-= 汎用検索（Entity Listing）
+= Material Design Components (EntityListing)
 :_hreflang-path: developerguide/materialdesigncomponents/entitylisting/index.html
 :_relative-root-path: ../../../
 :_menu-title-ee-only: true
