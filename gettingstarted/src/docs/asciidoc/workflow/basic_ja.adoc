@@ -69,7 +69,7 @@ image::images/simple_setting-start.png[]
 |項目名|設定値
 |name|startEvent1
 |displayName|StartEvent1
-|historyLogging|true
+|<<../../developerguide/workflow/index#ref_history_log,historyLogging>>|true
 |===
 
 * EndEvent +
