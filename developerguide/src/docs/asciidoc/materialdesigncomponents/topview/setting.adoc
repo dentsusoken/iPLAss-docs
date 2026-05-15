@@ -1568,6 +1568,36 @@ request.executeMode:: <<taskviewdetaillayout_execute_mode, 実行モード>>
 org.iplass.mtp.mdc.view.topview.workflow.UpdateAssignStatusInterrupter
 ====
 
+.WebAPI設定
+タスク一覧、タスク詳細画面の各種WebAPIを設定します。
+
+[cols="1,2a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|Task List Setting
+|タスク一覧のWebAPIをカスタマイズする際の設定を行います。
+
+Search WebAPI ::
+タスク検索時に実行されるWebAPIを設定します。
+View screen display WebAPI ::
+タスク一覧の詳細/編集リンククリックで実行されるWebAPIを設定します。
+Assignment WebAPI ::
+タスク一覧の割当リンククリックで実行されるWebAPIを設定します。
+
+|Task Detail Setting
+|タスク詳細のWebAPIをカスタマイズする際の設定を行います。
+
+Workflow history WebAPI ::
+タスク詳細のワークフロー履歴セクション表示時に実行されるWebAPIを設定します。
+Status update WebAPI ::
+タスク詳細の各タスク処理ボタンクリックで実行されるWebAPIを設定します。
+Agency status update WebAPI ::
+管理可能なタスク詳細の各タスク処理ボタンクリックで実行されるWebAPIを設定します。
+Delegate WebAPI ::
+タスク詳細の各委譲ボタンクリックで実行されるWebAPIを設定します。
+|===
 
 [[space]]
 ==== Space

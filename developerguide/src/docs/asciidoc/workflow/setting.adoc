@@ -2907,6 +2907,53 @@ VIEW : 詳細画面
 |登録済テンプレート名を設定します。
 |===
 
+.アクション/WebAPI設定
+タスク一覧、タスク詳細画面の各種アクション、WebAPIを設定します。
+
+[cols="1,2a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|Task List Setting
+|タスク一覧のアクション、WebAPIをカスタマイズする際の設定を行います。
+
+Search WebAPI ::
+タスク検索時に実行されるWebAPIを設定します。
+View screen display action ::
+タスク一覧の詳細リンククリックで実行されるアクションを設定します。
+Edit screen display action ::
+タスク一覧の編集リンククリックで実行されるアクションを設定します。
+Assignment WebAPI ::
+タスク一覧の割当リンククリックで実行されるWebAPIを設定します。
+
+|Task Detail Setting
+|タスク詳細のアクション、WebAPIをカスタマイズする際の設定を行います。
+
+Edit screen display action ::
+タスク詳細の編集ボタンクリックで実行されるアクションを設定します。
+Cancel action ::
+タスク詳細のキャンセルボタンクリックで実行されるアクションを設定します。
+Workflow history WebAPI ::
+タスク詳細のワークフロー履歴セクション表示時に実行されるWebAPIを設定します。
+Status update action ::
+タスク詳細の各タスク処理ボタンクリックで実行されるアクションを設定します。
+Agency status update action ::
+管理可能なタスク詳細の各タスク処理ボタンクリックで実行されるアクションを設定します。
+Delegate action ::
+タスク詳細の各委譲ボタンクリックで実行されるアクションを設定します。
+
+|Task Detail Dialog Setting
+|タスク詳細（ダイアログ表示）のアクション、WebAPIをカスタマイズする際の設定を行います。
+
+Edit screen display action ::
+タスク詳細の編集ボタンクリックで実行されるアクションを設定します。
+Status update action ::
+タスク詳細の各タスク処理ボタンクリックで実行されるアクションを設定します。
+Delegate action ::
+タスク詳細の各委譲ボタンクリックで実行されるアクションを設定します。
+|===
+
 ==== Workflowの実行権限
 Workflowを実行できるユーザーをロールをベースに制御できます。
 Entityの詳細画面では、この設定により実行ボタンの表示・非表示が自動的に制御されます。
