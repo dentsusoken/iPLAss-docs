@@ -105,7 +105,7 @@ image::images/mdc_entitylisting_ope_aggregate.png[]
 * 数値フォーマット設定（数値型・集計項目のみ） +
 数値をフォーマット（カンマ区切り）表示するかを設定します。
 数値型のプロパティまたは数値結果を返す集計関数（カウント、合計、平均等）が設定されている場合に選択可能です。
-未指定の場合、<<mdc_entitylisting_service_config, MdcConfigService>> の `formatNumberWithComma` が `true` の場合にのみフォーマット表示されます。 `formatNumberWithComma` が `true` の場合で、フォーマット表示したくない場合は、「フォーマットしない」を選択する必要があります。
+未指定の場合、<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `formatNumberWithComma` が `true` の場合にのみフォーマット表示されます。 `formatNumberWithComma` が `true` の場合で、フォーマット表示したくない場合は、「フォーマットしない」を選択する必要があります。
 
 NOTE: 多重度が1より大きいプロパティ、およびLongText型のプロパティは、抽出項目設定を行うことができません。
 [[mdc_entitylisting_ope_filter]]
@@ -211,7 +211,7 @@ image::images/mdc_entitylisting_ope_filter.png[]
 |Binary|等しい, 等しくない, 前方一致, 後方一致, 含む, 含まない, 値が設定されている, 値が設定されていない
 |===
 
-NOTE: LongText型プロパティをフィルター条件として利用するには、 <<mdc_entitylisting_property_service_config, PropertyService>> の `remainInlineText` を `true` に設定する必要があります。
+NOTE: LongText型プロパティをフィルター条件として利用するには、 <<../../../serviceconfig/index.adoc#PropertyService, PropertyService>> の `remainInlineText` を `true` に設定する必要があります。
 
 [[mdc_entitylisting_ope_filter_expression]]
 ===== フィルター条件式
@@ -302,7 +302,7 @@ image::images/mdc_entitylisting_ope_result.png[]
 .ページング
 検索結果の件数がページ表示件数を超えた場合にページングが表示されます。
 ページ番号をクリックすると該当ページの検索結果が表示されます。
-ページ表示件数は<<mdc_entitylisting_service_config, MdcConfigService>> の `entityListingSearchLimit` で変更可能です（デフォルト：10件）。
+ページ表示件数は<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `entityListingSearchLimit` で変更可能です（デフォルト：10件）。
 
 .エンティティ参照
 `抽出項目` にオブジェクトID（`oid`）が含まれている場合、検索結果に参照リンクが表示されます。
@@ -337,14 +337,14 @@ image::images/mdc_entitylisting_ope_download.png[]
 |EntityListingメタデータの `File type` が `SPECIFY` の場合に表示されます。
 CSVまたはExcelのいずれかを選択します。
 `SPECIFY` 以外の場合は、メタデータの設定に従い自動でファイルタイプが決定されます。 +
-メタデータの `File type` が未指定の場合は、<<mdc_entitylisting_service_config, MdcConfigService>> の `entityListingFileSupportType` によって動作します。
+メタデータの `File type` が未指定の場合は、<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `entityListingFileSupportType` によって動作します。
 
 |コード値でダウンロード
 |チェックを入れると、Select型プロパティの値を表示名ではなくコード値で出力します。
 
 |文字コード
 |CSVファイルダウンロード時の文字コードを選択します。Excelファイルの場合はこの設定は無視されます。 +
-選択可能な文字コードは<<mdc_entitylisting_service_config, MdcConfigService>> の `csvDownloadCharacterCode` で設定します。
+選択可能な文字コードは<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `csvDownloadCharacterCode` で設定します。
 |===
 
 NOTE: ダウンロードボタンの表示はEntityListingメタデータの `can file download` で制御します。
