@@ -74,6 +74,10 @@ See <<WebFrontendService, WebFrontendService uploadFileTypeDetector>>, <<FileTyp
 | dividingTableSideAtCrosstabFileDownload | boolean | Whether to divide table side in crosstab file download. The default value is false.
 | dividingTableHeadAtCrosstabFileDownload | boolean | Whether to divide table head in crosstab file download. The default value is false.
 | outputItemLabelCrosstabFileDownload | boolean | Whether to output item label in crosstab file download. The default value is false.
+| entityListingSearchLimit | int | Number of records per page in EntityListing search results. The default value is 10.
+| entityListingFileSupportType | FileSupportType | Default file format for EntityListing file download. Applied when the `File type` of the EntityListing metadata is not specified. Specify from `CSV` `EXCEL` `SPECIFY`. The default value is `CSV`.
+| entityListingFileDownloadWithFooter | boolean | Whether to output a footer in EntityListing file download. The default value is false.
+| entityListingFileDownloadFooter | String | Footer wording for EntityListing file download. Effective when `entityListingFileDownloadWithFooter` is `true`.
 
 |===
 
@@ -246,5 +250,17 @@ This property is the output target of the binary download log. The following ite
 
 	<!-- Whether to output item label in crosstab file download -->
 	<property name="outputItemLabelCrosstabFileDownload" value="false"/>
+
+	<!-- Number of records per page in EntityListing search results -->
+	<property name="entityListingSearchLimit" value="10" />
+
+	<!-- Default file format for EntityListing. CSV, EXCEL, SPECIFY -->
+	<property name="entityListingFileSupportType" value="CSV" />
+
+	<!-- Whether to output a footer in EntityListing file download -->
+	<property name="entityListingFileDownloadWithFooter" value="false"/>
+
+	<!-- Footer wording for EntityListing file download -->
+	<property name="entityListingFileDownloadFooter" value="" />
 </service>
 ----
