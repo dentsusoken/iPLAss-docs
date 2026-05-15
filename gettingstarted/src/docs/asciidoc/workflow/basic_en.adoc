@@ -69,7 +69,7 @@ image::images/simple_setting-start_en.png[]
 | Item name | Setting value
 | name | startEvent1
 | displayName | StartEvent1
-| historyLogging | true
+| <<../../developerguide/workflow/index#ref_history_log,historyLogging>> | true
 |===
 
 * EndEvent +
@@ -100,7 +100,8 @@ image::images/simple_setting-user_en.png[]
 
 ** assignRule +
 We will set assignRule.
-assignRule sets who processes this UserTask.
+assignRule sets who processes this UserTask. +
+Please refer to <<../../developerguide/workflow/index#ref_usertask_assign_rule,the workflow documentation>> for descriptions of each of the following settings.
 +
 image::images/simple_setting-assignrule_en.png[]
 +
@@ -118,7 +119,8 @@ image::images/simple_setting-assignrule_en.png[]
 ** taskResultStatus +
 Set taskResultStatus.
 By setting taskResultStatus, it is possible to branch the process by approval or rejection.
-This time, use only approval.
+This time, use only approval. +
+For detailed instructions, please refer to <<../../developerguide/workflow/index#ref_usertask_result_status,the workflow documentation>>.
 +
 image::images/simple_setting-taskresultstatus_en.png[]
 +
