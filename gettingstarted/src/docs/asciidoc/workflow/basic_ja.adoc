@@ -69,7 +69,7 @@ image::images/simple_setting-start.png[]
 |項目名|設定値
 |name|startEvent1
 |displayName|StartEvent1
-|<<../../developerguide/workflow/index#ref_history_log,historyLogging>>|true
+|<<../../developerguide/workflow/index.adoc#ref_history_log,historyLogging>>|true
 |===
 
 * EndEvent +
@@ -101,7 +101,7 @@ image::images/simple_setting-user.png[]
 ** assignRule +
 assignRuleを設定します。
 assignRuleでは、誰がこのUserTaskを処理するかを設定します。 +
-以下の各設定項目の説明については<<../../developerguide/workflow/index#ref_usertask_assign_rule,ワークフローのドキュメント>>に記載されていますので、参照してください。
+以下の各設定項目の説明については<<../../developerguide/workflow/index.adoc#ref_usertask_assign_rule,ワークフローのドキュメント>>に記載されていますので、参照してください。
 +
 image::images/simple_setting-assignrule.png[]
 +
