@@ -69,7 +69,7 @@ image::images/simple_setting-start.png[]
 |項目名|設定値
 |name|startEvent1
 |displayName|StartEvent1
-|historyLogging|true
+|<<../../developerguide/workflow/index.adoc#ref_history_log,historyLogging>>|true
 |===
 
 * EndEvent +
@@ -100,7 +100,8 @@ image::images/simple_setting-user.png[]
 
 ** assignRule +
 assignRuleを設定します。
-assignRuleでは、誰がこのUserTaskを処理するかを設定します。
+assignRuleでは、誰がこのUserTaskを処理するかを設定します。 +
+以下の各設定項目の説明については<<../../developerguide/workflow/index.adoc#ref_usertask_assign_rule,リンク>>を参照してください。
 +
 image::images/simple_setting-assignrule.png[]
 +
@@ -117,8 +118,9 @@ image::images/simple_setting-assignrule.png[]
 
 ** taskResultStatus +
 taskResultStatusを設定します。
-taskResultStatusを設定することで、承認、否認による処理の分岐が可能になります。
-今回は承認だけとなります。
+taskResultStatusを設定することで、承認、否認による処理の分岐が可能になります。 +
+今回は承認だけ設定します。
+詳しい説明は<<../../developerguide/workflow/index.adoc#ref_usertask_result_status,リンク>>を参照してください。
 +
 image::images/simple_setting-taskresultstatus.png[]
 +
