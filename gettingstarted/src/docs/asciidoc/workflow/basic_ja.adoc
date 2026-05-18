@@ -120,7 +120,7 @@ image::images/simple_setting-assignrule.png[]
 taskResultStatusを設定します。
 taskResultStatusを設定することで、承認、否認による処理の分岐が可能になります。 +
 今回は承認だけ設定します。
-詳しい説明は<<../../developerguide/workflow/index#ref_usertask_result_status,リンク>>を参照してください。
+詳しい説明は<<../../developerguide/workflow/index.adoc#ref_usertask_result_status,リンク>>を参照してください。
 +
 image::images/simple_setting-taskresultstatus.png[]
 +
