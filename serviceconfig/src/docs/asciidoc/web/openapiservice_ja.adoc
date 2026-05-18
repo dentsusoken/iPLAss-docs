@@ -22,13 +22,13 @@ OpenApiServiceを設定します。
 | infoTitleOfExport | String | OpenAPI Export 時の info.title の値。
 | infoVersionOfExport | String | OpenAPI Export 時の info.version の値。
 | infoDescriptionOfExport | String | OpenAPI Export 時の info.description の値。
-| classPropertySchema | <<openapiservice_ClassPropertySchema>>、複数指定可 | OpenAPI Export 時のスキーマ定義に使用するクラス・プロパティのスキーマ定義。
+| propertySchema | <<openapiservice_PropertySchema>>、複数指定可 | OpenAPI Export 時のスキーマ定義に使用するクラス・プロパティのスキーマ定義。
 |===
 
 
-[[openapiservice_ClassPropertySchema]]
-.ClassPropertySchema
-classは org.iplass.mtp.impl.webapi.openapi.schema.ClassPropertySchema を指定します。
+[[openapiservice_PropertySchema]]
+.PropertySchema
+classは org.iplass.mtp.impl.webapi.openapi.schema.PropertySchema を指定します。
 
 Java クラス情報から JsonSchema を生成する際の、固定のスキーマを設定します。 +
 スキーマの判断方法は、クラス・プロパティの組み合わせが一致する場合が優先され、次いでプロパティのみが一致する場合となります。 +
@@ -62,7 +62,7 @@ Java クラス情報から JsonSchema を生成する際の、固定のスキー
     <property name="infoTitleOfExport" value="iPLAss WebAPI, EntityCRUDApi OpenAPI Spec" />
     <property name="infoVersionOfExport" value="1.0.0" />
     <property name="infoDescriptionOfExport" value="iPLAss WebAPI and EntityCRUDApi OpenAPI Specification" />
-    <property name="classPropertySchema" class="org.iplass.mtp.impl.webapi.openapi.schema.ClassPropertySchema">
+    <property name="propertySchema" class="org.iplass.mtp.impl.webapi.openapi.schema.PropertySchema">
         <property name="propertyName" value="@class" />
         <property name="schemaType" value="STRING" />
         <property name="description" value="Fully qualified class name is set as the value. This property is used to identify the concrete class when the type of parameter or response is an interface or abstract class." />

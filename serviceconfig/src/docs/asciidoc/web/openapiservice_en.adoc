@@ -22,12 +22,12 @@ OpenApiService can be configured with the following items.
 | infoTitleOfExport | String | The value of info.title when exporting OpenAPI.
 | infoVersionOfExport | String | The value of info.version when exporting OpenAPI.
 | infoDescriptionOfExport | String | The value of info.description when exporting OpenAPI.
-| classPropertySchema | <<openapiservice_ClassPropertySchema>>, Multiple | The class-property schema definitions used when exporting OpenAPI.
+| propertySchema | <<openapiservice_PropertySchema>>, Multiple | The property schema definitions used when exporting OpenAPI.
 |===
 
-[[openapiservice_ClassPropertySchema]]
-.ClassPropertySchema
-class is specified as org.iplass.mtp.impl.webapi.openapi.schema.ClassPropertySchema.
+[[openapiservice_PropertySchema]]
+.PropertySchema
+class is specified as org.iplass.mtp.impl.webapi.openapi.schema.PropertySchema.
 
 When generating JsonSchema from Java class information, fixed schemas can be set. +
 The schema determination method prioritizes cases where the class-property combination matches, followed by cases where only the property matches. +
@@ -62,7 +62,7 @@ Configurable schema types::
     <property name="infoTitleOfExport" value="iPLAss WebAPI, EntityCRUDApi OpenAPI Spec" />
     <property name="infoVersionOfExport" value="1.0.0" />
     <property name="infoDescriptionOfExport" value="iPLAss WebAPI and EntityCRUDApi OpenAPI Specification" />
-    <property name="classPropertySchema" class="org.iplass.mtp.impl.webapi.openapi.schema.ClassPropertySchema">
+    <property name="propertySchema" class="org.iplass.mtp.impl.webapi.openapi.schema.PropertySchema">
         <property name="propertyName" value="@class" />
         <property name="schemaType" value="STRING" />
         <property name="description" value="Fully qualified class name is set as the value. This property is used to identify the concrete class when the type of parameter or response is an interface or abstract class." />
