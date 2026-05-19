@@ -22,7 +22,7 @@ OpenApiService can be configured with the following items.
 | infoTitleOfExport | String | The value of info.title when exporting OpenAPI.
 | infoVersionOfExport | String | The value of info.version when exporting OpenAPI.
 | infoDescriptionOfExport | String | The value of info.description when exporting OpenAPI.
-| propertySchema | <<openapiservice_PropertySchema>>, Multiple | The property schema definitions used when exporting OpenAPI.
+| propertySchema | <<openapiservice_PropertySchema>>, Multiple | The class/property schema definitions used when exporting OpenAPI.
 |===
 
 [[openapiservice_PropertySchema]]
