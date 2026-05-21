@@ -872,7 +872,7 @@ SELECTFILTER:: 選択フィルターを表示
 |LINK +
 SELECT +
 CHECKBOX +
-SELECTFILTER +
+SELECTFILTER
 |表示ラベルとして扱うプロパティを設定します。
 `name` 以外のプロパティを画面にラベルとして表示できます。
 `StringProperty` にのみ適用されます。それ以外のプロパティを指定すると、画面表示にエラーになります。

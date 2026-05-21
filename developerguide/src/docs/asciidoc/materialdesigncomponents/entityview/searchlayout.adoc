@@ -2119,7 +2119,8 @@ CHECKBOX
 |検索条件入力カスタムスタイル
 |TEXT +
 SELECT +
-CHECKBOX
+CHECKBOX +
+SELECTFILTER
 |<<searchview_propertyeditor_setting, 共通設定項目>>を参照してください。
 
 |検索条件表示カスタムスタイル
