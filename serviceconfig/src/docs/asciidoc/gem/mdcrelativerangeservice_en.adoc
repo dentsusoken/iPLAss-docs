@@ -1,0 +1,85 @@
+[[MdcRelativeRangeService]]
+=== [.eeonly]#MdcRelativeRangeService#
+This is a service for adding your own relative range in the MDC version.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.mdc.relativeRange.MdcRelativeRangeService
+----
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.mdc.relativeRange.MdcRelativeRangeService
+----
+
+==== The settings of MdcRelativeRangeService
+MdcRelativeRangeService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| relativeRanges | <<MdcRelativeRange>>, Multiple | Setting custom relative ranges.
+|===
+
+[[MdcRelativeRange]]
+.MdcRelativeRange
+Please specify org.iplass.mtp.impl.mdc.relativeRange.MdcRelativeRange to the class.
+
+A custom relative range. The following items can be set.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| relativeRangeName | String | Custom relative range name.
+| displayLabel | String | display label.
+| localizedDisplayLabel | <<MdcRelativeRangeLocalizedLabel>>, Multiple | Setting displayLabel for each language.
+| converter | String | Conversion logic class. Specify the name of the class that implements the `org.iplass.mtp.impl.mdc.relativeRange.MdcRelativeRangeConverter` interface.
+|===
+
+[[MdcRelativeRangeLocalizedLabel]]
+.MdcRelativeRangeLocalizedLabel
+Please specify org.iplass.mtp.impl.mdc.relativeRange.MdcRelativeRangeLocalizedLabel to the class.
+
+Custom relative ranges for each language. The following items can be set.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| locale | String | Locale.
+| displayLabel | String | display label.
+|===
+
+===== Example
+[source,xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.mdc.relativeRange.MdcRelativeRangeService</interface>
+	<class>org.iplass.mtp.impl.mdc.relativeRange.MdcRelativeRangeService</class>
+	<!-- custom relative range -->
+	<property name="relativeRanges" class="org.iplass.mtp.impl.mdc.relativeRange.MdcRelativeRange">
+		<property name="relativeRangeName" value="firstHalfOfThisFiscalYear" />
+		<property name="displayLabel" value="今年度上期" />
+		<property name="localizedDisplayLabel" class="org.iplass.mtp.impl.mdc.relativeRange.MdcRelativeRangeLocalizedLabel">
+			<property name="locale" value="ja" />
+			<property name="displayLabel" value="今年度上期" />
+		</property>
+		<property name="localizedDisplayLabel" class="org.iplass.mtp.impl.mdc.relativeRange.MdcRelativeRangeLocalizedLabel">
+			<property name="locale" value="en" />
+			<property name="displayLabel" value="First half of this fiscal year" />
+		</property>
+		<property name="converter" class="sample.FirstHalfRelativeRangeConverter" />
+	</property>
+	<property name="relativeRanges" class="org.iplass.mtp.impl.mdc.relativeRange.MdcRelativeRange">
+		<property name="relativeRangeName" value="secondHalfOfThisFiscalYear" />
+		<property name="displayLabel" value="今年度下期" />
+		<property name="localizedDisplayLabel" class="org.iplass.mtp.impl.mdc.relativeRange.MdcRelativeRangeLocalizedLabel">
+			<property name="locale" value="ja" />
+			<property name="displayLabel" value="今年度下期" />
+		</property>
+		<property name="localizedDisplayLabel" class="org.iplass.mtp.impl.mdc.relativeRange.MdcRelativeRangeLocalizedLabel">
+			<property name="locale" value="en" />
+			<property name="displayLabel" value="2nd half of this fiscal year" />
+		</property>
+		<property name="converter" class="sample.SecondHalfRelativeRangeConverter" />
+	</property>
+</service>
+----
