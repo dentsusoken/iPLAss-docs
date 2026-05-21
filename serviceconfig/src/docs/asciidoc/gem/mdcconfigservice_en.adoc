@@ -48,6 +48,7 @@ When asynchronous is selected, please set `useQueue` of <<RdbQueueService>> to t
 | shallowCopyLobData | boolean | Shallow copy Lob data.
 If `true`, it refers to the same data as the copy source without copying the entity.
 If `false`, copy the entity and refer to the data after copying.
+| selectFilterSearchPageSize | int | The number of records retrieved each time by the reference-type. If not specified, the default value is 40.
 | displayBreakpoint | <<DisplayBreakpoint>> | Display breakpoint. Set the width for each device size.
 | permitRolesToMdc | String, Multiple | Mdc permit roles in MdcAuth.
 The default value is `MdcUser` and `AppAdmin` .
@@ -193,6 +194,9 @@ This property is the output target of the binary download log. The following ite
 
 	<!-- Shallow copy Lob data when copying entity data on detail view -->
 	<property name="shallowCopyLobData" value="false" />
+
+	<!-- Search results for reference type selection filters -->
+	<property name="selectFilterSearchPageSize" value="40" />
 
 	<!-- Display Setting  -->
 	<property name="displayBreakpoint" class="org.iplass.mtp.mdc.DisplayBreakpoint">
