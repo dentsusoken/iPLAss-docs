@@ -75,6 +75,10 @@ OFFにした場合は、条件として保存されます。
 |can direct file download
 a|保存リストの一覧画面から直接File Downloadを許可するかを設定します（デフォルト：不可） +
 可能とした場合は、ポップアップに `Download` が表示されます。 +
+ダウンロード時のファイル形式は、対象となる
+<<../aggregation/index.adoc#aggregation_common_setting, Aggregation定義>> や
+<<setting.adoc#entitylisiting_defaultsetting, EntityListing定義>> の `File type` 設定に従います。 +
+`File type` が `SPECIFY` の場合は、ファイル形式を選択するダイアログが表示されます。 +
 またCSV Download時に文字コードを指定する場合は、TopViewの
 <<../genericentitymanager/topview/index.adoc#csvdownload, CsvDownload Settings>> で設定します。
 
