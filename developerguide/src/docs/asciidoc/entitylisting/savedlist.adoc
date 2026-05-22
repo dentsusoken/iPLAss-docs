@@ -83,20 +83,6 @@ Downloadボタンの表示を制御していますが、保存リスト一覧上
 (それぞれの保存データをロードする必要があるためパフォーマンスを考慮してチェックしていません)。
 許可されていない保存リストについてはWARNログを出力後、空のファイルが出力されます。
 
-|File type
-|ダウンロードで利用するファイル形式を指定します。
-
-CSV::
-CSVファイルを利用します。
-
-EXCEL::
-EXCELファイルを利用します。
-
-SPECIFY::
-CSVファイルかEXCELファイルのどちらを利用するかを画面で選択します。
-
-未指定の場合は、<<../../serviceconfig/index.adoc#EnterpriseGemConfigService,EnterpriseGemConfigService>> の `savedListFileSupportType` によって動作します。
-
 |run a search when loading detailed data
 |保存リストを表示する際に、初期検索を行うかのデフォルト値を設定します。
 
