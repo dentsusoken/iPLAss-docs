@@ -10,7 +10,7 @@ EntityListingアイコンを右クリックして、「EntityListingを作成す
 メタデータを定義しなくてもEntityListing機能自体は実行することが可能です。 +
 ただし、ユーザーによって利用可能なエンティティやプロパティを制御したい場合には、EntityListingメタデータを作成します。
 
-[[entitylisiting_defaultsetting]]
+[[entitylisting_defaultsetting]]
 ==== Default Setting
 ここでの設定は、下のCustom Settingを設定していないエンティティに対してデフォルトで適用される設定です。
 
