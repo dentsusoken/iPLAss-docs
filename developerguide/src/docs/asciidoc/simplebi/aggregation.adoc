@@ -80,7 +80,28 @@ CSVファイルかEXCELファイルのどちらを利用するかを画面で選
 詳細は<<ag_editdefaultfilter, Edit default filter>>を参照してください。
 
 |Edit JavaScript Code
-|集計画面内で実行するJavaScriptを設定できます。
+|集計画面内で実行するJavaScriptを設定できます。 +
+JavaScriptには、集計タイプに応じて以下の変数がバインドされます。
+
+.単純集計
+====
+selectedData:: 選択中のデータ
+sortCondition:: ソート条件
+filterCondition:: フィルター条件
+page:: ページ情報
+resultData:: 集計結果データ
+aggregationViewDefinition:: 集計ビュー定義
+mdcProxy:: MAggregationSimpleResultコンポーネントのプロキシオブジェクト
+====
+
+.クロス集計
+====
+selectedData:: 選択中のデータ
+filterCondition:: フィルター条件
+resultData:: 集計結果データ
+aggregationViewDefinition:: 集計ビュー定義
+mdcProxy:: MAggregationCrosstabResultコンポーネントのプロキシオブジェクト
+====
 |===
 
 [[ag_filenameformat]]
