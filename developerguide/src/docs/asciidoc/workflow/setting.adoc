@@ -2281,7 +2281,7 @@ image::parts_tasklist_setting-reftree-searchlayout-category.png[]
 連動プロパティを設定することで、他のプロパティ選択値と連動して選択可能な項目をフィルターすることができます。
 
 .フィルター条件
-Editorの表示タイプが `Select` のみ動作します。
+Editorの表示タイプが `Select` の場合のみ動作します。
 上位の選択値（連動元）に合わせて選択可能な項目を絞り込みます。
 
 image::parts_tasklist_linkproperty-searchview.png[]
@@ -2301,7 +2301,7 @@ taskStatus(Status):: タスクステータス
 taskPriority(Priority):: タスク優先度
 ====
 
-NOTE: 連動プロパティ名と連動元カスタムプロパティはどちらか片方のみ設定できます。
+NOTE: 連動元プロパティ名と連動元カスタムプロパティ名はどちらか片方のみ設定できます。
 
 |連動元カスタムプロパティ名
 |連動元になるカスタムプロパティを指定します。 +
