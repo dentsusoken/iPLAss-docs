@@ -2116,6 +2116,11 @@ ALERT:: 上位の階層のみが指定されている場合、アラートを表
 |再帰構造のエンティティ(同一エンティティの参照をプロパティに持つエンティティ)をツリーから選択することが出来ます。
 詳細は<<taskpropertyeditorreftree, 参照ツリーの設定>>を参照してください。
 
+|連動プロパティ設定
+|Select
+|他のプロパティと連動して選択可能項目をフィルターすることができます。
+詳細は<<taskpropertyeditorlinkproperty, 連動プロパティの設定>>を参照してください。
+
 |ユニークキープロパティ
 |Unique
 |参照エンティティを検索するためのユニークキープロパティを指定します。
@@ -2271,6 +2276,104 @@ image::parts_tasklist_setting-reftree-searchlayout.png[]
 +
 image::parts_tasklist_setting-reftree-searchlayout-category.png[]
 
+[[taskpropertyeditorlinkproperty]]
+.連動プロパティの設定
+連動プロパティを設定することで、他のプロパティ選択値と連動して選択可能な項目をフィルターすることができます。
+
+.フィルター条件
+Editorの表示タイプが `Select` のみ動作します。
+上位の選択値（連動元）に合わせて選択可能な項目を絞り込みます。
+
+image::parts_tasklist_linkproperty-searchview.png[]
+
+.設定項目
+[cols="1,8a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|連動元プロパティ名
+|連動元になるプロパティを指定します。 +
+連動元プロパティに指定可能なプロパティは以下です。
+
+====
+taskStatus(Status):: タスクステータス
+taskPriority(Priority):: タスク優先度
+====
+
+NOTE: 連動プロパティ名と連動元カスタムプロパティはどちらか片方のみ設定できます。
+
+|連動元カスタムプロパティ名
+|連動元になるカスタムプロパティを指定します。 +
+ユーザータスクカスタムプロパティエンティティのプロパティを指定します。 +
+連動元カスタムプロパティに指定可能なプロパティは以下です。
+
+====
+Selectプロパティ:: UserTaskListSelectPropertyEditorの `表示タイプ` が `Select` または `Radio` のもの
+Referenceプロパティ:: UserTaskListReferencePropertyEditorの `表示タイプ` が `Select` のもの
+====
+
+|連動側絞込対象プロパティ名
+|連動元プロパティに対応する参照エンティティ側(自身)のプロパティ名を指定します。 +
+連動元の選択値を、 `連動側絞込対象プロパティ` に対して条件設定して、選択可能なアイテムを絞り込みます。
+|===
+
+（例）メインとなるエンティティで３階層の構造をもったカテゴリエンティティを定義した場合の連動方法 +
+
+.エンティティ定義
+* ユーザータスクカスタムプロパティエンティティ +
+各カテゴリエンティティとCategory1エンティティで保持する区分を保持している。全て多重度は1。
++
+image::parts_tasklist_setting-linkproperty-main.png[]
+
+* 参照している各カテゴリエンティティ +
+Category1 ＞ Category2 ＞ Category3
++
+image::parts_tasklist_setting-linkproperty-category.png[]
+
+.フィルター条件設定
+. 各Categoryを配置
++
+image::parts_tasklist_setting-linkproperty-searchlayout.png[]
+
+. Category1の設定 +
+Category1エンティティをセレクトアイテムの選択値に連動させる
++
+image::parts_tasklist_setting-linkproperty-searchlayout-category1.png[]
+
+. Category2の設定 +
+Category2エンティティをCategory1の選択値に連動させる
++
+image::parts_tasklist_setting-linkproperty-searchlayout-category2.png[]
+
+. Category3の設定 +
+Category3エンティティをCategory2の選択値に連動させる
++
+image::parts_tasklist_setting-linkproperty-searchlayout-category3.png[]
+
+.画面動作
+以下のように上位階層を選択することで、下位階層の選択肢が表示されます。
+
+初期表示時点では連動元の一番Topである `セレクトアイテム` が未選択のため、カテゴリは全て未選択かつ選択可能項目もない状態。
+
+image::parts_tasklist_setting-linkproperty-searchcondition1.png[]
+
+`セレクトアイテム` を選択することで、連動先の `カテゴリ1` の選択可能項目が設定される。
+
+image::parts_tasklist_setting-linkproperty-searchcondition2.png[]
+
+`カテゴリ1` を選択することで、連動先の `カテゴリ2` の選択可能項目が設定される。
+
+image::parts_tasklist_setting-linkproperty-searchcondition3.png[]
+
+`カテゴリ2` を選択することで、連動先の `カテゴリ3` の選択可能項目が設定される。
+
+image::parts_tasklist_setting-linkproperty-searchcondition4.png[]
+
+より上位の連動元が未選択になると、
+連動先は未選択状態になり、選択可能項目もクリアされる。
+
+image::parts_tasklist_setting-linkproperty-searchcondition5.png[]
 
 [[taskpropertyeditorselect]]
 .SelectPropertyEditor
