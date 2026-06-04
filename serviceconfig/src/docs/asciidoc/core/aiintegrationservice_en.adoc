@@ -12,10 +12,10 @@ org.iplass.mtp.impl.ai.AiIntegrationService
 org.iplass.mtp.impl.ai.AiIntegrationService
 ----
 
-==== Settings for AiIntegrationService
+==== Settings of AiIntegrationService
 Configures the AiIntegrationService.
 
-===== Configuration Items
+===== Configurable Items
 [cols="1,1,3", options="header"]
 |===
 | Item

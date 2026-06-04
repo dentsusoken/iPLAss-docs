@@ -12,7 +12,7 @@ org.iplass.mtp.impl.ai.prompt.AiSystemPromptService
 org.iplass.mtp.impl.ai.prompt.AiSystemPromptService
 ----
 
-==== Settings for AiSystemPromptService
+==== Settings of AiSystemPromptService
 Configures the AiSystemPromptService.
 There are no configuration items.
 

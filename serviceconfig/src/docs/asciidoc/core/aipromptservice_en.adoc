@@ -12,10 +12,10 @@ org.iplass.mtp.impl.ai.prompt.AiPromptService
 org.iplass.mtp.impl.ai.prompt.AiPromptService
 ----
 
-==== Settings for AiPromptService
+==== Settings of AiPromptService
 Configures the AiPromptService.
 
-===== Configuration Items
+===== Configurable Items
 [cols="1,1,3", options="header"]
 |===
 | Item

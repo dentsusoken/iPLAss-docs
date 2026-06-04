@@ -7,19 +7,19 @@ AI Data Connect Service.
 org.iplass.mtp.impl.ai.dataconnect.AiDataConnectService
 ----
 
-==== Implementation Class Name
+==== Implementing Class Name
 ----
 org.iplass.mtp.impl.ai.dataconnect.AiDataConnectService
 ----
 
-==== AiDataConnectService Settings
+==== Settings of AiDataConnectService
 Configures the AiDataConnectService.
 
-===== Settings
+===== Configurable Items
 [cols="1,1,3", options="header"]
 |===
-| Property
-| Type
+| Item
+| Value
 | Description
 
 | sourceClassMapping
