@@ -1,0 +1,49 @@
+// NOTE:
+// このファイルは dataconnect.adoc から include されています。
+// dataconnect_setting_destination*.adoc のタイトルは "====" から始めてください。
+// タグの接頭辞として "dataconnect_setting_destination" を設定してください。
+[[dataconnect_setting_destination_aws]]
+==== AWS
+AWS へのデータ連携機能を設定することができます。
+
+===== JSON to S3
+JSON ファイルを S3 にアップロードする機能です。 +
+Amazon Bedrock Knowledge Base のデータソースとして利用することを目的としています。 +
+受け入れ可能なデータ型は `Map<String, Object>` です。
+
+設定項目は以下の通りです。
+
+[cols="1,3", options="header,autowidth"]
+|===
+|項目
+|説明
+
+|Output Type
+a|ファイル出力方法を決定します。
+
+出力方法::
+* One record to File
+** データ読み取り元のレコード単位でファイルを出力します。
+* All Records to File
+** データ読み取り元の全レコードをまとめて1ファイルとして出力します。
+
+|JSON Write Format
+|JSON書き込みフォーマットを選択します。利用可能なフォーマットは、 JSON もしくは JSONL です。
+
+|Bucket Name
+|ファイルをアップロードする S3 バケットの名前を設定します。
+
+|Prefix
+|S3 バケット内のオブジェクトキーのプレフィックスを設定します。
+
+|Object Key Generate Type
+|オブジェクトキーの生成方法を設定します。 +
+`Class` を選択した場合は、Class Name を設定してください。 +
+`Script` を選択した場合は、Script を設定してください。
+
+|Object Key Generate - Class Name
+|オブジェクトキーを生成するクラスの完全修飾名を設定します。
+
+|Object Key Generate - Script
+|オブジェクトキーを生成するスクリプトを設定します。
+|===

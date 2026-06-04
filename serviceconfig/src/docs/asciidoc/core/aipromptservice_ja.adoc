@@ -1,0 +1,46 @@
+[[AiPromptService]]
+=== [.eeonly]#AiPromptService#
+AIプロンプトサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.ai.prompt.AiPromptService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.ai.prompt.AiPromptService
+----
+
+==== AiPromptService の設定
+AiPromptService を設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目
+| 値
+| 説明
+
+| definitionMetaClassMap
+| String, Map形式
+| AIプロンプトにおける、AIプラットフォームの定義クラス・メタデータクラスのマッピングを設定します。 +
+本設定値はシステムで定義されるべき内容であり、利用者が設定する必要はありません。 +
+Map 形式の name プロパティには `org.iplass.mtp.ai.prompt.AiPlatformDefinition` クラスのサブクラスの完全修飾クラス名を設定します。 +
+Map 形式の value プロパティには name プロパティに対応する `org.iplass.mtp.impl.ai.prompt.MetaAiPlatform` メタデータクラスのサブクラスの完全修飾クラス名を設定します。
+|===
+
+===== 設定例
+[source,xml]
+----
+<!-- AIプロンプト -->
+<service>
+    <interface>org.iplass.mtp.impl.ai.prompt.AiPromptService</interface>
+    <class>org.iplass.mtp.impl.ai.prompt.AiPromptService</class>
+
+    <property name="definitionMetaClassMap">
+        <property name="org.iplass.mtp.ai.prompt.AiPlatformDefinition" value="org.iplass.mtp.impl.ai.prompt.MetaAiPlatform" />
+        <property name="org.iplass.mtp.ai.prompt.AiPlatformCustomDefinition" value="org.iplass.mtp.impl.ai.prompt.MetaAiPlatformCustom" />
+    </property>
+</service>
+----

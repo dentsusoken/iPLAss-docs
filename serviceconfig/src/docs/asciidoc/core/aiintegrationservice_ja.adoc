@@ -1,0 +1,244 @@
+[[AiIntegrationService]]
+=== [.eeonly]#AiIntegrationService#
+AI統合のサービスです。データ連携、プロンプトで利用可能な統合的なサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.ai.AiIntegrationService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.ai.AiIntegrationService
+----
+
+==== AiIntegrationService の設定
+AiIntegrationServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目
+| 値
+| 説明
+
+| aiServiceProvider
+| <<AiIntegrationService_AiServiceProviderConfig>>, 複数指定可
+| 外部のAIサービスプロバイダを設定します。複数のプロバイダを設定可能です。
+
+| jsonConverter
+| <<AiIntegrationService_JsonConverter>>
+| AI関連機能において JSON の変換に利用するクラスを指定します。
+|===
+
+[[AiIntegrationService_AiServiceProviderConfig]]
+.AiServiceProviderConfig
+class は org.iplass.mtp.impl.ai.AiServiceProviderConfig の実装クラスを指定します。
+標準で、以下の AiServiceProviderConfig を提供します。
+
+- <<AiIntegrationService_AiServiceProviderConfig_AWSSettingAiServiceProviderConfig>>
+- <<AiIntegrationService_AiServiceProviderConfig_AWSAiServiceProviderConfigImpl>>
+
+[[AiIntegrationService_AiServiceProviderConfig_AWSSettingAiServiceProviderConfig]]
+.[.eeonly]#AWSSettingAiServiceProviderConfig#
+class は org.iplass.mtp.impl.ai.awsv2.AWSSettingAiServiceProviderConfig クラスを指定します。 +
+AWS接続設定を <<aws2_AWSSetting>> の設定情報を利用してサービスを利用するための設定クラスです。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目
+| 値
+| 説明
+
+| name
+| String、必須
+| サービスプロバイダを識別するための名前を設定します。
+
+| s3ClientFactory
+| <<AiIntegrationService_ConfigurableCredentialsS3ClientFactory>>
+| AWS S3 クライアントを生成するためのクラスを指定します。未設定の場合は <<AiIntegrationService_ConfigurableCredentialsS3ClientFactory_ConfigurableCredentialsS3AsyncClientFactory>> が設定されます。
+
+| tenantId
+| int, 複数設定可
+a| テナントIDを設定します。複数のテナントIDを設定可能です。
+
+テナントIDを設定した場合::
+設定されたテナントでのみサービスプロバイダを利用可能です。
+
+テナントIDの設定が無い場合::
+全てのテナントでサービスプロバイダを利用可能です。
+|===
+
+[[AiIntegrationService_AiServiceProviderConfig_AWSAiServiceProviderConfigImpl]]
+.[.eeonly]#AWSAiServiceProviderConfigImpl#
+class は org.iplass.mtp.impl.ai.awsv2.AWSAiServiceProviderConfigImpl クラスを指定します。 +
+<<aws2_AWSSetting>> の設定情報とは異なる接続設定を行うための設定クラスです。
+
+以下の項目を設定可能です。
+[cols="1,1,3", options="header"]
+|===
+| 項目
+| 値
+| 説明
+
+| name
+| String、必須
+| サービスプロバイダを識別するための名前を設定します。
+
+| credentialsProviderFactory
+| <<aws2_AWSSetting_CredentialsProviderFactory>>
+| AwsCredentialsProvider を生成する為の設定。未設定の場合は <<aws2_AWSSetting_DefaultCredentialsProviderFactory>> が設定されます。
+
+| clientConfig
+| <<aws2_AWSSetting_AWSClientConfig>>
+| AWS SDK クライアントの全体に適用するデフォルト設定。AWSリージョンや通信設定を設定します。
+
+| s3ClientFactory
+| <<AiIntegrationService_ConfigurableCredentialsS3ClientFactory>>
+| AWS S3 クライアントを生成するためのクラスを指定します。未設定の場合は <<AiIntegrationService_ConfigurableCredentialsS3ClientFactory_ConfigurableCredentialsS3AsyncClientFactory>> が設定されます。
+
+| tenantId
+| int, 複数設定可
+a| テナントIDを設定します。複数のテナントIDを設定可能です。
+
+テナントIDを設定した場合::
+設定されたテナントでのみサービスプロバイダを利用可能です。
+
+テナントIDの設定が無い場合::
+全てのテナントでサービスプロバイダを利用可能です。
+|===
+
+[[AiIntegrationService_ConfigurableCredentialsS3ClientFactory]]
+.[.eeonly]#ConfigurableCredentialsS3ClientFactory#
+class は org.iplass.mtp.impl.s3.awsv2.ConfigurableCredentialsS3ClientFactory クラスを指定します。
+標準で、以下のS3クライアントファクトリを提供します。
+
+* 同期クライアントを生成するクラス
+** <<AiIntegrationService_ConfigurableCredentialsS3ClientFactory_ConfigurableCredentialsS3SyncClientFactory>>
+* 非同期クライアントを生成するクラス
+** <<AiIntegrationService_ConfigurableCredentialsS3ClientFactory_ConfigurableCredentialsS3AsyncClientFactory>>
+** <<AiIntegrationService_ConfigurableCredentialsS3ClientFactory_ConfigurableCredentialsS3AsyncCrtClientFactory>>
+
+[TIP]
+====
+S3 オブジェクトパートの最大サイズは 5GB です。透過的なマルチパートをサポートしていないクライアントの最大オブジェクトサイズとなります。 +
+5GB を超えるオブジェクトをアップロードする場合は、透過的なマルチパートが有効なクライアントを利用してください。
+
+S3 Client の選定については、link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/examples-s3.html#s3-clients[AWS SDK for Java 2.x の S3 クライアント^] を参考にしてください。
+====
+
+
+[[AiIntegrationService_ConfigurableCredentialsS3ClientFactory_ConfigurableCredentialsS3SyncClientFactory]]
+.[.eeonly]#ConfigurableCredentialsS3SyncClientFactory#
+class は org.iplass.mtp.impl.s3.awsv2.ConfigurableCredentialsS3SyncClientFactory クラスを指定します。
+同期のS3クライアントを生成するためのクラスです。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目
+| 値
+| 説明
+
+| clientConfig
+| <<aws2_AWSSetting_AWSClientConfig>>
+| 本クライアントに適用する設定。AWSリージョンや通信設定を設定します。
+|===
+
+
+[[AiIntegrationService_ConfigurableCredentialsS3ClientFactory_ConfigurableCredentialsS3AsyncClientFactory]]
+.[.eeonly]#ConfigurableCredentialsS3AsyncClientFactory#
+class は org.iplass.mtp.impl.s3.awsv2.ConfigurableCredentialsS3AsyncClientFactory クラスを指定します。
+非同期のS3クライアントを生成するためのクラスです。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目
+| 値
+| 説明
+
+| multipartEnabled
+| boolean
+| 透過的なマルチパートを有効にするかどうか。デフォルトは false で、透過的なマルチパートは無効になります。
+
+| clientConfig
+| <<aws2_AWSSetting_AWSClientConfig>>
+| 本クライアントに適用する設定。AWSリージョンや通信設定を設定します。
+|===
+
+[[AiIntegrationService_ConfigurableCredentialsS3ClientFactory_ConfigurableCredentialsS3AsyncCrtClientFactory]]
+.[.eeonly]#ConfigurableCredentialsS3AsyncCrtClientFactory#
+class は org.iplass.mtp.impl.s3.awsv2.ConfigurableCredentialsS3AsyncCrtClientFactory の実装クラスを指定します。 +
+非同期クライアントの S3AsyncClient を生成します。本機能で生成されるクライアントは link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/crt-based-s3-client.html[AWS CRT ベースの S3 クライアント^]です。
+
+S3操作のパフォーマンスを重視する場合は、CRT ベースのクライアントの利用を推奨します。 +
+CRT ベースのクライアントは native ライブラリを利用しています。その為、システムが利用するプラットフォーム上で動作することを確認してください。
+
+機能を利用する際には、ライブラリ `software.amazon.awssdk.crt:aws-crt` の追加が必要です。 +
+詳細は link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/crt-based-s3-client.html#crt-based-s3-client-depend[AWS CRTベースの S3 クライアントを使用するための依存関係を追加する^] を参照してください。
+
+[cols="1,1,3", options="header"]
+|===
+| 項目
+| 値
+| 説明
+
+| clientConfig
+| <<aws2_AWSSetting_AWSClientConfig>>
+| 本クライアントに適用する設定。AWSリージョンや通信設定を設定します。
+|===
+
+[[AiIntegrationService_JsonConverter]]
+.[.eeonly]#JsonConverter#
+class は org.iplass.mtp.impl.ai.json.JsonConverter の実装クラスを指定します。 +
+標準で、以下の JsonConverter を提供します。
+
+- <<AiIntegrationService_JsonConverter_ObjectMapperJsonConverter>>
+
+[[AiIntegrationService_JsonConverter_ObjectMapperJsonConverter]]
+.[.eeonly]#ObjectMapperJsonConverter#
+class は org.iplass.mtp.impl.ai.json.ObjectMapperJsonConverter の実装クラスを指定します。 +
+ObjectMapper を利用した JsonConverter です。 ObjectMapper の設定をカスタマイズしたい場合は、クラスを継承して ObjectMapper をカスタマイズしてください。 +
+設定項目はありません。
+
+
+===== 設定例
+[source,xml]
+----
+<!-- AI統合 -->
+<service>
+    <interface>org.iplass.mtp.impl.ai.AiIntegrationService</interface>
+    <class>org.iplass.mtp.impl.ai.AiIntegrationService</class>
+
+    <!--
+        AWSSetting サービスの設定を利用して AIサービスプロバイダを設定する例です。
+    -->
+    <property name="aiServiceProvider" class="org.iplass.mtp.impl.ai.awsv2.AWSSettingAiServiceProviderConfig" additional="true">
+        <property name="name" value="AwsSettingAiServiceProvider" />
+        <property name="s3ClientFactory" class="org.iplass.mtp.impl.s3.awsv2.ConfigurableCredentialsS3AsyncClientFactory">
+            <property name="multipartEnabled" value="false" />
+            <!-- aiServiceProvider で設定した clientConfig とは異なる接続設定を行うことが可能です。 -->
+            <!--
+            <property name="clientConfig" class="org.iplass.mtp.impl.awsv2.AWSClientConfig">
+                <property name="region" value="us-east-1" />
+            </property>
+            -->
+        </property>
+    </property>
+
+    <!--
+        AWSSetting サービスの設定とは異なるAWS接続設定を利用してAIサービスプロバイダを設定する例です。
+    -->
+    <property name="aiServiceProvider" class="org.iplass.mtp.impl.ai.awsv2.AWSAiServiceProviderConfigImpl" additional="true">
+        <property name="name" value="DefaultCredentialsAiServiceProvider" />
+        <!-- AWS接続設定を行います。 -->
+        <property name="credentialsProviderFactory" class="org.iplass.mtp.impl.awsv2.DefaultCredentialsProviderFactory" />
+        <property name="clientConfig" class="org.iplass.mtp.impl.awsv2.AWSClientConfig">
+            <property name="region" value="ap-northeast-1" />
+        </property>
+    </property>
+
+    <property name="jsonConverter" class="org.iplass.mtp.impl.ai.json.ObjectMapperJsonConverter" />
+</service>
+
+----

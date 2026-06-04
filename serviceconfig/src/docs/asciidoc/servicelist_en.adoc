@@ -7,6 +7,10 @@ The Services for iPLAss core features.
 [cols="1,3", options="header"]
 |===
 | Name | Description
+| <<index.adoc#AiDataConnectService>> | A service for AI data connection.
+| <<index.adoc#AiIntegrationService>> | A service for AI integration. This is an integrated service available for data connection and prompts.
+| <<index.adoc#AiPromptService>> | A service for AI prompts.
+| <<index.adoc#AiSystemPromptService>> | A service for AI system prompts.
 | <<index.adoc#AsyncTaskService, AsyncTaskService>> | A service for executing tasks asynchronously inside the platform.
 | <<index.adoc#AsyncTaskServiceForHttpMessageChannel, AsyncTaskServiceForHttpMessageChannel>> | This service performs asynchronous execution using HttpMessageChannel for cluster communication.
 | <<index.adoc#AuditLoggingService, AuditLoggingService>> | This service outputs registration, update, and deletion for Entity as an operation log.
