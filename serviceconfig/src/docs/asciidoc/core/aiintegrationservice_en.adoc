@@ -212,12 +212,8 @@ There are no configurable settings.
     <!--
         This is an example of configuring an AI service provider using the AWSSetting service settings.
     -->
-    <property name="aiServiceProvider" class="org.iplass.mtp.impl.ai.awsv2.AWSSettingAiServiceProviderConfig">
+    <property name="aiServiceProvider" class="org.iplass.mtp.impl.ai.awsv2.AWSSettingAiServiceProviderConfig" additional="true">
         <property name="name" value="AwsSettingAiServiceProvider" />
-        <!-- Configure AWS connection settings for using AI services. -->
-        <property name="clientConfig" class="org.iplass.mtp.impl.awsv2.AWSClientConfig">
-            <property name="region" value="ap-northeast-1" />
-        </property>
         <property name="s3ClientFactory" class="org.iplass.mtp.impl.s3.awsv2.ConfigurableCredentialsS3AsyncClientFactory">
             <property name="multipartEnabled" value="false" />
             <!-- You can configure different connection settings from the clientConfig set in aiServiceProvider. -->
@@ -232,7 +228,7 @@ There are no configurable settings.
     <!--
         This is an example of configuring an AI service provider using different AWS connection settings from the AWSSetting service settings.
     -->
-    <property name="aiServiceProvider" class="org.iplass.mtp.impl.ai.awsv2.AWSAiServiceProviderConfigImpl">
+    <property name="aiServiceProvider" class="org.iplass.mtp.impl.ai.awsv2.AWSAiServiceProviderConfigImpl" additional="true">
         <property name="name" value="DefaultCredentialsAiServiceProvider" />
         <!-- Configure AWS connection settings. -->
         <property name="credentialsProviderFactory" class="org.iplass.mtp.impl.awsv2.DefaultCredentialsProviderFactory" />
