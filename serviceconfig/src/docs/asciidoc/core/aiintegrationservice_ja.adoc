@@ -168,8 +168,8 @@ class は org.iplass.mtp.impl.s3.awsv2.ConfigurableCredentialsS3AsyncClientFacto
 
 [[AiIntegrationService_ConfigurableCredentialsS3ClientFactory_ConfigurableCredentialsS3AsyncCrtClientFactory]]
 .[.eeonly]#ConfigurableCredentialsS3AsyncCrtClientFactory#
-class は org.iplass.mtp.impl.s3.awsv2.ConfigurableCredentialsS3AsyncCrtClientFactory の実装クラスを指定します。
-非同期クライアントの S3AsyncClient を生成します。本機能で生成されるクライアントは link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/crt-based-s3-client.html[AWS CRT ベースの S3 クライアント^]です。設定項目はありません。
+class は org.iplass.mtp.impl.s3.awsv2.ConfigurableCredentialsS3AsyncCrtClientFactory の実装クラスを指定します。 +
+非同期クライアントの S3AsyncClient を生成します。本機能で生成されるクライアントは link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/crt-based-s3-client.html[AWS CRT ベースの S3 クライアント^]です。
 
 S3操作のパフォーマンスを重視する場合は、CRT ベースのクライアントの利用を推奨します。 +
 CRT ベースのクライアントは native ライブラリを利用しています。その為、システムが利用するプラットフォーム上で動作することを確認してください。

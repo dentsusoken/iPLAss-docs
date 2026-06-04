@@ -169,7 +169,7 @@ This class is used to create asynchronous S3 clients.
 [[AiIntegrationService_ConfigurableCredentialsS3ClientFactory_ConfigurableCredentialsS3AsyncCrtClientFactory]]
 .[.eeonly]#ConfigurableCredentialsS3AsyncCrtClientFactory#
 Specify the class of org.iplass.mtp.impl.s3.awsv2.ConfigurableCredentialsS3AsyncCrtClientFactory. +
-This class is used to create asynchronous S3 clients. The clients created by this class are link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/crt-based-s3-client.html[AWS CRT-based S3 clients^]. There are no configurable settings.
+This class is used to create asynchronous S3 clients. The clients created by this class are link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/crt-based-s3-client.html[AWS CRT-based S3 clients^].
 
 If you prioritize S3 operation performance, it is recommended to use CRT-based clients. +
 CRT-based clients use native libraries, so ensure they are compatible with your system's platform.
