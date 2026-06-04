@@ -31,14 +31,14 @@ a|AIに対する指示プロンプトを設定します。Groovy Template 形式
 * `inputText`: ユーザーからの入力テキストを表します。
 
 .プロンプト例
-```
+----
 ## あなたの役割
 あなたは優秀なアシスタントです。ユーザーからの質問に対して、正確かつ簡潔に答えることが求められます。
 ユーザーからの質問に対して、必要に応じて、質問の内容を理解するための追加の質問を行うことができます。
 
 ## 質問に答えてください。
 質問: ${inputText}
-```
+----
 
 |Prompt Placeholder
 a|プロンプト実行時に動的に値を設定したい箇所にプレースホルダを設定することができます。 +
@@ -240,22 +240,22 @@ public class ExamplePrompt {
 上の例を実行した場合に、プロンプトの定義例と結果例は以下のようになります。
 
 .プロンプト定義例
-```
+----
 {
     "prompt": "${inputText}",
     "placeholder_name1": "${placeholder_name1}",
     "placeholder_name2": "${placeholder_name2}"
 }
-```
+----
 
 .AIサービスにリクエストするプロンプト結果例
-```
+----
 {
     "prompt": "プロンプトテキスト",
     "placeholder_name1": "プレースホルダーの値1",
     "placeholder_name2": "プレースホルダーの値2"
 }
-```
+----
 
 [[prompt_usage_response_multiple_data]]
 ==== レスポンスから複数のデータ取得
