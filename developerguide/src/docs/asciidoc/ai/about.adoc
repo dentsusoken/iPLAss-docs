@@ -12,6 +12,6 @@ AI連携機能は、iPLAss から外部のAIサービスを利用する機能で
 本機能を利用するには、以下の設定が必要になります。
 
 .設定
-. <<service_provider>> の設定
-. メタデータ <<prompt>>、<<system_prompt>> の設定
-. メタデータ <<dataconnect>> の設定
+* <<service_provider>> の設定
+* メタデータ <<prompt>>、<<system_prompt>> の設定
+* メタデータ <<dataconnect>> の設定
