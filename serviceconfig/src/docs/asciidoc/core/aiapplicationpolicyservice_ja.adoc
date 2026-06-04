@@ -23,7 +23,7 @@ AI機能の利用ポリシーを設定します。
 | 項目 | 値 | 説明
 | aiChatAutoCompletionUserMessageMaxLength | int | AIチャット自動補完のユーザーメッセージ最大長。デフォルト値は5000です。
 | aiChatAutoCompletionMaxConversationTurns | int | AIチャット自動補完の会話履歴最大ターン数。デフォルト値は20です。
-| aiAutocompleteErrorClearTimeout | int | AIオートコンプリートのエラークリアタイムアウト（ミリ秒）。デフォルト値は5000です。
+| aiAutocompleteErrorClearTimeout | int | AI自動補完のエラークリアタイムアウト（ミリ秒）。デフォルト値は5000です。
 |===
 
 ===== 設定例
@@ -38,7 +38,7 @@ AI機能の利用ポリシーを設定します。
 	<!-- AIチャット自動補完の会話履歴最大ターン数 -->
 	<property name="aiChatAutoCompletionMaxConversationTurns" value="20" />
 
-	<!-- AIオートコンプリートのエラークリアタイムアウト（ミリ秒） -->
+	<!-- AI自動補完のエラークリアタイムアウト（ミリ秒） -->
 	<property name="aiAutocompleteErrorClearTimeout" value="5000" />
 </service>
 ----
