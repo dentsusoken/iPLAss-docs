@@ -23,7 +23,7 @@ Configure usage policies for AI features.
 | Item | Value | Description
 | aiChatAutoCompletionUserMessageMaxLength | int | Maximum length of the user message for AI chat auto-completion. The default value is 5000.
 | aiChatAutoCompletionMaxConversationTurns | int | Maximum number of conversation history turns for AI chat auto-completion. The default value is 20.
-| aiAutocompleteErrorClearTimeout | int | Timeout for clearing AI auto-complete errors (milliseconds). The default value is 5000.
+| aiAutocompleteErrorClearTimeout | int | Timeout for clearing AI auto-completion errors (milliseconds). The default value is 5000.
 |===
 
 ===== Example
@@ -38,7 +38,7 @@ Configure usage policies for AI features.
 	<!-- Maximum conversation history turns for AI chat auto-completion -->
 	<property name="aiChatAutoCompletionMaxConversationTurns" value="20" />
 
-	<!-- Timeout for clearing AI auto-complete errors (milliseconds) -->
+	<!-- Timeout for clearing AI auto-completion errors (milliseconds) -->
 	<property name="aiAutocompleteErrorClearTimeout" value="5000" />
 </service>
 ----
