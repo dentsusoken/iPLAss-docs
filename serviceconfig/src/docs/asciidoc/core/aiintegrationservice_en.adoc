@@ -204,7 +204,7 @@ There are no configurable settings.
 ===== Example
 [source,xml]
 ----
-<!-- AI Data Connect -->
+<!-- AI Integration -->
 <service>
     <interface>org.iplass.mtp.impl.ai.AiIntegrationService</interface>
     <class>org.iplass.mtp.impl.ai.AiIntegrationService</class>
