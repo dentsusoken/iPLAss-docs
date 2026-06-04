@@ -7,6 +7,7 @@ The Services for iPLAss core features.
 [cols="1,3", options="header"]
 |===
 | Name | Description
+| <<index.adoc#AiApplicationPolicyService, [.eeonly]#AiApplicationPolicyService#>> | This service manages application policy settings for AI features.
 | <<index.adoc#AiDataConnectService>> | A service for AI data connection.
 | <<index.adoc#AiIntegrationService>> | A service for AI integration. This is an integrated service available for data connection and prompts.
 | <<index.adoc#AiPromptService>> | A service for AI prompts.

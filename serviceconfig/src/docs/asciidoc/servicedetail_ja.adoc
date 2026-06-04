@@ -17,6 +17,8 @@ include::core/aisystempromptservice_ja.adoc[]
 
 include::gem/aggregationservice_ja.adoc[]
 
+include::core/aiapplicationpolicyservice_ja.adoc[]
+
 include::core/asynctaskservice_ja.adoc[]
 
 include::core/asynctaskserviceforhttpmessagechannel_ja.adoc[]
