@@ -1,0 +1,118 @@
+[[McpService]]
+=== [.eeonly]#McpService#
+MCPの機能を管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.mcp.McpService
+----
+
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.mcp.McpService
+----
+
+
+==== McpService の設定
+McpService を設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目
+| 値
+| 説明
+
+| enableMcp
+| boolean
+| MCP機能を有効にするか。デフォルト値は false です。MCP機能を利用する場合は true に設定してください。
+
+| requestEndpoint
+| String
+| MCP機能のリクエストエンドポイントを設定します。デフォルト値は `/mcp/message` です。 +
+`/mcp/` で始まるパスを設定してください。 +
+デフォルト時のリクエストURLは `http://{host}:{port}/{contextPath}/{tenant}/mcp/message` となります。
+
+| tenantServerInfo
+| <<McpServerInfo>>、複数指定可
+| MCP機能を利用するテナント、MCPサーバー情報を設定します。 +
+MCPサーバーの機能を利用するテナント単位で、テナントIDとMCPサーバー情報を組み合わせて設定してください。
+
+| propagatedExceptionsToClient
+| String、複数指定可
+| MCP機能で例外発生時にクライアントに伝播する例外クラスを設定します。例外クラスは完全修飾クラス名で設定する必要があります。 +
+初期化のタイミングで org.iplass.mtp.ApplicationException クラスは必ず設定されます。 +
+ここに記載されない例外クラスは、MCP機能で例外が発生した場合に固定のエラーメッセージが返されます。
+
+| javaTypeJsonSchemaResolver
+| <<JavaTypeJsonSchemaResolver>>
+| Javaの型からJSONスキーマを生成するためのクラスを設定します。デフォルト値は org.iplass.mtp.impl.mcp.schema.JavaTypeJsonSchemaResolver クラスです。
+|===
+
+[[McpServerInfo]]
+.[.eeonly]#McpServerInfo#
+class は org.iplass.mtp.impl.mcp.McpServerInfo クラスを指定します。 +
+MCPサーバーを利用するテナントID、MCPサーバーの情報（サーバー名、バージョン）を設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目
+| 値
+| 説明
+
+| tenantId
+| Integer、必須
+| MCPサーバーを利用するテナントIDを設定します。
+
+| serverName
+| String、必須
+| MCPサーバーの名前を設定します。クライアントが取得する ServerInfo の name として表示されます。
+
+| version
+| String、必須
+| MCPサーバーのバージョンを設定します。クライアントが取得する ServerInfo の version として表示されます。
+|===
+
+[[JavaTypeJsonSchemaResolver]]
+.[.eeonly]#JavaTypeJsonSchemaResolver#
+class は org.iplass.mtp.impl.mcp.schema.JavaTypeJsonSchemaResolver を指定します。 +
+Javaの型からJSONスキーマを生成するためのクラスを設定します。
+
+
+===== 設定例
+[source,xml]
+----
+	<!-- mcp service -->
+	<service>
+		<interface>org.iplass.mtp.impl.mcp.McpService</interface>
+
+		<depend>org.iplass.mtp.impl.core.TenantContextService</depend>
+		<depend>org.iplass.mtp.impl.webapi.jackson.WebApiObjectMapperService</depend>
+
+		<!--  MCPサーバーを有効にする。デフォルト値 false -->
+		<!--
+		<property name="enableMcp" value="false" />
+		-->
+
+		<!-- MCPサーバー用リクエストエンドポイント。エンドポイントは、WebFrontendService の throughPath プロパティに含まれるように設定します。 -->
+		<!--
+		<property name="requestEndpoint" value="/mcp/message" />
+		-->
+
+		<!-- MCPサーバー利用テナント サーバー情報、複数設定可能 -->
+		<!--
+		<property name="tenantServerInfo" class="org.iplass.mtp.impl.mcp.McpServerInfo">
+			<property name="tenantId" value="1" />
+			<property name="serverName" value="tenant1-mcp" />
+			<property name="version" value="1.0.0" />
+		</property>
+		-->
+
+		<!-- クライアントに伝搬する例外クラス（複数設定可能）。org.iplass.mtp.ApplicationException は必ず設定されます。 -->
+		<property name="propagatedExceptionsToClient" value="org.iplass.mtp.ApplicationException" />
+
+		<property name="javaTypeJsonSchemaResolver" class="org.iplass.mtp.impl.mcp.schema.JavaTypeJsonSchemaResolver" />
+	</service>
+----

@@ -26,6 +26,27 @@ CAUTION: Use the `alwaysAvailableAction` one. We will remove it in the next mino
 | alwaysAvailableAction | String, Multiple | Actions available during maintenance
 
 | alwaysAvailableWebApi | String, Multiple | WebApi available during maintenance
+
+| alwaysAvailableFeature | <<TenantAvailableService_AvailableFeature>>, Multiple | Features available during maintenance
+
+|===
+
+[[TenantAvailableService_AvailableFeature]]
+.AvailableFeature
+Please specify org.iplass.mtp.impl.tenant.available.AvailableFeature to the class.
+
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| featureType | String | Specify the feature type.
+
+The available feature types are as follows.
+
+* `mcp_tool`
+** Sets the availability/unavailability for Tool-type features on the MCP server.
+
+| name | String, Multiple | Specify the feature name.
 |===
 
 ===== Example
@@ -47,5 +68,12 @@ CAUTION: Use the `alwaysAvailableAction` one. We will remove it in the next mino
 
 	<property name="alwaysAvailableWebApi" value="gem/auth/verifycodegen" />
 	<property name="alwaysAvailableWebApi" value="mdc/auth/verifycodegen" />
+
+	<property name="alwaysAvailableFeature" class="org.iplass.mtp.impl.tenant.available.AvailableFeature">
+		<property name="featureType" value="mcp_tool" />
+
+		<property name="name" value="mtp/definition/get" />
+		<property name="name" value="mtp/definition/delete" />
+	</property>
 </service>
 ----

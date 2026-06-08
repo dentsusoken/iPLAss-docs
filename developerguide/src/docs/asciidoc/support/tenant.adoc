@@ -218,7 +218,10 @@ WebApi単位で利用不可にできます。
 - Entityに対する更新処理の停止（データリードオンリー） +
 Entity単位で利用不可にできます。
 
-それぞれの利用停止範囲は、ログインユーザー情報やアクセスパス（対象Action、対象WebApi、対象Entity）を参照して、GroovyScriptで制御できます。
+- 特定の機能タイプに対する利用停止 +
+機能タイプ単位で利用不可にできます。
+
+それぞれの利用停止範囲は、ログインユーザー情報やアクセスパス（対象Action、対象WebApi、対象Entity、対象機能タイプ）を参照して、GroovyScriptで制御できます。
 
 image::images/tenant_TenantMaintenance_UnderMaintenance.png[caption="",title="（例）画面利用停止時の表示画面"]
 
@@ -349,4 +352,23 @@ return false;
 発生する例外は `org.iplass.mtp.entity.available.EntityReadOnlyException` です。
 
 詳細は <<../multitenant/index.adoc#ref_tenant_applicationErrorUrlSelector, エラー画面Template制御Scriptの設定>> を参照してください。
+
+| Feature Type
+| 特定の機能タイプに対する利用停止を設定できます。
+
+設定可能な機能タイプは以下の通りです。
+
+* `mcp_tool`
+** MCPサーバーのToolタイプの機能に対する利用可能／不可能を設定します。
+
+Feature Type, Feature Available Condition Script, Feature Unavailable Customize Message の条件編集領域は、以下のボタンを押下することで制御できます。
+
+* `Add Feature Condition` ボタンをクリックして条件編集領域を追加します。
+* `Remove Feature Condition` ボタンをクリックして条件編集領域を削除します。
+| Feature Available Condition Script
+| 特定の機能タイプに対する利用可否をGroovyScript形式で定義します。未指定の場合、全てが利用不可となります。 +
+対象の機能タイプのメタデータがバインドされるので、それをもとにtrue(利用可)/false(利用不可)を返すように定義します。 +
+利用可能なバインド変数は、編集ダイアログの「Notes」を参照してください。
+| Feature Unavailable Customize Message
+| 特定の機能タイプが利用不可の場合に発生する例外に対してメッセージをGroovyTemplate形式で指定できます。
 |===

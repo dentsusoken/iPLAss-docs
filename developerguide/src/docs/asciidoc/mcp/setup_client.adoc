@@ -1,0 +1,39 @@
+[[setup_client]]
+== クライアントの設定
+
+クライアントから接続する場合のエンドポイントは、McpService で設定することが可能です。 +
+McpService のプロパティ `requestEndpoint` にエンドポイント URL を設定してください。 +
+McpService の詳細は link:../../serviceconfig/index.html#McpService[Configuration - McpService^] を参照してください。
+
+=== エンドポイント
+McpService の設定に従って、クライアントから接続する際のエンドポイントが決まります。 +
+エンドポイントの設定値がデフォルト `/mcp/message` の場合、クライアントから接続する際のエンドポイントは以下のようになります。
+
+(http|https)://<host><:port>/<context>/<tenant>/mcp/message
+
+.構成要素の説明
+* <host>: ホスト名
+* <:port>: ポート番号 (省略可能)
+* <context>: アプリケーションコンテキスト。サーバー構築時の設定により異なります。
+* <tenant>: テナント名。テナント構築時に設定したテナント名を指定します。
+
+URL 例： https://example.com/iplass/tenant/mcp/message
+
+=== 認証
+MCPサーバーの利用にあたり、認証が必須となります。
+
+==== サポートしている認証方法
+.OAuth 2.0 Bearer Token 認証
+OAuth 2.0のアクセストークン。リクエストヘッダーの `Authorization` に `Bearer` トークンとして設定してください。
+
+.個人アクセストークン Bearer Token 認証
+link:../genericentitymanager/topview/index.html#_アプリの管理[GEM(TopView) - アプリの管理^] を参照し個人アクセストークンを発行してください。 +
+発行した個人アクセストークンは、リクエストヘッダーの `Authorization` に `Bearer` トークンとして設定してください。
+
+==== 認証情報の設定例
+以下は、リクエストヘッダーの `Authorization` に `Bearer` トークンとして設定する例です。
+
+.Header 設定例
+----
+Authorization: Bearer <token>
+----
