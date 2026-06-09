@@ -353,8 +353,8 @@ return false;
 
 詳細は <<../multitenant/index.adoc#ref_tenant_applicationErrorUrlSelector, エラー画面Template制御Scriptの設定>> を参照してください。
 
-| Feature Type
-| 特定の機能タイプに対する利用停止を設定できます。
+|Feature Type
+|特定の機能タイプに対する利用停止を設定できます。
 
 設定可能な機能タイプは以下の通りです。
 
@@ -365,10 +365,10 @@ Feature Type, Feature Available Condition Script, Feature Unavailable Customize 
 
 * `Add Feature Condition` ボタンをクリックして条件編集領域を追加します。
 * `Remove Feature Condition` ボタンをクリックして条件編集領域を削除します。
-| Feature Available Condition Script
-| 特定の機能タイプに対する利用可否をGroovyScript形式で定義します。未指定の場合、全てが利用不可となります。 +
+|Feature Available Condition Script
+|特定の機能タイプに対する利用可否をGroovyScript形式で定義します。未指定の場合、全てが利用不可となります。 +
 対象の機能タイプのメタデータがバインドされるので、それをもとにtrue(利用可)/false(利用不可)を返すように定義します。 +
 利用可能なバインド変数は、編集ダイアログの「Notes」を参照してください。
-| Feature Unavailable Customize Message
-| 特定の機能タイプが利用不可の場合に発生する例外に対してメッセージをGroovyTemplate形式で指定できます。
+|Feature Unavailable Customize Message
+|特定の機能タイプが利用不可の場合に発生する例外に対してメッセージをGroovyTemplate形式で指定できます。
 |===
