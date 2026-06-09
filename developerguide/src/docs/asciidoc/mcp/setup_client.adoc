@@ -5,18 +5,18 @@
 
 === エンドポイント
 クライアントから接続する場合のエンドポイントは、McpService で設定することが可能です。 +
-McpService のプロパティ `requestEndpoint` にエンドポイント URL を設定してください。 +
+McpService のプロパティ `requestEndpoint` にエンドポイントのパス（ `/mcp/` から始まるパス ）を設定してください。 +
 McpService の詳細は link:../../serviceconfig/index.html#McpService[Configuration - McpService^] を参照してください。
 
 エンドポイントの設定値がデフォルト `/mcp/message` の場合、クライアントから接続する際のエンドポイントは以下のようになります。
 
-(http|https)://<host><:port>/<context>/<tenant>/mcp/message
+`(http|https)://<host><:port>/<context>/<tenant>/mcp/message`
 
 .構成要素の説明
-* <host>: ホスト名
-* <:port>: ポート番号 (省略可能)
-* <context>: アプリケーションコンテキスト。サーバー構築時の設定により異なります。
-* <tenant>: テナント名。テナント構築時に設定したテナント名を指定します。
+* `<host>`: ホスト名
+* `<:port>`: ポート番号 (省略可能)
+* `<context>`: アプリケーションコンテキスト。サーバー構築時の設定により異なります。
+* `<tenant>`: テナント名。テナント構築時に設定したテナント名を指定します。
 
 URL 例： https://example.com/iplass/tenant/mcp/message
 
