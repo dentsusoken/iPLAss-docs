@@ -1,12 +1,13 @@
 [[setup_client]]
 == クライアントの設定
 
+クライアントからMCPサーバーに接続するためには、リクエストするエンドポイントの指定と、認証情報の設定が必要です。
+
+=== エンドポイント
 クライアントから接続する場合のエンドポイントは、McpService で設定することが可能です。 +
 McpService のプロパティ `requestEndpoint` にエンドポイント URL を設定してください。 +
 McpService の詳細は link:../../serviceconfig/index.html#McpService[Configuration - McpService^] を参照してください。
 
-=== エンドポイント
-McpService の設定に従って、クライアントから接続する際のエンドポイントが決まります。 +
 エンドポイントの設定値がデフォルト `/mcp/message` の場合、クライアントから接続する際のエンドポイントは以下のようになります。
 
 (http|https)://<host><:port>/<context>/<tenant>/mcp/message
