@@ -48,6 +48,17 @@ Exception classes not listed here will result in a fixed error message being ret
 | javaTypeJsonSchemaResolver
 | <<JavaTypeJsonSchemaResolver>>
 | Sets the class for generating JSON schemas from Java types. The default value is the org.iplass.mtp.impl.mcp.schema.JavaTypeJsonSchemaResolver class.
+| allowOrigin
+| String, multiple
+| Sets the origins to be allowed for CORS (Cross-Origin Resource Sharing) in the MCP feature. +
+Origins should be specified in the format combining scheme, host, and port. The port is optional. Example: `http://example.com` +
+The port can also be specified with a wildcard ({asterisk}). Example: `http://example.com:*`
+
+| allowHost
+| String, multiple
+| Sets the hostnames to be allowed for CORS (Cross-Origin Resource Sharing) in the MCP feature. +
+Hostnames should be specified as domain names or IP addresses. Example: `example.com:8080`, `192.168.0.1` +
+The port can also be specified with a wildcard ({asterisk}). Example: `example.com:*`, `192.168.0.1:*`
 |===
 
 [[McpServerInfo]]

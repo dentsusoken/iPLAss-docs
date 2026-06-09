@@ -48,6 +48,18 @@ MCPサーバーの機能を利用するテナント単位で、テナントIDと
 | javaTypeJsonSchemaResolver
 | <<JavaTypeJsonSchemaResolver>>
 | Javaの型からJSONスキーマを生成するためのクラスを設定します。デフォルト値は org.iplass.mtp.impl.mcp.schema.JavaTypeJsonSchemaResolver クラスです。
+
+| allowOrigin
+| String、複数指定可
+| MCP機能でCORS（Cross-Origin Resource Sharing）を許可するオリジンを設定します。 +
+オリジンは、スキーム、ホスト、ポートを組み合わせた形式で指定してください。ポートは省略可能です。例）`http://example.com` +
+ポートはワイルドカード（ {asterisk} ）で指定することもできます。例）`http://example.com:*`
+
+| allowHost
+| String、複数指定可
+| MCP機能でCORS（Cross-Origin Resource Sharing）を許可するホスト名を設定します。 +
+ホスト名は、ドメイン名やIPアドレスを指定してください。例）`example.com:8080`、`192.168.0.1` +
+ポートはワイルドカード（ {asterisk} ）で指定することもできます。例）`example.com:*`、`192.168.0.1:*`
 |===
 
 [[McpServerInfo]]
