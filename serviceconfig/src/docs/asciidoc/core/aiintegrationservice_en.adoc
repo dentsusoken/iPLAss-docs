@@ -38,6 +38,7 @@ The following AiServiceProviderConfig is provided by default.
 
 - <<AiIntegrationService_AiServiceProviderConfig_AWSSettingAiServiceProviderConfig>>
 - <<AiIntegrationService_AiServiceProviderConfig_AWSAiServiceProviderConfigImpl>>
+- <<AiIntegrationService_AiServiceProviderConfig_KnowNarratorAiServiceProviderConfigImpl>>
 
 [[AiIntegrationService_AiServiceProviderConfig_AWSSettingAiServiceProviderConfig]]
 .[.eeonly]#AWSSettingAiServiceProviderConfig#
@@ -107,6 +108,39 @@ The service provider can only be used by the specified tenants.
 
 If no tenant IDs are set::
 The service provider can be used by all tenants.
+|===
+
+[[AiIntegrationService_AiServiceProviderConfig_KnowNarratorAiServiceProviderConfigImpl]]
+.[.eeonly]#KnowNarratorAiServiceProviderConfigImpl#
+Specify the class of org.iplass.mtp.impl.ai.knownarrator.KnowNarratorAiServiceProviderConfigImpl. +
+This configuration class is used to utilize the service via the Know Narrator API.
+
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item
+| Value
+| Description
+
+| name
+| String, required
+| Sets the name to identify the service provider. This becomes the provider name selected in the prompt platform settings.
+
+| apiBaseUrl
+| String, required
+| Sets the destination URL of the Know Narrator API.
+
+| subscriptionKey
+| String, required
+| Sets the subscription key of the Know Narrator API. It is set in the request header `Ocp-Apim-Subscription-Key`.
+
+| userPermissionId
+| String, required
+| Sets the user permission ID of the Know Narrator API. It is set in the request header `X-Api-User-Permission-Id`.
+
+| httpClientConfig
+| <<HttpClientConfig>>
+| This is an optional item. Set this when configuring HTTP client settings such as proxy or connection pool. If not set, the default HTTP client is used.
 |===
 
 [[AiIntegrationService_ConfigurableCredentialsS3ClientFactory]]

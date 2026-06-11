@@ -80,10 +80,14 @@ iPLAss では、以下のプラットフォームを提供しています。
 .サービスプロバイダによるプラットフォーム
 * <<prompt_setting_platform_aws>>
 ** Amazon Bedrock サービスを利用することができます。
+* <<prompt_setting_platform_knownarrator>>
+** Know Narrator API を利用することができます。
 * <<prompt_setting_platform_custom>>
 ** 独自に作成したプロンプトを実行することができます。
 
 include::prompt_setting_platform_aws.adoc[]
+
+include::prompt_setting_platform_knownarrator.adoc[]
 
 include::prompt_setting_platform_custom.adoc[]
 
