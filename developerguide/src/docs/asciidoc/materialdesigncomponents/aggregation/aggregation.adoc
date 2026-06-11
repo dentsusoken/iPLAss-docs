@@ -74,8 +74,12 @@ CSVファイルかEXCELファイルのどちらを利用するかを画面で選
 |ファイルダウンロード時のファイル名をGroovyTemplate書式を利用して指定します。
 詳細は<<ag_filenameformat, File name format>>を参照してください。
 
-|フィルタ項目
-|集計画面で利用可能なフィルタ項目を設定します。
+|保存リストを使用する
+|未選択の場合、フィルター条件と結果の絞り込みの「保存リストから」を選択不可になります。
+編集画面に「保存」ボタンとローデータメニューの「リストに保存」は表示されません。
+
+|フィルタ項目|
+集計画面で利用可能なフィルタ項目を設定します。
 詳細は<<ag_filter, フィルタ項目>>を参照してください。
 
 |Edit default filter
@@ -99,6 +103,18 @@ CSVファイルかEXCELファイルのどちらを利用するかを画面で選
 [source,groovy]
 ----
 ${csvName}_${yyyy}${MM}${dd}${HH}${mm}${ss}
+----
+
+.（例）保存リストの場合は保存名を先頭に付加する。
+[source,groovy]
+----
+<%
+def fileName = defDisplayName;
+if (savedListName != null) {
+    fileName = savedListName + "_" + defDisplayName;
+}
+%>
+${fileName}_${yyyy}${MM}${dd}
 ----
 
 [[ag_filter]]
@@ -159,6 +175,7 @@ a|フィルタ時の比較演算子、指定できるのは以下となります
  * RDT: 相対範囲(日時)
  * NNL: 値が設定されている
  * NL: 値が設定されていない
+ * SL: 保存リストから
 
 |xxx_y
 |フィルタ時の値、型によって指定の際の制約あり
