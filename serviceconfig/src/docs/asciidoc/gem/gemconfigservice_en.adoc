@@ -116,7 +116,6 @@ Please configure these items along with the settings from community editions.
 |===
 | Item | Value | Description
 | savedListFileDownloadInterval | int | Set the file download interval of the SavedList list overviews to prevent redundant download requests. If 0 is set, the interval will be infinite. The default value is 60000 (1 minute).
-| savedListFileSupportType | SavedListFileSupportType | The file format for downloading SavedList can be specified as CSV, EXCEL, or SPECIFY. The default value is CSV.
 | entitylistingSearchInterval | int | EntityListing search  interval to prevent redundant search requests. If 0 is set, it will be infinite. The default value is 60000 (1 minute).
 | entitylistingFileDownloadInterval | int | EntityListing file download interval to prevent redundant download requests. If 0 is set, it will be infinite. The default value is 60000 (1 minute).
 | entityListingFileSupportType | EntityListingFileSupportType | The file format for downloading EntityListing can be specified as CSV, EXCEL, or SPECIFY. The default value is CSV.
@@ -291,9 +290,6 @@ There is no configurable items.
 
 	<!-- File download interval, infinite (0) / specified milliseconds (1 or more) -->
 	<property name="csvDownloadInterval" value="60000"/>
-	
-	<!-- Supported file types for SavedList: CSV, EXCEL, SPECIFY. -->
-	<property name="savedListFileSupportType" value="CSV" />
 
 	<!-- EntityListing search processing interval, indefinite (0) / specified milliseconds (1 or more) -->
 	<property name="entitylistingSearchInterval" value="60000"/>

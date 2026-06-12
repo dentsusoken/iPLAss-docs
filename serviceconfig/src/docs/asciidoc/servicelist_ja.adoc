@@ -133,4 +133,6 @@ Gem(Generic Entity Manager)画面に関するサービス群です。
 | <<index.adoc#WamService, [.eeonly]#WamService#>> | Web会員管理機能のサービスです。
 | <<index.adoc#MicrometerService, [.eeonly]#MicrometerService#>> | メトリクス収集、モニタリングシステムへの連携を行うためのサービスです。
 | <<index.adoc#GoogleCloudSettings, GoogleCloudSettings>> | GoogleCloudの設定を管理するサービスです。
+| <<index.adoc#McpService, McpService>> | MCP機能を管理するサービスです。
+| <<index.adoc#McpToolService, McpToolService>> | MCP Tool に関するサービスです。
 |===

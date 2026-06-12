@@ -25,6 +25,7 @@ PermissionExplorerの詳細は <<../support/index.adoc#tools_permissionexplorer,
 |<<en_workflowperm,Workflow権限>>|ロールに付与されたWorkflow権限の参照情報となります。
 |<<en_usertaskperm,UserTask権限>>|ロールに付与されたUserTask権限の参照情報となります。
 |<<en_cubeperm,Cube権限>>|ロールに付与されたCube権限の参照情報となります。
+|<<en_mcpserverperm>>|ロールに付与されたMCPサーバー権限の参照情報となります。
 |===
 
 NOTE: 各権限の情報編集は直接行えません。権限の各設定においてロールの指定と条件を設定します。
@@ -444,4 +445,69 @@ Cubeに対する権限が未設定の場合の挙動は以下の形です。
 Cubeに対する権限は、`CubePermission` エンティティとして管理します。
 ----
 mtp.auth.CubePermission
+----
+
+[[en_mcpserverperm]]
+=== [.eeonly]#MCPサーバー権限#
+MCPサーバーの機能に対してアクセス制御が可能です。
+
+MCPサーバーに対する権限が未設定の場合の挙動は以下の形です。
+
+- いずれのロールに対しても権限が未設定の場合 +
+ログインユーザーのみMCPサーバーの参照は**許可**
+
+- いずれかのロールに対して権限が設定されている場合 +
+権限が設定されていないロールのユーザーの参照は**不許可**
+
+.MCPサーバー権限の設定
+[cols="1,3a", options="header"]
+|===
+| 項目名
+| 内容
+
+| 名前
+| MCPサーバー権限の表示名を設定します。
+
+| 対象MCP
+| MCPサーバー権限の対象となる機能名（メタデータ定義パス）を設定します。<<mcpserver_permit_target>>を参照してください。
+
+| 対象MCPタイプ
+| MCPサーバーの機能タイプです。Tool を選択することが可能です。
+
+| ロール
+| 対象とするロールを設定します。
+
+| 許可条件
+| 許可する条件を記述します。指定方法はAction権限の<<permit_condition>>と同様です。 +
+バインドされている変数等の詳細は<<condition_format>>のMCPサーバー権限を参照してください。
+|===
+
+[[mcpserver_permit_target]]
+==== 対象MCPの指定
+権限で指定する対象MCPは、MCPメタデータの定義パスで対象を選定します。 +
+MCPサーバーの定義パスを個別に指定する以外に、ワイルドカード（*を指定可能）を利用する事もできます。
+
+.例）下記 MCPサーバーの機能に対して制御する場合
+
+以下のようなメタデータが定義されている場合を考えます。
+----
+mtp/definition/get
+custom/function/search
+custom/function/register
+----
+
+* `custom/function/search` のみを制御したい場合、次のように設定して下さい。 +
+----
+custom/function/search
+----
+* `custom/function` 配下を制御したい場合、次のように設定して下さい。 +
+----
+custom/function/*
+----
+
+==== MCPサーバー権限のエンティティ
+MCPサーバーに対する権限は、`McpPermission` エンティティとして管理します。
+
+----
+mtp.auth.McpPermission
 ----

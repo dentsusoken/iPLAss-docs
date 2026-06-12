@@ -133,4 +133,6 @@ The service group for other plug-in modules.
 | <<index.adoc#WamService, [.eeonly]#WamService#>> | Web membership management service.
 | <<index.adoc#MicrometerService, [.eeonly]#MicrometerService#>> | This service for collecting metrics and linking to a monitoring system.
 | <<index.adoc#GoogleCloudSettings, GoogleCloudSettings>> | This service manages GoogleCloud settings.
+| <<index.adoc#McpService, McpService>> | The service to manage MCP functionality.
+| <<index.adoc#McpToolService, McpToolService>> | The service related to MCP Tool.
 |===

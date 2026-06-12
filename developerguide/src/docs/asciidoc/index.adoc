@@ -51,6 +51,8 @@ endif::[]
 
 == <<./ai/index.adoc#, [.eeonly]#AI連携# >>
 
+== <<./mcp/index.adoc#, [.eeonly]#MCP# >>
+
 == <<./workflow/index.adoc#, [.eeonly]#ワークフロー# >>
 
 == <<./schedule/index.adoc#, [.eeonly]#スケジューラ# >>
