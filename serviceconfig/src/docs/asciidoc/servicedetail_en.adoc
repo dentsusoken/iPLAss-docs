@@ -79,6 +79,10 @@ include::core/loggingservice_en.adoc[]
 
 include::core/mailservice_en.adoc[]
 
+include::other/mcpservice_en.adoc[]
+
+include::other/mcptoolservice_en.adoc[]
+
 include::gem/mdcconfigservice_en.adoc[]
 
 include::gem/mdcrelativerangeservice_en.adoc[]

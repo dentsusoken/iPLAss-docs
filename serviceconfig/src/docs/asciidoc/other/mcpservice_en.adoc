@@ -1,0 +1,129 @@
+[[McpService]]
+=== [.eeonly]#McpService#
+This is the service to manage the settings of MCP.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.mcp.McpService
+----
+
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.mcp.McpService
+----
+
+
+==== The settings of McpService
+Configure McpService.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item
+| Value
+| Description
+
+| enableMcp
+| boolean
+| Whether to enable the MCP feature. The default value is false. Set to true to use the MCP feature.
+
+| requestEndpoint
+| String
+| Sets the request endpoint for the MCP feature. The default value is `/mcp/message`. +
+Please set a path that begins with `/mcp/`. +
+The default request URL is `http://{host}:{port}/{contextPath}/{tenant}/mcp/message`.
+
+| tenantServerInfo
+| <<McpServerInfo>>, multiple
+| Sets the tenant and MCP server information for using the MCP feature. +
+Set the tenant ID and MCP server information for each tenant using the MCP feature.
+
+| propagatedExceptionsToClient
+| String, multiple
+| Sets the exception classes to be propagated to the client when an exception occurs in the MCP feature. The exception classes must be specified with their fully qualified class names. +
+The org.iplass.mtp.ApplicationException class is always set at initialization. +
+Exception classes not listed here will result in a fixed error message being returned when an exception occurs in the MCP feature.
+
+| javaTypeJsonSchemaResolver
+| <<JavaTypeJsonSchemaResolver>>
+| Sets the class for generating JSON schemas from Java types. The default value is the org.iplass.mtp.impl.mcp.schema.JavaTypeJsonSchemaResolver class.
+| allowOrigin
+| String, multiple
+| Sets the origins to be allowed for CORS (Cross-Origin Resource Sharing) in the MCP feature. +
+Origins should be specified in the format combining scheme, host, and port. The port is optional. Example: `http://example.com` +
+The port can also be specified with a wildcard ({asterisk}). Example: `http://example.com:*`
+
+| allowHost
+| String, multiple
+| Sets the hostnames to be allowed for CORS (Cross-Origin Resource Sharing) in the MCP feature. +
+Hostnames should be specified as domain names or IP addresses. Example: `example.com:8080`, `192.168.0.1` +
+The port can also be specified with a wildcard ({asterisk}). Example: `example.com:*`, `192.168.0.1:*`
+|===
+
+[[McpServerInfo]]
+.[.eeonly]#McpServerInfo#
+Specify the class as org.iplass.mtp.impl.mcp.McpServerInfo. +
+Set the tenant ID and MCP server information for each tenant using the MCP feature.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item
+| Value
+| Description
+
+| tenantId
+| Integer, required
+| Sets the tenant ID for using the MCP server.
+
+| serverName
+| String, required
+| Sets the name of the MCP server. The name is displayed as the `name` in the ServerInfo retrieved by the client.
+
+| version
+| String, required
+| Sets the version of the MCP server. The version is displayed as the `version` in the ServerInfo retrieved by the client.
+|===
+
+[[JavaTypeJsonSchemaResolver]]
+.[.eeonly]#JavaTypeJsonSchemaResolver#
+Specify the class as org.iplass.mtp.impl.mcp.schema.JavaTypeJsonSchemaResolver. +
+Sets the class for generating JSON schemas from Java types.
+
+
+===== Example
+[source,xml]
+----
+	<!-- mcp service -->
+	<service>
+		<interface>org.iplass.mtp.impl.mcp.McpService</interface>
+
+		<depend>org.iplass.mtp.impl.core.TenantContextService</depend>
+		<depend>org.iplass.mtp.impl.webapi.jackson.WebApiObjectMapperService</depend>
+
+		<!--  Enable the MCP server. Default value is false -->
+		<!--
+		<property name="enableMcp" value="false" />
+		-->
+
+		<!-- MCP server request endpoint. The endpoint should be included in the throughPath property of WebFrontendService. -->
+		<!--
+		<property name="requestEndpoint" value="/mcp/message" />
+		-->
+
+		<!-- MCP server tenant information, multiple settings possible -->
+		<!--
+		<property name="tenantServerInfo" class="org.iplass.mtp.impl.mcp.McpServerInfo">
+			<property name="tenantId" value="1" />
+			<property name="serverName" value="tenant1-mcp" />
+			<property name="version" value="1.0.0" />
+		</property>
+		-->
+
+		<!-- Exception classes to be propagated to the client (multiple settings possible). The org.iplass.mtp.ApplicationException class is always set. -->
+		<property name="propagatedExceptionsToClient" value="org.iplass.mtp.ApplicationException" />
+
+		<property name="javaTypeJsonSchemaResolver" class="org.iplass.mtp.impl.mcp.schema.JavaTypeJsonSchemaResolver" />
+	</service>
+----
