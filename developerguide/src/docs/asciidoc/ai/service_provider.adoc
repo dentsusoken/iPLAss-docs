@@ -1,0 +1,65 @@
+[[service_provider]]
+== サービスプロバイダ
+外部のAIサービスを利用するために、外部サービスの接続設定が必要になります。 +
+サービスプロバイダでは、外部AIサービスプロバイダの接続設定を管理します。
+
+<<prompt>>、<<dataconnect>>ではここで設定したサービスプロバイダを利用します。
+
+=== サービスプロバイダ設定
+サービスプロバイダは Service-Config で設定します。 +
+AiIntegrationService の "aiServiceProvider" プロパティに、利用するサービスプロバイダを指定してください。 +
+設定の詳細については、link:../../serviceconfig/index.html#AiIntegrationService[Service-Config AiIntegrationService^]を参照してください。
+
+サービスプロバイダ設定の一例を記載します。
+
+.サービスプロバイダ設定例
+[source,xml]
+----
+<!-- AI統合 -->
+<service>
+    <interface>org.iplass.mtp.impl.ai.AiIntegrationService</interface>
+    <class>org.iplass.mtp.impl.ai.AiIntegrationService</class>
+
+    <!--1-->
+    <depend>org.iplass.mtp.impl.awsv2.AWSSetting</depend>
+
+    <!--2-->
+    <property name="aiServiceProvider" class="org.iplass.mtp.impl.ai.awsv2.AWSSettingAiServiceProviderConfig" additional="true" >
+        <property name="name" value="AwsSettingAws" />
+    </property>
+
+    <!--3-->
+    <property name="aiServiceProvider" class="org.iplass.mtp.impl.ai.awsv2.AWSAiServiceProviderConfigImpl" additional="true" >
+        <property name="name" value="Tenant_1_2_OnlyAws" />
+        <property name="credentialsProviderFactory" class="org.iplass.mtp.impl.awsv2.DefaultCredentialsProviderFactory" />
+        <property name="clientConfig" class="org.iplass.mtp.impl.awsv2.AWSClientConfig">
+            <property name="region" value="ap-northeast-1" />
+        </property>
+
+        <property name="tenantId" value="1" />
+        <property name="tenantId" value="2" />
+    </property>
+</service>
+----
+<1> AWSSettingAiServiceProviderConfig で、AWSSetting の設定を利用するので、depend に AWSSetting を指定しています。
+<2> AWSSettingAiServiceProviderConfig クラスを利用して、AWSSetting の設定を利用するAIサービスプロバイダを設定します。
+<3> AWSAiServiceProviderConfigImpl クラスを利用して、特定のテナントに対して利用可能なAIサービスプロバイダを設定します。
+
+Know Narrator を利用する場合のサービスプロバイダ設定の一例を記載します。 +
+Know Narrator 用のサービスプロバイダは `org.iplass.mtp.impl.ai.knownarrator.KnowNarratorAiServiceProviderConfigImpl` クラスを利用して設定します。
+
+.サービスプロバイダ設定例（Know Narrator）
+[source,xml]
+----
+<!-- AI統合 -->
+<service>
+    <interface>org.iplass.mtp.impl.ai.AiIntegrationService</interface>
+
+    <property name="aiServiceProvider" class="org.iplass.mtp.impl.ai.knownarrator.KnowNarratorAiServiceProviderConfigImpl" additional="true">
+        <property name="name" value="KnowNarrator" />
+        <property name="apiBaseUrl" value="https://your-knownarrator-endpoint" />
+        <property name="subscriptionKey" value="YOUR_SUBSCRIPTION_KEY" />
+        <property name="userPermissionId" value="YOUR_USER_PERMISSION_ID" />
+    </property>
+</service>
+----

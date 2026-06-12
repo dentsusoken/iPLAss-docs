@@ -1,0 +1,306 @@
+[[prompt]]
+== プロンプト
+プロンプトでは、AIに対しての指示の設定、指示を行うAIサービスの設定を行います。 +
+プロンプトメタデータは AdminConsole を介して設定します。 +
+メタデータ構成としては、プロンプト設定とプラットフォーム設定があります。
+
+[[prompt_setting_prompt]]
+=== プロンプト設定
+プロンプト設定では、AIに対しての標準的な指示を設定します。 +
+プロンプトおよび<<system_prompt>>の連携設定を行います。
+
+[[prompt_setting_prompt_definition]]
+.プロンプトの設定項目
+[cols="1,2", options="header,autowidth"]
+|===
+|項目
+|説明
+
+|System Prompt
+|定義されたシステムプロンプトを参照することができます。 +
+AIリクエスト実行時に、システムプロンプトに設定された内容をプロンプトの定義に共通の内容として利用することができます。 +
+システムプロンプトについては、<<system_prompt>>を参照してください。
+
+|Prompt
+a|AIに対する指示プロンプトを設定します。Groovy Template 形式で設定することができます。 +
+プロンプトにはプレースホルダーを定義することができます。プレースホルダーは `${placeholder_name}` の形式で定義します。 +
+プレースホルダーには、独自に定義するものと予約されているものがあります。 独自に定義するものは、項目 Prompt Placeholder で項目を定義してください。 +
+予約済プレースホルダーは次の通りです。
+
+予約済プレースホルダー::
+* `inputText`: ユーザーからの入力テキストを表します。
+
+.プロンプト例
+----
+## あなたの役割
+あなたは優秀なアシスタントです。ユーザーからの質問に対して、正確かつ簡潔に答えることが求められます。
+ユーザーからの質問に対して、必要に応じて、質問の内容を理解するための追加の質問を行うことができます。
+
+## 質問に答えてください。
+質問: ${inputText}
+----
+
+|Prompt Placeholder
+a|プロンプト実行時に動的に値を設定したい箇所にプレースホルダを設定することができます。 +
+
+グリッド入力項目::
+- Name: プレースホルダーの名前を設定します。使用可能な文字列は、英数字とアンダースコアのみで構成される文字列になります。
+- Notes: プレースホルダーの説明です。任意入力項目です。
+
+Name に `description` と入力した場合、プロンプトでは `${description}` を利用することができます。 +
+プレースホルダーの利用例は、<<prompt_usage_placeholder>>を参照してください。
+|===
+
+[[prompt_setting_platform]]
+=== プラットフォーム設定
+プラットフォーム設定では、サービスプロバイダが提供可能なAIサービスの種類や詳細を設定します。 +
+利用する<<service_provider>>を選択し、利用するAIサービスを選択してください。
+
+プラットフォーム共通の設定項目は次の通りです。
+
+[[prompt_setting_platform_common]]
+.プラットフォーム共通の設定項目
+[cols="1,2", options="header,autowidth"]
+|===
+|項目
+|説明
+
+|Provider Name
+|サービスプロバイダの名前を設定します。選択するプロバイダ名は、本プロンプト利用時に使用します。 +
+ドロップダウンリストに表示される内容は、<<service_provider>>で設定した内容になります。
+
+|Platform Type
+|プラットフォームのタイプを設定します。プラットフォームタイプは、サービスプロバイダで利用可能なAIサービスです。 +
+Provider Name で選択したサービスプロバイダによってドロップダウンリストに表示される内容は異なります。 +
+また、プラットフォームタイプによって、設定する内容は異なります。
+|===
+
+iPLAss では、以下のプラットフォームを提供しています。
+
+.サービスプロバイダによるプラットフォーム
+* <<prompt_setting_platform_aws>>
+** Amazon Bedrock サービスを利用することができます。
+* <<prompt_setting_platform_knownarrator>>
+** Know Narrator API を利用することができます。
+* <<prompt_setting_platform_custom>>
+** 独自に作成したプロンプトを実行することができます。
+
+include::prompt_setting_platform_aws.adoc[]
+
+include::prompt_setting_platform_knownarrator.adoc[]
+
+include::prompt_setting_platform_custom.adoc[]
+
+[[prompt_usage]]
+=== プロンプト利用方法
+基本的なプロンプトの利用方法は、プロンプトメタデータの定義名を指定してリクエストを実行します。 +
+プロンプトメタデータの定義名を指定しない場合は、`DEFAULT` という定義名のプロンプトメタデータを利用します。
+
+プロンプトを経由してAIサービスを利用することで、外部サービスを意識せずにAIサービスを利用することができます。
+
+プロンプトのリクエスト・レスポンスで対応しているデータ種別は、以下の通りです。
+
+.対応データ種別
+- テキスト
+
+NOTE: 対応するデータ種別について、AIサービスで利用するモデルが対応している必要があります。
+
+.リクエスト
+プロンプトを利用してAIサービスにリクエストを行うには、プロンプトメタデータの定義名を指定してリクエストを作成し、リクエストを実行します。
+
+.レスポンス
+プロンプトを利用してAIサービスにリクエストを行うと、レスポンスが返却されます。 +
+レスポンスには、AIサービスからの応答テキストや、状態などが含まれます。
+
+応答テキストは JSON などに構造化されている場合があります。 +
+この場合は、レスポンスからテキストを取得し、JSON などの形式でパースして利用してください。
+
+.状態
+プロンプトでリクエストを実行したら状態を保存します。 +
+状態には、セッションIDなどの継続した会話を行うための情報が含まれています。 +
+状態に対応状況は、外部のAIサービスやプラットフォーム実装によって異なります。
+
+状態を次のリクエストで利用することで、前回のリクエストの内容を引き継いで会話を続ける、などができます。
+
+
+[[prompt_usage_basic]]
+==== 基本的なプロンプト利用
+基本的なプロンプトの利用方法は、以下の例の通りです。
+
+[[prompt_usage_basic_example]]
+.基本的なプロンプト利用例
+[source,java]
+----
+public class ExamplePrompt {
+    /** プロンプトメタデータの定義名 */
+    private static final String PROMPT_NAME = "prompt_definition_name";
+
+    /**
+     * プロンプトの利用例
+     * プロンプト名を指定してプロンプトを利用する例です。
+     */
+    public String exampleUseSpecificPrompt() {
+        var aiManager = ManagerLocator.manager(AiManager.class);
+
+        // 前回のリクエストで保存した状態の読み取り
+        var state = loadState();
+
+        // prompt_definition_name という名前のプロンプトメタデータを利用してリクエストを作成する例
+        var request = aiManager.createRequest(PROMPT_NAME, state, AiPlatformPayload.text("プロンプトテキスト"));
+        // prompt_definition_name という名前のプロンプトメタデータを利用してリクエストを実行する例
+        var response = aiManager.request(PROMPT_NAME, request);
+
+        // 次のリクエストで利用できるように状態を保存する
+        saveState(response.getState());
+
+        // レスポンステキストの取得
+        var responseText = response.getText();
+        return responseText;
+    }
+
+    /**
+     * プロンプトの利用例
+     * DEFAULT を指定してプロンプトを利用する例です。
+     */
+    public String exampleUseDefaultPrompt() {
+        var aiManager = ManagerLocator.manager(AiManager.class);
+
+        // 前回のリクエストで保存した状態の読み取り
+        var state = loadState();
+
+        // DEFAULT という名前のプロンプトメタデータを利用してリクエストを作成する例
+        var request = aiManager.createRequest(state, AiPlatformPayload.text("プロンプトテキスト"));
+        // DEFAULT という名前のプロンプトメタデータを利用してリクエストを実行する例
+        var response = aiManager.request(request);
+
+        // 次のリクエストで利用できるように状態を保存する
+        saveState(response.getState());
+
+        // レスポンステキストの取得
+        var responseText = response.getText();
+        return responseText;
+    }
+
+    /**
+     * 状態の読み取り処理
+     */
+    private AiPlatformState loadState() {
+        // 状態の取得はご利用の環境に応じてカスタマイズしてください
+        return null;
+    }
+
+    /**
+     * 状態の保存処理
+     */
+    private void saveState(AiPlatformState state) {
+        // 状態の保存はご利用の環境に応じてカスタマイズしてください
+    }
+}
+----
+
+[[prompt_usage_placeholder]]
+==== プレースホルダーの利用
+<<prompt_setting_prompt_definition>>で説明した通り、独自のプレースホルダーを用意することができます。 +
+独自のプレースホルダーを設定した場合は、プレースホルダーに対応する値をリクエストの作成時に設定する必要があります。 +
+プレースホルダーの値を設定するには、キー名とそれに対応する値をリクエストに追加する必要があります。
+
+プレースホルダーとして `placeholder_name1` と `placeholder_name2` を定義した場合の例、 +
+`placeholder_name1` と `placeholder_name2` キーに対応する値をリクエストに追加する必要があります。
+
+この場合、プロンプトには `${placeholder_name1}` と `${placeholder_name2}` を利用することができます。
+
+[[prompt_usage_placeholder_example]]
+.プロンプトでプレースホルダーを利用する例
+[source,java]
+----
+public class ExamplePrompt {
+    // <1>
+    public String exampleUsePlaceholder() {
+        var aiManager = ManagerLocator.manager(AiManager.class);
+
+        // <2>
+        // プレースホルダーに対応する値を設定する例。 <A> と <B> は等価です。
+        var request = aiManager.createRequest(AiPlatformPayload.text("プロンプトテキスト"));
+        // <A> 個別にキー・値を設定する場合
+        request.putBinding("placeholder_name1", "プレースホルダーの値1");
+        request.putBinding("placeholder_name2", "プレースホルダーの値2");
+        // <B> プレースホルダーの値をまとめて設定する場合
+        request.setBindings(Map.of(
+            "placeholder_name1", "プレースホルダーの値1",
+            "placeholder_name2", "プレースホルダーの値2"
+        ));
+
+        var response = aiManager.request(request);
+
+        // レスポンステキストの取得
+        var responseText = response.getText();
+        return responseText;
+    }
+}
+----
+<1> プレースホルダーとして `placeholder_name1` と `placeholder_name2` を定義した場合の例。
+<2> `placeholder_name1` と `placeholder_name2` キーに対応する値をリクエストに追加する。
+
+上の例を実行した場合に、プロンプトの定義例と結果例は以下のようになります。
+
+.プロンプト定義例
+----
+{
+    "prompt": "${inputText}",
+    "placeholder_name1": "${placeholder_name1}",
+    "placeholder_name2": "${placeholder_name2}"
+}
+----
+
+.AIサービスにリクエストするプロンプト結果例
+----
+{
+    "prompt": "プロンプトテキスト",
+    "placeholder_name1": "プレースホルダーの値1",
+    "placeholder_name2": "プレースホルダーの値2"
+}
+----
+
+[[prompt_usage_response_multiple_data]]
+==== レスポンスから複数のデータ取得
+AIリクエストのレスポンスは、テキスト以外のデータ型が含まれることがあります。 +
+レスポンスからテキスト以外のデータを取得するには、対応するメソッドを利用してください。
+
+[[prompt_usage_response_multiple_data_example]]
+.レスポンスから複数データを取得する例
+[source,java]
+----
+public class ExamplePrompt {
+    public void exampleGetMultipleData() {
+        var aiManager = ManagerLocator.manager(AiManager.class);
+
+        // プロンプトのリクエストの作成と実行
+        var request = aiManager.createRequest(AiPlatformPayload.text("プロンプトテキスト"));
+        var response = aiManager.request(request);
+
+        // ここからレスポンスの情報を取得する例
+
+        // 返却されるデータが事前に判明している場合
+        // テキスト
+        String text = response.getText();
+        // 画像
+        List<AiPlatformPayloadImage> payloadImageList = response.getPayloadImage();
+
+        // 返却されるデータが不明な場合
+        // すべてのデータ
+        List<AiPlatformPayload> payloadList = response.getPayloads();
+        // データタイプ別に処理する
+        response.acceptPayloads(new PayloadConsumer() {
+            @Override
+            public void visit(AiPlatformPayloadText text) {
+                // テキストの処理
+            }
+
+            @Override
+            public void visit(AiPlatformPayloadImage image) {
+                // 画像の処理
+            }
+        });
+    }
+}
+----

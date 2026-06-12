@@ -1,0 +1,15 @@
+= AI連携
+:_hreflang-path: developerguide/ai/index.html
+:_relative-root-path: ../../
+:_menu-title-ee-only: true
+
+include::about.adoc[]
+
+include::service_provider.adoc[]
+
+include::prompt.adoc[]
+
+include::system_prompt.adoc[]
+
+include::dataconnect.adoc[]
+

@@ -1,0 +1,21 @@
+// NOTE:
+// このファイルは dataconnect.adoc から include されています。
+// dataconnect_setting_destination*.adoc のタイトルは "====" から始めてください。
+// タグの接頭辞として "dataconnect_setting_destination" を設定してください。
+[[dataconnect_setting_destination_custom]]
+==== カスタム
+独自に作成したデータ連携処理を設定することができます。 +
+設定項目は以下の通りです。
+
+[cols="1,3", options="header,autowidth"]
+|===
+|項目
+|説明
+
+|Custom Destination Class Name
+|データ連携処理を実行するクラスの完全修飾名を設定します。クラスは `org.iplass.mtp.impl.ai.dataconnect.AiDataDestination` インターフェースを実装している必要があります。 +
+初期化処理が必要な場合は、`org.iplass.mtp.impl.ai.dataconnect.AiDataInitializable` インターフェースを実装してください。 +
+終了処理が必要な場合は、`org.iplass.mtp.impl.ai.dataconnect.AiDataCloseable` インターフェースを実装してください。
+
+カスタムデータ連携処理を設定する場合は、<<dataconnect_setting_destination_common>>のProcessor Factory Class Nameを設定する必要があります。
+|===

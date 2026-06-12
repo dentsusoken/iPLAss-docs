@@ -49,6 +49,8 @@ endif::[]
 
 == <<./simplebi/index.adoc#, [.eeonly]#簡易BI# >>
 
+== <<./ai/index.adoc#, [.eeonly]#AI連携# >>
+
 == <<./mcp/index.adoc#, [.eeonly]#MCP# >>
 
 == <<./workflow/index.adoc#, [.eeonly]#ワークフロー# >>

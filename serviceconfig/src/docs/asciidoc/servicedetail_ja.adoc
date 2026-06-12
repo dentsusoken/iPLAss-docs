@@ -7,7 +7,17 @@ include::admin/adminauditloggingservice_ja.adoc[]
 
 include::admin/adminconsoleservice_ja.adoc[]
 
+include::core/aidataconnectservice_ja.adoc[]
+
+include::core/aiintegrationservice_ja.adoc[]
+
+include::core/aipromptservice_ja.adoc[]
+
+include::core/aisystempromptservice_ja.adoc[]
+
 include::gem/aggregationservice_ja.adoc[]
+
+include::core/aiapplicationpolicyservice_ja.adoc[]
 
 include::core/asynctaskservice_ja.adoc[]
 

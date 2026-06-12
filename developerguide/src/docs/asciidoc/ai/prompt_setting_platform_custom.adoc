@@ -1,0 +1,82 @@
+// NOTE:
+// このファイルは prompt.adoc から include されています。
+// prompt_setting_platform_*.adoc のタイトルは "====" から始めてください。
+// タグの接頭辞として "prompt_setting_platform_" を設定してください。
+[[prompt_setting_platform_custom]]
+==== カスタムプラットフォーム
+カスタムプラットフォームでは独自のプロンプトアプリケーションを利用することができます。 +
+カスタムプラットフォームを利用する場合は、プラットフォームタイプを `CUSTOM` に設定してください。
+
+設定項目は次の通りです。
+
+[cols="1,3", options="header,autowidth"]
+|===
+|項目
+|説明
+
+|Logic Class Name
+|プロンプトリクエストを行うクラスの完全修飾クラス名を設定します。 +
+設定するクラスは、`org.iplass.mtp.impl.ai.prompt.AiPlatformCustom` インターフェースを実装している必要があります。 +
+本クラスのインスタンスは再利用されるため、スレッドセーフである必要があります。
+
+リソース開放が必要な場合は、`java.io.Closeable` インターフェースを実装してください。
+
+|Value Map
+|Logic Class Name で指定したクラスのインスタンスを生成する際に、初期値として設定することができます。 +
+Value Map はキーバリュー形式で設定され、キーと値は両方とも文字列で設定します。
+|===
+
+[[prompt_setting_platform_custom_usage]]
+===== 実装例
+カスタムプロンプトは、`org.iplass.mtp.impl.ai.prompt.AiPlatformCustom` インターフェースを実装することで作成できます。 +
+以下は、カスタムプロンプトの実装例です。
+
+.実装例
+[source,java]
+----
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.Map;
+
+import org.iplass.mtp.ai.prompt.AiPlatformRequest;
+import org.iplass.mtp.ai.prompt.AiPlatformResponse;
+import org.iplass.mtp.impl.ai.prompt.AiPlatformCustom;
+import org.iplass.mtp.impl.ai.prompt.AiPlatformRequestInformation;
+import org.iplass.mtp.impl.ai.prompt.MetaAiPrompt.AiPromptRuntime;
+
+public class ExampleAiLogic implements AiPlatformCustom, Closeable {
+    private AiPromptRuntime promptRuntime;
+    private Map<String, String> valueMap;
+
+	@Override
+	public AiPlatformResponse requestPrompt(AiPlatformRequest request, AiPlatformRequestInformation requestInfo) {
+        // カスタムプロンプトのリクエスト処理を実装してください。
+		return null;
+	}
+
+	@Override
+	public void setPromptRuntime(AiPromptRuntime promptRuntime) {
+        // initialize() メソッドの前に実行されます。
+        // AiPromptRuntime が設定されます。
+        this.promptRuntime = promptRuntime;
+	}
+
+	@Override
+	public void setValueMap(Map<String, String> valueMap) {
+        // initialize() メソッドの前に実行されます。
+        // プラットフォーム設定の Value Map で設定した値が渡されます。
+        this.valueMap = valueMap;
+	}
+
+	@Override
+	public void initialize() {
+		// 初期化処理を実装します。
+        // promptRuntime や valueMap を使用して初期化を行います。
+	}
+
+	@Override
+	public void close() throws IOException {
+		// 必要な場合は、リソースの解放処理を実装します。
+	}
+}
+----

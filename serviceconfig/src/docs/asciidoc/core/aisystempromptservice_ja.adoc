@@ -1,0 +1,27 @@
+[[AiSystemPromptService]]
+=== [.eeonly]#AiSystemPromptService#
+AIシステムプロンプトサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.ai.prompt.AiSystemPromptService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.ai.prompt.AiSystemPromptService
+----
+
+==== AiSystemPromptService の設定
+AiSystemPromptService を設定します。
+設定項目はありません。
+
+===== 設定例
+[source,xml]
+----
+<!-- AIシステムプロンプト -->
+<service>
+    <interface>org.iplass.mtp.impl.ai.prompt.AiSystemPromptService</interface>
+    <class>org.iplass.mtp.impl.ai.prompt.AiSystemPromptService</class>
+</service>
+----

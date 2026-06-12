@@ -102,6 +102,8 @@ iPLAssでは以下の情報が診断コンテキスト(MDC)によりログ出力
 Infinispan を利用したクラスターノードへの非同期処理を送信した際のID。送信単位で一意なIDを付与する。
 | scimDistributeId | %X{scimDistributeId} | [.eeonly]#iplass-ee-web# モジュール適用の場合に利用可能。 +
 SCIM Service Provider 機能のスケジューラのタスクで利用可能。サービスプロバイダへ SCIM リクエストを配信する際のID。メッセージ単位で一意なIDが付与されている。
+| aiPromptRequestId | %X{aiPromptRequestId} | [.eeonly]#iplass-ee-core# モジュールの利用時、AIプロンプトリクエストのIDを出力
+| aiDataConnectExecuteId | %X{aiDataConnectExecuteId} | [.eeonly]#iplass-ee-core# モジュールの利用時、AI Data Connectの実行IDを出力
 |===
 
 === フィルター
