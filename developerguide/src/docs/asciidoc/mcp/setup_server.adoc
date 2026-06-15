@@ -1,0 +1,79 @@
+[[setup_server]]
+== サーバーの設定
+MCPサーバーを利用するための設定手順は以下の通りです。
+
+* <<setup_server_import_mcp_module>>
+* <<setup_server_edit_web_xml>>
+* <<setup_server_service_config>>
+
+[[setup_server_import_mcp_module]]
+=== iplass-ee-mcp モジュールの取り込み
+
+MCPサーバーを利用するには、iplass-ee-mcp モジュールをプロジェクトに取り込む必要があります。
+
+Gradle を利用している場合は、以下の依存関係を build.gradle に追加してください。
+[source,groovy]
+----
+dependencies {
+    implementation "org.iplass.ee:iplass-ee-mcp:${iPLAssVersion}"
+}
+----
+
+[[setup_server_edit_web_xml]]
+=== web.xml へ mtp_mcp フラグメントの追加
+web.xml に mtp_mcp フラグメントを追加することで、MCPサーバーのリクエストを処理するための初期化処理が設定されます。 +
+mtp_mcp フラグメントは、iplass-ee-mcp モジュールに含まれています。
+
+.web.xml 設定例（抜粋）
+[source,xml]
+----
+<web-app>
+	<absolute-ordering>
+		<name>mtp</name>
+		:
+		:
+		<!-- mcp -->
+		<name>mtp_mcp</name>
+	</absolute-ordering>
+    :
+    :
+</web-app>
+----
+
+[[setup_server_service_config]]
+=== Service Config の設定
+Service Config 設定ファイルにMCPサーバーの設定を行います。 +
+MCPサーバーの設定を行う際のポイントは以下の通りです。
+
+* `mcp-service-config.xml` を読み込む
+* McpService のプロパティ設定
+** プロパティ `enableMcp` を `true` に設定する
+** プロパティ `tenantServerInfo` に、有効化したいテナントのテナントID、サーバー名、バージョン情報を設定する
+** 必要に応じて `allowOrigin`, `allowHost` プロパティを設定する。
+
+[source,xml]
+----
+<serviceDefinition>
+    <!--1-->
+	<inherits>/mcp-service-config.xml</inherits>
+
+    <!--2-->
+    <service>
+        <interface>org.iplass.mtp.impl.mcp.McpService</interface>
+        <class>org.iplass.mtp.impl.mcp.McpService</class>
+
+        <!-- MCPサーバーの有効化 -->
+        <property name="enableMcp" value="true" />
+
+        <!-- テナントIDは環境に合わせて設定してください。 -->
+        <!-- MCPサーバー利用テナント サーバー情報 -->
+        <property name="tenantServerInfo" class="org.iplass.mtp.impl.mcp.McpServerInfo">
+            <property name="tenantId" value="1" />
+            <property name="serverName" value="tenant1-mcp" />
+            <property name="version" value="1.0.0" />
+        </property>
+    </service>
+</serviceDefinition>
+----
+<1> mcp-service-config.xml の読み込み
+<2> McpService の設定。設定の詳細は link:../../serviceconfig/index.html#McpService[Configuration - McpService^] を参照してください。

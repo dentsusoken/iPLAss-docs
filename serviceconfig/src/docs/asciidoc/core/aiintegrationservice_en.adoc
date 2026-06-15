@@ -1,0 +1,277 @@
+[[AiIntegrationService]]
+=== [.eeonly]#AiIntegrationService#
+AI Integration Service. This service provides integrated functionalities for data integration and prompts.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.ai.AiIntegrationService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.ai.AiIntegrationService
+----
+
+==== Settings of AiIntegrationService
+Configures the AiIntegrationService.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item
+| Value
+| Description
+
+| aiServiceProvider
+| <<AiIntegrationService_AiServiceProviderConfig>>, Multiple
+| Sets the external AI service providers. Multiple providers can be configured.
+
+| jsonConverter
+| <<AiIntegrationService_JsonConverter>>
+| Specifies the class used for JSON conversion in AI-related functionalities.
+|===
+
+[[AiIntegrationService_AiServiceProviderConfig]]
+.AiServiceProviderConfig
+Specify the implementing class of org.iplass.mtp.impl.ai.AiServiceProviderConfig. +
+The following AiServiceProviderConfig is provided by default.
+
+- <<AiIntegrationService_AiServiceProviderConfig_AWSSettingAiServiceProviderConfig>>
+- <<AiIntegrationService_AiServiceProviderConfig_AWSAiServiceProviderConfigImpl>>
+- <<AiIntegrationService_AiServiceProviderConfig_KnowNarratorAiServiceProviderConfigImpl>>
+
+[[AiIntegrationService_AiServiceProviderConfig_AWSSettingAiServiceProviderConfig]]
+.[.eeonly]#AWSSettingAiServiceProviderConfig#
+Specify the class of org.iplass.mtp.impl.ai.awsv2.AWSSettingAiServiceProviderConfig. +
+This configuration class uses the AWS connection settings from <<aws2_AWSSetting>> to utilize the service.
+
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item
+| Value
+| Description
+
+| name
+| String, required
+| Sets the name to identify the service provider.
+
+| s3ClientFactory
+| <<AiIntegrationService_ConfigurableCredentialsS3ClientFactory>>
+| Specifies the class used to create the AWS S3 client. If not set, <<AiIntegrationService_ConfigurableCredentialsS3ClientFactory_ConfigurableCredentialsS3AsyncClientFactory>> is used.
+
+| tenantId
+| int, multiple allowed
+a| Sets the tenant ID. Multiple tenant IDs can be set.
+
+If tenant IDs are set::
+The service provider can only be used by the specified tenants.
+
+If no tenant IDs are set::
+The service provider can be used by all tenants.
+|===
+
+[[AiIntegrationService_AiServiceProviderConfig_AWSAiServiceProviderConfigImpl]]
+.[.eeonly]#AWSAiServiceProviderConfigImpl#
+Specify the class of org.iplass.mtp.impl.ai.awsv2.AWSAiServiceProviderConfigImpl. +
+This configuration class is used to set up connection settings different from those in <<aws2_AWSSetting>>.
+
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item
+| Value
+| Description
+
+| name
+| String, required
+| Sets the name to identify the service provider.
+
+| credentialsProviderFactory
+| <<aws2_AWSSetting_CredentialsProviderFactory>>
+| Specifies the settings to create an AwsCredentialsProvider. If not set, <<aws2_AWSSetting_DefaultCredentialsProviderFactory>> is used.
+
+| clientConfig
+| <<aws2_AWSSetting_AWSClientConfig>>
+| Specifies the default settings applied to the entire AWS SDK client. You can configure the AWS region and communication settings.
+
+| s3ClientFactory
+| <<AiIntegrationService_ConfigurableCredentialsS3ClientFactory>>
+| Specifies the class used to create the AWS S3 client. If not set, <<AiIntegrationService_ConfigurableCredentialsS3ClientFactory_ConfigurableCredentialsS3AsyncClientFactory>> is used.
+
+| tenantId
+| int, multiple allowed
+a| Sets the tenant ID. Multiple tenant IDs can be set.
+
+If tenant IDs are set::
+The service provider can only be used by the specified tenants.
+
+If no tenant IDs are set::
+The service provider can be used by all tenants.
+|===
+
+[[AiIntegrationService_AiServiceProviderConfig_KnowNarratorAiServiceProviderConfigImpl]]
+.[.eeonly]#KnowNarratorAiServiceProviderConfigImpl#
+Specify the class of org.iplass.mtp.impl.ai.knownarrator.KnowNarratorAiServiceProviderConfigImpl. +
+This configuration class is used to utilize the service via the Know Narrator API.
+
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item
+| Value
+| Description
+
+| name
+| String, required
+| Sets the name to identify the service provider. This becomes the provider name selected in the prompt platform settings.
+
+| apiBaseUrl
+| String, required
+| Sets the destination URL of the Know Narrator API.
+
+| subscriptionKey
+| String, required
+| Sets the subscription key of the Know Narrator API. It is set in the request header `Ocp-Apim-Subscription-Key`.
+
+| userPermissionId
+| String, required
+| Sets the user permission ID of the Know Narrator API. It is set in the request header `X-Api-User-Permission-Id`.
+
+| httpClientConfig
+| <<HttpClientConfig>>
+| This is an optional item. Set this when configuring HTTP client settings such as proxy or connection pool. If not set, the default HTTP client is used.
+|===
+
+[[AiIntegrationService_ConfigurableCredentialsS3ClientFactory]]
+.[.eeonly]#ConfigurableCredentialsS3ClientFactory#
+Specify the class of org.iplass.mtp.impl.s3.awsv2.ConfigurableCredentialsS3ClientFactory. +
+The following S3 client factories are provided by default.
+
+* Class for creating synchronous clients
+** <<AiIntegrationService_ConfigurableCredentialsS3ClientFactory_ConfigurableCredentialsS3SyncClientFactory>>
+* Class for creating asynchronous clients
+** <<AiIntegrationService_ConfigurableCredentialsS3ClientFactory_ConfigurableCredentialsS3AsyncClientFactory>>
+** <<AiIntegrationService_ConfigurableCredentialsS3ClientFactory_ConfigurableCredentialsS3AsyncCrtClientFactory>>
+
+[TIP]
+====
+The maximum size of an S3 object part is 5GB. This is the maximum object size for clients that do not support transparent multipart. +
+If you are uploading objects larger than 5GB, please use a client with transparent multipart enabled.
+
+Please refer to link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/examples-s3.html#s3-clients[S3 clients in the AWS SDK for Java 2.x^] for S3 Client selection.
+====
+
+
+[[AiIntegrationService_ConfigurableCredentialsS3ClientFactory_ConfigurableCredentialsS3SyncClientFactory]]
+.[.eeonly]#ConfigurableCredentialsS3SyncClientFactory#
+Specify the class of org.iplass.mtp.impl.s3.awsv2.ConfigurableCredentialsS3SyncClientFactory. +
+This class is used to create synchronous S3 clients.
+
+[cols="1,1,3", options="header"]
+|===
+| Item
+| Value
+| Description
+
+| clientConfig
+| <<aws2_AWSSetting_AWSClientConfig>>
+| Specifies the settings applied to this client. You can configure the AWS region and communication settings.
+|===
+
+
+[[AiIntegrationService_ConfigurableCredentialsS3ClientFactory_ConfigurableCredentialsS3AsyncClientFactory]]
+.[.eeonly]#ConfigurableCredentialsS3AsyncClientFactory#
+Specify the class of org.iplass.mtp.impl.s3.awsv2.ConfigurableCredentialsS3AsyncClientFactory. +
+This class is used to create asynchronous S3 clients.
+
+[cols="1,1,3", options="header"]
+|===
+| Item
+| Value
+| Description
+
+| multipartEnabled
+| boolean
+| Specifies whether to enable transparent multipart. The default is false, and transparent multipart is disabled.
+
+| clientConfig
+| <<aws2_AWSSetting_AWSClientConfig>>
+| Specifies the settings applied to this client. You can configure the AWS region and communication settings.
+|===
+
+[[AiIntegrationService_ConfigurableCredentialsS3ClientFactory_ConfigurableCredentialsS3AsyncCrtClientFactory]]
+.[.eeonly]#ConfigurableCredentialsS3AsyncCrtClientFactory#
+Specify the class of org.iplass.mtp.impl.s3.awsv2.ConfigurableCredentialsS3AsyncCrtClientFactory. +
+This class is used to create asynchronous S3 clients. The clients created by this class are link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/crt-based-s3-client.html[AWS CRT-based S3 clients^].
+
+If you prioritize S3 operation performance, it is recommended to use CRT-based clients. +
+CRT-based clients use native libraries, so ensure they are compatible with your system's platform.
+
+To use this feature, you need to add the library `software.amazon.awssdk.crt:aws-crt`. +
+For more details, refer to link:https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/crt-based-s3-client.html#crt-based-s3-client-depend[Adding dependencies for AWS CRT-based S3 clients^].
+
+[cols="1,1,3", options="header"]
+|===
+| Item
+| Value
+| Description
+
+| clientConfig
+| <<aws2_AWSSetting_AWSClientConfig>>
+| Specifies the settings applied to this client. You can configure the AWS region and communication settings.
+|===
+
+[[AiIntegrationService_JsonConverter]]
+.[.eeonly]#JsonConverter#
+Specify the class of org.iplass.mtp.impl.ai.json.JsonConverter. +
+The following JsonConverter implementations are provided by default.
+
+- <<AiIntegrationService_JsonConverter_ObjectMapperJsonConverter>>
+
+[[AiIntegrationService_JsonConverter_ObjectMapperJsonConverter]]
+.[.eeonly]#ObjectMapperJsonConverter#
+Specify the class of org.iplass.mtp.impl.ai.json.ObjectMapperJsonConverter. +
+This is a JsonConverter that uses ObjectMapper. If you want to customize the ObjectMapper settings, please extend the class and customize the ObjectMapper. +
+There are no configurable settings.
+
+===== Example
+[source,xml]
+----
+<!-- AI Integration -->
+<service>
+    <interface>org.iplass.mtp.impl.ai.AiIntegrationService</interface>
+    <class>org.iplass.mtp.impl.ai.AiIntegrationService</class>
+
+    <!--
+        This is an example of configuring an AI service provider using the AWSSetting service settings.
+    -->
+    <property name="aiServiceProvider" class="org.iplass.mtp.impl.ai.awsv2.AWSSettingAiServiceProviderConfig" additional="true">
+        <property name="name" value="AwsSettingAiServiceProvider" />
+        <property name="s3ClientFactory" class="org.iplass.mtp.impl.s3.awsv2.ConfigurableCredentialsS3AsyncClientFactory">
+            <property name="multipartEnabled" value="false" />
+            <!-- You can configure different connection settings from the clientConfig set in aiServiceProvider. -->
+            <!--
+            <property name="clientConfig" class="org.iplass.mtp.impl.awsv2.AWSClientConfig">
+                <property name="region" value="us-east-1" />
+            </property>
+            -->
+        </property>
+    </property>
+
+    <!--
+        This is an example of configuring an AI service provider using different AWS connection settings from the AWSSetting service settings.
+    -->
+    <property name="aiServiceProvider" class="org.iplass.mtp.impl.ai.awsv2.AWSAiServiceProviderConfigImpl" additional="true">
+        <property name="name" value="DefaultCredentialsAiServiceProvider" />
+        <!-- Configure AWS connection settings. -->
+        <property name="credentialsProviderFactory" class="org.iplass.mtp.impl.awsv2.DefaultCredentialsProviderFactory" />
+        <property name="clientConfig" class="org.iplass.mtp.impl.awsv2.AWSClientConfig">
+            <property name="region" value="ap-northeast-1" />
+        </property>
+    </property>
+
+    <property name="jsonConverter" class="org.iplass.mtp.impl.ai.json.ObjectMapperJsonConverter" />
+</service>
+
+----

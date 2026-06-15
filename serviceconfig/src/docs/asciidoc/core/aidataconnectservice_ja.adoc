@@ -1,0 +1,105 @@
+[[AiDataConnectService]]
+=== [.eeonly]#AiDataConnectService#
+AIデータ連携のサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.ai.dataconnect.AiDataConnectService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.ai.dataconnect.AiDataConnectService
+----
+
+==== AiDataConnectService の設定
+AiDataConnectServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目
+| 値
+| 説明
+
+| sourceClassMapping
+| String, Map形式
+| AIデータ連携における、データ入力元の定義クラス・メタデータクラスのマッピングを設定します。 +
+本設定値はシステムで定義されるべき内容であり、利用者が設定する必要はありません。 +
+Map 形式の name プロパティには `org.iplass.mtp.ai.dataconnect.AiDataSourceDefinition` クラスのサブクラスの完全修飾クラス名を設定します。 +
+Map 形式の value プロパティには name プロパティに対応する `org.iplass.mtp.impl.ai.dataconnect.MetaAiDataSource` メタデータクラスのサブクラスの完全修飾クラス名を設定します。
+
+| destinationClassMapping
+| String, Map形式
+| AIデータ連携における、データ配信先の定義クラス・メタデータクラスのマッピングを設定します。 +
+本設定値はシステムで定義されるべき内容であり、利用者が設定する必要はありません。 +
+Map 形式の name プロパティには `org.iplass.mtp.ai.dataconnect.AiDataDestinationDefinition` クラスのサブクラスの完全修飾クラス名を設定します。 +
+Map 形式の value プロパティには name プロパティに対応する `org.iplass.mtp.impl.ai.dataconnect.MetaAiDataDestination` メタデータクラスのサブクラスの完全修飾クラス名を設定します。
+
+| binaryParseLimitLength
+| int
+| バイナリリファレンスの内容をパースする際の最大バイト長。 +
+バイナリリファレンスをパースした結果がこの値を超える場合、最大バイト長までのパース結果を出力します。デフォルト値は 131,072(128KB) です。
+
+| binaryParser
+| <<BinaryReferenceParser>>、複数指定可
+| バイナリリファレンスの内容をパースするためのクラスを指定します。
+|===
+
+===== 設定例
+[source,xml]
+----
+<!-- AIデータコネクト -->
+<service>
+    <interface>org.iplass.mtp.impl.ai.dataconnect.AiDataConnectService</interface>
+    <class>org.iplass.mtp.impl.ai.dataconnect.AiDataConnectService</class>
+
+    <property name="sourceClassMapping">
+        <property name="org.iplass.mtp.ai.dataconnect.AiDataSourceDefinition" value="org.iplass.mtp.impl.ai.dataconnect.MetaAiDataSource" />
+        <property name="org.iplass.mtp.ai.dataconnect.AiDataEntitySourceDefinition" value="org.iplass.mtp.impl.ai.dataconnect.MetaAiDataEntitySource" />
+        <property name="org.iplass.mtp.ai.dataconnect.AiDataEqlSourceDefinition" value="org.iplass.mtp.impl.ai.dataconnect.MetaAiDataEqlSource" />
+    </property>
+
+    <property name="destinationClassMapping">
+        <property name="org.iplass.mtp.ai.dataconnect.AiDataDestinationDefinition" value="org.iplass.mtp.impl.ai.dataconnect.MetaAiDataDestination" />
+        <property name="org.iplass.mtp.ai.dataconnect.AiDataCustomDestinationDefinition" value="org.iplass.mtp.impl.ai.dataconnect.MetaAiDataCustomDestination" />
+    </property>
+
+    <!-- バイナリファイルパース最大サイズ（デフォルト：128KB） -->
+    <property name="binaryParseLimitLength" value="131072" />
+
+    <!-- NOTE fulltextsearch のパーサーを設定している -->
+    <!--
+        BinaryReference用Parser設定。
+        org.iplass.mtp.impl.fulltextsearch.parser.BinaryReferenceParser
+        を実装したParserを設定可能。
+        BinaryReferenceのタイプに対して対応されているParserを上から順にチェックする。
+    -->
+
+    <!-- PDF用Parser。tikaのPDFParserを利用して解析する -->
+    <property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryPDFParser" />
+    <!-- OfficeDocument(OOXML形式)用Parser。tikaのOOXMLParserを利用して解析する -->
+    <property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryOOXMLParser" />
+    <!-- OfficeDocument(2003以前の形式)用Parser。tikaのOfficeParserを利用して解析する -->
+    <property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryOfficeParser">
+        <!-- RTFファイルの解析例外は処理継続する -->
+        <property name="continuableExceptions" value="org.apache.poi.poifs.filesystem.NotOLE2FileException" />
+    </property>
+    <!-- HTML用Parser。tikaのHtmlParserを利用して解析する -->
+    <property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryHtmlParser" />
+    <!-- PlainText用Parser。tikaのTXTParserを利用して解析する -->
+    <property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryTextParser" />
+    <!-- XML用Parser。tikaのXMLParserを利用して解析する -->
+    <property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryXMLParser" />
+
+    <!-- tikaのAutoDetectParserを利用して全てのタイプを対象に解析する。
+        ただし解析に必要となる依存ライブラリが存在しない場合はスキップされる -->
+    <!--
+    <property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryAutoDetectParser" />
+    -->
+
+    <!-- 全てのバイナリファイルを対象に、nameとtypeのみ返す -->
+    <property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryNameTypeParser" />
+</service>
+
+----

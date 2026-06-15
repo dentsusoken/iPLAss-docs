@@ -1,0 +1,14 @@
+= MCP（Model Context Protocol）
+:_hreflang-path: developerguide/mcp/index.html
+:_relative-root-path: ../../
+:_menu-title-ee-only: true
+
+include::about.adoc[]
+
+include::setup_server.adoc[]
+
+include::setup_metadata.adoc[]
+
+include::setup_client.adoc[]
+
+include::others.adoc[]

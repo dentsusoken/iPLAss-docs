@@ -1,0 +1,104 @@
+[[AiDataConnectService]]
+=== [.eeonly]#AiDataConnectService#
+AI Data Connect Service.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.ai.dataconnect.AiDataConnectService
+----
+
+==== Implementing Class Name
+----
+org.iplass.mtp.impl.ai.dataconnect.AiDataConnectService
+----
+
+==== Settings of AiDataConnectService
+Configures the AiDataConnectService.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item
+| Value
+| Description
+
+| sourceClassMapping
+| String, in format of Map
+| Mapping of source definition classes to metadata classes for AI data integration. +
+This setting should be defined by the system and does not need to be configured by the user. +
+In the Map format, the name property should be set to the fully qualified class name of a subclass of `org.iplass.mtp.ai.dataconnect.AiDataSourceDefinition`. +
+The value property should be set to the fully qualified class name of a subclass of `org.iplass.mtp.impl.ai.dataconnect.MetaAiDataSource` corresponding to the name property.
+
+| destinationClassMapping
+| String, in format of Map
+| Mapping of destination definition classes to metadata classes for AI data integration. +
+This setting should be defined by the system and does not need to be configured by the user. +
+In the Map format, the name property should be set to the fully qualified class name of a subclass of `org.iplass.mtp.ai.dataconnect.AiDataDestinationDefinition`. +
+The value property should be set to the fully qualified class name of a subclass of `org.iplass.mtp.impl.ai.dataconnect.MetaAiDataDestination` corresponding to the name property.
+
+| binaryParseLimitLength
+| int
+| Maximum byte length for parsing binary references. +
+If the parsed result of a binary reference exceeds this value, the output will be limited to the maximum byte length. The default value is 131,072 (128KB).
+
+| binaryParser
+| <<BinaryReferenceParser>>, Multiple
+| Specify the class for parsing the content of binary references.
+|===
+
+===== Example
+[source,xml]
+----
+<!-- AI Data Connect -->
+<service>
+    <interface>org.iplass.mtp.impl.ai.dataconnect.AiDataConnectService</interface>
+    <class>org.iplass.mtp.impl.ai.dataconnect.AiDataConnectService</class>
+
+    <property name="sourceClassMapping">
+        <property name="org.iplass.mtp.ai.dataconnect.AiDataSourceDefinition" value="org.iplass.mtp.impl.ai.dataconnect.MetaAiDataSource" />
+        <property name="org.iplass.mtp.ai.dataconnect.AiDataEntitySourceDefinition" value="org.iplass.mtp.impl.ai.dataconnect.MetaAiDataEntitySource" />
+        <property name="org.iplass.mtp.ai.dataconnect.AiDataEqlSourceDefinition" value="org.iplass.mtp.impl.ai.dataconnect.MetaAiDataEqlSource" />
+    </property>
+
+    <property name="destinationClassMapping">
+        <property name="org.iplass.mtp.ai.dataconnect.AiDataDestinationDefinition" value="org.iplass.mtp.impl.ai.dataconnect.MetaAiDataDestination" />
+        <property name="org.iplass.mtp.ai.dataconnect.AiDataCustomDestinationDefinition" value="org.iplass.mtp.impl.ai.dataconnect.MetaAiDataCustomDestination" />
+    </property>
+
+    <!-- Maximum byte length for parsing binary files (default: 128KB) -->
+    <property name="binaryParseLimitLength" value="131072" />
+
+    <!-- NOTE fulltextsearch parser settings -->
+    <!--
+        BinaryReference parser settings.
+        You can set a parser that implements org.iplass.mtp.impl.fulltextsearch.parser.BinaryReferenceParser.
+        The parsers are checked in order for the corresponding BinaryReference type.
+    -->
+
+    <!-- PDF parser. Uses tika's PDFParser for analysis -->
+    <property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryPDFParser" />
+    <!-- OfficeDocument (OOXML format) parser. Uses tika's OOXMLParser for analysis -->
+    <property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryOOXMLParser" />
+    <!-- OfficeDocument (pre-2003 format) parser. Uses tika's OfficeParser for analysis -->
+    <property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryOfficeParser">
+        <!-- Continue processing if RTF file analysis exception occurs -->
+        <property name="continuableExceptions" value="org.apache.poi.poifs.filesystem.NotOLE2FileException" />
+    </property>
+    <!-- HTML parser. Uses tika's HtmlParser for analysis -->
+    <property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryHtmlParser" />
+    <!-- PlainText parser. Uses tika's TXTParser for analysis -->
+    <property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryTextParser" />
+    <!-- XML parser. Uses tika's XMLParser for analysis -->
+    <property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryXMLParser" />
+
+    <!-- Uses tika's AutoDetectParser to analyze all types.
+        However, if the required dependency libraries for analysis are not present, it will be skipped. -->
+    <!--
+    <property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryAutoDetectParser" />
+    -->
+
+    <!-- Returns only the name and type for all binary files -->
+    <property name="binaryParser" class="org.iplass.mtp.impl.fulltextsearch.parser.BinaryNameTypeParser" />
+</service>
+
+----

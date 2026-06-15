@@ -1,0 +1,191 @@
+[[dataconnect]]
+== データ連携
+データ連携では、外部のサービスプロバイダに対してデータを提供することができます。 +
+連携可能なデータは、<<dataconnect_setting_source>>で設定するデータ読み取り元から読み取ったデータになります。 +
+データ連携先は、<<dataconnect_setting_destination>>で設定します。
+
+データ連携は AdminConsole を介して設定します。 +
+構成としては、データ読み取り元設定とデータ連携先設定があります。
+
+
+[[dataconnect_setting_general]]
+=== データ連携の全体設定
+全体設定では、データ連携の全体に関する設定を行います。
+
+.全体の設定項目
+[cols="1,2", options="header,autowidth"]
+|===
+|項目
+|説明
+
+|Enabled
+|このデータ連携設定が有効かどうかを設定します。チェックすることで有効にすることができます。 +
+無効のままデータ連携を実行することはできません。
+
+|Incremental Update
+|差分更新を行うかどうかを設定します。チェックすることで差分更新を行うことができます。 +
+差分更新を行う場合、前回のデータ連携の実行以降にデータ読み取り元で更新されたデータのみを連携するようになります。
+
+差分更新は、データ読み取り元の実装によって対応している必要があります。
+|===
+
+
+[[dataconnect_setting_source]]
+=== データ読み取り元設定
+データ連携する元データに関する設定を行います。 +
+共通設定では、データ読み取り元の種類を設定します。データ読み取り元を決定後に、選択した種類に応じた詳細な設定を行います。
+
+.データ読み取り元の共通設定項目
+[cols="1,2", options="header,autowidth"]
+|===
+|項目
+|説明
+
+|Source Type
+|データ読み取り元の種類を設定します。
+|===
+
+==== エンティティ
+データ読み取り元が、エンティティ設定です。エンティティのデータを連携することができます。 +
+読み取りデータの型は、`org.iplass.mtp.entity.GenericEntity` です。
+
+差分更新を行う場合は、前回のデータ連携の実行以降に更新されたエンティティを連携するようになります。
+
+.エンティティ読み取り元の設定項目
+[cols="1,2", options="header,autowidth"]
+|===
+|項目
+|説明
+
+|Entity Name
+|データ連携のデータ読み取り元とするエンティティの名前。
+|===
+
+==== EQL
+データ読み取り元をEQLクエリとした設定です。 +
+読み取りデータの型は、`Object[]` です。
+
+差分更新を行う場合は、前回のデータ連携の実行以降に更新されたEQLのFROM句で指定されたエンティティのデータを連携するようになります。
+
+.EQL読み取り元の設定項目
+[cols="1,2", options="header,autowidth"]
+|===
+|項目
+|説明
+
+|EQL
+|EQLクエリを設定します。
+
+|Column Info
+a|EQLクエリの結果のカラム情報を設定します。 +
+EQLに設定する列としてファンクションやリテラルを設定した場合、その項目に名前を設定することを目的とします。 +
+設定項目は以下となります。
+
+* Index: EQLのカラムのインデックスを設定します。0から始まる整数で設定します。
+* Name: インデックスに対応する列のカラム名前を設定します。データ連携先へ連携する際に、このカラム名前を利用することができます。
+|===
+
+
+[[dataconnect_setting_destination]]
+=== データ連携先の設定
+データ連携する先に関する設定を行います。 +
+共通設定では、データ連携先の種類を設定します。データ連携先を決定後に、選択した種類に応じた詳細な設定を行います。 +
+データ連携先で受付可能なデータ型は、選択したデータ連携先の種類に依存します。
+
+[[dataconnect_setting_destination_common]]
+.データ連携先共通の設定項目
+[cols="1,2", options="header,autowidth"]
+|===
+|項目
+|説明
+
+|Provider Name
+|サービスプロバイダの名前を設定します。選択するプロバイダ名は、データ連携実行時に使用します。 +
+ドロップダウンリストに表示される内容は、<<service_provider>>で設定した内容になります。
+
+|Destination Type
+|データ連携先のタイプを設定します。利用可能なタイプは、サービスプロバイダで対応しているデータ連携先の種類に依存します。 +
+Provider Name で選択したサービスプロバイダによってドロップダウンリストに表示される内容は異なります。 +
+また、データ連携先のタイプによって、設定する内容は異なります。
+
+|Processor Factory Class Name
+|プロセッサは読み取り元の情報からデータ連携先が要求するデータの形式に変換する機能です。 +
+本設定項目ではプロセッサを生成するための完全修飾クラス名を設定します。 +
+クラスは `org.iplass.mtp.impl.ai.dataconnect.AiDataProcessorFactory` インターフェースを実装している必要があります。 +
+プロセッサの設定は必須ではありません。設定しない場合はデフォルトのプロセッサが利用されます。
+
+詳細については、<<dataconnect_processor>>を参照してください。
+|===
+
+.利用可能なデータ連携先
+* <<dataconnect_setting_destination_aws>>
+** AWSサービスに対してデータを連携します。
+* <<dataconnect_setting_destination_custom>>
+** 独自に作成した機能を利用して、データを連携します。
+
+include::dataconnect_setting_destination_aws.adoc[]
+
+include::dataconnect_setting_destination_custom.adoc[]
+
+[[dataconnect_processor]]
+=== プロセッサ
+プロセッサは、読み取り元からデータ連携先へのデータ変換を行う機能です。 +
+プロセッサインスタンスは、`org.iplass.mtp.impl.ai.dataconnect.AiDataProcessorFactory` で設定したクラスによって生成されます。 +
+プロセッサは `org.iplass.mtp.impl.ai.dataconnect.AiDataProcessor` を実装する必要があります。
+
+標準提供している読み取り元、データ連携先の組み合わせに対しては、デフォルトのプロセッサが用意されています。 +
+ただし、データの変換方法をカスタマイズしたい場合や、独自のデータ連携先を利用する場合は、プロセッサおよびプロセッサファクトリを実装して設定する必要があります。
+
+[[dataconnect_usage]]
+=== データ連携方法
+作成したデータ連携を行うには、データ連携メタデータの定義名を指定します。
+
+[[dataconnect_usage_basic]]
+==== 基本的なデータ連携方法
+AiManager から `connectData` メソッドを呼び出すことで、データ連携を実行できます。 +
+実行結果は、データ連携の実行結果クラスから取得できます。
+
+[[dataconnect_usage_basic_example]]
+.データ連携の実行例
+[source,java]
+----
+public class ExampleDataConnect {
+    public void connectData() {
+        var name = "dataconnect.metadata.name";
+
+        var aiManager = ManagerLocator.manager(AiManager.class);
+
+        // データ連携の実行
+        var status = aiManager.connectData(name);
+
+        // 実行ID
+        var executionId = status.getExecutionId(); // <1>
+        var historyOid = status.getHistoryOid(); // <2>
+    }
+}
+----
+<1> データ連携の実行IDを取得します。実行IDはデータ連携の実行ごとに一意な値となり、履歴の参照やログ確認などに利用できます。
+<2> データ連携の実行履歴エンティティのOIDを取得します。データ連携の実行履歴エンティティには、データ連携の実行に関する情報が保存されます。
+
+==== データ連携の実行履歴確認
+データ連携の履歴はAIデータ連携履歴エンティティに保存されます。 +
+Admin Console の `Tools > EntityExplorer > mtp.ai.dataconnect.DataConnectHistory` から確認してください。 +
+履歴には、実行ID、実行開始日時、実行終了日時、実行結果などの情報が保存されます。
+
+実行結果は、`execute_state` 列の値で確認することができます。
+
+.execute_stateの状況
+[cols="1,2", options="header,autowidth"]
+|===
+|値
+|説明
+
+|RUNNING
+|データ連携を実行中です。
+
+|SUCCEEDED
+|データ連携が成功しました。
+
+|FAILED
+|データ連携が失敗しました。
+|===

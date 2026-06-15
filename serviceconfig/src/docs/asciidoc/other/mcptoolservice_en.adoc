@@ -1,0 +1,25 @@
+[[McpToolService]]
+=== [.eeonly]#McpToolService#
+This service manages MCP tool settings. It is a service for metadata management.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.mcp.McpToolService
+----
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.mcp.McpToolService
+----
+
+==== The settings of McpToolService
+McpToolService has no configurable items.
+
+===== Example
+[source,xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.mcp.McpToolService</interface>
+	<class>org.iplass.mtp.impl.mcp.McpToolService</class>
+</service>
+----

@@ -1,0 +1,44 @@
+[[AiApplicationPolicyService]]
+=== [.eeonly]#AiApplicationPolicyService#
+AI機能におけるアプリケーションポリシー設定を管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.ai.policy.AiApplicationPolicyService
+----
+
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.ai.policy.AiApplicationPolicyService
+----
+
+
+==== AiApplicationPolicyServiceの設定
+AI機能の利用ポリシーを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| aiChatAutoCompletionUserMessageMaxLength | int | AIチャット自動補完のユーザーメッセージ最大長。デフォルト値は5000です。
+| aiChatAutoCompletionMaxConversationTurns | int | AIチャット自動補完の会話履歴最大ターン数。デフォルト値は20です。
+| aiAutocompleteErrorClearTimeout | int | AI自動補完のエラークリアタイムアウト（ミリ秒）。デフォルト値は5000です。
+|===
+
+===== 設定例
+[source,xml]
+----
+<service>
+	<interface>org.iplass.mtp.impl.ai.policy.AiApplicationPolicyService</interface>
+
+	<!-- AIチャット自動補完のユーザーメッセージ最大長 -->
+	<property name="aiChatAutoCompletionUserMessageMaxLength" value="5000" />
+
+	<!-- AIチャット自動補完の会話履歴最大ターン数 -->
+	<property name="aiChatAutoCompletionMaxConversationTurns" value="20" />
+
+	<!-- AI自動補完のエラークリアタイムアウト（ミリ秒） -->
+	<property name="aiAutocompleteErrorClearTimeout" value="5000" />
+</service>
+----

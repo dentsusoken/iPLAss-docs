@@ -134,6 +134,7 @@ The library iplass-ee-aws will be removed in the future.
 | [.eeonly]#/aws2-service-config.xml# | The default config files for aws related contents. Can be used by Enterprise Edition. It is bundled in the iplass-ee-aws2 library.
 | [.eeonly]#/wam-service-config.xml# | The default config files for wam module. Can be used by Enterprise Edition.
 | [.eeonly]#/micrometer-service-config.xml# | The default config files for micrometer module. Can be used by Enterprise Edition.
+| [.eeonly]#/mcp-service-config.xml# | The default config files for mcp module. Can be used by Enterprise Edition.
 |===
 
 
@@ -648,7 +649,7 @@ The following items can be set.
 [cols="1,4a", options="header"]
 |===
 |Items|Value
-|propertyValueCoder|Please specify the implementing class of org.iplass.mtp.impl.core.config.PropertyValueCoder. 
+|propertyValueCoder|Please specify the implementing class of org.iplass.mtp.impl.core.config.PropertyValueCoder.
 Implement the process of encoding/decoding the string in PropertyValueCoder.
 The following implementations are provided by default.
 
@@ -732,7 +733,7 @@ passphrase=hogehoge
 ----
 
 [[obfuscation_passphrase_example2]]
-.Example 2: Using SecretsManagerPassphraseSupplier obfuscation settings 
+.Example 2: Using SecretsManagerPassphraseSupplier obfuscation settings
 This is an example of defining a passphrase in AWS Secrets Manager and using its value.
 
 .Example of AWS Secrets Manager configuration ( SecretName = test/passphrase/example2 )
@@ -765,7 +766,7 @@ The library iplass-ee-aws will be removed in the future.
 [cols="1,4a", options="header"]
 |===
 |Items|Value
-|aws.secretName|Specify the secret name. 
+|aws.secretName|Specify the secret name.
 |===
 
 For example, to get the setting value registered in the secret of AWS Secrets Manager, set as follows:
@@ -787,7 +788,7 @@ Please specify org.iplass.mtp.impl.core.config.secretsmanager.awsv2.SecretsManag
 [cols="1,4a", options="header"]
 |===
 |Items|Value
-|aws.secretName|Specify the secret name. 
+|aws.secretName|Specify the secret name.
 |===
 
 For example, to get the setting value registered in the secret of AWS Secrets Manager, set as follows:
@@ -860,9 +861,9 @@ Pre-register in Key-Value format. This example assumes that the secret name is s
 
 [source,json]
 ----
-{ 
-    "xxxservice_secret_password": "secret_password_value", 
-    "xxxservice_secret_key": "secret_key_value" 
+{
+    "xxxservice_secret_password": "secret_password_value",
+    "xxxservice_secret_key": "secret_key_value"
 }
 ----
 
