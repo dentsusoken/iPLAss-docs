@@ -33,8 +33,6 @@ include::core/authtokenservice_en.adoc[]
 
 include::core/autonumbertypecounter_en.adoc[]
 
-include::other/awssetting_en.adoc[]
-
 include::other/aws2_awssetting_en.adoc[]
 
 include::core/binarymetadataservice_en.adoc[]

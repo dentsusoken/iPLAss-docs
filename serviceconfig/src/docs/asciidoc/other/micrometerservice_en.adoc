@@ -29,7 +29,7 @@ To actually collect the metrics, you need to add the Micrometer module's <<Entit
 To actually collect the metrics, you need to add the Micrometer module's <<ActionMetricsInterceptor>> to the `interceptor` of the ActionMappingService (it is added by default).
 | actionConfig | <<TimerConfig>> | The histograms and percentiles setting for the metrics of the Action Latency.
 | enableWebApiLatencyMetrics | boolean | Specify whether to record the latency and number of calls of the WebAPI as metrics. The default value is true. +
-To actually collect the metrics, you need to add the Micrometer module <<WebApiMetricsInterceptor>> to the InterceptorService `webApi, soap` (it is added by default). 
+To actually collect the metrics, you need to add the Micrometer module <<WebApiMetricsInterceptor>> to the InterceptorService `webApi, soap` (it is added by default).
 | webApiConfig | <<TimerConfig>> | The histograms and percentiles setting for the metrics of the WebAPI Latency.
 | enableSqlExecutionMetrics | boolean | Specify whether to record the number of times SQL is executed as a metric when calling Action or WebAPI. The default value is true. +
 To actually collect the metrics, you need to add the Micrometer module's <<ActionMetricsInterceptor>> to the `interceptor` of the ActionMappingService ,and the Micrometer module <<WebApiMetricsInterceptor>> to the InterceptorService `webApi, soap` (it is added by default).
@@ -43,8 +43,7 @@ To actually collect the metrics, the `loggers` of the AuthLoggerService must inc
 | enableAsyncMetrics | boolean | Specify whether to record the number of successful/unsuccessful asynchronous execution, the number of timeout, execution time as metrics. The default value is true. +
 To actually collect the metrics, the `workerFactory` of the RdbQueueService must include the Micrometer module <<MetricsWorkerFactory>>.
 | enableS3Metrics | boolean | Specify whether to record the request duration and number of requests of AWS S3 as metrics. The default value is true. +
-To actually collect metrics, the LobStoreService `binaryStore` must be set to <<aws2_S3LobStore>> and the configuration item `requestConfigureList` of the <<aws2_S3Controller>> must contain the Micrometer module <<aws2_micrometer_S3RequestMetricPublisherConfigure>>. +
-The functionality for AWS SDK for Java 1.x requires that the Micrometer module <<MetricsS3LobStore>> be included in the `binaryStore` of the LobStoreService in order to actually collect metrics.
+To actually collect metrics, the LobStoreService `binaryStore` must be set to <<aws2_S3LobStore>> and the configuration item `requestConfigureList` of the <<aws2_S3Controller>> must contain the Micrometer module <<aws2_micrometer_S3RequestMetricPublisherConfigure>>.
 | enableMailMetrics | boolean | Specify whether to record  the number of successful/unsuccessful attempts and execution time of the mail transmission events as metrics. The default value is true. +
 To actually collect the metrics, the `listener` of the MailService must include the Micrometer module <<MetricsSendMailListener>>.
 | enablePushMetrics | boolean | Specify whether to record  the number of successful/unsuccessful attempts and execution time of the push transmission events as metrics. The default value is true. +
@@ -200,8 +199,8 @@ Please specify org.iplass.mtp.impl.micrometer.metrics.web.webapi.DefaultWebApiPa
 
 This is a Resolver class that resolves the path of GEM standard WebAPI and Entity CRUD API. There are no configurable items.
 
-* For the GEM standard WebAPI, if the definition name is specified in the parameter mapping, "WebAPI name + definition name" is returned. 
-* For Entity CRUD API, if SubPath exists, return "WebAPI name + the first path of SubPath". 
+* For the GEM standard WebAPI, if the definition name is specified in the parameter mapping, "WebAPI name + definition name" is returned.
+* For Entity CRUD API, if SubPath exists, return "WebAPI name + the first path of SubPath".
 
 [[ActionHierarchicalPathResolver]]
 .ActionHierarchicalPathResolver
@@ -246,7 +245,6 @@ The following MeterRegistryFactory are provided in the standard.
 * <<ElasticMeterRegistryFactory>>
 * <<JmxMeterRegistryFactory>>
 * <<PrometheusMeterRegistryFactory>>
-* <<CloudWatchMeterRegistryFactory>>
 * <<aws2_CloudWatchMeterRegistryFactory>>
 * <<NewRelicMeterRegistryFactory>>
 * <<LoggingMeterRegistryFactory>>
@@ -276,30 +274,7 @@ Please specify the implementation class of io.micrometer.core.ipc.http.HttpSende
 
 The following HttpSender is provided in the standard. If not specified, <<HttpUrlConnectionSender>> will be used.
 
-* <<AWSHttpSender>>
 * <<aws2_AWSHttpSender>>
-
-[[AWSHttpSender]]
-.(Deprecated)AWSHttpSender
-Please specify org.iplass.mtp.impl.micrometer.aws.AWSHttpSender to the class.
-
-This is an implementation class of HttpSender that supports Amazon OpenSearch Service. The access key, secret key, and AWSClient side settings can be configured in <<AWSSetting, [.eeonly]#AWSSetting#>>. The following items can be configured.
-
-[CAUTION]
-====
-AWS SDK for Java 1.x is in maintenance mode and will be discontinued in December 2025. +
-iPLAss recommends deprecating the AWS SDK for Java 1.x-based library iplass-ee-aws and moving to the AWS SDK for Java 2.x-based library iplass-ee-aws2. +
-If you are using this function, please migrate your settings to <<aws2_AWSHttpSender>> that uses the function of the library iplass-ee-aws2. +
-The library iplass-ee-aws will be removed in the future.
-====
-
-[cols="1,1,3", options="header"]
-|====================
-| Item | Value | Description
-| serviceName | String | Service name. The default value is "es".  +
-If you are using Amazon OpenSearch Service, do not change the default value.
-| region | String | Region of Amazon OpenSearch Service.
-|====================
 
 [[aws2_AWSHttpSender]]
 .AWSHttpSender
@@ -312,7 +287,7 @@ HttpSender implementation class for Amazon OpenSearch Service. Access key, secre
 | Item | Value | Description
 | serviceName | String | Service Name. The service name is implemented in the AWS Service Client. +
 Specify `es` if you are using the Amazon OpenSearch Service managed cluster.
-| region | String | Set the region for the AWS service. 
+| region | String | Set the region for the AWS service.
 | clientConfig | <<aws2_AWSSetting_AWSClientConfig>> | Configure AWS client settings, including AWS regions and communication settings.
 | defaultCharset | String | Default character set for response parsing. Used when Content-Type is not present in the response. The default value is "UTF-8".
 |====================
@@ -363,33 +338,6 @@ Factory class of io.micrometer.prometheus.PrometheusMeterRegistry that supports 
 * `step` ： The step interval used to calculate statistics such as maximum and average. To get the most out of the statistics, set the step interval to be close to the Prometheus scrape interval (The default is 1 minute).
 
 For details of all the possible settings, please see JavaDoc of the  link:https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-prometheus/src/main/java/io/micrometer/prometheus/PrometheusConfig.java[PrometheusConfig^].
-|====================
-
-[[CloudWatchMeterRegistryFactory]]
-.(Deprecated)CloudWatchMeterRegistryFactory
-Please specify org.iplass.mtp.impl.aws.micrometer.registry.cloudwatch.CloudWatchMeterRegistryFactory to the class.
-
-Factory class of io.micrometer.cloudwatch.CloudWatchMeterRegistry that supports Amazon CloudWatch. This class can be specified when an AWS module is added to a dependency. To specify this class, please add `io.micrometer:micrometer-registry-cloudwatch` to a runtime dependency. +
-The access key, secret key, and AWSClient side settings can be configured in <<AWSSetting, [.eeonly]#AWSSetting#>>. The following items can be configured.
-
-[CAUTION]
-====
-AWS SDK for Java 1.x is in maintenance mode and will be discontinued in December 2025. +
-iPLAss recommends deprecating the AWS SDK for Java 1.x-based library iplass-ee-aws and moving to the AWS SDK for Java 2.x-based library iplass-ee-aws2. +
-If you are using this function, please migrate your configuration to <<aws2_CloudWatchMeterRegistryFactory>> that uses the function of the library iplass-ee-aws2. +
-The library iplass-ee-aws will be removed in the future.
-====
-
-[cols="1,1,3a", options="header"]
-|====================
-| Item | Value | Description
-| configMap | String, in format of Map | Configuration parameters for CloudWatchMeterRegistry. The main settings are as follows.
-
-* `region` ： CloudWatch Region.
-* `namespace` ： Namespace to store the submitted custom metrics (default value is "micrometer-namespace").
-* `step` ： Metrics transmission interval (default value is "1m").
-
-For details of all the possible settings, please see JavaDoc of the  link:https://github.com/micrometer-metrics/micrometer/blob/1.12.x/implementations/micrometer-registry-cloudwatch/src/main/java/io/micrometer/cloudwatch/CloudWatchConfig.java[CloudWatchConfig^].
 |====================
 
 [[aws2_CloudWatchMeterRegistryFactory]]
@@ -495,7 +443,7 @@ For details of all the possible settings, please see JavaDoc of the  link:https:
 		<property name="publishPercentiles" value="0.99" />
 		-->
 	</property>
-	
+
 	<!-- Http request count, latency, and http connection pool metrics in HttpClient -->
 	<property name="enableHttpClientMetrics" value="true" />
 
@@ -575,13 +523,13 @@ For details of all the possible settings, please see JavaDoc of the  link:https:
 
 	<!-- ■ Custom PathResolver Settings ■ -->
 	<!--
-	<property name="customTagActionPathResolver"> 
+	<property name="customTagActionPathResolver">
 		<property name="customHierarchicalUri1" class="org.iplass.mtp.impl.micrometer.metrics.web.action.ActionHierarchicalPathResolver">
 			<property name="depth" value="1" />
 		</property>
 	</property>
-	
-	<property name="customTagWebApiPathResolver"> 
+
+	<property name="customTagWebApiPathResolver">
 		<property name="customHierarchicalUri1" class="org.iplass.mtp.impl.micrometer.metrics.web.webapi.WebApiHierarchicalPathResolver">
 			<property name="depth" value="1" />
 		</property>
@@ -602,13 +550,6 @@ For details of all the possible settings, please see JavaDoc of the  link:https:
 	<property name="meterRegistryFactory" class="org.iplass.mtp.impl.micrometer.registry.elastic.ElasticMeterRegistryFactory">
 	-->
 		<!-- ■ If want to use Amazon OpenSearch Service, uncomment the following and change the property httpSender. ■ -->
-		<!-- (Deprecated) Example of using AWS SDK for Java 1.x. -->
-		<!--
-		<property name="httpSender" class="org.iplass.mtp.impl.micrometer.aws.AWSHttpSender">
-			<property name="serviceName" value="es" />
-			<property name="region" value="yourESRegion" />
-		</property>
-		-->
 		<!-- Example of using AWS SDK for Java 2.x. Depends on org.iplass.mtp.impl.awsv2.AWSSetting. -->
 		<!--
 		<property name="httpSender" class="org.iplass.mtp.impl.micrometer.awsv2.AWSHttpSender">
@@ -644,18 +585,6 @@ For details of all the possible settings, please see JavaDoc of the  link:https:
 		</property>
 	</property>
 	-->
-	
-	<!-- (Deprecated) for CloudWatch -->
-	<!-- Functions using AWS SDK for Java 1.x are deprecated; please change to functions using AWS SDK for Java 2.x. -->
-	<!--
-	<property name="meterRegistryFactory" class="org.iplass.mtp.impl.aws.micrometer.registry.cloudwatch.CloudWatchMeterRegistryFactory">
-		<property name="configMap" >
-			<property name="step" value="1m" />
-			<property name="region" value="yourRegion" />
-			<property name="namespace" value="micrometer-namespace" />
-		</property>
-	</property>
-	-->
 
 	<!-- for CloudWatch (AWS SDK for Java 2.x). Depends on org.iplass.mtp.impl.awsv2.AWSSetting. -->
 	<!--
@@ -670,7 +599,7 @@ For details of all the possible settings, please see JavaDoc of the  link:https:
 
 	<!-- for New Relic -->
 	<!--
-	<property name="meterRegistryFactory" class="org.iplass.mtp.impl.micrometer.registry.newrelic.NewRelicMeterRegistryFactory"> 
+	<property name="meterRegistryFactory" class="org.iplass.mtp.impl.micrometer.registry.newrelic.NewRelicMeterRegistryFactory">
 		<property name="configMap" >
 			<property name="step" value="1m" />
 			<property name="apiKey" value="yourApiKey" />
