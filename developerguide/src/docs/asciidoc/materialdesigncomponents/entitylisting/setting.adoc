@@ -127,6 +127,18 @@ One Column Fill Null::
 ${csvName}_${yyyy}${MM}${dd}${HH}${mm}${ss}
 ----
 
+.（例）保存リストの場合は保存名を先頭に付加する。
+[source,groovy]
+----
+<%
+def fileName = defDisplayName;
+if (savedListName != null) {
+    fileName = savedListName + "_" + defDisplayName;
+}
+%>
+${fileName}_${yyyy}${MM}${dd}${HH}${mm}${ss}
+----
+
 [[mdc_el_customviewscript]]
 ===== Custom ViewScript
 
