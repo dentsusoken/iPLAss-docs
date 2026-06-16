@@ -344,7 +344,7 @@ PrometheusMeterRegistryの設定パラメータです。主要な設定項目は
 
 [[aws2_CloudWatchMeterRegistryFactory]]
 .CloudWatchMeterRegistryFactory
-classは、org.iplass.mtp.impl.aws.micrometer.registry.cloudwatch.awsv2.CloudWatchMeterRegistryFactory を指定します。
+classは、org.iplass.mtp.impl.micrometer.registry.cloudwatch.awsv2.CloudWatchMeterRegistryFactory を指定します。
 
 Amazon CloudWatch に対応した io.micrometer.cloudwatch2.CloudWatchMeterRegistry のFactoryクラスです。AWS2 モジュールを依存関係に追加した場合に指定可能です。このクラスを指定する場合は、 `io.micrometer:micrometer-registry-cloudwatch2` を実行時の依存関係に追加してください。 +
 <<aws2_AWSSetting>> でアクセスキー、シークレットキー、デフォルトのクライアント設定が可能です。以下の項目を設定可能です。

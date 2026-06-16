@@ -282,7 +282,7 @@ Apache Tikaを利用して、特定のバイナリ内もインデックスする
 |analysisFactory| カスタムでAnalyzer等を定義したい場合に利用します。
 classには `org.iplass.mtp.impl.fulltextsearch.elasticsearch.analysis.DefaultAnalysisFactory` を指定します。
 
-|defaultAnalyzerProperty| デフォルトで利用するAnalyzer名を指定します。 classには `org.iplass.mtp.impl.fulltextsearch.elasticsearch.mapping.AnalyzerProperty` を指定します。Analyzer名にはデフォルトで提供されているAnalyzerやカスタムで定義したAnalyzerを指定することができます。 +
+|defaultAnalyzerProperty| デフォルトで利用するAnalyzer名を指定します。 classには `org.iplass.mtp.impl.fulltextsearch.elasticsearch.mappings.AnalyzerProperty` を指定します。Analyzer名にはデフォルトで提供されているAnalyzerやカスタムで定義したAnalyzerを指定することができます。 +
 デフォルトで提供されているAnalyzerについては、Elasticsearchのドキュメントを参照してください。
 
 |analyzerPropertyPerEntity|

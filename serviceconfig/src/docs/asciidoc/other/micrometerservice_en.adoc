@@ -342,7 +342,7 @@ For details of all the possible settings, please see JavaDoc of the  link:https:
 
 [[aws2_CloudWatchMeterRegistryFactory]]
 .CloudWatchMeterRegistryFactory
-Please specify org.iplass.mtp.impl.aws.micrometer.registry.cloudwatch.awsv2.CloudWatchMeterRegistryFactory to the class.
+Please specify org.iplass.mtp.impl.micrometer.registry.cloudwatch.awsv2.CloudWatchMeterRegistryFactory to the class.
 
 Factory class for io.micrometer.cloudwatch2.CloudWatchMeterRegistry for Amazon CloudWatch, can be specified if AWS2 module is added to the dependency. If you specify this class, add `io.micrometer:micrometer-registry-cloudwatch2` to your runtime dependencies. +
 <<aws2_AWSSetting>> allows access key, secret key, and default client settings. The following items can be set
