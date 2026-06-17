@@ -254,7 +254,7 @@ ReCAPTCHAを使用します。 `version` 項目に使用するバージョンを
 |excludeActionPatterns
 |同意チェックを除外するActionパターン（正規表現）を指定します。複数指定可能です。 +
 ここで指定したパターンに一致するActionに対しては、未同意状態でもリダイレクトが行われません。 +
-デフォルトで `wam/auth/\*`、`wam/signup/\*`、`wam/consent/\*` 等の認証・サインアップ・同意関連Actionは除外されています。
+デフォルトで `wam/auth/.\*` 、 `wam/signup/.*` 、 `wam/consent/.*` 等の認証・サインアップ・同意関連Actionは除外されています。
 |
 
 |cacheReloadIntervalSeconds

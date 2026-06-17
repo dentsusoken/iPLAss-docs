@@ -108,6 +108,7 @@ Entity定義名: wam.consent.ConsentContent
 |content
 |String
 |コンテンツ本文（HTML）。`contentType` が `DOCUMENT` または `SIMPLE` の場合に使用します。
+`SIMPLE` の場合はこの内容がチェック項目名として利用されます。
 
 |externalContentUrl
 |String
