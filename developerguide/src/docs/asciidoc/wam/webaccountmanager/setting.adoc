@@ -89,6 +89,11 @@ org.iplass.wam.api.WamPreference
 |idProvider
 |<<wam_wampreference_idProvider_yh,idProvider(Yahoo)>>参照
 |
+
+|consent
+|<<wam_wampreference_consent,consent>>参照
+|
+
 |===
 
 [[wam_wampreference_signUp]]
@@ -229,6 +234,34 @@ ReCAPTCHAを使用します。 `version` 項目に使用するバージョンを
 |propertyForSecretQuestion
 |同上
 |mail
+|===
+
+[[wam_wampreference_consent]]
+.consent
+同意管理機能の設定です。
+
+[cols="1,4,1", options="header"]
+|===
+|項目
+|説明
+|初期値
+
+|enabled
+|同意管理機能の有効/無効を設定します。 +
+`true` に設定すると、ログイン後のリクエストに対して未同意チェックが有効になります。
+|false
+
+|excludeActionPatterns
+|同意チェックを除外するActionパターン（正規表現）を指定します。複数指定可能です。 +
+ここで指定したパターンに一致するActionに対しては、未同意状態でもリダイレクトが行われません。 +
+デフォルトで `wam/auth/\*`、`wam/signup/\*`、`wam/consent/\*` 等の認証・サインアップ・同意関連Actionは除外されています。
+|
+
+|cacheReloadIntervalSeconds
+|ConsentContent Entityのキャッシュのリロード間隔（秒）を指定します。 +
+0以下の場合はキャッシュが無期限（Entity更新まで）となります。 +
+規約の更新頻度に応じて適切な値を設定してください。
+|0
 |===
 
 [[wam_wampreference_manageSite]]
