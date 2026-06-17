@@ -11,4 +11,6 @@ include::setup_metadata.adoc[]
 
 include::setup_client.adoc[]
 
+include::standard_features.adoc[]
+
 include::others.adoc[]

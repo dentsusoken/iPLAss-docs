@@ -1,0 +1,162 @@
+[[standard_features]]
+== 標準提供機能
+
+[[standard_features_metadata_crud]]
+=== メタデータCRUD
+
+メタデータの操作（作成、読み取り、更新、削除）を行うための機能を、MCP Tool として提供します。
+
+メタデータCRUD機能は、WebAPI のメタデータCRUDで利用しているコマンドを MCP Tool として提供するものです。 +
+メタデータCRUD機能を利用するには、以下の設定が必要となります。
+
+* WebApiService の `enableDefinitionApi` プロパティの設定を行う必要があります。 +
+詳細については、 link:../../serviceconfig/index.html#WebApiService[Configuration - WebApiService^] を参照してください。
+* ツールを実行する利用者は、管理者としての権限が必要です。
+
+[NOTE]
+====
+メタデータCRUD機能は、開発を目的とした機能です。
+====
+
+
+[[standard_features_metadata_crud_getDefinition]]
+==== メタデータ取得
+
+メタデータの定義の一覧や詳細を取得するための機能です。
+
+.ツール名
+getDefinition
+
+.パラメータ
+[cols="1,3", options="header"]
+|===
+| 項目
+| 説明
+
+| path
+| メタデータの定義のパスを設定します。`/` で終わる場合は一覧を取得します。それ以外の場合、定義が存在すればメタデータを取得します。
+
+| recursive
+| 一覧取得時に利用します。true または false を設定します。 true が設定された場合、メタデータパス以下の階層を辿って一覧を取得します。
+|===
+
+.レスポンス（一覧取得の場合）
+[cols="1,3", options="header"]
+|===
+| 項目
+| 説明
+
+| status
+| ツールの実行結果を表します。成功した場合は "SUCCESS" を返却します。
+
+| list
+| 指定されたパスのメタデータの一覧が返ります。
+|===
+
+.レスポンス（詳細取得の場合）
+[cols="1,3", options="header"]
+|===
+| 項目
+| 説明
+
+| status
+| ツールの実行結果を表します。成功した場合は "SUCCESS" を返却します。
+
+| definition
+| 指定されたパスのメタデータの詳細が返ります。
+|===
+
+
+[[standard_features_metadata_crud_createDefinition]]
+==== メタデータ作成
+
+メタデータの定義を新規に作成する機能です。 +
+指定された path のメタデータを作成します。作成するメタデータの定義は definition で指定します。
+
+.ツール名
+createDefinition
+
+.パラメータ
+[cols="1,3", options="header"]
+|===
+| 項目
+| 説明
+
+| path
+| 登録するメタデータのパスを設定します。必須項目です。
+
+| definition
+| 登録するメタデータの定義を設定します。必須項目です。
+|===
+
+.レスポンス
+[cols="1,3", options="header"]
+|===
+| 項目
+| 説明
+
+| status
+| ツールの実行結果を表します。成功した場合は "SUCCESS" を返却します。
+|===
+
+
+[[standard_features_metadata_crud_updateDefinition]]
+==== メタデータ更新
+メタデータの定義を更新する機能です。 +
+指定された path のメタデータを更新します。更新するメタデータの定義は definition で指定します。 +
+更新元のメタデータは、<<standard_features_metadata_crud_getDefinition>> で取得することを想定しています。
+
+.ツール名
+updateDefinition
+
+.パラメータ
+[cols="1,3", options="header"]
+|===
+| 項目
+| 説明
+
+| path
+| 更新するメタデータのパスを設定します。必須項目です。
+
+| definition
+| 更新するメタデータの定義を設定します。必須項目です。
+|===
+
+.レスポンス
+[cols="1,3", options="header"]
+|===
+| 項目
+| 説明
+
+| status
+| ツールの実行結果を表します。成功した場合は "SUCCESS" を返却します。
+|===
+
+
+[[standard_features_metadata_crud_deleteDefinition]]
+==== メタデータ削除
+メタデータの定義を削除する機能です。 +
+パラメータで指定されたパスのメタデータ定義を削除します。
+
+.ツール名
+deleteDefinition
+
+.パラメータ
+[cols="1,3", options="header"]
+|===
+| 項目
+| 説明
+
+| path
+| 削除するメタデータのパスを設定します。必須項目です。
+|===
+
+.レスポンス
+[cols="1,3", options="header"]
+|===
+| 項目
+| 説明
+
+| status
+| ツールの実行結果を表します。成功した場合は "SUCCESS" を返却します。
+|===
