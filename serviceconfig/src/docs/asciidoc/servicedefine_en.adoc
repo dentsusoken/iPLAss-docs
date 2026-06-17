@@ -122,15 +122,6 @@ Below is a list of service-config files with default values.
 | /adminconsole-service-config.xml | The default config files for AdminConsole.
 | /infinispan-service-config.xml | The default config files for infinispan.
 | /redis-service-config.xml | The default config files for redis.
-| [.eeonly]#/aws-service-config.xml# a| The default config files for aws related contents. Can be used by Enterprise Edition. It is bundled in the iplass-ee-aws library.
-
-[CAUTION]
-====
-AWS SDK for Java 1.x is in maintenance mode and will be discontinued in December 2025. +
-iPLAss recommends deprecating the AWS SDK for Java 1.x-based library iplass-ee-aws and moving to the AWS SDK for Java 2.x-based library iplass-ee-aws2. +
-If you are using this configuration, please migrate to the library iplass-ee-aws2 configuration. +
-The library iplass-ee-aws will be removed in the future.
-====
 | [.eeonly]#/aws2-service-config.xml# | The default config files for aws related contents. Can be used by Enterprise Edition. It is bundled in the iplass-ee-aws2 library.
 | [.eeonly]#/wam-service-config.xml# | The default config files for wam module. Can be used by Enterprise Edition.
 | [.eeonly]#/micrometer-service-config.xml# | The default config files for micrometer module. Can be used by Enterprise Edition.
@@ -656,11 +647,6 @@ The following implementations are provided by default.
 <<DefaultPropertyValueCoder>>::
 Encode/decode values obfuscated by passphrases.
 
-<<SecretsManagerPropertyValueCoder>>::
-Get the setting value registered in the secret of AWS Secrets Manager. Class is included in the iplass-ee-aws library. +
-Use the default credential provider chain for AWS credentials. +
-For more information, see link:https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html#credentials-default[AWS SDK for Java 1.x Using the Default Credential Provider Chain^].
-
 <<obfuscation_aws2_SecretsManagerPropertyValueCoder>>::
 Get the setting value registered in the secret of AWS Secrets Manager. Class is included in the iplass-ee-aws2 library. +
 Use the default credential provider chain for AWS credentials. +
@@ -700,19 +686,6 @@ org.iplass.mtp.impl.core.config.SystemEnvironmentVariablePassphraseSupplier::
 Specify the passphrase in the system environment variable (MTP_CONFIG_PASSPHRASE).
 (Not a java system variable)
 
-[.eeonly]#(Deprecated)org.iplass.mtp.impl.aws.secretsmanager.SecretsManagerPassphraseSupplier#::
-Get from the passphrase registered in the secret of AWS Secrets Manager. Class is included in the iplass-ee-aws library. +
-Use the default credential provider chain for AWS credentials. +
-For more information, see link:https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html#credentials-default[AWS SDK for Java 1.x Using the Default Credential Provider Chain^].
-
-[CAUTION]
-====
-AWS SDK for Java 1.x is in maintenance mode and will be discontinued in December 2025. +
-iPLAss recommends deprecating the AWS SDK for Java 1.x-based library iplass-ee-aws and moving to the AWS SDK for Java 2.x-based library iplass-ee-aws2. +
-If you are using this function, please migrate your settings to org.iplass.mtp.impl.core.config.secretsmanager.awsv2.SecretsManagerPassphraseSupplier in the library iplass-ee-aws2. +
-The library iplass-ee-aws will be removed in the future.
-====
-
 [.eeonly]#org.iplass.mtp.impl.core.config.secretsmanager.awsv2.SecretsManagerPassphraseSupplier#::
 Get from the passphrase registered in the secret of AWS Secrets Manager. Class is included in the iplass-ee-aws2 library. +
 Use the default credential provider chain for AWS credentials. +
@@ -750,36 +723,6 @@ passphraseSupplier=org.iplass.mtp.impl.core.config.secretsmanager.awsv2.SecretsM
 aws.secretName=test/passphrase/example2 #<1>
 ----
 <1> The secret can be obtained by setting the secret name `test/passphrase/example2` registered in AWS Secrets Manager. In this example, `passphrase_value` is the passphrase.
-
-[[SecretsManagerPropertyValueCoder]]
-.[.eeonly]#(Deprecated)SecretsManagerPropertyValueCoder#
-Please specify org.iplass.mtp.impl.aws.secretsmanager.SecretsManagerPropertyValueCoder to the class.
-
-[CAUTION]
-====
-AWS SDK for Java 1.x is in maintenance mode and will be discontinued in December 2025. +
-iPLAss recommends deprecating the AWS SDK for Java 1.x-based library iplass-ee-aws and moving to the AWS SDK for Java 2.x-based library iplass-ee-aws2. +
-If you are using this function, please migrate your settings to <<obfuscation_aws2_SecretsManagerPropertyValueCoder>> in the library iplass-ee-aws2. +
-The library iplass-ee-aws will be removed in the future.
-====
-
-[cols="1,4a", options="header"]
-|===
-|Items|Value
-|aws.secretName|Specify the secret name.
-|===
-
-For example, to get the setting value registered in the secret of AWS Secrets Manager, set as follows:
-
-.Example of crypt.properties
-[source,properties]
-----
-propertyValueCoder=org.iplass.mtp.impl.aws.secretsmanager.SecretsManagerPropertyValueCoder
-aws.secretName=test/propertyValueCoder/example #<1>
-----
-<1> The relevant secret can be obtained by setting the secret name `test/propertyValueCoder/example` registered in AWS Secrets Manager.
-
-Please also check <<obfuscation_retrieving_values_with_aws_secrets_manager>> as well.
 
 [[obfuscation_aws2_SecretsManagerPropertyValueCoder]]
 .[.eeonly]#SecretsManagerPropertyValueCoder#

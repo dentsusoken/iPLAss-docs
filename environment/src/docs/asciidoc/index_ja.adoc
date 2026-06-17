@@ -653,15 +653,6 @@ AWS S3で保存の場合は、org.iplass.mtp.impl.lob.lobstore.s3.awsv2.S3LobSto
 CAUTION: RDBとしてMySQL、PostgreSQLを利用する場合、binaryStoreはFileLobStoreもしくはS3LobStoreの利用を推奨します。
 これらのDBへJDBC経由でアクセスした場合、バイナリデータはストリーム処理されないため、OutOfMemoryErrorの危険性が増します。
 +
-[CAUTION]
-====
-AWS SDK for Java 1.x はメンテナンスモードになっており、2025年12月 にサポートを終了する予定です。 +
-iPLAss では AWS SDK for Java 1.x ベースのライブラリ iplass-ee-aws を非推奨とし、AWS SDK for Java 2.x ベースのライブラリ iplass-ee-aws2 への移行を推奨します。 +
-ライブラリ iplass-ee-aws の `org.iplass.mtp.impl.aws.lobstore.s3.S3LobStore` を利用している場合は、 +
-ライブラリ iplass-ee-aws2 の `org.iplass.mtp.impl.lob.lobstore.s3.awsv2.S3LobStore` へ設定を移行してください。 +
-ライブラリ iplass-ee-aws は将来削除される予定です。
-====
-+
 [source,xml]
 .設定例１
 ----

@@ -326,7 +326,6 @@ The following MdcValueResolver is provided as standard.
 - <<RemoteAddrMdcValueResolver>>
 - <<HttpHeaderMdcValueResolver>>
 - <<SessionIdMdcValueResolver>>
-- <<AmznTraceIdMdcValueResolver>>
 - <<aws2_AmznTraceIdMdcValueResolver>>
 
 
@@ -386,25 +385,6 @@ Please specify org.iplass.mtp.impl.web.mdc.SessionIdMdcValueResolver for class.
 Set the ID of the session already created at the start of the request. +
 In the setting of WebFrontendService to mdc, in String,
 SessionIdMdcValueResolver is set by specifying `sessionId`.
-
-[[AmznTraceIdMdcValueResolver]]
-.[.eeonly]#(Deprecated) AmznTraceIdMdcValueResolver#
-Please specify org.iplass.mtp.impl.aws.web.mdc.AmznTraceIdMdcValueResolver for class.
-
-[CAUTION]
-====
-AWS SDK for Java 1.x is in maintenance mode and will be discontinued in December 2025. +
-iPLAss recommends deprecating the AWS SDK for Java 1.x-based library iplass-ee-aws and moving to the AWS SDK for Java 2.x-based library iplass-ee-aws2. +
-If you are using this function, please migrate your settings to <<aws2_AmznTraceIdMdcValueResolver>> in the library iplass-ee-aws2. +
-The library iplass-ee-aws will be removed in the future.
-====
-
-Gets the specific field value of the X-Amzn-Trace-Id value set in the HTTP header. The following items can be configured.
-[cols="1,1,3", options="header"]
-|===
-| Item | Value | Description
-| field | String | The field name to get. Specify Root or Self.
-|===
 
 [[aws2_AmznTraceIdMdcValueResolver]]
 .[.eeonly]#AmznTraceIdMdcValueResolver#
@@ -523,7 +503,7 @@ Gets the specific field value of the X-Amzn-Trace-Id value set in the HTTP heade
 
 	<!--
 	Tika adapter for FileUpload function.
-	
+
 	Assumes that the instance is shared by TikaFileTypeDetector and TikaMagicByteChecker.
 	If tikaConfigXml is not specified, the default configuration of apache tika will work.
 	-->
@@ -535,7 +515,7 @@ Gets the specific field value of the X-Amzn-Trace-Id value set in the HTTP heade
 
 	<!-- File type (MIME Type/Media Type) detection function -->
 	<!-- Default. The following instances are also set if unspecified. -->
-	<!-- 
+	<!--
 	<property name="uploadFileTypeDetector" class="org.iplass.mtp.impl.web.fileupload.DefaultFileTypeDetector" />
 	-->
 	<!-- File type (MIME Type/Media Type) detection using Apache Tika. Enabling bean tikaAdapter. -->
