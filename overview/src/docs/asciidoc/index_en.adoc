@@ -187,7 +187,7 @@ In addition, the functionalities like mail activation while signing up, and the 
 We provides the tool-pages to reset passwords for the users who forget about their own passwords.
 
 ==== [.eeonly]#Consent Management#
-Provides functionality to manage user consent for consent contents such as terms of service and privacy policies.
+Provides functionality to manage user consent for content such as terms of service and privacy policies.
 
 ==== [.eeonly]#Static Contents Access Control#
 iPLAss provide the feature of access management on static sites, contents (or the dynamic contents output to CMS servers.) When anonymous user trying to access the limited static contents, they are redirected to the iPLAss login pages. In the case of a logged in user, the system will check whether the user possesses the authority.
