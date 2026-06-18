@@ -34,6 +34,7 @@ As the standard implementation, the followingRequestInterceptor are provided.
 - <<ExceptionInterceptor>>
 - <<LoggingInterceptor>>
 - <<UnavailableInterceptor_ri, [.eeonly]#UnavailableInterceptor#>>
+- <<ConsentCheckInterceptor, [.eeonly]#ConsentCheckInterceptor#>>
 - <<ActionMetricsInterceptor>>
 
 [[InitialInterceptor_ri]]
@@ -94,6 +95,22 @@ The default value is -1(All logs will be logged at INFO level).
 Please specify org.iplass.mtp.impl.web.interceptors.UnavailableInterceptor to the class.
 
 This is the interceptor that performs maintenance checks. here is no configurable settings.
+
+[[ConsentCheckInterceptor]]
+.[.eeonly]#ConsentCheckInterceptor#
+Please specify org.iplass.wam.impl.consent.ConsentCheckInterceptor to the class.
+
+This is the interceptor that performs consent (terms of service) checks, and is added by default when WAM module is applied.
+It is placed after AuthInterceptor and redirects authenticated users to the consent screen when there are unconsented required terms.
+The consent check can be enabled/disabled via the consent setting in Preference (wam/wamPreference).
+
+The following items can be configured.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| excludeActionPatterns | String[], Multiple | Action patterns (regular expressions) to exclude from consent checks. +
+If not specified, the following defaults are applied: `wam/auth/.\*`, `wam/signup/.\*`, `wam/consent/.\*`, `wam/info/.\*`, `gem/auth/.\*`, `mdc/auth/.\*`.
+|===
 
 [[ActionMetricsInterceptor]]
 .[.eeonly]#ActionMetricsInterceptor#
