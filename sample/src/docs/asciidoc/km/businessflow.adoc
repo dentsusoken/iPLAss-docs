@@ -8,6 +8,8 @@
 
 === 質問者の操作
 
+サンプルアプリケーションのURL `http(s)://[server]/[tenantContextPath]/km/index` にアクセスしてログインすると、質問者用のトップ画面が表示されます。
+
 ==== 問合せの起票
 * ナビゲーションの「新規問合せ」を開き、件名と最初の質問を入力します。ファイルを添付することもできます。 +
 「送信」をクリックすると問合せが起票され、チャット形式の問合せ画面に遷移します。
@@ -19,10 +21,9 @@ image::images/sample-km_inquiry-chat-question.png[align=left]
 
 ===== 関連ナレッジの検索
 * 問合せ画面の右側のパネルで、質問に関連するナレッジをキーワードで検索できます。
+* [.eeonly]#類似ナレッジ検索: Enterprise Editionの場合、このパネルではRAGによる関連ナレッジを提案します。詳細は<<./eepackage/index#EEPackage_KM_Rag, RAG 検索・類似ナレッジ提案>>を参照してください。
 +
 image::images/sample-km_inquiry-chat-knowledge-panel.png[align=left]
-
-* Enterprise Editionでは、このパネルが [.eeonly]#AI による類似ナレッジ提案# に置き換わり、問合せ内容から関連ナレッジを自動で提案します。詳細は<<./eepackage/index#EEPackage_KM_Rag, RAG 検索・類似ナレッジ提案>>を参照してください。
 
 * [.eeonly]#ナレッジ検索（RAG）#: ナビゲーションの「ナレッジ検索」では、自由文で質問を入力すると、AI がナレッジを検索して回答文を生成し、参照元のナレッジとともに表示します。質問者は外部公開ナレッジのみが検索対象です。
 +
@@ -38,10 +39,12 @@ image::images/sample-km_inquiry-chat-close.png[align=left]
 
 === 回答者の操作
 
+サンプルアプリケーションのURL `http(s)://[server]/[tenantContextPath]/km/index` にアクセスしてログインすると、回答者用のトップ画面が表示されます。
+
 ==== 問合せの検索と回答
 * ナビゲーションの「問合せ一覧」で、問合せをステータス・タグ・全文検索で検索します。
 * [.eeonly]#問合せの要約生成#: 一覧の各行には AI が生成した問合せの要約が表示されます。詳細については<<./eepackage/index#EEPackage_KM_Inquiry, 問合せの AI 機能>>を参照してください。
-+
+  +
 image::images/sample-km_inquiry-list-search.png[align=left]
 
 * 問合せ画面を開いて回答を投稿します。
