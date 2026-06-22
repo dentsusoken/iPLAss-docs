@@ -1,0 +1,51 @@
+[[Knowledge_Management_FulltextSearch]]
+=== 全文検索
+ナレッジ検索と問合せ一覧のキーワード検索は、iPLAss の全文検索機能を利用しています。有効化・クロールについては<<index#Knowledge_Management_GlobalSettings, グローバル設定>>を、機能の詳細は開発者ガイドの<<../../developerguide/datamanagement/index#ref_fulltext_search, 全文検索>>を参照してください。
+
+* ナレッジ検索では、構造化された検索条件（公開範囲・マージ済みの除外など）と全文検索のキーワードを組み合わせます。
++
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/java/km/knowledge/command/KnowledgeSearchCommand.java
+|===
++
+[source,java]
+----
+// マージ済み（統合先に置き換わったナレッジ）は検索結果から除外する。
+conditions.add(new IsNull(Knowledge.MERGED_TO + ".oid")); <1>
+// ...
+Query query = new Query()
+		.select(Knowledge.OID, Knowledge.NAME, Knowledge.CONTENT, /* ... */)
+		.from(Knowledge.DEFINITION_NAME)
+		.where(where);
+query.limit(limit);
+
+SearchResult<Entity> searchResult =
+		em.fulltextSearchEntity(query, q.trim(), new SearchOption()); <2>
+----
+<1> 参照型プロパティ自体には IsNull を直接適用できないため、`mergedTo.oid` のようにパス式で指定します。
+<2> 構造化条件（Query）と全文検索キーワードを組み合わせて検索します。Query の select には OID を含める必要があります。
+
+* 問合せ一覧の検索では、問合せ本体と投稿の両方を対象に全文検索し、投稿でヒットしたものは親の問合せに逆引きして合流させます。
++
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/java/km/inquiry/command/InquiryListCommand.java
+|===
++
+[source,java]
+----
+Map<String, List<String>> hits =
+		em.fulltextSearchOidList(List.of(Inquiry.DEFINITION_NAME, Post.DEFINITION_NAME), keyword); <1>
+// ...
+// 投稿でヒットしたものは親問合せへ逆引きする
+Query parentQuery = new Query()
+		.select(Inquiry.OID)
+		.from(Inquiry.DEFINITION_NAME)
+		.where(new In(Inquiry.POSTS + ".oid", postOids.toArray())); <2>
+----
+<1> 複数の Entity を横断して全文検索し、Entity 種別ごとにヒットした OID を取得します。
+<2> 投稿（子）でヒットした OID を、親の問合せに `posts.oid` のパス式で逆引きします。
+
+[NOTE]
+全文検索の参照先プロパティはインデックスできないため、問合せに紐づく投稿文を検索したい場合は、投稿を対象に検索してから親へ逆引きする、という構成にしています。

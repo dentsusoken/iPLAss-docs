@@ -1,0 +1,19 @@
+[[EEPackage_KM]]
+= Enterprise Edition機能の追加パッケージ
+:_hreflang-path: sample/km/eepackage/index.html
+:_relative-root-path: ../../../
+:_menu-title-ee-only: true
+:example-caption!:
+:figure-caption!:
+:table-caption!:
+
+このパッケージで提供する機能はすべて Enterprise Edition の機能です。 +
+Enterprise Editionのサンプルアプリでは、Amazon Bedrock と連携した AI 機能を提供します。
+
+include::setup.adoc[]
+
+include::ai_inquiry.adoc[]
+
+include::ai_knowledge.adoc[]
+
+include::ai_rag.adoc[]

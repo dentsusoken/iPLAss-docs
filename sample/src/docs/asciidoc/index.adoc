@@ -1,7 +1,7 @@
 = サンプルアプリケーション
 :_hreflang-path: sample/index.html
 ifdef::env-github,env-browser[:outfilesuffix: .adoc]
-:_menu-item-name: sample-ec
+:_menu-item-name: sample
 
 ifeval::["{lang}" == "en"]
 
@@ -13,10 +13,15 @@ The English Version of this documentation is under construction.
 endif::[]
 
 
-include::overall.adoc[]
+iPLAssを利用して構築したサンプルアプリケーションです。 +
+アプリケーションごとに、実装の概要や、利用しているiPLAssの機能を説明しています。 +
+また、各アプリケーションのソースコードも公開されており、実際のアプリケーション開発時の参考に利用できます。
 
-include::businessflow.adoc[]
+== <<./ec/index#, オンライン書店>>
+オンライン書店を題材にしたサンプルアプリケーションです。 +
+GEMモジュールを利用した運営者向け機能と、Java/JSP・Groovy/GroovyTemplate・Vue.js/WebAPIの3つの実装方式で作成した一般消費者向け機能を提供します。
 
-include::globalsettings.adoc[]
-
-include::implementation.adoc[]
+== <<./km/index#, 問合せ・ナレッジ管理>>
+サポートデスク業務を題材にしたサンプルアプリケーションです。 +
+Vue.js/WebAPIにより作成した問合せ機能を提供します。 +
+また、Enterprise EditionではRAGによる回答生成など、 [.eeonly]#iPLAssのAI機能# を利用した機能を提供します。

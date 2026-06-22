@@ -1,0 +1,75 @@
+[[Knowledge_Management_Layout]]
+=== フロントエンドの構成
+画面は、JSP テンプレート `index.jsp` から読み込まれる Vue.js のシングルページアプリケーションとして動作します。
+
+* `index.jsp` は、サーバーが解決したログインユーザーの情報（ユーザー・ロール）・コンテキストパス・ロケールを HTML に埋め込み、ビルド済みのフロントエンドを読み込みます。
++
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/webapp/jsp/km/index.jsp
+|===
++
+[source,html]
+----
+    var __INITIAL_AUTH__ = {
+      user: { oid: '<%=request.getAttribute("userOid") %>', name: '<%=request.getAttribute("userName") %>' },
+      roles: ['<%=request.getAttribute("roleName") %>']
+    }; <1>
+// ...
+  <div id="app"></div> <2>
+  <script type="text/javascript" src="${m:esc(staticContentPath)}/km/assets/index.js?cv=<%=TemplateUtil.getAPIVersion()%>"></script> <3>
+----
+<1> サーバーが解決した現在のユーザーとロールをフロントエンドへ渡します。フロントエンドはこの値で API のベース URL・認証情報・表示言語を初期化します。
+<2> フロントエンドのマウント先です。
+<3> ビルド済みのフロントエンド（即時実行関数形式の単一ファイル）を読み込みます。
+
+* この画面を配信する <<../../developerguide/customizing/index#Action, ActionMapping>> と <<../../developerguide/customizing/index#Template-Annotation, Template>> は、Java のアノテーションで定義しています。
++
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/java/km/common/command/AuthSessionCommand.java
+|===
++
+[source,java]
+----
+@Template(
+		name = "km/index",
+		displayName = "ナレッジ管理トップ",
+		path = "/jsp/km/index.jsp",
+		contentType = "text/html; charset=utf-8")
+@ActionMapping(name = "km/index", result = @Result(status = "*", type = Type.TEMPLATE, value = "km/index"))
+@CommandClass(name = "km/auth/AuthSessionCommand")
+public class AuthSessionCommand implements Command {
+----
+
+* サーバーから画面への情報の受け渡しは、`index.jsp` がグローバル変数として埋め込む値で行います。フロントエンドは起動時にこれを読み取ります。
++
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/vue/types/globals.d.ts
+|===
++
+[source,typescript]
+----
+  var lang: string <1>
+  var tcPath: string <2>
+  var __INITIAL_AUTH__: {
+    user: { oid: string; name: string }
+    roles: string[] <3>
+  }
+----
+<1> 表示言語。多言語の切り替えに使います。
+<2> コンテキストパス。WebApi のベース URL の組み立てに使います。
+<3> 現在のユーザーとロール。ロールによる画面・操作の出し分けに使います。
+
+* フロントエンドの静的リソースのパス（`/km/assets/` 配下）は、<<../../serviceconfig/index#WebFrontendService, WebFrontendService>> の `excludePath` で iPLAss の管理対象外として設定しています。
++
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/resources/mtp-service-config.xml
+|===
++
+[source,xml]
+----
+<property name="excludePath" value="(/km/assets/.*)" additional="true" />
+----

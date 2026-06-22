@@ -1,0 +1,17 @@
+[[Knowledge_Management_Setup]]
+== セットアップ
+サンプルアプリのセットアップ手順です。 +
+iPLAss の<<../../gettingstarted/installguide/index#,開発環境の構築>>が未実施の場合は、先にそちらを実施することをお勧めします。
+
+* サンプルアプリのプロジェクトを GitHub から取得します。
+
+* サンプルアプリを起動する前に、フロントエンドをビルドしておく必要があります。ビルドやデプロイなどの操作は、プロジェクト内のREADME.mdを参照してください。
++
+[source]
+----
+mise run setup     # 依存ライブラリのインストール
+mise run tenant    # テナントの作成
+mise run deploy    # フロントエンド + バックエンドのビルド・デプロイ・起動
+----
+
+* 起動後は、<<index#Knowledge_Management_GlobalSettings, グローバル設定>>に従い必要な設定を行ってください。

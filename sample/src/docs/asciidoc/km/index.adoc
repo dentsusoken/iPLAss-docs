@@ -1,0 +1,30 @@
+[[Knowledge_Management]]
+= ナレッジ管理アプリ
+:_hreflang-path: sample/km/index.html
+:_relative-root-path: ../../
+:example-caption!:
+:figure-caption!:
+:table-caption!:
+
+ifeval::["{lang}" == "en"]
+
+[WARNING]
+====
+The English Version of this documentation is under construction.
+====
+
+endif::[]
+
+include::overview.adoc[]
+
+include::businessflow.adoc[]
+
+include::setup.adoc[]
+
+include::globalsettings.adoc[]
+
+include::features.adoc[]
+
+include::resources.adoc[]
+
+include::relatedfeatures.adoc[]

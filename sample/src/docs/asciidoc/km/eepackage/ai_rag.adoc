@@ -1,0 +1,73 @@
+[[EEPackage_KM_Rag]]
+== RAG 検索・類似ナレッジ提案
+ナレッジ検索（RAG）と、問合せ画面での類似ナレッジ提案は、Bedrock の Knowledge Base（RetrieveAndGenerate API）を利用します。自由文の質問に対し、AI がナレッジを検索して回答を生成し、参照元（引用元）のナレッジを返します。
+
+=== データ連携（ナレッジ → S3）
+Knowledge Base のデータソースは S3 です。ナレッジの更新を JSON 化して S3 へ出力する連携を、データ連携定義（AiDataConnectDefinition）で構成します。
+
+[cols="1,2"]
+|===
+h|ファイル名|/metadata-import/dataconnect.xml
+|===
+
+[source,xml]
+----
+<source xsi:type="metaAiDataEqlSource">
+    <eql>SELECT oid, name, content, tags.tagName, visibility FROM km.knowledge.Knowledge</eql> <1>
+</source>
+<destination xsi:type="metaAiDataJsonS3Destination">
+    <bucketName>（S3 バケット名）</bucketName>
+    <prefix>knowledge/</prefix>
+    <objectKeyGenerateSetting>
+        <injectType>SCRIPT</injectType>
+        <script>attr.uniqueId + ".json"</script> <2>
+    </objectKeyGenerateSetting>
+</destination>
+----
+<1> S3 へ出力するナレッジを EQL で抽出します。
+<2> `knowledge/{oid}.json` というキーで出力します。この規約が、後述の引用元の逆引きの根拠になります。
+
+=== RAG の呼び出しと引用元の解決
+RAG では、AI が生成した回答テキストと、引用元のナレッジ（S3 オブジェクト）を受け取ります。引用元の S3 URI から OID を逆引きして、参照元ナレッジへのリンクを作ります。
+
+[cols="1,2"]
+|===
+h|プロンプト定義名|km/ai/knowledge/ask
+h|ファイル名|/src/main/java/km/knowledge/command/ai/KnowledgeRagSearchCommand.java
+|===
+
+[source,java]
+----
+aiResponse = AiInvoker.invoke(AI_PROMPT_DEFINITION_NAME, Map.of(PLACEHOLDER_QUERY, query)); <1>
+// ...
+String answer = aiResponse.getText(); <2>
+answer = AiResponseText.normalizeLineBreaks(answer);
+List<String> citationOids = KnowledgeSourceLocator.extractCitationOids(aiResponse); <3>
+----
+<1> 自由文の質問をプレースホルダに渡して RAG を実行します。
+<2> 生成された回答テキストです。
+<3> 引用元の S3 URI から、ナレッジの OID を逆引きします。
+
+引用元の解決は、RAG 応答に含まれる引用情報から S3 URI を辿り、`knowledge/{oid}.json` の OID を取り出します。
+
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/java/km/common/util/ai/KnowledgeSourceLocator.java
+|===
+
+[source,java]
+----
+kbResponse.citations().forEach(citation -> citation.retrievedReferences()
+		.forEach(ref -> {
+			String s3Uri = ref.location().s3Location().uri();
+			String extracted = extractOid(s3Uri); <1>
+			if (extracted != null) { oids.add(extracted); }
+		}));
+----
+<1> S3 URI（`s3://.../knowledge/{oid}.json`）から OID を取り出します。
+
+=== 類似ナレッジ提案
+問合せ画面の類似ナレッジ提案（プロンプト定義 `km/ai/inquiry/knowledge-suggest`）も、同じく Knowledge Base を利用します。問合せ内容を質問として検索し、引用元のナレッジを提案として表示します。質問者には外部公開ナレッジのみを提案するよう、ロールに応じて結果を絞り込みます。
+
+[NOTE]
+RAG・類似ナレッジ提案で参照されるのはナレッジ本文です。検索の鮮度は、データ連携（S3 への出力）と Knowledge Base の同期に依存します。

@@ -1,0 +1,42 @@
+[[EEPackage_KM_Knowledge]]
+== ナレッジの AI 機能
+ナレッジに対する AI 機能として、問合せからのナレッジドラフト生成、タグの自動付与、複数ナレッジのマージドラフト生成を提供します。いずれも構造化出力（JSON Schema）を使うプロンプトで生成します。
+
+[cols="1,2,2",options="header"]
+|===
+|機能|プロンプト定義名|Command
+|ナレッジドラフトの生成|`km/ai/knowledge/generate`|`KnowledgeGenerateCommand`
+|タグの自動付与|`km/ai/knowledge/tag-suggest`|`KnowledgeTagSuggestCommand`
+|マージドラフトの生成|`km/ai/knowledge/merge`|`KnowledgeMergeCommand`
+|===
+
+* ナレッジドラフトの生成では、もとにする問合せの投稿内容をプレースホルダに渡し、構造化出力でタイトル（`name`）と本文（課題・解決）のドラフトを受け取ります。ドラフトはその場では保存せず、回答者がナレッジ管理画面で確認・編集してから登録します。
++
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/java/km/knowledge/command/ai/KnowledgeGenerateCommand.java
+|===
++
+[source,java]
+----
+aiResponse = AiInvoker.invoke(
+		AI_PROMPT_DEFINITION_NAME,
+		Map.of(PLACEHOLDER_INQUIRY_BODY, String.join("\n\n---\n\n", postContents))); <1>
+
+JsonNode node = JSON.readTree(aiResponse.getText());
+String name = requireNonEmptyText(node, "name");
+String question = requireNonEmptyText(node, "question"); <2>
+String solution = requireNonEmptyText(node, "solution");
+
+// 課題・解決を Markdown 見出しで1つの本文に結合し、改行を正規化する
+String content = HEADING_QUESTION + "\n\n" + AiResponseText.normalizeLineBreaks(question)
+		+ "\n\n" + HEADING_SOLUTION + "\n\n" + AiResponseText.normalizeLineBreaks(solution); <3>
+----
+<1> 全投稿を連結したテキストをプレースホルダに渡します。AI 呼び出しの型は<<index#EEPackage_KM_Inquiry, 問合せの AI 機能>>と同じです。
+<2> 構造化出力（JSON）から、タイトルと課題・解決の本文を取り出します。タグは別のプロンプト（`tag-suggest`）で付与するため、ここには含まれません。
+<3> 課題・解決を Markdown 見出しで1つのナレッジ文に結合し、改行を正規化します。
+
+* マージドラフトの生成では、選択した複数のナレッジを入力に、統合後のナレッジ文のドラフトを生成します。マージ後、もとのナレッジは統合先への参照（`mergedTo`）を持ち、検索結果から除外されます（<<../index#Knowledge_Management_FulltextSearch, 全文検索>>参照）。
+
+[NOTE]
+構造化出力の受け取り方（JSON のパース・改行の正規化）は問合せの AI 機能と同じです。<<index#EEPackage_KM_Inquiry, 問合せの AI 機能>>を参照してください。

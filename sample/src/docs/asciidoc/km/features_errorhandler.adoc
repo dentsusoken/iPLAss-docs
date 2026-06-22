@@ -1,0 +1,5 @@
+[[Knowledge_Management_ErrorHandler]]
+=== 共通エラーハンドラー
+このサンプルは Vue.js／WebAPI による SPA で、画面遷移をクライアント側のルーターで行っています。そのため、サーバー側でエラー画面へ遷移させる iPLAss 標準の `ErrorUrlSelector`（Java／JSP 版や Groovy／GroovyTemplate 版のサンプルが利用する機能）は使えません。代わりに、`useApi` composable で WebApi のエラー応答を一元的に捕捉し、各画面には例外として伝えることで、エラー処理を共通化しています。エラー応答を集約する `useApi` の実装は<<index#Knowledge_Management_WebAPI, WebApi との連携>>を参照してください。
+
+ユーザーに表示するエラーメッセージは、多言語（i18n）で解決します。メッセージの多言語解決の仕組みは<<index#Knowledge_Management_Multilingual, 多言語対応>>を参照してください。

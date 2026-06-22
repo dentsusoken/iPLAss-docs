@@ -1,0 +1,16 @@
+[[Knowledge_Management_Features]]
+== 機能
+
+include::features_layout.adoc[]
+
+include::features_webapi.adoc[]
+
+include::features_errorhandler.adoc[]
+
+include::features_entity.adoc[]
+
+include::features_fulltextsearch.adoc[]
+
+include::features_security.adoc[]
+
+include::features_multilingual.adoc[]

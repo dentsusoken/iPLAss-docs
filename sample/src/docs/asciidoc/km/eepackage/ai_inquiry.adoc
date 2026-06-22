@@ -1,0 +1,83 @@
+[[EEPackage_KM_Inquiry]]
+== 問合せの AI 機能
+問合せに対する AI 機能として、投稿内容からの要約生成と、タグの自動付与を提供します。
+
+=== AI の呼び出し
+AI の呼び出しは、共通のユーティリティに集約しています。プロンプト定義名と、プロンプトのプレースホルダに渡す値（bindings）を指定して呼び出します。
+
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/java/km/common/util/ai/AiInvoker.java
+|===
+
+[source,java]
+----
+public static AiPlatformResponse invoke(
+		String definitionName, Map<String, Object> bindings, AiPlatformPayload... payloads) {
+	AiManager ai = ManagerLocator.getInstance().getManager(AiManager.class);
+	AiPlatformRequest req = AiPlatformRequest.of(payloads);
+	if (bindings != null && !bindings.isEmpty()) {
+		req.setBindings(new HashMap<>(bindings)); <1>
+	}
+	return ai.request(definitionName, req); <2>
+}
+----
+<1> プロンプト内のプレースホルダ（`${...}`）に渡す値です。
+<2> プロンプト定義名を指定して AI を実行します。
+
+=== 問合せの要約生成
+要約は、構造化出力（JSON Schema）を使うプロンプトで生成します。
+
+[cols="1,2"]
+|===
+h|プロンプト定義名|km/ai/inquiry/summary
+h|ファイル名|/src/main/java/km/inquiry/command/ai/InquirySummaryGenerateCommand.java
+|===
+
+[source,java]
+----
+aiResponse = AiInvoker.invoke(
+		AI_PROMPT_DEFINITION_NAME,
+		Map.of(PLACEHOLDER_INQUIRY_BODY, String.join("\n\n---\n\n", postContents))); <1>
+// ...
+JsonNode node = JSON.readTree(aiResponse.getText()); <2>
+summaryShort = AiResponseText.normalizeLineBreaks(node.get("summaryShort").asText()); <3>
+summaryDetail = AiResponseText.normalizeLineBreaks(node.get("summaryDetail").asText());
+----
+<1> 全投稿を連結したテキストをプレースホルダに渡します。
+<2> 構造化出力の応答（JSON）をパースします。
+<3> AI が改行を `<br>` で返すことがあるため、実際の改行へ正規化してから保存します。
+
+プロンプト定義は、構造化出力の JSON Schema を持ちます。
+
+[cols="1,2"]
+|===
+h|ファイル名|/metadata-import/prompt.xml
+|===
+
+[source,xml]
+----
+<platform xsi:type="metaAiPlatformBedrock">
+    <providerName>bedrock</providerName>
+    <platformType>BEDROCK</platformType>
+    <structuredOutputConfig>
+        <jsonSchema>{
+  "type": "object",
+  "properties": {
+    "summaryShort": { "type": "string" },
+    "summaryDetail": { "type": "string" }
+  },
+  "required": ["summaryShort", "summaryDetail"],
+  "additionalProperties": false
+}</jsonSchema>
+        <name>InquirySummaryResult</name>
+    </structuredOutputConfig>
+    <modelId>google.gemma-3-12b-it</modelId>
+</platform>
+----
+
+=== 問合せのタグ自動付与
+回答の投稿などをきっかけに、問合せのタグを自動付与します（プロンプト定義 `km/ai/inquiry/tag-suggest`）。AI にタグの候補（タグマスタ）を渡し、応答で選ばれたタグをマスタと照合する、という共通処理にまとめています（`TagSuggestionUtil`）。
+
+[NOTE]
+要約やタグ付与は、問合せ・投稿の登録処理が完了した後に、付随処理として起動します（`AiAutoTrigger`）。AI の呼び出しに失敗しても、本体の登録処理は中断しません。

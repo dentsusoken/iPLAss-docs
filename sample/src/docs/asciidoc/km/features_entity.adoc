@@ -1,0 +1,54 @@
+[[Knowledge_Management_Entity]]
+=== Entity の構成
+このサンプルは、問合せ・投稿・ナレッジ・タグの4つの Entity で構成します。問合せと投稿は親子関係、ナレッジは関連問合せ・タグを参照で持つ、というのが中心のデータモデルです。Entity 定義に対応する Java のマッピングクラスは、Admin Console の `Mapping Class` 機能で生成できます（詳細は開発者ガイドの<<../../developerguide/datamanagement/index#ref_entity_mappingclass, Mapping Class>>を参照）。
+
+各 Entity の概要は次のとおりです。
+
+[cols="1,3"]
+|===
+h|Entity（定義名）|主なプロパティと関係
+
+|問合せ（`km.inquiry.Inquiry`）
+|`status`（Select 型のステータス）、`posts`（投稿への複数参照／親子）、`tags`（タグへの複数参照）、`accessibleGroupCodes`（複数値 String の公開範囲）。
+
+|投稿（`km.inquiry.Post`）
+|`content`、`attachments`（添付ファイル。複数の Binary 型）。問合せと親子関係を持ちます。
+
+|ナレッジ（`km.knowledge.Knowledge`）
+|`content`、`relatedInquiries`（問合せへの複数参照）、`tags`（タグへの複数参照）、`visibility`（Select 型の公開範囲）、`mergedTo`（自身への単一参照によるマージ先。未マージなら null）。
+
+|タグ（`km.tag.Tag`）
+|`tagName`（一意なタグ名）。参照や Select を持たない単純な Entity です。標準の `name` は改変できないため、一意なタグ名を別プロパティで保持しています。
+|===
+
+このサンプル特有の Entity の扱いとして、以下の2点に注意します。
+
+* **複数参照プロパティの単一／配列差** +
+複数参照プロパティは、検索（`searchEntity`）では1件のとき単一要素・load では配列、という形で返ります。マッピングクラスのゲッターでこの差を吸収しておくと、呼び出し側が型を気にせず扱えます。
++
+[source,java]
+----
+public Tag[] getTags() {
+	Object value = getValue(TAGS);
+	if (value instanceof Tag) {
+		return new Tag[] {(Tag) value}; <1>
+	} else {
+		return (Tag[]) value; <2>
+	}
+}
+----
+<1> 検索結果では、参照が1件のとき単一要素で返るため配列に包みます。
+<2> load 時は配列で返ります。
+
+* **`pub`→`public` の値変換** +
+ステータスと公開範囲は Java の enum で定義し、Select 型の値として扱います。公開範囲は、`public` が Java の予約語で enum 名にできないため、enum 名（`pub`）と保存される値（`public`）が異なります。両者を変換して扱います。
++
+[source,java]
+----
+public enum InquiryStatus { Open, Answered, Resolved, Canceled; /* ... */ }
+
+public enum Visibility {
+	internal,         // 内部公開（回答者のみ閲覧可）
+	pub("public");    // 外部公開（全ユーザー閲覧可）。保存される値は "public"
+}
+----

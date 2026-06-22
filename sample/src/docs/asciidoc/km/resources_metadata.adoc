@@ -1,0 +1,26 @@
+[[Knowledge_Management_Resources_Metadata]]
+=== メタデータ定義
+このサンプルの WebApi・Command・ActionMapping・Template はJava のアノテーションで定義しています。
+
+* メタデータ生成の対象となる Command は、1つのクラスに集約して列挙しています。
++
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/java/km/common/command/CommandList.java
+|===
++
+[source,java]
+----
+@MetaDataSeeAlso({
+	AuthSessionCommand.class,
+	InquiryListCommand.class,
+	// ...
+})
+@CommandClass(name = "km/CommandList")
+public class CommandList {}
+----
+
+* 各 Command は `@WebApi`（WebApi 名・HTTP メソッド）と `@CommandClass`（Command 名）を直接持ちます（<<index#Knowledge_Management_WebAPI, WebApi との連携>>参照）。画面は `@ActionMapping` と `@Template` で定義します（<<index#Knowledge_Management_Layout, フロントエンドの構成>>参照）。
+
+[NOTE]
+Entity 定義と管理画面の View 定義は、Admin Console で作成・登録します。AI 機能に関するメタデータ（プロンプト・データ連携）は、Enterprise Editionで別途インポートします（<<./eepackage/index#EEPackage_KM_Setup, AI 機能のセットアップ>>参照）。
