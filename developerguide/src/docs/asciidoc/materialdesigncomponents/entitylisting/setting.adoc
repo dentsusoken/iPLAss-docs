@@ -64,6 +64,10 @@ image::images/mdc_entitylisting_default_setting.png[]
 |can file download
 |条件編集画面で「ダウンロード」ボタンを利用できるかを指定します。
 
+|use saved list
+|保存リストを使用します。 +
+未選択の場合、フィルター条件と結果の絞り込みの「保存リストから」を選択不可になります。汎用検索画面に「保存」「別名で保存」ボタンが表示されません。
+
 |use property name in file header
 |ファイルヘッダに表示名ではなくプロパティ名を出力します。
 
@@ -121,6 +125,18 @@ One Column Fill Null::
 [source,groovy]
 ----
 ${csvName}_${yyyy}${MM}${dd}${HH}${mm}${ss}
+----
+
+.（例）保存リストの場合は保存名を先頭に付加する。
+[source,groovy]
+----
+<%
+def fileName = defDisplayName;
+if (savedListName != null) {
+    fileName = savedListName + "_" + defDisplayName;
+}
+%>
+${fileName}_${yyyy}${MM}${dd}${HH}${mm}${ss}
 ----
 
 [[mdc_el_customviewscript]]
@@ -427,6 +443,9 @@ ActionMenuItemに以下の設定を行ってください。
 
 defName:: 作成したEntityListingメタデータ名を指定します。
 entityName:: 初期表示時に選択したいエンティティ名を指定します。defNameには表示可能なエンティティを指定する必要があります。
+listedId:: 保存されているListを直接編集モードで開きたい場合に保存リストのOIDを指定します。
+これが指定された場合、defName、entityNameは無視されます。
+またスナップショットのデータは指定できません(編集不可)。
 
 |===
 
