@@ -13,3 +13,10 @@ link:src/docs/asciidoc/codes/index.adoc[Top Index]
 //include::./src/docs/asciidoc/ec/index.adoc[]
 
 link:src/docs/asciidoc/ec/index.adoc[Top Index]
+
+== Knowledge Management Application
+
+//GitHub上ではincludeはlink表示されてしまう
+//include::./src/docs/asciidoc/km/index.adoc[]
+
+link:src/docs/asciidoc/km/index.adoc[Top Index]

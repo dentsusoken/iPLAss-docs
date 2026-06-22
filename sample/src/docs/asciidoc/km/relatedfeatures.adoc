@@ -1,0 +1,4 @@
+[[Knowledge_Management_RelatedFeatures]]
+== 関連機能
+
+=== <<./eepackage/index#EEPackage_KM, [.eeonly]#Enterprise Edition機能の追加パッケージ#>>

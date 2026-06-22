@@ -1,0 +1,91 @@
+[[VueJS_WebAPI_WebAPI]]
+=== WebApiとの連携
+Ajaxを利用することで、WebApiで連携することができます。一般消費者向けのECサイト画面における全文検索処理を例として説明していきます。
+
+* 開発者ガイドの<<../../../developerguide/webapi/index#,WebApiの作成方法>>を参照してください。 +
+以下はここで利用しているWebApiです。
++
+[cols="1,2"]
+|===
+h|WebApi名|samples/ec01/search/fulltextSearch
+|===
+
+* WebApiを利用しているVueコンポーネント
++
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/vue/components/search/FullTextSearch.vue
+|===
++
+[source,javascript]
+----
+----------------------------------------以上略----------------------------------------
+    fullTextSearch() {
+      if (this.productName === '') {
+        this.helpMessage = this.$t('samples.ec01.search.nokeyword')
+        return false
+      }
+      const url = this.apiFulltextSearch()
+      const data = { productName: this.productName, categoryOid: this.categoryOid }
+      this.$http
+        .post(url, data) <1>
+        .then((response) => {
+          const commandResult = response.data
+          if (commandResult.status == 'SUCCESS') {
+            if (commandResult.defaultResult != null && commandResult.defaultResult.length > 0) {
+              this.fullSearchResult = this.transformSearchResults(commandResult.defaultResult) <2>
+              this.helpMessage = ''
+            } else {
+              this.helpMessage =
+                this.$t('samples.ec01.search.keyword') +
+                this.productName +
+                ', ' +
+                this.$t('samples.ec01.search.noResult')
+              this.fullSearchResult = []
+            }
+          } else {
+            console.log(response)
+          }
+        })
+        .catch((error) => { <3>
+          const errorResult = error.response.data
+          if (errorResult.exceptionType != null) {
+            alert(
+              this.$t('samples.ec01.search.jsError') +
+                errorResult.exceptionType +
+                '\n' +
+                errorResult.exceptionMessage
+            )
+            return
+          }
+        })
+    },
+    dropdownSelect(category) {
+      if (typeof category === 'string') {
+        // "all" を選択した場合
+        this.selectedCategory = { oid: 'all', name: this.$t('samples.ec01.product.category.all') }
+      } else {
+        // カテゴリを選択した場合
+        this.selectedCategory = category
+      }
+    },
+    transformSearchResults(entities) { <4>
+      return entities.map((entity) => ({
+        oid: entity.oid,
+        name: entity.name,
+        price: isNaN(entity.price) ? '' : entity.price,
+        imageUrl: this.imgUrl(entity.productImg),
+        detailUrl: `#/product/detail?productId=${entity.oid}`
+      }))
+    }
+  }
+----------------------------------------以下略----------------------------------------
+----
+<1> WebApiによる検索処理を呼び出します。
+<2> 返された検索処理の結果を取得し、クライアント側への反映処理を呼び出します。
+<3> 検索処理でエラーが発生した場合、クライアント側での処理。
+<4> 検索結果への反映処理。
+
+* 動作確認
++
+動作結果はJava／JSP版と同じであるため、そちらの<<../javajsp/index#Java_JSP_WebAPI_Operation_Check,動作確認>>を参照してください。

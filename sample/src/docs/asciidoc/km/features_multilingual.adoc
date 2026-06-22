@@ -1,0 +1,50 @@
+[[Knowledge_Management_Multilingual]]
+=== 多言語対応
+画面の表示言語は `vue-i18n` で切り替えます。日本語と英語に対応しています。
+
+* 表示ロケールは、サーバーが埋め込んだ `window.lang` から決定します。
++
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/vue/i18n/index.ts
+|===
++
+[source,typescript]
+----
+function resolveLocale(): AppLocale {
+  const raw = (typeof window !== 'undefined' && window.lang) || 'ja' <1>
+  return raw.toLowerCase().startsWith('en') ? 'en' : 'ja'
+}
+
+export const i18n = createI18n<[MessageSchema], AppLocale, false>({
+  legacy: false,
+  locale: resolveLocale(),
+  fallbackLocale: 'ja', <2>
+  messages: { ja, en },
+  globalInjection: true,
+})
+----
+<1> サーバーが埋め込んだロケールを使います。地域付き（`ja_JP` 等）も先頭で判定します。
+<2> 未定義のキーは日本語へフォールバックします。
+
+* メッセージは言語ごとのファイルに定義します。
++
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/vue/i18n/locales/ja.ts
+|===
++
+[source,typescript]
+----
+export const ja = {
+  error: {
+    code: { /* errorCode ごとのメッセージ */ },
+    exception: { /* iPLAss 例外型ごとのメッセージ */ },
+    http: { /* HTTP ステータスごとのメッセージ */ },
+  },
+  // ...
+}
+----
++
+[NOTE]
+WebApi のエラーは、エラーコード・iPLAss の例外型・HTTP ステータスの3段でメッセージを解決する構成にしています。

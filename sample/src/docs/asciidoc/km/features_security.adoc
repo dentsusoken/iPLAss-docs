@@ -1,0 +1,78 @@
+[[Knowledge_Management_Security]]
+=== セキュリティ（ロールと参照範囲）
+参照できるデータの範囲はユーザーのロールや所属グループに基づき制御しています。
+
+ロールの判定はヘルパークラスで行います。
+
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/java/km/common/auth/AuthHelper.java
+|===
+
+[source,java]
+----
+public static final String ROLE_RESPONDER = "inquiry_responder"; // 回答者
+public static final String ROLE_USER = "inquiry_user";           // 質問者
+// ...
+public static boolean isResponder() {
+	return AuthContext.getCurrentContext().userInRole(ROLE_RESPONDER); <1>
+}
+----
+<1> 現在のユーザーが回答者ロールを持つかを判定します。
+
+==== 問合せの参照範囲（Entity 権限）
+質問者が「自分の所属グループの問合せのみ参照できる」制御は、iPLAss の <<../../developerguide/authorization/index#en_entityperm, Entity 権限>>（参照可能な条件式）で行います。Command 側でクエリ条件を分岐させるのではなく、作成時にグループコードを記録しておき、参照時の絞り込みは iPLAss に任せます。
+
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/java/km/inquiry/command/InquiryCreateCommand.java
+|===
+
+[source,java]
+----
+// アクセス可能なグループコードを、現在のユーザーの所属グループから設定する（作成時点のスナップショット）。
+User currentUser = AuthHelper.getCurrentUser();
+Group[] groups = currentUser.getGroups();
+String[] groupCodes = /* groups から code を抽出 */;
+if (groupCodes != null && groupCodes.length > 0) {
+	inquiry.setValue(Inquiry.ACCESSIBLE_GROUP_CODES, groupCodes); <1>
+}
+----
+<1> 作成時点の所属グループコードを問合せ自身に記録します。参照時は、この値に対する Entity 権限の条件式で絞り込まれます。
+
+==== ナレッジの参照範囲（クエリ条件）
+一方、ナレッジの公開範囲による絞り込みは、Command のクエリ条件で明示的に分岐させています。
+
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/java/km/knowledge/command/KnowledgeSearchCommand.java
+|===
+
+[source,java]
+----
+// 公開範囲フィルタ: 質問者ロールは外部公開のナレッジのみ参照できる
+if (!AuthHelper.isResponder()) {
+	conditions.add(new Equals(Knowledge.VISIBILITY, Visibility.pub.getValue())); <1>
+}
+----
+<1> 回答者でなければ、外部公開（`public`）のナレッジに絞り込みます。
+
+==== フロントエンドでの出し分け
+画面側でも、ロールに応じて表示を切り替えます。判定には、サーバーから渡された認証情報を使います。
+
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/vue/components/layout/DefaultLayout.vue
+|===
+
+[source,html]
+----
+          <router-link
+            v-if="isResponder" <1>
+            to="/knowledge/manage"
+          >
+----
+<1> 回答者だけにナレッジ管理へのリンクを表示します。`isResponder` は、サーバーが埋め込んだロール情報から判定します。
+
+[NOTE]
+フロントエンドでの出し分けは利便性のためで、データの保護はサーバー側（Entity 権限・Command のクエリ条件）が担います。WebApi のリクエストに対する CSRF 対策（トークンチェック）も働きます（<<index#Knowledge_Management_WebAPI, WebApi との連携>>参照）。

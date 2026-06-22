@@ -1,0 +1,7 @@
+[[Knowledge_Management_Resources]]
+== リソース定義
+このサンプルが利用するメタデータ・メッセージの定義について説明します。
+
+include::resources_metadata.adoc[]
+
+include::resources_message.adoc[]

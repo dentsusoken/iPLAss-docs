@@ -1,0 +1,55 @@
+[[EEPackage_KM_Setup]]
+== セットアップ
+AI 機能は、iPLAss EE の AWS 連携モジュールを介して Amazon Bedrock を呼び出します。要約・タグ付与・ドラフト生成・マージは Bedrock Converse API（構造化出力）を、RAG 検索・類似ナレッジ提案は Knowledge Base（RetrieveAndGenerate API）を利用します。 +
+利用するには、次の手順で追加パッケージの取り込みと Bedrock 連携設定を行います。
+
+. 有償版の SDK に同梱されている Enterprise Edition 機能の追加パッケージ `iplass-ee-sample-app-ai-package.zip` を取得します。このパッケージには、Community Edition には含まれない AI 機能のメタデータ（プロンプト定義・データ連携定義）が含まれます。
+
+. 作成済のテナントで、Admin Console の Packaging 機能を利用して追加パッケージをインポートします。
++
+IMPORTANT: 環境固有の値（Knowledge Base ID・S3 バケット名）は、インポート後に利用する環境の値へ書き換えてください。
+
+. Amazon Bedrock との連携設定を行います。AWS 側の準備と、service-config による AI 連携の設定が必要です。
+
+=== AWS 側の準備
+Bedrock コンソールから、次を準備します。
+
+* 利用するモデルの有効化
+* S3 バケットの作成（Knowledge Base のデータソース用）
+* Knowledge Base の作成
+* iPLAss を実行する IAM プリンシパルへの、Bedrock と S3 への権限付与
+
+[NOTE]
+認証情報は AWS SDK の標準解決チェーン（環境変数・認証情報ファイル・IAM ロール等）から解決させます。アクセスキーを設定ファイルに直接書かないでください。
+
+=== service-config の設定
+`mtp-service-config.xml` で、AWS 連携モジュールの読み込みと AI サービスプロバイダの登録を行います。AI サービスプロバイダ登録の一般的な設定方法は、開発者ガイドの<<../../../developerguide/ai/index#service_provider, サービスプロバイダ>>を参照してください。ここではこのサンプル固有の配線のみを示します。
+
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/resources/mtp-service-config.xml
+|===
+
+[source,xml]
+----
+<inherits>/aws2-service-config.xml</inherits> <1>
+// ...
+<service>
+	<interface>org.iplass.mtp.impl.awsv2.AWSSetting</interface>
+	<class>org.iplass.mtp.impl.awsv2.AWSSetting</class>
+	<property name="clientConfig" class="org.iplass.mtp.impl.awsv2.AWSClientConfig">
+		<property name="region" value="ap-northeast-1" />
+	</property>
+</service>
+<service>
+	<interface>org.iplass.mtp.impl.ai.AiIntegrationService</interface>
+	<property name="aiServiceProvider"
+			class="org.iplass.mtp.impl.ai.awsv2.AWSSettingAiServiceProviderConfig">
+		<property name="name" value="bedrock" /> <2>
+	</property>
+</service>
+----
+<1> `iplass-ee-aws2` に同梱された設定を読み込み、Bedrock 関連のメタデータクラス・サービスを登録します。
+<2> このサンプルが利用する AI プロバイダ名です。インポートするプロンプト定義・データ連携定義の `providerName` と一致させます。
+
+プロンプト定義（Bedrock Converse・Knowledge Base）とデータ連携定義（S3 への出力）の設定項目の詳細は、開発者ガイドの<<../../../developerguide/ai/index#prompt_setting_platform_aws, AWSプラットフォーム>>および<<../../../developerguide/ai/index#dataconnect_setting_destination_aws, データ連携先（AWS）>>を参照してください。

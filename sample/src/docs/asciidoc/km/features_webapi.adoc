@@ -1,0 +1,102 @@
+[[Knowledge_Management_WebAPI]]
+=== WebApi との連携
+画面とサーバーの通信は、iPLAss の WebApi（REST/JSON）を介して行います。WebApi の作成方法は、開発者ガイドの<<../../developerguide/webapi/index#,WebApiの作成方法>>を参照してください。 +
+ここではナレッジ検索を例に、フロントエンドからサーバーまでの流れを説明します。
+
+==== フロントエンドからの呼び出し
+サーバーとの通信は、ブラウザ標準の `fetch` を薄くラップした composable（Vue で再利用するロジックをまとめた関数）に集約しています。WebApi のベース URL やレスポンスの取り出し、エラー処理をここで一元化し、各画面は機能ごとのパスだけを指定します。
+
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/vue/composables/useApi.ts
+|===
+
+[source,typescript]
+----
+function createApiClient(): ApiClient {
+  const basePath = window.tcPath || ''
+  const baseURL = `${basePath}/api/km` <1>
+  const defaultHeaders: HeadersInit = { 'X-Requested-With': 'XMLHttpRequest' } <2>
+// ...
+  async function request<T>(url: string, init: RequestInit = {}): Promise<T> {
+    const res = await fetch(url, { /* ... */ })
+    if (!res.ok) return handleErrorResponse(res) <3>
+    const json = await res.json()
+    return json.result ?? json <4>
+  }
+----
+<1> WebApi のベース URL です。コンテキストパス + `/api/km` で、各画面はこの後ろのパスだけを書きます。
+<2> Ajax からのリクエストであることを示すヘッダーです。iPLAss はこれを利用して CSRF 対策のトークンチェックを行います。
+<3> エラー応答は composable 側で集約して扱い、各画面には例外として伝えます。
+<4> iPLAss の WebApi はレスポンスを `{ status, result }` で包むため、`result` を取り出して返します。
+
+ナレッジ検索画面は、この composable を使って検索 WebApi を呼び出します。
+
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/vue/components/knowledge/KnowledgeSearch.vue
+|===
+
+[source,typescript]
+----
+      const { api } = useApi()
+      const res = await api.get<{ data: Knowledge[] }>('/knowledge/search', { <1>
+        params: { q: query.value, limit: '10' },
+      })
+      results.value = res.data <2>
+----
+<1> 検索 WebApi を呼び出します。ベース URL は composable が補うため、ここでは `/knowledge/search` と検索条件だけを指定します。
+<2> 返ってきた検索結果を画面に反映します。
+
+[NOTE]
+ファイルを添付する問合せの作成では、`FormData` を `api.post` に渡します。composable は `FormData` を検知して `Content-Type` を自動で切り替えます（`stores/inquiry.ts` の `createInquiry`）。
+
+==== サーバー側の Command
+WebApi の実体は Command クラスです。WebApi 名と HTTP メソッドはアノテーションで宣言します。
+
+[cols="1,2"]
+|===
+h|ファイル名|/src/main/java/km/inquiry/command/InquiryListCommand.java
+|===
+
+[source,java]
+----
+@WebApi(
+		name = "km/inquiry/list", <1>
+		accepts = RequestType.REST_JSON,
+		methods = MethodType.GET,
+		responseResults = {@WebApiResultAttribute(name = "result")}, <2>
+		privileged = false)
+@CommandClass(name = "km/inquiry/InquiryListCommand")
+public class InquiryListCommand implements Command {
+----
+<1> WebApi 名です。`/api/km/inquiry/list` としてフロントエンドから呼ばれます。
+<2> レスポンスに含める属性名です。Command 内で `result` 属性にセットした値が返されます。
+
+検索条件は `Condition` クラスを組み立てて作ります。EQL を文字列連結しないため、インジェクションの心配がありません。
+
+[source,java]
+----
+List<Condition> conditions = new ArrayList<>();
+addStatusConditions(conditions, statuses);
+addTagConditions(conditions, tagOids);
+// ...
+Condition where = combine(conditions); <1>
+
+Query dataQuery = new Query()
+		.select(Inquiry.OID, Inquiry.NAME, Inquiry.SUMMARY_SHORT, Inquiry.STATUS, /* ... */)
+		.from(Inquiry.DEFINITION_NAME)
+		.order(new SortSpec(eqlSortField, eqlSortType)); <2>
+// ...
+SearchResult<Entity> searchResult = em.searchEntity(dataQuery);
+// ...
+CommandResponseUtil.setResult(
+		request, CommandResponseUtil.successListResponse(dataList, totalCount, offset, limit)); <3>
+return "SUCCESS";
+----
+<1> 条件オブジェクトを結合して WHERE 句を作ります。
+<2> ソートフィールドはホワイトリストから選ぶため、外部からの値をそのまま EQL に渡しません。
+<3> レスポンスは共通のユーティリティで `{ status, data, totalCount, ... }` の形に整形します。フロントエンドはこの `data` を受け取ります。
+
+[NOTE]
+パスパラメータ（`/inquiry/detail/{oid}` など）を受け取る場合は、`@WebApi` に `paramMapping = @WebApiParamMapping(name = "oid", mapFrom = "${0}")` を加えます（`InquiryDetailCommand`）。
