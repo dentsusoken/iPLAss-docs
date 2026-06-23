@@ -86,8 +86,8 @@
   <text transform="translate(639.5 423.75)" style="font-size:13px;fill:#18747a;" text-anchor="middle">Reports Generation</text>
   <text transform="translate(639.5 374.13)" style="font-size:13px;fill:#18747a;" text-anchor="middle">Web API</text>
   <text transform="translate(639.5 324.04)" style="font-size:13px;fill:#18747a;" text-anchor="middle">Custom Logics</text>
-  <text transform="translate(383.5 573.08)" style="font-size:13px;fill:#18747a;" text-anchor="middle">Aggregation/BI</text>
-  <text transform="translate(383.5 523.72)" style="font-size:13px;fill:#18747a;" text-anchor="middle">Ad-Hoc Query</text>
+  <text transform="translate(383.5 573.08)" style="font-size:13px;fill:#18747a;" text-anchor="middle">Ad-Hoc Query/Aggregation/BI</text>
+  <text transform="translate(383.5 523.72)" style="font-size:13px;fill:#18747a;" text-anchor="middle">AI Integration</text>
   <text transform="translate(383.5 473.06)" style="font-size:13px;fill:#18747a;" text-anchor="middle">Data Audit Logging/Encryption</text>
   <text transform="translate(383.5 423.75)" style="font-size:13px;fill:#18747a;" text-anchor="middle">Data Management GUI Auto-Construction</text>
   <text transform="translate(383.5 374.13)" style="font-size:13px;fill:#18747a;" text-anchor="middle">Data Management</text>
