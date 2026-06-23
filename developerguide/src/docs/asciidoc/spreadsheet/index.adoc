@@ -1,0 +1,12 @@
+= スプレッドシートビュー　
+:_hreflang-path: developerguide/spreadsheet/index.html
+:_relative-root-path: ../../
+:_menu-title-ee-only: true
+
+[[spreadsheet]]
+== 概要
+スプレッドシートビューは、Entityのデータをスプレッドシート形式（グリッド）で編集・表示する機能です。
+Excelライクな操作感で、データの一覧表示、一括編集、フィルタリング、ファイル出力などを効率的に行えます。
+列ごとにエディタタイプを指定することで、プロパティの型に応じた入力サポートを提供します。
+
+include::about.adoc[]
