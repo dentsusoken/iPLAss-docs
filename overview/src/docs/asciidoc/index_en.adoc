@@ -88,6 +88,17 @@ Single sign on and services under to SAML2.0 standards are available.
 Provides user and group provisioning functionality based on SCIM (System for Cross-domain Identity Management).
 It can act as both an Identity Provider and a Service Provider.
 
+=== AI Integration
+==== [.eeonly]#Generative AI Platform Integration#
+Provides integration with external generative AI services such as Amazon Bedrock and Know Narrator.
+Prompt definitions, shared system prompts, and dynamic parameter injection via placeholders are managed as metadata, enabling no-code/low-code incorporation of AI capabilities into applications.
+A data connectivity feature for delivering entity data to AI services is also provided for RAG use cases.
+
+==== [.eeonly]#MCP Server#
+Provides server functionality compliant with MCP (Model Context Protocol).
+By defining MCP Tools as metadata, functions on iPLAss can be invoked from MCP clients.
+In addition, MCP Tools for browsing and updating metadata (design-time information) are provided out of the box, supporting AI-driven development with AI agents.
+
 === Multi-Language
 ==== Multi-Language
 The pages auto-generated via definitions are implemented with multiple languages.

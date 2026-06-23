@@ -86,8 +86,8 @@
   <text transform="translate(639.5 423.75)" style="font-size:13px;fill:#18747a;" text-anchor="middle">帳票出力</text>
   <text transform="translate(639.5 374.13)" style="font-size:13px;fill:#18747a;" text-anchor="middle">Web API</text>
   <text transform="translate(639.5 324.04)" style="font-size:13px;fill:#18747a;" text-anchor="middle">ロジックカスタマイズ</text>
-  <text transform="translate(383.5 573.08)" style="font-size:13px;fill:#18747a;" text-anchor="middle">定型集計／簡易BI</text>
-  <text transform="translate(383.5 523.72)" style="font-size:13px;fill:#18747a;" text-anchor="middle">汎用検索</text>
+  <text transform="translate(383.5 573.08)" style="font-size:13px;fill:#18747a;" text-anchor="middle">汎用検索／定型集計／簡易BI</text>
+  <text transform="translate(383.5 523.72)" style="font-size:13px;fill:#18747a;" text-anchor="middle">AI対応</text>
   <text transform="translate(383.5 473.06)" style="font-size:13px;fill:#18747a;" text-anchor="middle">データ監査ログ／暗号化</text>
   <text transform="translate(383.5 423.75)" style="font-size:13px;fill:#18747a;" text-anchor="middle">データ操作画面の自動構成</text>
   <text transform="translate(383.5 374.13)" style="font-size:13px;fill:#18747a;" text-anchor="middle">データ管理</text>
