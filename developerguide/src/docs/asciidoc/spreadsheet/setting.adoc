@@ -1,0 +1,462 @@
+[[spreadsheet_management]]
+== SpreadSheetの管理
+
+[[create_spreadsheet]]
+=== SpreadSheetの作成
+SpreadSheetアイコンを右クリックして `SpreadSheetを作成する` を選択してください。
+対象となるEntityを選択し、グリッドの列や機能を設定します。
+
+// TODO_SpreadSheet_SnapShots_SpreadSheet作成ダイアログ
+
+[[spreadsheet_setting]]
+=== 設定
+設定可能な項目は下記となります。
+
+[[spreadsheet_common_setting]]
+==== 共通項目
+
+[cols="1,4a", options="header"]
+|===
+|設定項目|設定値
+
+|定義名
+|SpreadSheet定義の名前を指定します。
+
+|表示名
+|SpreadSheetの表示名を指定します。
+
+|概要
+|SpreadSheetの概要を指定します。
+
+|ターゲットエンティティ名
+|SpreadSheetで編集・表示対象とするEntity定義名を指定します。
+
+|カスタム登録処理クラス名
+|グリッドデータの登録（insert/update/delete）時にカスタム処理を組み込む場合、`SpreadSheetRegistrationInterrupter` の実装クラス名を指定します。 +
+詳細は<<spreadsheet_interrupter, カスタム処理の組み込み>>を参照してください。
+
+|グリッド初期化スクリプト
+|グリッド表示時に実行される初期化スクリプトを記述します。 +
+画面ロード時の動的なカスタマイズが可能です。
+
+|===
+
+[[spreadsheet_gridoptions]]
+==== グリッドオプション
+グリッドの表示・動作に関するオプションを指定します。
+
+[cols="1,4a", options="header"]
+|===
+|設定項目|設定値
+
+|行高
+|グリッドの1行あたりの高さをピクセル単位で指定します。
+
+|デフォルト列幅
+|グリッドのデフォルト列幅をピクセル単位で指定します。
+
+|検索件数上限
+|グリッドに表示するデータの検索件数上限を指定します。
+
+|列幅を強制適合するか
+|グリッド幅に合わせて列幅を自動調整するかを指定します。
+
+|固定列インデックス
+|固定表示する列のインデックスを指定します。 +
+`-1` を指定すると固定なしになります。
+
+|固定行インデックス
+|固定表示する行のインデックスを指定します。 +
+`-1` を指定すると固定なしになります。
+
+|選択モード
+|セルの選択モードを指定します。
+
+checkbox:: チェックボックスによる行選択
+row:: 行選択
+cell:: セル選択
+range:: 範囲選択
+
+|複数選択モード
+|複数選択を許可するかを指定します。
+
+single:: 単一選択
+multiple:: 複数選択
+
+|編集を有効にするか
+|グリッド全体の編集を有効にするかを指定します。
+
+|グリッド高さを自動調整するか
+|グリッドの高さをデータ件数に合わせて自動調整するかを指定します。
+
+|列ヘッダーを表示するか
+|列ヘッダーを表示するかを指定します。
+
+|編集モードを自動開始するか
+|セル選択時に編集モードを自動的に開始するかを指定します。
+
+|セルナビゲーションを有効にするか
+|キーボードによるセルナビゲーションを有効にするかを指定します。
+
+|ツールチップ自動表示を有効にするか
+|セル内容のツールチップ自動表示を有効にするかを指定します。
+
+|セル内テキスト選択を有効にするか
+|セル内のテキスト選択を有効にするかを指定します。
+
+|===
+
+[[spreadsheet_featureflags]]
+==== 機能フラグ
+グリッドで許可する操作を指定します。
+
+[cols="1,4a", options="header"]
+|===
+|設定項目|設定値
+
+|行追加を許可するか
+|グリッド上での行追加を許可するかを指定します。
+
+|行削除を許可するか
+|グリッド上での行削除を許可するかを指定します。
+
+|エクスポートを許可するか
+|グリッドデータのファイル出力（エクスポート）を許可するかを指定します。
+
+|コピーを許可するか
+|グリッド上でのコピー操作を許可するかを指定します。
+
+|貼り付けを許可するか
+|グリッド上での貼り付け操作を許可するかを指定します。
+
+|ソートを許可するか
+|列ヘッダークリックによるソートを許可するかを指定します。
+
+|セル結合を有効にするか
+|セル結合を有効にするかを指定します。 +
+有効にした場合、`セル結合静的設定` または `セル結合式設定` で結合ルールを指定します。
+
+|セル結合静的設定
+|セル結合の静的設定を指定します。 +
+`セル結合を有効にするか` が有効な場合に適用されます。
+
+|セル結合式設定
+|セル結合の条件式を指定します。 +
+`セル結合を有効にするか` が有効な場合に適用されます。
+
+|===
+
+[[spreadsheet_columndefinition]]
+==== 列定義
+グリッドに表示する列（カラム）の定義を指定します。
+列ごとにプロパティ、表示ラベル、幅、エディタタイプなどを設定します。
+
+[cols="1,4a", options="header"]
+|===
+|設定項目|設定値
+
+|プロパティ名
+|対象となるプロパティ名を指定します。
+
+|表示ラベル
+|列ヘッダーに表示されるラベルを指定します。
+
+|列幅
+|列の幅をピクセル単位で指定します。
+
+|配置
+|セルのテキスト配置を指定します。
+
+left:: 左寄せ
+center:: 中央寄せ
+right:: 右寄せ
+
+|ソート可能か
+|該当列でソートを許可するかを指定します。
+
+|編集可能か
+|該当列の編集を許可するかを指定します。
+
+|必須か
+|該当列を必須入力にするかを指定します。
+
+|多重度
+|プロパティの多重度を指定します。 +
+`1` =単一、`2` 以上=複数、`0` =無制限
+
+|多重度表示モード
+|複数値の表示モードを指定します。
+
+COMMA_SEPARATED:: カンマ区切りで1セルに表示します（デフォルト）。
+MULTI_COL:: 多重度分の列に展開して表示します。
+
+|カスタムCSSクラス名
+|セルに適用するカスタムCSSクラス名を指定します。
+
+|列エディタ
+|該当列の編集タイプ（エディタ）を指定します。 +
+詳細は<<spreadsheet_editor, 列エディタ>>を参照してください。
+
+|===
+
+[[spreadsheet_editor]]
+===== 列エディタ
+列のプロパティ型に応じたエディタを指定します。
+以下のエディタタイプが利用可能です。
+
+[cols="2,3a", options="header"]
+|===
+|エディタ|説明
+
+|SpreadSheetStringEditor
+|文字列型プロパティ用エディタ。
+
+|max length:: 入力可能な最大文字数を指定します。
+|pattern:: 入力値の検証に使用する正規表現パターンを指定します。
+
+|SpreadSheetIntegerEditor
+|整数型プロパティ用エディタ。
+
+|number group separator:: 数値グループ区切り文字を使用するかを指定します。
+|min:: 入力可能な最小値を指定します。
+|max:: 入力可能な最大値を指定します。
+
+|SpreadSheetDecimalEditor
+|小数型プロパティ用エディタ。
+
+|min:: 入力可能な最小値を指定します。
+|max:: 入力可能な最大値を指定します。
+|scale:: 小数点以下桁数を指定します。
+|number group separator:: 数値グループ区切り文字を使用するかを指定します。
+
+|SpreadSheetFloatEditor
+|浮動小数点型プロパティ用エディタ。
+
+|min:: 入力可能な最小値を指定します。
+|max:: 入力可能な最大値を指定します。
+|number group separator:: 数値グループ区切り文字を使用するかを指定します。
+
+|SpreadSheetDateEditor
+|日付型プロパティ用エディタ。
+
+|display format:: 表示フォーマットを指定します。
+|min date:: 選択可能な最小日付を指定します。
+|max date:: 選択可能な最大日付を指定します。
+
+|SpreadSheetDateTimeEditor
+|日時型プロパティ用エディタ。
+
+|display format:: 表示フォーマットを指定します。
+|time disp range:: 時間表示範囲を指定します。 +
+SEC（秒まで表示）、MIN（分まで表示）、HOUR（時まで表示）、HIDDEN（非表示）
+|min interval:: 分の間隔を指定します。 +
+_1MIN（1分間隔）、_5MIN（5分間隔）、_10MIN（10分間隔）、_15MIN（15分間隔）、_30MIN（30分間隔）
+|min date time:: 選択可能な最小日時を指定します。
+|max date time:: 選択可能な最大日時を指定します。
+
+|SpreadSheetTimeEditor
+|時刻型プロパティ用エディタ。
+
+|display format:: 表示フォーマットを指定します。
+|time disp range:: 時間表示範囲を指定します。 +
+SEC（秒まで表示）、MIN（分まで表示）、HOUR（時まで表示）、HIDDEN（非表示）
+|min interval:: 分の間隔を指定します。 +
+_1MIN（1分間隔）、_5MIN（5分間隔）、_10MIN（10分間隔）、_15MIN（15分間隔）、_30MIN（30分間隔）
+
+|SpreadSheetBooleanEditor
+|ブール型プロパティ用エディタ。
+
+|true label:: 真値の表示ラベルを指定します。
+|false label:: 偽値の表示ラベルを指定します。
+
+|SpreadSheetSelectEditor
+|選択型プロパティ用エディタ。
+
+|values:: 選択肢定義リストを指定します。
+|sort values:: 選択肢のソート表示を行うかを指定します。
+
+|SpreadSheetReferenceEditor
+|参照型プロパティ用エディタ。
+
+|object name:: 参照先Entity定義名を指定します。
+|display type:: 参照の表示方式を指定します。 +
+SELECT（ドロップダウン選択）、LINK（検索ダイアログ選択）
+|display label item:: 表示ラベルに使用するプロパティ名を指定します。
+|condition:: フィルタ条件（EQL WHERE句相当）を指定します。
+|sort item:: ソートキープロパティ名を指定します。
+|sort type:: ソート順を指定します。 +
+ASC（昇順）、DESC（降順）
+|view name:: ビュー名を指定します。
+|select action name:: 選択アクション名を指定します。
+|viewref action name:: 詳細表示アクション名を指定します。
+|url parameter:: URLパラメータを指定します。
+
+|SpreadSheetLongTextEditor
+|長文型プロパティ用エディタ。
+
+|rows:: テキストエリアの行数を指定します。
+|cols:: テキストエリアの列数を指定します。
+|max length:: 最大文字数を指定します。
+
+|SpreadSheetAutoNumberEditor
+|自動採番型プロパティ用エディタ。 +
+自動採番は常に読み取り専用となるため、エディタ固有の設定項目はありません。
+
+|SpreadSheetExpressionEditor
+|式型プロパティ用エディタ。 +
+式は計算式による自動算出のため、常に読み取り専用となります。
+
+|result type:: 式の結果型（STRING/INTEGER/DECIMALなど）を指定します。
+
+|SpreadSheetBinaryEditor
+|バイナリ型プロパティ用エディタ。
+
+|upload enabled:: アップロードを許可するかを指定します。
+
+|===
+
+[[spreadsheet_filteritem]]
+==== フィルタ項目
+SpreadSheet画面で利用可能なフィルタ項目を設定します。
+画面右側にある `Properties` より、フィルタ項目としたいプロパティをフィルタ項目表内部にドラッグ&ドロップします。
+フィルタ項目のドラッグ&ドロップ後、対象フィルタ項目の右の鉛筆マークをクリックする事で下記設定が可能になります。
+
+[cols="1,2a", options="header"]
+|===
+|項目|設定値
+
+|プロパティ表示名
+|フィルタ項目としての表示名を指定します。
+
+|表示タイプ
+|プルダウン選択時は下部にある `追加` ボタンをクリックし、選択値を設定する必要があります。
+プルダウンはプロパティの型によって設定できる項目が変化します。
+
+|選択値
+|表示タイプでプルダウンを選択した場合に、値と表示名をそれぞれ設定します。
+
+|===
+
+また、必須列にある鉛筆マークをクリックすると、フィルタ条件を必須項目にするかを指定できます。
+必須項目にした場合、さらに利用可能な比較演算子を指定できます。
+なお、フィルタ条件の型により、予め利用可能な比較演算子は決まっています。
+利用できない比較演算子を選択した場合、SpreadSheet画面では表示されません。
+
+// TODO_SpreadSheet_SnapShots_フィルタ項目設定画面
+
+[[spreadsheet_interrupter]]
+==== カスタム処理の組み込み
+`SpreadSheetRegistrationInterrupter` を実装することで、グリッドデータの登録処理（insert/update/delete）の前後にカスタム処理を組み込めます。
+`カスタム登録処理クラス名` に実装クラスのFQCNを指定します。
+
+実装するインターフェースは以下の通りです。
+
+[source,java]
+----
+package org.iplass.mtp.view.spreadsheet;
+
+public interface SpreadSheetRegistrationInterrupter {
+
+    // 登録処理の種類
+    public enum RegistrationType {
+        INSERT,   // 新規追加
+        UPDATE,   // 更新
+        DELETE    // 削除
+    }
+
+    // 登録用のデータにリクエストのデータをマッピング
+    default void dataMapping(Entity entity, RequestContext request,
+            EntityDefinition definition, SpreadSheetDefinition spreadSheetDefinition,
+            Map<String, Object> row) {
+    }
+
+    // 更新対象プロパティの決定方法（false=追加、true=置き換え）
+    default boolean isSpecifyAllProperties() {
+        return false;
+    }
+
+    // 更新対象のプロパティを取得
+    default String[] getAdditionalProperties() {
+        return new String[] {};
+    }
+
+    // 登録前処理（戻り値にValidateErrorが含まれる場合、登録処理は中断）
+    default List<ValidateError> beforeRegister(Entity entity, RequestContext request,
+            EntityDefinition definition, SpreadSheetDefinition spreadSheetDefinition,
+            RegistrationType registrationType) {
+        return Collections.emptyList();
+    }
+
+    // 登録後処理（戻り値にValidateErrorが含まれる場合、トランザクション全体がロールバック）
+    default List<ValidateError> afterRegister(Entity entity, RequestContext request,
+            EntityDefinition definition, SpreadSheetDefinition spreadSheetDefinition,
+            RegistrationType registrationType) {
+        return Collections.emptyList();
+    }
+}
+----
+
+各メソッドの呼び出しタイミングは以下の通りです。
+
+[cols="1,4a", options="header"]
+|===
+|メソッド|説明
+
+|dataMapping
+|各行のEntity構築後、登録処理の前に呼び出されます。 +
+Entityに対して値の加工や追加設定を行うことができます。
+
+|isSpecifyAllProperties
+|更新対象プロパティの決定方法を指定します。 +
+`false` （デフォルト）の場合、SpreadSheet登録処理が自動算出した更新対象プロパティに `getAdditionalProperties()` の戻り値を追加します。 +
+`true` の場合、 `getAdditionalProperties()` の戻り値のプロパティのみを更新対象にします（自動算出分を置き換え）。
+
+|getAdditionalProperties
+|更新対象のプロパティを取得します。 +
+`isSpecifyAllProperties()` の戻り値により対象範囲が変わります。
+
+|beforeRegister
+|各行のEntity登録（insert/update/delete）の直前に呼び出されます。 +
+戻り値に `ValidateError` が含まれる場合、登録処理は中断されます。
+
+|afterRegister
+|各行のEntity登録（insert/update/delete）の直後に呼び出されます。 +
+戻り値に `ValidateError` が含まれる場合、トランザクション全体がロールバックされます。
+
+|===
+
+実装例を以下に示します。
+
+[source,java]
+----
+public class SampleSpreadSheetInterrupter implements SpreadSheetRegistrationInterrupter {
+
+    @Override
+    public void dataMapping(Entity entity, RequestContext request,
+            EntityDefinition definition, SpreadSheetDefinition spreadSheetDefinition,
+            Map<String, Object> row) {
+        // Entityに対して値の加工や追加設定を行う
+        entity.setValue("updateDate", new Date());
+    }
+
+    @Override
+    public List<ValidateError> beforeRegister(Entity entity, RequestContext request,
+            EntityDefinition definition, SpreadSheetDefinition spreadSheetDefinition,
+            RegistrationType registrationType) {
+        List<ValidateError> errors = new ArrayList<>();
+
+        // 登録前のバリデーション
+        if (registrationType == RegistrationType.INSERT) {
+            String name = entity.getName();
+            if (name == null || name.isEmpty()) {
+                ValidateError error = new ValidateError();
+                error.setPropertyName("name");
+                error.setErrorMsg("名前は必須です。");
+                errors.add(error);
+            }
+        }
+
+        return errors;
+    }
+}
+----
