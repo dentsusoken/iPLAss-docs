@@ -21,7 +21,7 @@ image::images/sample-km_inquiry-chat-question.png[align=left]
 
 ===== 関連ナレッジの検索
 * 問合せ画面の右側のパネルで、質問に関連するナレッジをキーワードで検索できます。
-* [.eeonly]#類似ナレッジ検索: Enterprise Editionの場合、このパネルではRAGによる関連ナレッジを提案します。詳細は<<./eepackage/index#EEPackage_KM_Rag, RAG 検索・類似ナレッジ提案>>を参照してください。
+* [.eeonly]#類似ナレッジ検索#: Enterprise Editionの場合、このパネルではRAGによる関連ナレッジを提案します。詳細は<<./eepackage/index#EEPackage_KM_Rag, RAG 検索・類似ナレッジ提案>>を参照してください。
 +
 image::images/sample-km_inquiry-chat-knowledge-panel.png[align=left]
 
@@ -44,7 +44,7 @@ image::images/sample-km_inquiry-chat-close.png[align=left]
 ==== 問合せの検索と回答
 * ナビゲーションの「問合せ一覧」で、問合せをステータス・タグ・全文検索で検索します。
 * [.eeonly]#問合せの要約生成#: 一覧の各行には AI が生成した問合せの要約が表示されます。詳細については<<./eepackage/index#EEPackage_KM_Inquiry, 問合せの AI 機能>>を参照してください。
-  +
++
 image::images/sample-km_inquiry-list-search.png[align=left]
 
 * 問合せ画面を開いて回答を投稿します。
