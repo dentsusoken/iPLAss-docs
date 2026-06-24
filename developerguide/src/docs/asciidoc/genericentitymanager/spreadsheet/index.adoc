@@ -1,12 +1,22 @@
-= スプレッドシートビュー　
-:_hreflang-path: developerguide/spreadsheet/index.html
-:_relative-root-path: ../../
+= Generic Entity Manager (Spreadsheet)
+:_hreflang-path: developerguide/genericentitymanager/spreadsheet/index.html
+:_relative-root-path: ../../../
 :_menu-title-ee-only: true
 
 [[spreadsheet]]
-== 概要
-スプレッドシートビューは、Entityのデータをスプレッドシート形式（グリッド）で編集・表示する機能です。
+== Spreadsheet
+Spreadsheetはエンティティをスプレッドシート形式（グリッド）で編集・表示する機能です。
 Excelライクな操作感で、データの一覧表示、一括編集、フィルタリング、ファイル出力などを効率的に行えます。
 列ごとにエディタタイプを指定することで、プロパティの型に応じた入力サポートを提供します。
 
-include::about.adoc[]
+Spreadsheetの定義としてAdmin Console上で以下の属性を設定することができます。
+
+* **グリッド編集** : エンティティをExcelライクなグリッド上で直接編集できます。行の追加、削除、コピー＆ペーストによる一括操作に対応しています。
+* **列エディタ** : 列ごとにエディタタイプ（文字列、数値、日付、選択、参照など）を指定することで、プロパティの型に応じた入力サポートを提供します。
+* **フィルタ機能** : フィルタ項目を設定することで、グリッドに表示するデータを絞り込めます。
+* **セル結合** : 同じ値を持つセルを自動的または手動で結合し、見やすいグリッドを表示できます。
+* **ファイル出力** : グリッドのデータをExcel形式で出力できます。
+
+include::operationguide.adoc[]
+
+include::setting.adoc[]

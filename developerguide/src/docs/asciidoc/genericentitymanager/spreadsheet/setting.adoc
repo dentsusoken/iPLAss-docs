@@ -1,4 +1,4 @@
 [[spreadsheet_management]]
-== SpreadSheetの管理
+== Spreadsheetの管理
 
 (詳細に関して近日、追記予定)
