@@ -1,0 +1,14 @@
+= Material Design Components (Spreadsheet)
+:_hreflang-path: developerguide/materialdesigncomponents/spreadsheet/index.html
+:_relative-root-path: ../../../
+:_menu-title-ee-only: true
+
+[[mdc_spreadsheet]]
+== Spreadsheet
+
+MDCモジュールにおけるスプレッドシート画面の設定です。 +
+エンティティをExcelライクなスプレッドシート形式（グリッド）で表示・編集することができます。
+
+include::operationguide.adoc[]
+
+include::setting.adoc[]
