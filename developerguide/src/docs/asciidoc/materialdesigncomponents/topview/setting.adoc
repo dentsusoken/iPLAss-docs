@@ -334,6 +334,7 @@ Custom Title::
 
 |Task Queue Select Condition
 | `全てのタスク` に表示するキューを取得する際の条件を指定します。
+指定した条件値はPreparedQuery（GroovyTemplate）として処理されます。
 条件を指定した場合、 `全てのタスク` にはタスク一覧で指定したキューか、未指定の場合には選択可能なキューに紐づくタスクのみ表示します。
 
 |Display tasks whose taskQueues is null.
