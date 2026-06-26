@@ -251,7 +251,7 @@ image:images/parts_savedlist_owner.png[]
 
 EntityListingにおいて保存されたデータに関して、その保存リスト詳細の構成は以下の通りである。
 
-image::images/mdc_savedlist_detail_entitylisting.png[]
+image::images/parts_savedlist_detail_entitylisting.png[]
 
 * A.保存情報 +
 保存データの基本情報が表示されます。
@@ -299,7 +299,7 @@ image::images/mdc_savedlist_detail_entitylisting.png[]
 集計(Aggregation)の保存リスト詳細ダイアログのタイトルは「ローデータ」と表示され、先頭100件のローデータが表示されます。 +
 その保存リスト詳細の構成は以下の通りである。
 
-image::images/mdc_savedlist_detail_aggregation.png[]
+image::images/parts_savedlist_detail_aggregation.png[]
 
 * A.保存情報 +
 保存データの基本情報が表示されます。
