@@ -1,7 +1,7 @@
 [[savedlist]]
 == 保存リスト
 保存リスト(SavedList)は、EntityListingや定型集計のローデータを保存、復元する機能です。
-詳細については<<../topview/index.adoc#savedlist_parts ,保存リスト>>を参照してください。
+詳細については<<../topview/index.adoc#savedlist_parts,保存リスト>>を参照してください。
 
 [[savedlist_viewsavedlist]]
 === 表示方法
@@ -38,4 +38,4 @@ image::images/mdc_savedlist_menu.png[]
 
 ==== Top画面での表示
 TopView 定義に SavedList パーツを配置することで、Top 画面に保存リスト一覧を表示できます。
-詳細については<<../topview/index.adoc#savedlist ,SavedList>>を参照してください。
+詳細については<<../topview/index.adoc#savedlist,SavedList>>を参照してください。
