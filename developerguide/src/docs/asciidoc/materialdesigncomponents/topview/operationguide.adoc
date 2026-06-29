@@ -201,7 +201,7 @@ image:images/parts_savedlist.png[]
 クリックすると集計のローデータや汎用検索の保存情報を表示します。 +
 また、保存情報からは保存時の状態を復元して表示できます。
 * F.コンテキストメニュー +
-フォルダまたはデータを右クリックした際に表示されるメニューであります。 +
+フォルダまたはデータを右クリックした際に表示されるメニューです。 +
 モバイル端末では、長押し操作によりメニューを表示します。
 ** 名前変更 +
 フォルダ、データの名前を変更します。
@@ -253,7 +253,7 @@ image:images/parts_savedlist_owner.png[]
 保存データ名をクリックすると、保存リストの詳細画面が表示されます。
 保存データの種別（EntityListing / 集計）によって、表示内容が異なります。
 
-EntityListingにおいて保存されたデータに関して、その保存リスト詳細の構成は以下の通りであります。
+EntityListingにおいて保存されたデータに関して、その保存リスト詳細の構成は以下の通りです。
 
 image::images/parts_savedlist_detail_entitylisting.png[]
 
@@ -301,7 +301,7 @@ image::images/parts_savedlist_detail_entitylisting.png[]
 ** 他者編集が許可されていない場合
 
 集計(Aggregation)の保存リスト詳細ダイアログのタイトルは「ローデータ」と表示され、先頭100件のローデータが表示されます。 +
-その保存リスト詳細の構成は以下の通りであります。
+その保存リスト詳細の構成は以下の通りです。
 
 image::images/parts_savedlist_detail_aggregation.png[]
 
