@@ -178,7 +178,7 @@ image::images/parts_tasklist_usertask_assignselect.png[]
 割当ユーザーの代わりに他のユーザーへ委譲を行います。
 
 [[savedlist_parts]]
-==== [.eeonly]#保存リスト#
+==== 保存リスト
 集計データや汎用検索の条件、結果などを保存、復元する画面部品です。
 自身が保存したデータのほか、他のユーザーから共有されたデータも参照できます。
 

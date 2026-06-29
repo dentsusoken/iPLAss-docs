@@ -1617,7 +1617,7 @@ Top画面にスペースを表示するパーツです。
 |===
 
 [[savedlist]]
-==== [.eeonly]#SavedList#
+==== SavedList
 TopViewのSavedListパーツでは以下の設定が可能です。
 
 [cols="1,3a", options="header"]
