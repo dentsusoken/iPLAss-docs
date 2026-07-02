@@ -44,3 +44,72 @@ In the Map format, the value property should be set to the fully qualified class
     </property>
 </service>
 ----
+
+[[AiPromptService_AiPromptServiceStub]]
+==== Settings of AiPromptServiceStub
+Configures the AiPromptServiceStub. +
+AiPromptServiceStub is a stub implementation for development that does not use an external AI platform. +
+It is a simple implementation that returns the values set in the properties.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item
+| Value
+| Description
+
+| stubLogic
+| <<AiPromptService_AiPromptServiceStub_AiPlatform>>
+| Sets the stub logic for the AI platform in the AI prompt. +
+If this property is set, other stub properties are ignored.
+
+| stubText
+| String
+| Sets the text response for the AI platform in the AI prompt. +
+The default value is `default stub text`.
+
+| stubImagePath
+| String
+| Sets the file path for the image response from the AI platform in the AI prompt.
+
+| stubImageType
+| String
+a| Sets the type of the image response from the AI platform in the AI prompt. +
+If stubImagePath is set, stubImageType is required.
+
+Configurable values::
+- GIF
+- JPEG
+- PNG
+- WEBP
+
+| stubPdfPath
+| String
+| Sets the file path for the PDF response from the AI platform in the AI prompt.
+|===
+
+[[AiPromptService_AiPromptServiceStub_AiPlatform]]
+.AiPlatform
+class specifies the implementation class of `org.iplass.mtp.impl.ai.prompt.AiPlatform`. +
+There are no provided classes.
+
+===== Example
+[source,xml]
+----
+<!-- AI Prompt -->
+<service>
+    <interface>org.iplass.mtp.impl.ai.prompt.AiPromptService</interface>
+    <class>org.iplass.mtp.impl.ai.prompt.AiPromptServiceStub</class>
+
+    <!-- Sets the stub logic. If you want to return custom values, set the stubLogic property. -->
+    <!--
+    <property name="stubLogic" class="package.to.AiPlatformImpl" />
+    -->
+
+    <!-- Sets the stub return values. All values set will be returned. -->
+    <property name="stubText" value="stub text" />
+    <property name="stubImagePath" value="/path/to/image.png" />
+    <property name="stubImageType" value="PNG" />
+    <property name="stubPdfPath" value="/path/to/document.pdf" />
+</service>
+----
