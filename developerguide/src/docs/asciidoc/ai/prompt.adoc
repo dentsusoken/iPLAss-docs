@@ -122,6 +122,12 @@ NOTE: 対応するデータ種別について、AIサービスで利用するモ
 
 状態を次のリクエストで利用することで、前回のリクエストの内容を引き継いで会話を続ける、などができます。
 
+[TIP]
+====
+開発環境等で外部のAIサービスを利用できない場合は、スタブ用のサービスを利用して固定のレスポンスを返すことができます。 +
+スタブ用のサービスを利用する場合は、link:../../serviceconfig/index.html#AiPromptService_AiPromptServiceStub[Service-Config AiPromptServiceStub^]を参照し、
+Service-Config を設定してください。
+====
 
 [[prompt_usage_basic]]
 ==== 基本的なプロンプト利用
