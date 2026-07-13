@@ -2243,7 +2243,7 @@ CLEAR:: 選択をすべてクリアします
 |入力領域にプレースホルダーを設定します。
 |===
 
-[[bulklayout_reference_property_editor_reference_combo_config]]
+[[searchview_propertyeditor_reference_combo_config]]
 ===== 参照コンボ設定
 REFCOMBOタイプに対する設定を行います。
 
