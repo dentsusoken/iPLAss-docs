@@ -2147,17 +2147,20 @@ propertyName:: プロパティ名
 
 |検索条件
 |SELECT +
-CHECKBOX
+CHECKBOX +
+REFCOMBO
 |選択可能項目を検索する際の条件に依存しない検索条件を設定します。
 
 |ソートアイテム
 |SELECT +
-CHECKBOX
+CHECKBOX +
+REFCOMBO
 |プルダウンの参照データをソートする項目を指定します。
 
 |ソート種別
 |SELECT +
-CHECKBOX
+CHECKBOX +
+REFCOMBO
 |プルダウンの参照データをソートする順序を指定します。
 
 |選択フィルター設定
