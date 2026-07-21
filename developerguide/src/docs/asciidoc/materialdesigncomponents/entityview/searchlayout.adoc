@@ -2158,6 +2158,17 @@ CHECKBOX
 CHECKBOX
 |プルダウンの参照データをソートする順序を指定します。
 
+|重複を除く
+|SELECT +
+CHECKBOX
+|チェックした場合、重複したレコードを除いた検索結果を返却します。
+
+|連動プロパティ設定
+|SELECT +
+CHECKBOX
+|エンティティの他のプロパティと連動して選択可能項目をフィルターすることができます。
+詳細は<<searchlayout_reference_property_editor_link_property_config, 連動プロパティの設定>>を参照してください。
+
 |選択フィルター設定
 |SELECTFILTER
 |選択フィルターの設定を行います。
@@ -2175,6 +2186,88 @@ SELECTFILTER
 |<<searchview_propertyeditor_setting, 共通設定項目>>を参照してください。
 
 |===
+
+[[searchlayout_reference_property_editor_link_property_config]]
+===== 連動プロパティ設定
+連動プロパティを設定することで、エンティティの他のプロパティ選択値と連動して選択可能な項目をフィルターすることができます。 +
+Editorの表示タイプが `Select` または `CheckBox` のみ動作します。上位に合わせて絞込みが行われます。
+
+image::images/searchview-linkproperty-overview.png[]
+
+.設定項目
+[cols="1,8a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|連動元プロパティ名
+|連動元になるプロパティを指定します。参照元のエンティティのプロパティを指定します。 +
+連動元プロパティに指定可能なのは以下です。
+
+====
+BooleanProperty:: プロパティエディタ設定の `表示タイプ` が `Radio` 、 `CheckBox` 、 `Select` 
+DateProperty:: プロパティエディタ設定の `表示タイプ` が `Text` 
+DateTimeProperty:: プロパティエディタ設定の `表示タイプ` が `Text` 
+DecimalProperty:: プロパティエディタ設定の `表示タイプ` が `Text` 
+FloatProperty:: プロパティエディタ設定の `表示タイプ` が `Text` 
+IntegerProperty:: プロパティエディタ設定の `表示タイプ` が `Text` 
+LongTextProperty:: プロパティエディタ設定の `表示タイプ` が `Text` 
+ReferenceProperty:: プロパティエディタ設定の `表示タイプ` が `CheckBox` 、 `Select` 
+SelectProperty:: プロパティエディタ設定の `表示タイプ` が `Radio` 、 `CheckBox` 、 `Select` 
+StringProperty:: プロパティエディタ設定の `表示タイプ` が `Text` 
+TimeProperty:: プロパティエディタ設定の `表示タイプ` が `Text` 
+====
+
+以下のプロパティは連動元プロパティに設定できません。 +
+
+* AutoNumberProperty
+* BinaryProperty
+* ExpressionProperty
+
+|連動絞込み対象タイプ
+|連動絞込みの方式を設定します。
+
+PROPERTY:: 連動元入力（選択）値を `連動絞込み対象プロパティ名` で指定したプロパティに対して条件設定して、選択可能なアイテムを絞り込みます。
+EQL::  `連動絞込み対象条件` で設定したEQLを実行し、選択可能なアイテムを絞り込みます。
+
+|連動絞込み対象プロパティ名
+|連動元プロパティに対応する参照エンティティ側(自身)のプロパティ名を指定します。連動絞込み対象タイプでPROPERTYを選択した場合に利用されます。 +
+連動絞込み対象プロパティ名に設定可能なプロパティは下記のみです。 +
+
+* SelectProperty
+* ReferenceProperty
+
+|連動絞込み対象条件
+|連動絞込み対象タイプでEQLを選択した際に実行する処理です。 GroovyTemplate形式で記述してください。
+
+.利用可能な変数
+以下の変数がバインドされています。
+====
+user:: ユーザー情報（org.iplass.mtp.impl.auth.UserBinding）
+value:: 連動元プロパティの値
+====
+
+.連動元プロパティ値の型
+変数としてバインドされている `連動元プロパティ値` の型は連動元プロパティタイプによって異なります。 +
+下記それぞれの型の `java.util.List` になります。
+====
+BooleanProperty:: `java.lang.Boolean` の `java.util.List` 
+DateProperty:: `java.lang.String` （yyyy-MM-dd形式）
+DateTimeProperty:: `java.lang.String` （yyyy-MM-ddTHH:mm:ss.SSS形式）
+DecimalProperty:: `java.lang.Number` 
+FloatProperty:: `java.lang.Number` 
+IntegerProperty:: `java.lang.Number` 
+LongTextProperty:: `java.lang.String` 
+ReferenceProperty:: `java.lang.String` （OID）の `java.util.List` 
+SelectProperty:: `java.lang.String` の `java.util.List` 
+StringProperty:: `java.lang.String` 
+TimeProperty:: `java.lang.String` （HH:mm:ss形式）
+====
+
+|===
+
+（例）メインとなるエンティティで３階層の構造をもったカテゴリエンティティを定義した場合の連動方法 +
+<<detaillayout_reference_property_editor_link_property_config_example, 設定例>>を参照してください。
 
 [[searchview_propertyeditor_select_filter_config]]
 ===== 選択フィルター設定

@@ -2177,7 +2177,7 @@ IntegerProperty:: プロパティエディタ設定の `表示タイプ` が `Te
 LongTextProperty:: プロパティエディタ設定の `表示タイプ` が `Text` 
 ReferenceProperty:: プロパティエディタ設定の `表示タイプ` が `CheckBox` 、 `Select` 
 SelectProperty:: プロパティエディタ設定の `表示タイプ` が `CheckBox` 、 `Select` 
-StringProperty:: プロパティエディタ設定の `表示タイプ` が `Text` 、 `Select` 
+StringProperty:: プロパティエディタ設定の `表示タイプ` が `Text` 
 TimeProperty:: プロパティエディタ設定の `表示タイプ` が `Text` 
 ====
 
@@ -2197,7 +2197,6 @@ EQL::  `連動絞込み対象条件` で設定したEQLを実行し、選択可�
 |連動元プロパティに対応する参照エンティティ側(自身)のプロパティ名を指定します。連動絞込み対象タイプでPROPERTYを選択した場合に利用されます。 +
 連動絞込み対象プロパティ名に設定可能なプロパティは下記のみです。 +
 
-* StringProperty
 * SelectProperty
 * ReferenceProperty
 
@@ -2211,25 +2210,26 @@ user:: ユーザー情報（org.iplass.mtp.impl.auth.UserBinding）
 value:: 連動元プロパティの値
 ====
 
-.連動元プロパティの値の型
-変数としてバインドされている `連動元プロパティの値` の型は連動元プロパティタイプによって異なります。 +
-連動元プロパティの多重度が1以外の場合は、それぞれの型のjava.util.Listになります。
+.連動元プロパティ値の型
+変数としてバインドされている `連動元プロパティ値` の型は連動元プロパティタイプによって異なります。 +
+下記それぞれの型の `java.util.List` になります。
 ====
-BooleanProperty:: java.lang.Boolean
-DateProperty:: java.lang.String（yyyy-MM-dd形式）
-DateTimeProperty:: java.lang.Long（ミリ秒）
-DecimalProperty:: java.lang.Number
-FloatProperty:: java.lang.Number
-IntegerProperty:: java.lang.Number
-LongTextProperty:: java.lang.String
-ReferenceProperty:: java.lang.String（OID）
-SelectProperty:: java.lang.String
-StringProperty:: java.lang.String
-TimeProperty:: java.lang.String（HH:mm:ss形式）
+BooleanProperty:: `java.lang.Boolean` 
+DateProperty:: `java.lang.String` （yyyy-MM-dd形式）
+DateTimeProperty:: `java.lang.String` （yyyy-MM-ddTHH:mm:ss.SSS形式）
+DecimalProperty:: `java.lang.Number` 
+FloatProperty:: `java.lang.Number` 
+IntegerProperty:: `java.lang.Number` 
+LongTextProperty:: `java.lang.String` 
+ReferenceProperty:: `java.lang.String` （OID）
+SelectProperty:: `java.lang.String` 
+StringProperty:: `java.lang.String` 
+TimeProperty:: `java.lang.String` （HH:mm:ss形式）
 ====
 
 |===
 
+[[detaillayout_reference_property_editor_link_property_config_example]]
 （例）メインとなるエンティティで３階層の構造をもったカテゴリエンティティを定義した場合の連動方法 +
 
 .エンティティ定義
