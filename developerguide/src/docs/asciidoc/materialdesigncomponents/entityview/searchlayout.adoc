@@ -2190,7 +2190,7 @@ SELECTFILTER
 [[searchlayout_reference_property_editor_link_property_config]]
 ===== 連動プロパティ設定
 連動プロパティを設定することで、エンティティの他のプロパティ選択値と連動して選択可能な項目をフィルターすることができます。 +
-Editorの表示タイプが `Select` または `CheckBox` のみ動作します。上位に合わせて絞込みが行われます。
+Editorの表示タイプが `Select` または `CheckBox` のみで動作します。上位に合わせて絞り込みが行われます。
 
 image::images/searchview-linkproperty-overview.png[]
 
@@ -2249,7 +2249,7 @@ value:: 連動元プロパティの値
 
 .連動元プロパティ値の型
 変数としてバインドされている `連動元プロパティ値` の型は連動元プロパティタイプによって異なります。 +
-下記それぞれの型の `java.util.List` になります。
+下記それぞれの型がバインドされます。
 ====
 BooleanProperty:: `java.lang.Boolean` の `java.util.List` 
 DateProperty:: `java.lang.String` （yyyy-MM-dd形式）
@@ -2267,7 +2267,7 @@ TimeProperty:: `java.lang.String` （HH:mm:ss形式）
 |===
 
 （例）メインとなるエンティティで３階層の構造をもったカテゴリエンティティを定義した場合の連動方法 +
-<<detaillayout_reference_property_editor_link_property_config_example, 設定例>>を参照してください。
+<<detaillayout.adoc#detaillayout_reference_property_editor_link_property_config_example, 設定例>>を参照してください。
 
 [[searchview_propertyeditor_select_filter_config]]
 ===== 選択フィルター設定

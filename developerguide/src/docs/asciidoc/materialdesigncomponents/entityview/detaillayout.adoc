@@ -2153,7 +2153,7 @@ SELECTタイプ、CHECKBOXタイプに対する設定を行います。
 [[detaillayout_reference_property_editor_link_property_config]]
 ===== 連動プロパティ設定
 連動プロパティを設定することで、エンティティの他のプロパティ選択値と連動して選択可能な項目をフィルターすることができます。 +
-Editorの表示タイプが `Select` または `CheckBox` のみ動作します。上位に合わせて絞込みが行われます。
+Editorの表示タイプが `Select` または `CheckBox` のみで動作します。上位に合わせて絞り込みが行われます。
 
 image::images/detailview-linkproperty-overview.png[]
 
@@ -2212,19 +2212,19 @@ value:: 連動元プロパティの値
 
 .連動元プロパティ値の型
 変数としてバインドされている `連動元プロパティ値` の型は連動元プロパティタイプによって異なります。 +
-下記それぞれの型の `java.util.List` になります。
+下記それぞれの型がバインドされます。
 ====
-BooleanProperty:: `java.lang.Boolean` 
-DateProperty:: `java.lang.String` （yyyy-MM-dd形式）
-DateTimeProperty:: `java.lang.String` （yyyy-MM-ddTHH:mm:ss.SSS形式）
-DecimalProperty:: `java.lang.Number` 
-FloatProperty:: `java.lang.Number` 
-IntegerProperty:: `java.lang.Number` 
-LongTextProperty:: `java.lang.String` 
-ReferenceProperty:: `java.lang.String` （OID）
-SelectProperty:: `java.lang.String` 
-StringProperty:: `java.lang.String` 
-TimeProperty:: `java.lang.String` （HH:mm:ss形式）
+BooleanProperty:: `java.lang.Boolean` の `java.util.List` 
+DateProperty:: `java.lang.String` （yyyy-MM-dd形式）の `java.util.List` 
+DateTimeProperty:: `java.lang.String` （yyyy-MM-ddTHH:mm:ss.SSS形式）の `java.util.List` 
+DecimalProperty:: `java.lang.Number` の `java.util.List` 
+FloatProperty:: `java.lang.Number` の `java.util.List` 
+IntegerProperty:: `java.lang.Number` の `java.util.List` 
+LongTextProperty:: `java.lang.String` の `java.util.List` 
+ReferenceProperty:: `java.lang.String` （OID）の `java.util.List` 
+SelectProperty:: `java.lang.String` の `java.util.List` 
+StringProperty:: `java.lang.String` の `java.util.List` 
+TimeProperty:: `java.lang.String` （HH:mm:ss形式）の `java.util.List` 
 ====
 
 |===
