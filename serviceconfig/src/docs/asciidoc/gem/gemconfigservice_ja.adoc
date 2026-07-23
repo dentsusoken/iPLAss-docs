@@ -112,24 +112,80 @@ CAUTION: 後方互換性のための設定フラグです。将来のバージ�
 [cols="1,1,3", options="header"]
 |===
 | 項目 | 値 | 説明
+| savedListCsvDownloadInterval | int a| 
+WARNING: 本設定項目は非推奨となります。将来のバージョンでは本設定項目は削除されます。savedListFileDownloadIntervalを利用ください。
+
+SavedList一覧のファイルダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
 | savedListFileDownloadInterval | int | SavedList一覧のファイルダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
 | entitylistingSearchInterval | int | EntityListingの検索処理のインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
+| entitylistingCsvDownloadInterval | int a| 
+WARNING: 本設定項目は非推奨となります。将来のバージョンでは本設定項目は削除されます。entitylistingFileDownloadIntervalを利用ください。
+
+EntityListingのファイルダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
 | entitylistingFileDownloadInterval | int | EntityListingのファイルダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
 | entityListingFileSupportType | EntityListingFileSupportType | EntityListingのファイルダウンロードで利用するファイル形式。`CSV` `EXCEL` `SPECIFY` から指定します。デフォルト値は `CSV` です。
+| aggregationCsvDownloadInterval | int a| 
+WARNING: 本設定項目は非推奨となります。将来のバージョンでは本設定項目は削除されます。aggregationFileDownloadIntervalを利用ください。
+
+Aggregationのファイルダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
 | aggregationFileDownloadInterval | int | Aggregationのファイルダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
+| aggregationRawdataCsvDownloadInterval | int a| 
+WARNING: 本設定項目は非推奨となります。将来のバージョンでは本設定項目は削除されます。aggregationRawdataFileDownloadIntervalを利用ください。
+
+Aggregationのローデータファイルダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
 | aggregationRawdataFileDownloadInterval | int | Aggregationのローデータファイルダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
 | aggregationFileSupportType | AggregationFileSupportType | Aggregationのファイルダウンロードで利用するファイル形式。`CSV` `EXCEL` `SPECIFY` から指定します。デフォルト値は `CSV` です。
 | aggregationRawdataFileSupportType | AggregationFileSupportType | Aggregationのローデータファイルダウンロードで利用するファイル形式。`CSV` `EXCEL` `SPECIFY` から指定します。デフォルト値は `CSV` です。
+| showBothAggregationCsvDownloadButton | boolean a| 
+WARNING: 本設定項目は非推奨となります。将来のバージョンでは本設定項目は削除されます。showBothAggregationFileDownloadButtonを利用ください。
+
+Aggregationのファイルダウンロードを集計表の上下に表示するか。デフォルト値はfalseです。
 | showBothAggregationFileDownloadButton | boolean | Aggregationのファイルダウンロードを集計表の上下に表示するか。デフォルト値はfalseです。
+| dividingTableSideAtCrosstabCsvDownload | boolean a| 
+WARNING: 本設定項目は非推奨となります。将来のバージョンでは本設定項目は削除されます。dividingTableSideAtCrosstabFileDownloadを利用ください。
+
+Aggregation(Crosstab)のファイルダウンロードで表側を分割して出力するか。デフォルト値はfalseです。
 | dividingTableSideAtCrosstabFileDownload | boolean | Aggregation(Crosstab)のファイルダウンロードで表側を分割して出力するか。デフォルト値はfalseです。
+| dividingTableHeadAtCrosstabCsvDownload | boolean a| 
+WARNING: 本設定項目は非推奨となります。将来のバージョンでは本設定項目は削除されます。dividingTableHeadAtCrosstabFileDownloadを利用ください。
+
+Aggregation(Crosstab)のファイルダウンロードで表頭を分割して出力するか。デフォルト値はfalseです。
 | dividingTableHeadAtCrosstabFileDownload | boolean | Aggregation(Crosstab)のファイルダウンロードで表頭を分割して出力するか。デフォルト値はfalseです。
+| outputItemLabelCrosstabCsvDownload | boolean a| 
+WARNING: 本設定項目は非推奨となります。将来のバージョンでは本設定項目は削除されます。outputItemLabelCrosstabFileDownloadを利用ください。
+
+Aggregation(Crosstab)のファイルダウンロードで表頭/表側のアイテム名を表示するか。デフォルト値はfalseです。
 | outputItemLabelCrosstabFileDownload | boolean | Aggregation(Crosstab)のファイルダウンロードで表頭/表側のアイテム名を表示するか。デフォルト値はfalseです。
 | entitylistingSearchLimit | int | EntityListingの検索Limit。デフォルト値は10です。
+| entitylistingCsvDownloadWithFooter | boolean a| 
+WARNING: 本設定項目は非推奨となります。将来のバージョンでは本設定項目は削除されます。entitylistingFileDownloadWithFooterを利用ください。
+
+EntityListingのファイルダウンロードでフッターを出力するか。デフォルト値はfalseです。
 | entitylistingFileDownloadWithFooter | boolean | EntityListingのファイルダウンロードでフッターを出力するか。デフォルト値はfalseです。
+| entitylistingCsvDownloadFooter | String a| 
+WARNING: 本設定項目は非推奨となります。将来のバージョンでは本設定項目は削除されます。entitylistingFileDownloadFooterを利用ください。
+
+EntityListingのファイルダウンロードのフッター文言。
 | entitylistingFileDownloadFooter | String | EntityListingのファイルダウンロードのフッター文言。
+| aggregationCsvDownloadWithFooter | boolean a| 
+WARNING: 本設定項目は非推奨となります。将来のバージョンでは本設定項目は削除されます。aggregationCsvDownloadWithFooterを利用ください。
+
+集計のファイルダウンロードでフッターを出力するか。デフォルト値はfalseです。
 | aggregationFileDownloadWithFooter | boolean | 集計のファイルダウンロードでフッターを出力するか。デフォルト値はfalseです。
+| aggregationCsvDownloadFooter | String a| 
+WARNING: 本設定項目は非推奨となります。将来のバージョンでは本設定項目は削除されます。aggregationFileDownloadFooterを利用ください。
+
+集計のファイルダウンロードのフッター文言。
 | aggregationFileDownloadFooter | String | 集計のファイルダウンロードのフッター文言。
+| aggregationRawdataCsvDownloadWithFooter | boolean a| 
+WARNING: 本設定項目は非推奨となります。将来のバージョンでは本設定項目は削除されます。aggregationRawdataFileDownloadWithFooterを利用ください。
+
+集計のローデータファイルダウンロードでフッターを出力するか。デフォルト値はfalseです。
 | aggregationRawdataFileDownloadWithFooter | boolean | 集計のローデータファイルダウンロードでフッターを出力するか。デフォルト値はfalseです。
+| aggregationRawdataCsvDownloadFooter | String a| 
+WARNING: 本設定項目は非推奨となります。将来のバージョンでは本設定項目は削除されます。aggregationRawdataFileDownloadFooterを利用ください。
+
+集計のローデータのファイルダウンロードのフッター文言。
 | aggregationRawdataFileDownloadFooter| String | 集計のローデータのファイルダウンロードのフッター文言。
 | confirmUserTaskSubmit| boolean | ワークフローのタスク編集画面でタスク確認ダイアログを表示するか。デフォルト値はfalseです。
 | confirmUserTaskCancel| boolean | ワークフローのタスク編集画面でキャンセル確認ダイアログを表示するか。デフォルト値はfalseです。
