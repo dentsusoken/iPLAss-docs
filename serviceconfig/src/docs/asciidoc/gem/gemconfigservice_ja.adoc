@@ -168,7 +168,7 @@ WARNING: 本設定項目は非推奨となります。将来のバージョン�
 EntityListingのファイルダウンロードのフッター文言。
 | entitylistingFileDownloadFooter | String | EntityListingのファイルダウンロードのフッター文言。
 | aggregationCsvDownloadWithFooter | boolean a| 
-WARNING: 本設定項目は非推奨となります。将来のバージョンでは本設定項目は削除されます。aggregationCsvDownloadWithFooterを利用ください。
+WARNING: 本設定項目は非推奨となります。将来のバージョンでは本設定項目は削除されます。aggregationFileDownloadWithFooterを利用ください。
 
 集計のファイルダウンロードでフッターを出力するか。デフォルト値はfalseです。
 | aggregationFileDownloadWithFooter | boolean | 集計のファイルダウンロードでフッターを出力するか。デフォルト値はfalseです。
