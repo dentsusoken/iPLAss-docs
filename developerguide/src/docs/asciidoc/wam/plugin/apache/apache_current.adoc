@@ -48,10 +48,10 @@ NOTE: SELinuxが有効（enforcing）な環境では次の設定が必要です�
 +
 ----
 # WAMプラグインモジュールが依存するライブラリをすべて解決できるかを確認します(出力が無ければOK)
-LD_LIBRARY_PATH=/opt/iplass-wam/lib ldd %APACHE_HOME%/modules/mod_iplass_ee_wam_apache.so | grep "not found"
+LD_LIBRARY_PATH=/opt/iplass-wam/lib ldd "$APACHE_HOME/modules/mod_iplass_ee_wam_apache.so" | grep "not found"
 
 # 同梱ライブラリを配置先から参照しているかを確認します(libjsoncpp.so、libapriconv-1.soが配置先のパス配下と出力されればOK)
-LD_LIBRARY_PATH=/opt/iplass-wam/lib ldd %APACHE_HOME%/modules/mod_iplass_ee_wam_apache.so | grep "/opt/iplass-wam"
+LD_LIBRARY_PATH=/opt/iplass-wam/lib ldd "$APACHE_HOME/modules/mod_iplass_ee_wam_apache.so" | grep "/opt/iplass-wam"
 
 # Apacheの設定ファイルの構文を確認します(Syntax OKと出力されればOK)
 LD_LIBRARY_PATH=/opt/iplass-wam/lib httpd -t
@@ -92,7 +92,7 @@ JsonCpp・APR-iconvは、RHEL9系の標準リポジトリで取得できない�
 NOTE: OpenSSL・zlib・libidn2・APR・APR-utilは、httpdプロセス自身が使用するライブラリのため同梱していません。 +
 httpdプロセス内でシステム側とバージョンが混在する可能性があるため、これらのライブラリを配布パッケージの `lib/` へ追加しないでください。
 
-NOTE: libcurlは7.84以降を使用してください。7.84より前のバージョンは `curl_global_init()` / `curl_global_cleanup()` がスレッドセーフではありません。 +
+NOTE: （<<wamapachesystemlibs_build, ソースコードからのビルド>>で独自ビルドする場合は）libcurlは7.84以降を使用してください。7.84より前のバージョンは `curl_global_init()` / `curl_global_cleanup()` がスレッドセーフではありません。 +
 スレッドを使用するMPM構成で並行リクエストを処理した際に、問題が生じる可能性があります。
 
 ====== ビルド済プラグインの動作環境
