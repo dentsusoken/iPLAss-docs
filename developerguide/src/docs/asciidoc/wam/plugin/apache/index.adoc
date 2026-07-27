@@ -2,6 +2,8 @@
 
 include::apache.adoc[]
 
-include::settingfile_example_apache.adoc[]
+include::apache_current.adoc[]
 
-include::apache_systemlibs.adoc[]
+include::apache_legacy.adoc[]
+
+include::settingfile_example_apache.adoc[]

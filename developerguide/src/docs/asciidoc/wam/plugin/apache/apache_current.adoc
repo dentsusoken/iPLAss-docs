@@ -1,0 +1,193 @@
+[[wamapache_current]]
+==== iPLAss 4.1.1以降
+
+===== 初期設定
+
+. 事前準備/前提
+* 有償版のSDKに同梱されている `iplass-ee-wam-apache-[バージョン]-el9-gcc-x86_64.tar.gz` をWebサーバーの任意のパスに配置してください。
+* 以降の説明では、Apacheのインストールディレクトリを `%APACHE_HOME%` と表記します。
+* Apacheをデーモン形式で実行することを前提とします。
+* 以降の手順はRHEL9系を前提としています。ソースコードから独自にビルドしたWAMプラグインモジュールを使用する場合も、モジュールと依存ライブラリの配置、環境変数の設定は同様です。ただし、パッケージのインストールコマンドとSELinux関連の手順は、使用するOSに読み替えてください。
+
+. WAMプラグインモジュールの配置 +
+* Webサーバーの `%APACHE_HOME%/modules` にWAMプラグインモジュールを配置します。 `iplass-ee-wam-apache-[バージョン]-el9-gcc-x86_64.tar.gz` 内の以下のファイルが対象です。
+** mod_iplass_ee_wam_apache.so
+
+. Apacheの設定
+* WAMプラグインモジュールの設定ファイル（iplass-wam.conf）を `%APACHE_HOME%/conf.modules.d` に配置します。設定項目の詳細は<<wamsettingfile, WAMプラグインモジュールの設定>>を参照してください。 +
+※ Apacheの設定ファイル（httpd.conf）から、配置した `iplass-wam.conf` をIncludeしていることを確認してください。
+
+* <<wamapachesystemlibs, WAMシステムライブラリ>>のうち、RHEL9系の標準リポジトリで提供されるものを導入します。
++
+----
+dnf install boost-regex boost-random
+----
+
+* 続けて、httpdプロセスの環境変数を設定し、配布パッケージに同梱されたWAMシステムライブラリを参照可能にします。 +
+`iplass-ee-wam-apache-[バージョン]-el9-gcc-x86_64.tar.gz` 内の `lib/` ディレクトリ一式（同梱ライブラリ・文字コード変換モジュール）を任意のパスに配置します。 +
+以下は、`lib/` の配置先を `/opt/iplass-wam/lib` とした場合の設定例です。 +
+systemd管理のhttpdでは、`systemctl edit httpd` でドロップイン用ファイルを作成し、次のように設定します。
++
+.ドロップイン用ファイル（/etc/systemd/system/httpd.service.d/override.conf）
+----
+[Service]
+Environment="LD_LIBRARY_PATH=/opt/iplass-wam/lib"
+Environment="APR_ICONV_PATH=/opt/iplass-wam/lib/iconv"
+----
++
+保存後はhttpdを再起動してください。
++
+NOTE: `/etc/sysconfig/httpd` に設定を記載する場合は、ドロップイン用ファイルに `EnvironmentFile=/etc/sysconfig/httpd` を追記してください。
++
+NOTE: SELinuxが有効（enforcing）な環境では次の設定が必要です。 +
+（1）WAMプラグインモジュール本体への `restorecon -v` の適用。 +
+（2）同梱ライブラリへのセキュリティコンテキストの付与。`semanage fcontext -a -t lib_t "/opt/iplass-wam/lib(/.*)?"` で登録したうえで `restorecon -Rv /opt/iplass-wam/lib` を適用します。 +
+（3）httpdからiPLAssへのHTTP接続の許可。`setsebool -P httpd_can_network_connect 1` を設定します。未設定のときは権限チェックの通信が拒否され、保護対象パスへのアクセスが503エラーとなることがあります。
+
+* 配置後の確認として、以下を実行してください。
++
+----
+# WAMプラグインモジュールが依存するライブラリをすべて解決できるかを確認します(出力が無ければOK)
+LD_LIBRARY_PATH=/opt/iplass-wam/lib ldd %APACHE_HOME%/modules/mod_iplass_ee_wam_apache.so | grep "not found"
+
+# 同梱ライブラリを配置先から参照しているかを確認します(libjsoncpp.so、libapriconv-1.soが配置先のパス配下と出力されればOK)
+LD_LIBRARY_PATH=/opt/iplass-wam/lib ldd %APACHE_HOME%/modules/mod_iplass_ee_wam_apache.so | grep "/opt/iplass-wam"
+
+# Apacheの設定ファイルの構文を確認します(Syntax OKと出力されればOK)
+LD_LIBRARY_PATH=/opt/iplass-wam/lib httpd -t
+
+systemctl restart httpd
+
+# WAMプラグインモジュールがロードされているかを確認します(iplass_ee_wam_apache_module (shared)と出力されればOK)
+LD_LIBRARY_PATH=/opt/iplass-wam/lib httpd -M 2>/dev/null | grep iplass
+----
+
+. WAMシステムライブラリ +
+<<wamapachesystemlibs, WAMシステムライブラリ>>を参照してください。
+
+[[wamapachesystemlibs]]
+===== WAMシステムライブラリ
+
+Apache版WAMプラグインモジュールが依存するライブラリは以下のとおりです。
+
+[cols="2,2,4", options="header"]
+|===
+|ライブラリ |バージョン |提供形態
+|libcurl |8.21.0 |WAMプラグインモジュールへ静的リンク
+|JsonCpp |1.9.7 |配布パッケージのlib/に同梱
+|APR-iconv |1.2.2 |配布パッケージのlib/に同梱
+|Boost（regex/random） |1.75 |システム参照
+|GMP |6.2 |システム参照
+|APR |1.7 |システム参照
+|APR-util |1.6 |システム参照
+|OpenSSL |3系 |システム参照
+|zlib |1.2 |システム参照
+|libidn2 |2.3 |システム参照
+|===
+
+「システム参照」は、OSが提供するライブラリを使用することを示します。 +
+上表のバージョンは、RHEL9系の標準リポジトリが供給するバージョンです。 +
+JsonCpp・APR-iconvは、RHEL9系の標準リポジトリで取得できないため配布パッケージに同梱しています。
+
+NOTE: OpenSSL・zlib・libidn2・APR・APR-utilは、httpdプロセス自身が使用するライブラリのため同梱していません。 +
+httpdプロセス内でシステム側とバージョンが混在する可能性があるため、これらのライブラリを配布パッケージの `lib/` へ追加しないでください。
+
+NOTE: libcurlは7.84以降を使用してください。7.84より前のバージョンは `curl_global_init()` / `curl_global_cleanup()` がスレッドセーフではありません。 +
+スレッドを使用するMPM構成で並行リクエストを処理した際に、問題が生じる可能性があります。
+
+====== ビルド済プラグインの動作環境
+
+ビルド済プラグイン `iplass-ee-wam-apache-[バージョン]-el9-gcc-x86_64.tar.gz` はRHEL9系を対象としています。 +
+RHEL・Rocky Linux・AlmaLinux・Oracle Linux 9の全マイナーリリースで動作します。RHEL10系での動作は保証されません。 +
+実行環境に必要なRPMパッケージは、httpd（2.4系）・boost-regex・boost-random・openssl-libs・zlib・libidn2です。いずれもRHEL9系の標準リポジトリで供給され、EPELなどの外部リポジトリは不要です。 +
+RHEL9系以外のOSで使用する場合は、<<wamapachesystemlibs_build, ソースコードからのビルド>>を参照してください。
+
+====== 脆弱性対応時のライブラリ更新
+
+依存ライブラリに脆弱性が発見された場合の更新方法は、提供形態ごとに異なります。
+
+* システム参照のライブラリ（OpenSSL・zlib・libidn2・APR・APR-util・Boost・GMP） +
+OSのパッケージ更新を適用してください。WAMプラグインモジュールの依存はsoname単位で解決されるため、sonameを維持するパッケージ更新であれば再配布・再ビルドは不要です。 +
+更新後はhttpdを再起動してください。
+
+* 同梱ライブラリ（JsonCpp・APR-iconv） +
+原則としてiPLAssのリリースで更新版を提供します。
+緊急に利用者側で更新する場合は、<<wamapachesystemlibs_build, ソースコードからのビルド>>の手順で対象ライブラリの修正版をビルドします。
+ビルドしたファイルで、`lib/` 内の同名ファイル（soname名）を差し替えてください。
+ただしsonameが変わる更新はファイルの差し替えでは動作せず、WAMプラグインモジュール自体の再ビルドが必要です。
+
+* 静的リンクのlibcurl +
+WAMプラグインモジュールへ静的リンクしているため、単体での差し替えはできません。
+iPLAssのリリースで更新するか、<<wamapachesystemlibs_build, ソースコードからのビルド>>の手順で新しいlibcurlに対してWAMプラグインモジュールを再ビルドしてください。
+なおHTTP/HTTPS以外のプロトコルと不要な機能を無効化してビルドされているため、無効化済み機能の脆弱性の影響は受けません。
+
+[[wamapachesystemlibs_build]]
+====== ソースコードからのビルド
+
+有償版iPLAss SDKに同梱されているソースパッケージから、独自にビルドする場合の手順概要を示します。 +
+ビルド済プラグインを提供していないOSで使用する場合や、依存ライブラリのバージョンを独自に選定する場合に参照してください。
+
+NOTE: 動作確認済みの実行環境はRHEL9系およびAmazon Linux 2023です。それ以外のOSでの動作は個別に検証してください。
+
+* ビルドツールと開発パッケージ
+
+C++コンパイラ・make・autoconf・automake・libtool・cmakeに加え、httpd（2.4系）・APR・APR-util・OpenSSL・zlib・libidn2・Boost・GMPの開発パッケージ（ヘッダ）が必要です。 +
+利用しているパッケージマネージャでインストールしてください。以下はRHEL9系での例です。
+
+----
+# dnf install gcc-c++ make autoconf automake libtool cmake pkgconf-pkg-config \
+    httpd-devel apr-devel apr-util-devel openssl-devel zlib-devel libidn2-devel \
+    boost-devel gmp-devel
+----
+
+* APR-iconv、JsonCpp
+
+この2つはRHEL9系の標準リポジトリに存在しないため、上流ソースからビルドします。 +
+利用しているパッケージマネージャで取得できる場合は、そちらを使用しても構いません。インストール先（この例では `/opt/wam-build` ）は任意です。
+
+----
+# tar zxf apr-iconv-1.2.2.tar.gz
+# cd apr-iconv-1.2.2
+# ./configure --prefix=/opt/wam-build/apr-iconv --with-apr=[apr-1-configのパス]
+# make
+# make install
+----
+
+----
+# tar zxf jsoncpp-1.9.7.tar.gz
+# cd jsoncpp-1.9.7
+# mkdir build
+# cd build
+# cmake .. -DCMAKE_INSTALL_PREFIX=/opt/wam-build/jsoncpp -DBUILD_SHARED_LIBS=ON
+# make
+# make install
+----
+
+* libcurl
+
+静的ライブラリとしてビルドします。OpenSSL・zlib・libidn2を有効にし、HTTP/HTTPS以外のプロトコルと不要な機能は無効化してください。
+
+----
+# tar zxf curl-8.21.0.tar.gz
+# cd curl-8.21.0
+# ./configure --prefix=/opt/wam-build/curl \
+    --disable-shared --enable-static --with-pic \
+    --with-openssl --with-zlib --with-libidn2 \
+    [不要なプロトコル・機能を無効化するオプション]
+# make
+# make install
+----
+
+NOTE: 無効化の対象と指定できるオプションはlibcurlのバージョンによって異なるため、 `./configure --help` で確認してください。 +
+configureのサマリー出力で、Protocolsに不要なプロトコルが含まれていないこと、IDNが enabled（libidn2）であることを確認してください。 +
+CA証明書バンドルのパスはconfigureが自動検出します。自動検出されない環境では `--with-ca-bundle` オプションでパスを指定してください。
+
+* WAMプラグインモジュール
+
+----
+# cd [ソースパッケージの展開先]
+# make clean build
+----
+
+ビルド成果物は `bin/release/mod_iplass_ee_wam_apache.so` に生成されます。 +
+依存ライブラリのインストール先を `/opt/wam-build` 以外にした場合は `make WAM_DEPS_ROOT=[インストール先] clean build` としてください。
