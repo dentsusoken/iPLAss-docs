@@ -1,47 +1,19 @@
-==== 初期設定
+Apache版のWAMプラグインモジュールは、有償版iPLAss SDKにビルド済プラグインとして同梱されます。 +
+iPLAss 4.1.1でビルド済プラグインの提供形態が変更されているため、初期設定の手順とWAMシステムライブラリの構成はバージョンによって異なります。ご利用のバージョンに応じた節を参照してください。
 
-. 事前準備/前提
-* 有償版のSDKに同梱されている `iplass-ee-wam-apache-[バージョン]-[OS/処理系].[拡張子]` （例 : iplass-ee-wam-apache-[バージョン]-linux-gcc.tar.gz）をWebサーバーの任意のパスに配置してください。
-* 以降の説明では、Apacheのインストールディレクトリを `%APACHE_HOME%` と表記します。
-* Apacheをデーモン形式で実行することを前提とします。
+[cols="2,5", options="header"]
+|===
+|iPLAssのバージョン |同梱されるビルド済プラグイン
 
-. WAMプラグインモジュールの配置 +
-* Webサーバーの `%APACHE_HOME%/modules` にWAMプラグインモジュールを配置します。 `iplass-ee-wam-apache-[バージョン]-[OS/処理系].[拡張子]` 内の以下のファイルが対象です。
-** mod_iplass_ee_wam_apache.so
+|<<wamapache_current, 4.1.1以降>>
+|`iplass-ee-wam-apache-[バージョン]-el9-gcc-x86_64.tar.gz` （RHEL9系向け）
 
-. Apacheの設定
-* WAMプラグインモジュールの設定ファイル(iplass-wam.conf)を `%APACHE_HOME%/conf.modules.d` に配置します。設定項目の詳細は<<wamsettingfile, WAMプラグインモジュールの設定>>を参照してください。 +
-※ Apacheの設定ファイル(httpd.conf)で、 `%APACHE_HOME%/conf.modules.d` に配置したWAMプラグインモジュールの設定ファイル(iplass-wam.conf)をIncludeしていることを確認してください。
+|<<wamapache_legacy, 4.1.1未満>>
+|`iplass-ee-wam-apache-[バージョン]-linux-gcc.tar.gz` （Linux向け） +
+`iplass-ee-wam-apache-[バージョン]-win64-vc.zip` （Windows向け）
+|===
 
-* Linux環境の場合、httpdプロセスの環境変数を編集し、WAMプラグインモジュールの依存するシステムライブラリを参照可能とする必要があります。 +
-initスクリプトでApacheをデーモン起動している場合、httpdプロセスの環境変数 `LD_LIBRARY_PATH` からWAMプラグインモジュールの依存するシステムライブラリを参照可能とします。 +
-以下、ライブラリのインストール先を `/opt/wam/local` とした場合の設定例です。 `/etc/sysconfig/httpd` に以下を追加します。
-+
-----
-WAM_LOCAL=/opt/wam/local
-WAM_LIB_PATH=\
-${WAM_LOCAL}/boost/lib\
-:${WAM_LOCAL}/jsoncpp/lib\
-:${WAM_LOCAL}/openssl/lib\
-:${WAM_LOCAL}/zlib/lib\
-:${WAM_LOCAL}/libidn/lib\
-:${WAM_LOCAL}/curl/lib\
-:${WAM_LOCAL}/apr/lib\
-:${WAM_LOCAL}/apr-iconv/lib\
-:${WAM_LOCAL}/apr-util/lib\
-:${WAM_LOCAL}/gmp/lib
+WARNING: `linux-gcc` 形式および `win64-vc` 形式のビルド済プラグインは非推奨です。iPLAss 4.1.1以降のSDKにも当面同梱されますが、今後の機能改善や不具合修正は提供されず、将来的に削除されます。 +
+iPLAss 4.1.1以降をご利用の場合は、 `el9-gcc-x86_64` 形式のビルド済プラグイン、またはソースコードから独自にビルドしたWAMプラグインモジュールを使用してください。RHEL9系以外のOSについては<<wamapachesystemlibs_build, ソースコードからのビルド>>を参照してください。
 
-LD_LIBRARY_PATH="$WAM_LIB_PATH:$LD_LIBRARY_PATH"
-export LD_LIBRARY_PATH
-----
-+
-NOTE: SELinuxを有効にしている環境では、ライブラリにセキュリティコンテキストを付与する必要があります。 +
-まず、他の.soファイルに付与されているコンテキストをls -Zコマンドで確認します。 +
-次に、上記パスの各ライブラリに対して、chconコマンドで当該コンテキストを付与します。 +
-この操作により、httpdプロセスからライブラリへのアクセスが可能となります。
-
-
-* Windows環境の場合、 `iplass-ee-wam-apache-[バージョン]-win64-vc.zip` 内の `bin/` にあるDLLファイルを `%APACHE_HOME%/bin` にコピーします。
-
-. WAMシステムライブラリ +
-<<wamapachesystemlibs,WAMシステムライブラリ>>を参照してください。
+NOTE: <<wamsettingfile_ex_apache, 設定方法/設定例>>はiPLAssのバージョンによらず共通です。
