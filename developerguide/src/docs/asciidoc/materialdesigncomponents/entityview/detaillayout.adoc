@@ -1916,6 +1916,7 @@ LINK:: 名称のリンク表示とリンクから詳細画面を表示
 SELECT:: 選択リストを表示
 CHECKBOX:: 多重度が複数の場合はチェックボックス、1の場合はラジオボタンを表示
 SELECTFILTER:: 選択フィルターを表示
+REFCOMBO:: 参照コンボを表示
 LABEL:: ラベルを表示
 HIDDEN:: ロードや更新対象とするが画面には表示しない
 
@@ -1924,6 +1925,7 @@ HIDDEN:: ロードや更新対象とするが画面には表示しない
 |詳細画面に表示する方法を設定します。
 
 LINK:: 名称のリンク表示とリンクから詳細画面を表示
+REFCOMBO:: 参照コンボを表示
 LABEL:: ラベルを表示
 HIDDEN:: ロードや更新対象とするが画面には表示しない
 
@@ -1932,6 +1934,7 @@ HIDDEN:: ロードや更新対象とするが画面には表示しない
 SELECT +
 CHECKBOX +
 SELECTFILTER +
+REFCOMBO +
 LABEL
 |表示ラベルとして扱うプロパティを設定します。
 `name` 以外のプロパティを画面にラベルとして表示できます。
@@ -1952,6 +1955,11 @@ CHECKBOX
 |SELECTFILTER
 |選択フィルターの設定を行います。
 詳細は<<detaillayout_reference_property_editor_select_filter_config, 選択フィルター設定>>を参照してください。
+
+|参照コンボ設定
+|REFCOMBO
+|参照コンボの設定を行います。
+詳細は<<detaillayout_reference_property_editor_reference_combo_config, 参照コンボ設定>>を参照してください。
 
 |ラベル設定
 |LABEL
@@ -2198,6 +2206,79 @@ CLEAR:: 選択をすべてクリアします
 |プレースホルダー
 |入力領域にプレースホルダーを設定します。
 |===
+
+[[detaillayout_reference_property_editor_reference_combo_config]]
+===== 参照コンボ設定
+REFCOMBOタイプに対する設定を行います。
+
+[cols="1,4a", options="header"]
+|===
+|設定項目
+|設定内容
+
+|参照コンボ設定
+|選択値を階層的に指定することができます。
+
+|検索条件
+|上位コンボの選択肢を取得する際に自動的に付与される検索条件をPreparedQuery形式で指定します。 WHERE句に指定する条件を指定してください。
+
+|ソートアイテム
+|選択可能項目をソートする項目を設定します。
+
+|ソート種別
+|選択可能項目をソートする種別を設定します。
+
+|プレースホルダー
+|入力領域にプレースホルダーを設定します。
+
+|ビュー定義名
+|参照リンク押下で表示するダイアログのView定義名を設定します。未指定時はデフォルトのViewを使用します。
+
+|詳細画面で参照コンボの親階層を表示
+|選択したデータから取得可能な全ての親階層を表示します。
+
+|詳細画面の参照リンクで編集を許可
+|参照リンク押下時のリンク先詳細画面で編集を許可します。
+
+|参照画面表示JavaScript
+|参照先の詳細画面を表示する前のタイミングで実行されるJavaScriptを指定します。
+戻り値として `false` を返すと画面を表示しません。
+
+.JavaScriptの変数
+JavaScriptには、以下の変数がバインドされます。
+====
+entity:: 参照元のエンティティデータ
+reference:: 参照先のエンティティデータ
+propertyName:: プロパティ名
+====
+
+|参照画面保存後JavaScript
+|参照先の編集画面で保存されたタイミングで実行されるJavaScriptを指定します。
+
+.JavaScriptの変数
+JavaScriptには、以下の変数がバインドされます。
+====
+entity:: 参照元のエンティティデータ
+reference:: 参照先のエンティティデータ
+propertyName:: プロパティ名
+====
+
+|参照画面削除後JavaScript
+|参照先の詳細画面で削除されたタイミングで実行されるJavaScriptを指定します。
+
+.JavaScriptの変数
+JavaScriptには、以下の変数がバインドされます。
+====
+entity:: 参照元のエンティティデータ
+reference:: 参照先のエンティティデータ
+propertyName:: プロパティ名
+====
+|===
+
+.詳細、編集画面設定
+設定内容は検索条件と同様。 ただし `詳細画面で参照コンボの親階層を表示` がチェックされている場合は、階層で表示される。 +
+
+image::images/operation_detailview_condition_reference_combo.png[]
 
 [[detaillayout_script_property_editor]]
 ==== ScriptPropertyEditor
