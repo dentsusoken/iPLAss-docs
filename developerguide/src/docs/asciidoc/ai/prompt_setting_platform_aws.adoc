@@ -89,9 +89,7 @@ InvokeAgent API の詳細については、Amazon Bedrock のドキュメント�
 
 [WARNING]
 ====
-Amazon Bedrock Agents は Amazon Bedrock Agents Classic と名称を変更し、メンテナンスモードとなっており、 +
-2026年7月30日以降は新規に Agent を作成することができなくなっています。
-
+Amazon Bedrock Agents は Amazon Bedrock Agents Classic と名称を変更し、メンテナンスモードとなっています。 +
 Amazon Bedrock AgentCore の利用・移行を検討してください。
 ====
 
