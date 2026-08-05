@@ -4,7 +4,7 @@
 // タグの接頭辞として "prompt_setting_platform_" を設定してください。
 [[prompt_setting_platform_aws]]
 ==== AWSプラットフォーム
-AWSプラットフォームでは Amazon Bedrock の以下のサービスを利用することができます。
+AWSプラットフォームでは Amazon Bedrock, Amazon Bedrock AgentCore の以下のサービスを利用することができます。
 
 .AWSで利用可能なプラットフォームタイプ
 * <<prompt_setting_platform_aws_bedrock>>
@@ -15,6 +15,10 @@ AWSプラットフォームでは Amazon Bedrock の以下のサービスを利�
 ** AWS上に定義した Amazon Bedrock Flow サービスに対してリクエストを行います。
 * <<prompt_setting_platform_aws_bedrock_knowledge_base>>
 ** AWS上に定義した Amazon Bedrock Knowledge Base を利用したリクエストを行います。
+* <<prompt_setting_platform_aws_bedrock_agent_core_harness>>
+** AWS上に定義した Amazon Bedrock AgentCore Harness に対してリクエストを行います。
+* <<prompt_setting_platform_aws_bedrock_agent_core_runtime_http>>
+** AWS上に定義した Amazon Bedrock AgentCore Runtime(http) に対してリクエストを行います。
 
 
 [[prompt_setting_platform_aws_bedrock]]
@@ -82,6 +86,14 @@ Groovy Script 形式でカスタマイズ処理を実装します。
 ===== Bedrock - Agent
 Bedrock InvokeAgent API を利用し、Amazon Bedrock Agent で定義したエージェントに対してリクエストを行うことができます。 +
 InvokeAgent API の詳細については、Amazon Bedrock のドキュメントを参照してください。
+
+[WARNING]
+====
+Amazon Bedrock Agents は Amazon Bedrock Agents Classic と名称を変更し、メンテナンスモードとなっており、 +
+2026年7月30日以降は新規に Agent を作成することができなくなっています。
+
+Amazon Bedrock AgentCore の利用・移行を検討してください。
+====
 
 状態に対応しており、保持する値は以下の通りです。
 
@@ -207,4 +219,87 @@ AdminConsole で設定できない内容を設定する場合に利用します�
 Groovy Script 形式でカスタマイズ処理を実装します。
 
 カスタマイズするリクエストインスタンスは、`software.amazon.awssdk.services.bedrockagentruntime.model.RetrieveAndGenerateRequest.Builder` クラスのインスタンスになります。
+|===
+
+[[prompt_setting_platform_aws_bedrock_agent_core_harness]]
+===== Bedrock AgentCore - Harness
+Bedrock AgentCore InvokeHarness API を利用し、Amazon Bedrock AgentCore に定義したハーネスを利用したリクエストを行うことができます。 +
+InvokeHarness API の詳細については、Amazon Bedrock のドキュメントを参照してください。
+
+状態に対応しており、保持する値は以下の通りです。
+
+.状態に保存する内容
+* ランタイムセッションID
+
+設定項目は次の通りです。
+
+[cols="1,3", options="header,autowidth"]
+|===
+|項目
+|説明
+
+|Harness ARN
+|Amazon Bedrock AgentCore で定義したハーネスの ARN を設定します。
+
+|エンドポイント Qualifier
+|Amazon Bedrock AgentCore で定義したハーネスのエンドポイントを設定します。 +
+未指定の場合はデフォルトのエンドポイントを利用します。
+
+|ActorId を設定する
+|ハーネスのメモリーオペレーションに影響する設定項目です。チェックすることで、InvokeHarness API のパラメータ ActorId を設定します。 +
+ハーネスのメモリーが有効な場合に ActorId を設定することで、ハーネスに設定されたデフォルトの ActorId を指定した値で上書きできます。 +
+リクエストに設定される ActorId は、テナント・ユーザーごとに決まった値を利用します。
+
+|ActorId 編集スクリプト
+|設定する ActorId をカスタマイズするための groovy script を設定します。戻り値として文字列を返却してください。 +
+「ActorId を設定する」がチェックされている場合だけ有効になります。
+
+|Request Before Customize
+|AIリクエストを実行する前に、リクエストの内容をカスタマイズするための設定項目です。 +
+AdminConsole で設定できない内容を設定する場合に利用します。 +
+Groovy Script 形式でカスタマイズ処理を実装します。
+
+カスタマイズするリクエストインスタンスは、`software.amazon.awssdk.services.bedrockagentcore.model.InvokeHarnessRequest.Builder` クラスのインスタンスになります。
+|===
+
+
+[[prompt_setting_platform_aws_bedrock_agent_core_runtime_http]]
+===== Bedrock AgentCore - Runtime(http)
+Bedrock InvokeAgentRuntime API を利用し、Amazon Bedrock AgentCore で定義したHTTPプロトコルに対応したランタイムを利用してリクエストを行うことができます。 +
+InvokeAgentRuntime API の詳細については、Amazon Bedrock のドキュメントを参照してください。
+
+状態に対応しており、保持する値は以下の通りです。
+
+.状態に保存する内容
+* ランタイムセッションID
+
+設定項目は次の通りです。
+
+[cols="1,3", options="header,autowidth"]
+|===
+|項目
+|説明
+
+|Agent Runtime ARN
+|Amazon Bedrock AgentCore ランタイムのARNを設定します。
+
+|エンドポイント Qualifier
+|Amazon Bedrock AgentCore で定義したランタイムのエンドポイントを設定します。 +
+未指定の場合はデフォルトのエンドポイントを利用します。
+
+|ペイロード作成スクリプト
+|ランタイムに送信するペイロードを作成するための groovy script を設定します。戻り値として文字列を返却してください。 +
+ペイロードは JSON 形式で送信することを想定していますが、ランタイムの仕様に応じて任意の形式で作成してください。
+
+|Platform 内部レスポンスクラス
+|ランタイムからのレスポンスを受け取るためのクラスを設定します。 +
+通常機能の受信方法に問題がある場合は、この設定を利用して独自のレスポンスクラスを設定することができます。 +
+レスポンスクラスは、 `org.iplass.mtp.impl.ai.prompt.bedrock.awsv2.AbstractBedrockAgentCoreRuntimeHttpInnerResponse` を継承したクラスを設定してください。
+
+|Request Before Customize
+|AIリクエストを実行する前に、リクエストの内容をカスタマイズするための設定項目です。 +
+AdminConsole で設定できない内容を設定する場合に利用します。 +
+Groovy Script 形式でカスタマイズ処理を実装します。
+
+カスタマイズするリクエストインスタンスは、`software.amazon.awssdk.services.bedrockagentcore.model.InvokeAgentRuntimeRequest.Builder` クラスのインスタンスになります。
 |===
