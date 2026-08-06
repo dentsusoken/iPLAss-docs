@@ -115,25 +115,81 @@ Please configure these items along with the settings from community editions.
 [cols="1,1,3", options="header"]
 |===
 | Item | Value | Description
+| savedListCsvDownloadInterval | int a|
+WARNING: This config item is not recommended. This setting flag will be deleted in a future version. Please use the savedListFileDownloadInterval instead.
+
+Set the file download interval of the SavedList list overviews to prevent redundant download requests. If 0 is set, the interval will be infinite. The default value is 60000 (1 minute).
 | savedListFileDownloadInterval | int | Set the file download interval of the SavedList list overviews to prevent redundant download requests. If 0 is set, the interval will be infinite. The default value is 60000 (1 minute).
 | savedListFileSupportType | SavedListFileSupportType | The file format for downloading SavedList can be specified as CSV, EXCEL, or SPECIFY. The default value is CSV.
 | entitylistingSearchInterval | int | EntityListing search  interval to prevent redundant search requests. If 0 is set, it will be infinite. The default value is 60000 (1 minute).
+| entitylistingCsvDownloadInterval | int a|
+WARNING: This config item is not recommended. This setting flag will be deleted in a future version. Please use the entitylistingFileDownloadInterval instead.
+
+EntityListing file download interval to prevent redundant download requests. If 0 is set, it will be infinite. The default value is 60000 (1 minute).
 | entitylistingFileDownloadInterval | int | EntityListing file download interval to prevent redundant download requests. If 0 is set, it will be infinite. The default value is 60000 (1 minute).
 | entityListingFileSupportType | EntityListingFileSupportType | The file format for downloading EntityListing can be specified as CSV, EXCEL, or SPECIFY. The default value is CSV.
+| aggregationCsvDownloadInterval | int a|
+WARNING: This config item is not recommended. This setting flag will be deleted in a future version. Please use the aggregationFileDownloadInterval instead.
+
+Aggregation file download interval. If 0 is set, it will be indefinite. The default value is 60000 (1 minute).
 | aggregationFileDownloadInterval | int | Aggregation file download interval. If 0 is set, it will be indefinite. The default value is 60000 (1 minute).
+| aggregationRawdataCsvDownloadInterval | int a|
+WARNING: This config item is not recommended. This setting flag will be deleted in a future version. Please use the aggregationRawdataFileDownloadInterval instead.
+
+Aggregation raw data file download interval. If 0 is set, it will be infinite. The default value is 60000 (1 minute).
 | aggregationRawdataFileDownloadInterval | int | Aggregation raw data file download interval. If 0 is set, it will be infinite. The default value is 60000 (1 minute).
 | aggregationFileSupportType | AggregationFileSupportType | The file format for downloading aggregation can be specified as CSV, EXCEL, or SPECIFY. The default value is CSV.
 | aggregationRawdataFileSupportType | AggregationFileSupportType | The file format for downloading raw data for aggregation can be specified as CSV, EXCEL, or SPECIFY. The default value is CSV.
+| showBothAggregationCsvDownloadButton | boolean a|
+WARNING: This config item is not recommended. This setting flag will be deleted in a future version. Please use the showBothAggregationFileDownloadButton instead.
+
+Whether to display the Aggregation file download button both above and below the summary table. The default value is false.
 | showBothAggregationFileDownloadButton | boolean | Whether to display the Aggregation file download button both above and below the summary table. The default value is false.
+| dividingTableSideAtCrosstabCsvDownload | boolean a|
+WARNING: This config item is not recommended. This setting flag will be deleted in a future version. Please use the dividingTableSideAtCrosstabFileDownload instead.
+
+Whether to divide and output the table side by file download of Aggregation (Crosstab). The default value is false.
 | dividingTableSideAtCrosstabFileDownload | boolean | Whether to divide and output the table side by file download of Aggregation (Crosstab). The default value is false.
+| dividingTableHeadAtCrosstabCsvDownload | boolean a|
+WARNING: This config item is not recommended. This setting flag will be deleted in a future version. Please use the dividingTableHeadAtCrosstabFileDownload instead.
+
+Whether to output by dividing the header of the table with file download of Aggregation (Crosstab). The default value is false.
 | dividingTableHeadAtCrosstabFileDownload | boolean | Whether to output by dividing the header of the table with file download of Aggregation (Crosstab). The default value is false.
+| outputItemLabelCrosstabCsvDownload | boolean a|
+WARNING: This config item is not recommended. This setting flag will be deleted in a future version. Please use the outputItemLabelCrosstabFileDownload instead.
+
+Whether to display header/table-side item names in file download of Aggregation (Crosstab). The default value is false.
 | outputItemLabelCrosstabFileDownload | boolean | Whether to display header/table-side item names in file download of Aggregation (Crosstab). The default value is false.
 | entitylistingSearchLimit | int | EntityListing's search limit. The default value is 10.
+| entitylistingCsvDownloadWithFooter | boolean a|
+WARNING: This config item is not recommended. This setting flag will be deleted in a future version. Please use the entitylistingFileDownloadWithFooter instead.
+
+Set whether to output footer in file download of EntityListing. The default value is false.
 | entitylistingFileDownloadWithFooter | boolean | Set whether to output footer in file download of EntityListing. The default value is false.
+| entitylistingCsvDownloadFooter | String a|
+WARNING: This config item is not recommended. This setting flag will be deleted in a future version. Please use the entitylistingFileDownloadFooter instead.
+
+Footer wording for file of EntityListing.
 | entitylistingFileDownloadFooter | String | Footer wording for file of EntityListing.
+| aggregationCsvDownloadWithFooter | boolean a|
+WARNING: This config item is not recommended. This setting flag will be deleted in a future version. Please use the aggregationFileDownloadWithFooter instead.
+
+Whether to output a footer for aggregate file downloads. The default value is false.
 | aggregationFileDownloadWithFooter | boolean | Whether to output a footer for aggregate file downloads. The default value is false.
+| aggregationCsvDownloadFooter | String a|
+WARNING: This config item is not recommended. This setting flag will be deleted in a future version. Please use the aggregationFileDownloadFooter instead.
+
+footer wording of the aggregate file downloads.
 | aggregationFileDownloadFooter | String | footer wording of the aggregate file downloads.
+| aggregationRawdataCsvDownloadWithFooter | boolean a|
+WARNING: This config item is not recommended. This setting flag will be deleted in a future version. Please use the aggregationRawdataFileDownloadWithFooter instead.
+
+Whether to output a footer when downloading raw file data for aggregation. The default value is false.
 | aggregationRawdataFileDownloadWithFooter | boolean | Whether to output a footer when downloading raw file data for aggregation. The default value is false.
+| aggregationRawdataCsvDownloadFooter | String a|
+WARNING: This config item is not recommended. This setting flag will be deleted in a future version. Please use the aggregationRawdataFileDownloadFooter instead.
+
+Footer wording of raw data aggregate file downloads.
 | aggregationRawdataFileDownloadFooter | String | Footer wording of raw data aggregate file downloads.
 | confirmUserTaskSubmit | boolean | Whether to display the task confirmation dialog on the workflow task edit screen. The default value is true.
 | confirmUserTaskCancel | boolean | Whether to display a cancellation confirmation dialog on the workflow task edit screen. The default value is true.
