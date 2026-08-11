@@ -21,4 +21,6 @@ include::bulklayout.adoc[]
 
 include::filter.adoc[]
 
+include::customcomponent.adoc[]
+
 include::customize.adoc[]
