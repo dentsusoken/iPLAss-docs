@@ -68,23 +68,26 @@ VUE_SFC_LIKE:: Vue.jsのランタイムを用いてコンポーネントとし�
 カスタムコンポーネントが受け取る props および発火する emits は、 **カスタムコンポーネントで置き換える対象のMDC標準のコンポーネントが受け取る props および発火する emits と同じ** になります。 +
 詳細は置き換え対象のMDC標準コンポーネントの実装を参照してください。
 
-.例：ファイルアップロードダイアログをカスタムコンポーネントに置き換える場合
+.例：検索条件ダイアログをカスタムコンポーネントに置き換える場合
 ====
-置き換え対象の `MIFileUploadDialog.vue` が受け取る props と発火する emits がそのままカスタムコンポーネントに引き渡されます。 +
+置き換え対象の `MSearchConditionDialog.vue` が受け取る props と発火する emits がそのままカスタムコンポーネントに引き渡されます。 +
 
 .置き換え対象の props
-* `uploadButtonConfig` : アップロードボタン設定
-* `uploadResultState` : アップロード結果
-* `entityName` : エンティティ名
-* `entityDisplayName` : エンティティ表示名
-* `viewName` : ビュー名
+* `viewKey` : EntityView の Key 情報
+* `title` : 検索画面タイトル
+* `searchConditionSection` : 検索条件セクション
+* `initialSearchCondition` : 初期検索条件
+* `searchErrorInfo` : 検索エラーメッセージ
+* `aboveConditionSection` : 検索条件上のセクション
+* `belowConditionSection` : 検索条件下のセクション
+* `customSearchCondition` : 検索条件をさらに別のカスタムコンポーネントで置き換える設定
 * `contextMap` : コンテキストマップ（下位のコンポーネントに引き渡す情報）
 
 .置き換え対象の emits
-* `click:close` : ダイアログを閉じる
-* `click:sample-download` : サンプルダウンロード要求
-* `click:execute-upload` : アップロード実行
-* `do-custom-click-event-handler` : カスタムクリックイベントハンドラ呼び出し
+* `change:search-condition` : 検索条件変更
+* `loaded:definition` : 検索画面定義ロード完了
+* `error:load` : 検索画面定義ロード失敗
+* `update:linkProperty` : 連動プロパティ更新
 
 カスタムコンポーネントはこれらの props / emits を、置き換え対象が `VUE_SFC` / `VUE_SFC_LIKE` のテンプレートで実装されたコンポーネントか、 `COMPONENT` で読み込まれたコンポーネントかにかかわらず、透過的に受け渡します。
 ====
