@@ -109,7 +109,7 @@ class は `org.iplass.mtp.impl.ai.prompt.DefaultAiUserIdFactory` クラスを指
     <property name="userIdFactory" class="org.iplass.mtp.impl.ai.prompt.DefaultAiUserIdFactory" />
     <property name="userIdCharacterReplacementRule" ref="sharedIdCharacterReplacementRule" />
 
-    <!--セッションID生成 -->
+    <!-- セッションID生成 -->
     <property name="sessionIdFactory" class="org.iplass.mtp.impl.ai.prompt.DefaultAiSessionIdFactory" />
     <property name="sessionIdCharacterReplacementRule" ref="sharedIdCharacterReplacementRule" />
 </service>

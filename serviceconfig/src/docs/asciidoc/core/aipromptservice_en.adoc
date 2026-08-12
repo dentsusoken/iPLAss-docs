@@ -41,7 +41,7 @@ The key is the character (char) to be replaced, and the value is the replacement
 By default, the following replacement rules are applied.
 
 - Character to be replaced: `@`, Replacement string: `x40`
-- Character to be replaced: `.` , Replacement string: `x2e`
+- Character to be replaced: `.`, Replacement string: `x2e`
 - Character to be replaced: `+`, Replacement string: `x2b`
 
 | sessionIdFactory
@@ -56,7 +56,7 @@ The key is the character (char) to be replaced, and the value is the replacement
 By default, the following replacement rules are applied.
 
 - Character to be replaced: `@`, Replacement string: `x40`
-- Character to be replaced: `.` , Replacement string: `x2e`
+- Character to be replaced: `.`, Replacement string: `x2e`
 - Character to be replaced: `+`, Replacement string: `x2b`
 
 |===
@@ -64,7 +64,7 @@ By default, the following replacement rules are applied.
 [[AiPromptService_AiPromptService_AiIdFactory]]
 .AiIdFactory
 class specifies the implementation class of `org.iplass.mtp.impl.ai.prompt.AiIdFactory`. +
-By default, the following AiServiceProviderConfig is provided.
+By default, the following AiIdFactory is provided.
 
 - <<AiPromptService_AiPromptService_AiIdFactory_DefaultAiSessionIdFactory>>
 - <<AiPromptService_AiPromptService_AiIdFactory_DefaultAiUserIdFactory>>
