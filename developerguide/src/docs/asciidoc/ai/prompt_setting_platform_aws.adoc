@@ -83,7 +83,7 @@ Groovy Script 形式でカスタマイズ処理を実装します。
 |===
 
 [[prompt_setting_platform_aws_bedrock_agent]]
-===== Bedrock - Agent
+===== （非推奨）Bedrock - Agent
 Bedrock InvokeAgent API を利用し、Amazon Bedrock Agent で定義したエージェントに対してリクエストを行うことができます。 +
 InvokeAgent API の詳細については、Amazon Bedrock のドキュメントを参照してください。
 
@@ -293,6 +293,19 @@ InvokeAgentRuntime API の詳細については、Amazon Bedrock のドキュメ
 |ランタイムからのレスポンスを受け取るためのクラスを設定します。 +
 通常機能の受信方法に問題がある場合は、この設定を利用して独自のレスポンスクラスを設定することができます。 +
 レスポンスクラスは、 `org.iplass.mtp.impl.ai.prompt.bedrock.awsv2.AbstractBedrockAgentCoreRuntimeHttpInnerResponse` を継承したクラスを設定してください。
+
+|Structured Output Config - Schema Name
+|構造化されたデータのスキーマの名前を設定します。 +
+Bedrock AgentCore Runtime(http) のリクエストでは直接利用しませんが、レスポンスが構造化されたデータで返却される場合に、構造化されたデータのスキーマを設定することができます。
+
+|Structured Output Config - Schema Description
+|構造化されたデータのスキーマの説明を設定します。 +
+Bedrock AgentCore Runtime(http) のリクエストでは直接利用しませんが、レスポンスが構造化されたデータで返却される場合に、構造化されたデータのスキーマを設定することができます。
+
+|Structured Output Config - Json Schema
+|AIリクエストを実行した際の応答を構造化されたデータとして受け取るための設定項目です。 +
+構造化されたデータのスキーマを Json Schema 形式で設定します。 +
+Bedrock AgentCore Runtime(http) のリクエストでは直接利用しませんが、レスポンスが構造化されたデータで返却される場合に、構造化されたデータのスキーマを設定することができます。
 
 |Request Before Customize
 |AIリクエストを実行する前に、リクエストの内容をカスタマイズするための設定項目です。 +
