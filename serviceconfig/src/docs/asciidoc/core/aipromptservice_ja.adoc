@@ -34,7 +34,56 @@ AiPromptService を設定します。
 本設定値はシステムで定義されるべき内容であり、利用者が設定する必要はありません。 +
 Map 形式の name プロパティには `org.iplass.mtp.ai.prompt.AiPlatformDefinition` クラスのサブクラスの完全修飾クラス名を設定します。 +
 Map 形式の value プロパティには name プロパティに対応する `org.iplass.mtp.impl.ai.prompt.MetaAiPlatform` メタデータクラスのサブクラスの完全修飾クラス名を設定します。
+
+| userIdFactory
+| <<AiPromptService_AiPromptService_AiIdFactory>>
+| ユーザー毎にユニークなIDを生成するためのファクトリクラスを設定します。 +
+デフォルトでは `org.iplass.mtp.impl.ai.prompt.DefaultAiUserIdFactory` クラスが設定されます。
+
+| userIdCharacterReplacementRule
+| String, Map形式
+a| ユーザーIDに使用できない文字を置換するためのルールを設定します。 +
+キーには置換対象の文字（char）を、値には置換後の文字列を設定します。 +
+デフォルトでは以下の置換ルールが適用されます。
+
+- 置換対象の文字: `@`、置換後の文字列: `x40`
+- 置換対象の文字: `.`、置換後の文字列: `x2e`
+- 置換対象の文字: `+`、置換後の文字列: `x2b`
+
+| sessionIdFactory
+| <<AiPromptService_AiPromptService_AiIdFactory>>
+| リクエストセッション毎にユニークなIDを生成するためのファクトリクラスを設定します。 +
+デフォルトでは `org.iplass.mtp.impl.ai.prompt.DefaultAiSessionIdFactory` クラスが設定されます。
+
+| sessionIdCharacterReplacementRule
+| String, Map形式
+a| セッションIDに使用できない文字を置換するためのルールを設定します。 +
+キーには置換対象の文字（char）を、値には置換後の文字列を設定します。 +
+デフォルトでは以下の置換ルールが適用されます。
+
+- 置換対象の文字: `@`、置換後の文字列: `x40`
+- 置換対象の文字: `.`、置換後の文字列: `x2e`
+- 置換対象の文字: `+`、置換後の文字列: `x2b`
+
 |===
+
+[[AiPromptService_AiPromptService_AiIdFactory]]
+.AiIdFactory
+class は `org.iplass.mtp.impl.ai.prompt.AiIdFactory` の実装クラスを指定します。 +
+標準で、以下の AiIdFactory を提供します。
+
+- <<AiPromptService_AiPromptService_AiIdFactory_DefaultAiSessionIdFactory>>
+- <<AiPromptService_AiPromptService_AiIdFactory_DefaultAiUserIdFactory>>
+
+[[AiPromptService_AiPromptService_AiIdFactory_DefaultAiSessionIdFactory]]
+.[.eeonly]#DefaultAiSessionIdFactory#
+class は `org.iplass.mtp.impl.ai.prompt.DefaultAiSessionIdFactory` クラスを指定します。 +
+設定項目はありません。
+
+[[AiPromptService_AiPromptService_AiIdFactory_DefaultAiUserIdFactory]]
+.[.eeonly]#DefaultAiUserIdFactory#
+class は `org.iplass.mtp.impl.ai.prompt.DefaultAiUserIdFactory` クラスを指定します。 +
+設定項目はありません。
 
 ===== 設定例
 [source,xml]
@@ -44,10 +93,25 @@ Map 形式の value プロパティには name プロパティに対応する `o
     <interface>org.iplass.mtp.impl.ai.prompt.AiPromptService</interface>
     <class>org.iplass.mtp.impl.ai.prompt.AiPromptService</class>
 
+    <!-- ID生成時の文字列置換ルール -->
+    <bean name="sharedIdCharacterReplacementRule" class="java.util.HashMap">
+        <property name="@" value="x40" />
+        <property name="." value="x2e" />
+        <property name="+" value="x2b" />
+    </bean>
+
     <property name="definitionMetaClassMap">
         <property name="org.iplass.mtp.ai.prompt.AiPlatformDefinition" value="org.iplass.mtp.impl.ai.prompt.MetaAiPlatform" />
         <property name="org.iplass.mtp.ai.prompt.AiPlatformCustomDefinition" value="org.iplass.mtp.impl.ai.prompt.MetaAiPlatformCustom" />
     </property>
+
+    <!-- ユーザーID生成 -->
+    <property name="userIdFactory" class="org.iplass.mtp.impl.ai.prompt.DefaultAiUserIdFactory" />
+    <property name="userIdCharacterReplacementRule" ref="sharedIdCharacterReplacementRule" />
+
+    <!-- セッションID生成 -->
+    <property name="sessionIdFactory" class="org.iplass.mtp.impl.ai.prompt.DefaultAiSessionIdFactory" />
+    <property name="sessionIdCharacterReplacementRule" ref="sharedIdCharacterReplacementRule" />
 </service>
 ----
 
