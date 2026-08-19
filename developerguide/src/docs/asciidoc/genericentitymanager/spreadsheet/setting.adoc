@@ -1,4 +1,135 @@
+
 [[spreadsheet_management]]
 == Spreadsheetの管理
 
-(詳細に関して近日、追記予定)
+[[spreadsheet_create]]
+=== SpreadSheetの作成
+
+SpreadSheet定義は、AdminConsoleのメタデータ管理から作成します。
+メタデータツリーの `SpreadSheet` アイコン配下の対象フォルダを右クリックし、 `SpreadSheetを作成する` を選択します。
+表示されたダイアログで、定義名・表示名・概要を入力して作成します。
+
+image::images/spreadsheet_set_create.png[]
+
+作成後、編集画面が表示されます。
+編集画面では、左側のプロパティドラッグエリアに対象Entityのプロパティ一覧が表示され、フィルタ項目や列定義にドラッグ&ドロップで追加できます。
+
+NOTE: 対象Entityを変更すると、設定済みのフィルタ項目と列定義はクリアされます。
+
+[[spreadsheet_setting]]
+=== 設定
+
+SpreadSheet定義の編集画面の `SpreadSheet属性` タブでは、以下のセクションを設定します。
+各設定項目の詳細は、<<definition.adoc#spreadsheet_definition,Definition定義の詳細>>を参照してください。
+
+image::images/spreadsheet_set_edit.png[]
+
+[cols="1,5a", options="header"]
+|===
+|セクション|説明
+
+|基本設定
+|対象Entity、デフォルト検索条件、グリッドオプション、カスタム処理、機能フラグを設定します。
+
+|フィルタ項目
+|フィルタ条件エリアに表示する検索条件の項目を設定します。
+対象Entityのプロパティをドラッグ&ドロップで追加できます。
+
+|列定義
+|グリッドに表示する列を設定します。
+対象Entityのプロパティをドラッグ&ドロップで追加できます。
+列定義は1つ以上必要です。
+|===
+
+[[spreadsheet_setting_basic]]
+==== 基本設定
+
+対象Entityとデフォルト検索条件を設定します。
+
+[cols="1,5a", options="header"]
+|===
+|設定項目|説明
+
+|対象Entity
+|SpreadSheetの対象となるEntityを選択します。
+
+|デフォルト検索条件
+|画面表示時に初期適用する検索条件をGroovyスクリプトで指定します。
+|===
+
+image::images/spreadsheet_set_basic.png[]
+
+[[spreadsheet_setting_gridoptions]]
+==== グリッドオプション
+
+グリッドの表示・操作に関する設定を行います。
+行の高さ、デフォルト列幅、検索件数上限、列幅自動調整、固定列・固定行、選択モード、編集許可などの項目を設定できます。
+
+image::images/spreadsheet_set_gridoptions.png[]
+
+[[spreadsheet_setting_custom]]
+==== カスタム処理
+
+データ登録時のカスタム処理を設定します。
+
+[cols="1,5a", options="header"]
+|===
+|設定項目|説明
+
+|カスタム登録処理クラス名
+|データ登録時に行うカスタム登録処理のクラス名を指定します。
+SpreadSheetRegistrationInterrupterインターフェースを実装するクラスを指定してください。
+
+|グリッド初期化スクリプト
+|グリッド生成後に実行する初期化JavaScriptをGroovyテンプレートで指定します。
+|===
+
+[[spreadsheet_setting_featureflags]]
+==== 機能フラグ
+
+グリッド上で許可する操作を設定します。
+行追加許可、行削除許可、エクスポート許可、コピー許可、貼り付け許可、ソート許可、結合許可を設定できます。
+結合許可を有効にした場合は、セル結合設定（セルレイアウトまたはExpression）もあわせて設定します。
+
+image::images/spreadsheet_set_featureflags.png[]
+
+[[spreadsheet_setting_filter]]
+==== フィルタ項目
+
+フィルタ条件エリアに表示する項目を設定します。
+プロパティドラッグエリアからプロパティをドラッグ&ドロップで追加し、各項目の編集ダイアログで表示ラベル、プロパティエディタ、利用可能な比較演算子、必須設定を行います。
+
+image::images/spreadsheet_set_filter.png[]
+
+[[spreadsheet_setting_column]]
+==== 列定義
+
+グリッドに表示する列を設定します。
+プロパティドラッグエリアからプロパティをドラッグ&ドロップで追加し、各列の編集ダイアログで表示ラベル、幅、配置、ソート可否、編集可否、必須、多重度、多重度表示モード、カスタムスタイル、エディタタイプを設定します。
+エディタタイプはプロパティの型から自動的に決定されます。
+
+image::images/spreadsheet_set_column.png[]
+
+[[spreadsheet_view]]
+=== 表示方法
+
+[[spreadsheet_menu]]
+==== メニューへの登録
+
+SpreadSheet画面を表示するにはメニューにActionMenuItemを登録します。
+
+ActionMenuItemには雛型として `gem/template/spreadsheet/ViewSpreadSheetAction` というメニューアイテムがあります。
+このActionMenuItemをコピーしてメニューアイテムを編集してください。
+
+[cols="1,5a", options="header"]
+|===
+|項目|設定値
+|Name|管理しやすいように設定してください。
+|DisplayName|メニューの表示名になります。
+|Execute Action| `gem/spreadsheet/view` を指定してください。
+|Parameter| `definitionName=XXX`
+
+definitionName:: 作成したSpreadSheetメタデータ名を指定します。
+|===
+
+NOTE: TopViewのパーツとしては未対応です。SpreadSheet画面はメニューから表示してください。
