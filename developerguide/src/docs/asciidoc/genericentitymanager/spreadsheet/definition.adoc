@@ -415,7 +415,7 @@ GEM既存のPropertyEditorを使用します。
 |利用可能な比較演算子
 |フィルタ条件で選択可能な比較演算子を限定する場合に指定します。
 未指定の場合はすべての比較演算子が利用可能です。
-指定できる演算子は、<<operationguide.adoc#spreadsheet_filter_operator,利用可能な比較演算子>>を参照してください。
+指定できる演算子は、<<spreadsheet_filter_operator,利用可能な比較演算子>>を参照してください。
 |===
 
 [[spreadsheet_columndefinition]]
@@ -848,6 +848,13 @@ NOTE: 登録処理の種類はRegistrationType（INSERT：新規追加、UPDATE�
 [[spreadsheet_interrupter_example]]
 ==== 実装例
 
+カスタム処理の典型的なユースケースを2つの例で示します。
+
+===== 例1：登録時に更新ユーザーを自動的に設定したい
+
+ユースケース：画面から入力させずに、保存処理を実行したユーザーを更新ユーザーとして自動的に設定します。
+次の `SampleSpreadSheetInterrupter` は、`dataMapping` のタイミングで実行ユーザーのアカウント情報をEntityにセットします。
+
 [source,java]
 ----
 package your.package;
@@ -856,6 +863,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.iplass.mtp.auth.AuthContext;
 import org.iplass.mtp.command.RequestContext;
 import org.iplass.mtp.entity.Entity;
 import org.iplass.mtp.entity.EntityDefinition;
@@ -871,7 +879,7 @@ public class SampleSpreadSheetInterrupter implements SpreadSheetRegistrationInte
             EntityDefinition definition, SpreadSheetDefinition spreadSheetDefinition,
             Map<String, Object> row) {
         // 登録用Entityに対する値の加工や追加設定を行います
-        entity.setValue("updateUser", request.getUser().getName());
+        entity.setValue("updateUser", AuthContext.getCurrentContext().getUser().getName());
     }
 
     @Override
@@ -881,6 +889,53 @@ public class SampleSpreadSheetInterrupter implements SpreadSheetRegistrationInte
         // 登録前のバリデーションを行います
         // エラーがある場合はValidateErrorを返却し、登録処理を中断します
         return Collections.emptyList();
+    }
+}
+----
+
+===== 例2：特定の条件に該当する行の登録を拒否したい
+
+ユースケース：価格が未入力の行など、特定の条件に該当する行の登録を拒否し、エラーとして差し戻します。
+次の `SampleValidationInterrupter` は、`beforeRegister` で価格が未設定の行をチェックします。
+戻り値のリストにValidateErrorが含まれる場合、該当行の登録処理は中断されます。
+
+[source,java]
+----
+package your.package;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.iplass.mtp.command.RequestContext;
+import org.iplass.mtp.entity.Entity;
+import org.iplass.mtp.entity.ValidateError;
+import org.iplass.mtp.entity.definition.EntityDefinition;
+import org.iplass.mtp.view.spreadsheet.SpreadSheetDefinition;
+import org.iplass.mtp.view.spreadsheet.SpreadSheetRegistrationInterrupter;
+import org.iplass.mtp.view.spreadsheet.SpreadSheetRegistrationInterrupter.RegistrationType;
+
+public class SampleValidationInterrupter implements SpreadSheetRegistrationInterrupter {
+
+    @Override
+    public List<ValidateError> beforeRegister(Entity entity, RequestContext request,
+            EntityDefinition definition, SpreadSheetDefinition spreadSheetDefinition,
+            RegistrationType registrationType) {
+        List<ValidateError> errors = new ArrayList<>();
+        // 価格が未設定の行は登録を拒否します
+        if (entity.getValue("price") == null) {
+            ValidateError error = new ValidateError();
+            error.setPropertyName("price");
+            error.addErrorMessage("価格を入力してください。");
+            errors.add(error);
+        }
+        return errors;
+    }
+
+    @Override
+    public void dataMapping(Entity entity, RequestContext request,
+            EntityDefinition definition, SpreadSheetDefinition spreadSheetDefinition,
+            Map<String, Object> row) {
     }
 }
 ----

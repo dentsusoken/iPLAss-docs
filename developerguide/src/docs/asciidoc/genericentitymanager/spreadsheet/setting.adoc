@@ -6,7 +6,7 @@
 === Spreadsheetの作成
 
 Spreadsheet定義は、Admin Consoleのメタデータ管理から作成します。
-メタデータツリーの `Spreadsheet` アイコン配下の対象フォルダを右クリックし、 `Spreadsheetを作成する` を選択します。
+メタデータツリーの `Spreadsheet` アイコン直下または配下のフォルダを右クリックし、 `Spreadsheetを作成する` を選択します。
 表示されたダイアログで、定義名・表示名・概要を入力して作成します。
 
 image::images/spreadsheet_set_create.png[]
@@ -132,4 +132,8 @@ ActionMenuItemには雛型として `gem/template/spreadsheet/ViewSpreadSheetAct
 definitionName:: 作成したSpreadsheetメタデータ名を指定します。
 |===
 
-NOTE: TopViewのパーツとしては未対応です。Spreadsheet画面はメニューから表示してください。
+以下は商品一覧を表示するActionMenuItemの登録例です。
+
+image::images/spreadsheet_set_menu.png[]
+
+NOTE: TopViewのパーツとしては未対応です。詳細は、<<spreadsheet_limitations,SpreadsheetとExcelの違い・制限事項>>を参照してください。

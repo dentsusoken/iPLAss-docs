@@ -20,7 +20,7 @@ SpreadSheetService can be configured with the following items.
 |===
 | Item | Value | Description
 | searchLimit | int | The maximum number of records to retrieve for the initial display and filter search on the Spreadsheet screen. The default value is 20. +
-This value is used when the search limit is not specified in the grid options of the Spreadsheet definition.
+ This value is used when the search limit is not specified in the grid options of the Spreadsheet definition.
 |===
 
 ===== Example
