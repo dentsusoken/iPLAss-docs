@@ -1,0 +1,35 @@
+[[SpreadSheetService]]
+=== [.eeonly]#SpreadSheetService#
+This service manages the definition (metadata) of Spreadsheet.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.view.spreadsheet.SpreadSheetService
+----
+
+==== Implementing Class
+----
+org.iplass.mtp.impl.view.spreadsheet.SpreadSheetService
+----
+
+==== The settings of SpreadSheetService
+SpreadSheetService can be configured with the following items.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| searchLimit | int | The maximum number of records to retrieve for the initial display and filter search on the Spreadsheet screen. The default value is 20. +
+This value is used when the search limit is not specified in the grid options of the Spreadsheet definition.
+|===
+
+===== Example
+[source,xml]
+----
+<service final="true">
+	<interface>org.iplass.mtp.impl.view.spreadsheet.SpreadSheetService</interface>
+	<class>org.iplass.mtp.impl.view.spreadsheet.SpreadSheetService</class>
+	<!-- The maximum number of records to retrieve for search on the Spreadsheet screen -->
+	<property name="searchLimit" value="20" />
+</service>
+----
