@@ -20,7 +20,7 @@ NOTE: 対象Entityを変更すると、設定済みのフィルタ項目と列�
 === 設定
 
 SpreadSheet定義の編集画面の `SpreadSheet属性` タブでは、以下のセクションを設定します。
-各設定項目の詳細は、<<definition.adoc#spreadsheet_definition,Definition定義の詳細>>を参照してください。
+各設定項目の詳細は、<<spreadsheet_definition,Definition定義の詳細>>を参照してください。
 
 image::images/spreadsheet_set_edit.png[]
 

@@ -280,7 +280,7 @@ image::images/spreadsheet_ope_validation.png[]
 * セルレイアウト（静的設定）: 結合するセル範囲を行・列・行結合数・列結合数で固定値として定義します。
 * Expression（式設定）: ルールベースで結合条件（同値比較など）を定義します。
 
-設定方法の詳細は<<definition.adoc#spreadsheet_featureflags_merge,セル結合設定>>を参照してください。
+設定方法の詳細は<<spreadsheet_featureflags_merge,セル結合設定>>を参照してください。
 
 image::images/spreadsheet_ope_merge.png[]
 

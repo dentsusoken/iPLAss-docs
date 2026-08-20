@@ -14,59 +14,59 @@ SpreadSheetDefinitionの設定項目は以下となります。
 |===
 |設定項目|設定値
 
-|定義名（name）
+|定義名
 |定義名を指定します。
 
-|表示名（displayName）
+|表示名
 |定義の表示名を指定します。多言語対応が可能です。
 
-|多言語表示名リスト（localizedDisplayNameList）
+|多言語表示名リスト
 |多言語の表示名を指定します。
 
-|概要（description）
+|概要
 |定義の概要を指定します。
 
-|対象Entity（targetEntityName）
+|対象Entity
 |SpreadSheetの対象となるEntityを選択します。
 
-|グリッドオプション（gridOptions）
+|グリッドオプション
 |グリッドの表示・操作に関する設定を指定します。 +
-詳細は<<definition.adoc#spreadsheet_gridoptions,グリッドオプション>>を参照してください。
+詳細は<<spreadsheet_gridoptions,グリッドオプション>>を参照してください。
 
-|機能フラグ（featureFlags）
+|機能フラグ
 |グリッド上で許可する操作を指定します。 +
-詳細は<<definition.adoc#spreadsheet_featureflags,機能フラグ>>を参照してください。
+詳細は<<spreadsheet_featureflags,機能フラグ>>を参照してください。
 
-|デフォルト検索条件（defaultPropertyConditionScript）
+|デフォルト検索条件
 |画面表示時にフィルタ条件エリアへ初期設定する検索条件をGroovyスクリプトで指定します。 +
-詳細は<<definition.adoc#spreadsheet_basic_defaultcond,デフォルト検索条件スクリプト>>を参照してください。
+詳細は<<spreadsheet_basic_defaultcond,デフォルト検索条件スクリプト>>を参照してください。
 
-|グリッド初期化スクリプト（gridInitializationScript）
+|グリッド初期化スクリプト
 |グリッド生成後に実行する初期化JavaScriptをGroovyテンプレートで指定します。 +
-詳細は<<definition.adoc#spreadsheet_basic_init,グリッド初期化スクリプト>>を参照してください。
+詳細は<<spreadsheet_basic_init,グリッド初期化スクリプト>>を参照してください。
 
-|フィルタ項目リスト（filterItems）
+|フィルタ項目リスト
 |フィルタ条件エリアに表示する項目を指定します。 +
-詳細は<<definition.adoc#spreadsheet_filteritem,フィルタ項目>>を参照してください。
+詳細は<<spreadsheet_filteritem,フィルタ項目>>を参照してください。
 
-|列定義リスト（columnDefinitions）
+|列定義リスト
 |グリッドに表示する列を指定します。列定義は1つ以上必要です。 +
-詳細は<<definition.adoc#spreadsheet_columndefinition,列定義>>を参照してください。
+詳細は<<spreadsheet_columndefinition,列定義>>を参照してください。
 
-|デフォルトソート条件（defaultOrderBy）
+|デフォルトソート条件
 |画面表示時に適用するソート条件を指定します。
 ソート対象のプロパティ名とソート方向（ascまたはdesc）をカンマ区切りで指定します（例： `name asc, age desc`）。
 ソート方向を省略した場合は昇順になります。
 
-|カスタム登録処理クラス名（interrupterName）
+|カスタム登録処理クラス名
 |データ登録時のカスタム処理クラスを指定します。 +
-詳細は<<definition.adoc#spreadsheet_interrupter,カスタム処理の組み込み>>を参照してください。
+詳細は<<spreadsheet_interrupter,カスタム処理の組み込み>>を参照してください。
 |===
 
 [[spreadsheet_basic_defaultcond]]
 ==== デフォルト検索条件スクリプト
 
-デフォルト検索条件（defaultPropertyConditionScript）は、画面表示時にフィルタ条件エリアへ初期値を設定するためのGroovyスクリプトです。
+デフォルト検索条件は、画面表示時にフィルタ条件エリアへ初期値を設定するためのGroovyスクリプトです。
 リクエストパラメータで指定された条件を引き継いだ上で、スクリプト内で条件を追加・変更できます。
 
 スクリプト内では以下の変数が利用できます。
@@ -133,7 +133,7 @@ initCondMap.put("name_0", "サンプル")
 [[spreadsheet_basic_init]]
 ==== グリッド初期化スクリプト
 
-グリッド初期化スクリプト（gridInitializationScript）は、グリッド生成後にクライアント側で実行する初期化JavaScriptを、Groovyテンプレートで記述します。
+グリッド初期化スクリプトは、グリッド生成後にクライアント側で実行する初期化JavaScriptを、Groovyテンプレートで記述します。
 Groovyテンプレートはサーバサイドで評価され、その出力結果がクライアント側のグリッド初期化スクリプトとして実行されます。
 
 クライアント側では以下の変数が利用できます。
@@ -180,29 +180,29 @@ SpreadSheetGridOptionsの設定項目は以下となります。
 |===
 |設定項目|設定値
 
-|行の高さ（rowHeight）
+|行の高さ
 |行の高さをピクセル単位で指定します。
 
-|デフォルト列幅（defaultColumnWidth）
+|デフォルト列幅
 |列のデフォルト幅を指定します。
 列定義で幅が指定されていない列に適用されます。
 
-|検索件数上限（searchLimit）
+|検索件数上限
 |初期表示およびフィルタ検索時の取得件数上限を指定します。
 未指定の場合はSpreadSheetサービスのデフォルト値（20）を使用します。
 
-|列幅自動調整（forceFitColumns）
+|列幅自動調整
 |列幅をグリッド幅に自動的に合わせます。
 
-|固定列（frozenColumn）
+|固定列
 |固定する列のインデックスを指定します。
 -1を指定した場合は固定しません。
 
-|固定行（frozenRow）
+|固定行
 |固定する行のインデックスを指定します。
 -1を指定した場合は固定しません。
 
-|選択モード（selectionMode）
+|選択モード
 |グリッドの選択モードを指定します。
 
 cell:: セル単位で選択します（デフォルト）。
@@ -213,32 +213,32 @@ range:: セル範囲（ドラッグによる矩形選択）で選択します。
 
 checkbox:: 行頭のチェックボックスで行を選択します。
 
-|選択（multiSelect）
+|選択
 |単一選択または複数選択を指定します。
 
 single:: 単一選択です（デフォルト）。
 
 multiple:: 複数選択です。CtrlキーやShiftキーを併用して複数選択できます。
 
-|編集許可（editable）
+|編集許可
 |セル値の編集を許可します。
 
-|高さ自動調整（autoHeight）
+|高さ自動調整
 |行数に合わせてグリッドの高さを自動調整します。
 
-|列ヘッダー表示（showColumnHeader）
+|列ヘッダー表示
 |グリッドの列ヘッダーを表示します。
 
-|自動編集開始（autoEdit）
+|自動編集開始
 |セルがアクティブになったとき自動で編集モードを開始します。
 
-|セルナビゲーション有効（enableCellNavigation）
+|セルナビゲーション有効
 |キーボードやアクティブセルの移動を有効にします。
 
-|自動ツールチップ有効（enableAutoTooltip）
+|自動ツールチップ有効
 |セル内容が省略表示されたとき自動でツールチップを表示します。
 
-|セル内テキスト選択有効（enableTextSelectionOnCells）
+|セル内テキスト選択有効
 |セル操作と競合しない範囲でセル内テキストの選択を有効にします。
 |===
 
@@ -251,40 +251,40 @@ SpreadSheetFeatureFlagsの設定項目は以下となります。
 |===
 |設定項目|設定値
 
-|行追加許可（allowAddRow）
+|行追加許可
 |新しい行の追加を許可します。
 
-|行削除許可（allowDeleteRow）
+|行削除許可
 |行の削除を許可します。
 
-|エクスポート許可（allowExport）
+|エクスポート許可
 |データのエクスポートを許可します。
 
-|コピー許可（allowCopy）
+|コピー許可
 |データのコピーを許可します。
 
-|貼り付け許可（allowPaste）
+|貼り付け許可
 |データの貼り付けを許可します。
 
-|ソート許可（allowSort）
+|ソート許可
 |列のソートを許可します。
 
-|結合許可（enableMergeCells）
+|結合許可
 |セルの結合機能を有効にします。
 
-|セル結合静的設定（mergeCellsConfig）
+|セル結合静的設定
 |結合するセル範囲をJSON形式で定義します。 +
-詳細は<<definition.adoc#spreadsheet_featureflags_merge,セル結合設定>>を参照してください。
+詳細は<<spreadsheet_featureflags_merge,セル結合設定>>を参照してください。
 
-|セル結合式設定（mergeCellsExpression）
+|セル結合式設定
 |ルールベースで結合条件をJSON形式で定義します。 +
-詳細は<<definition.adoc#spreadsheet_featureflags_merge,セル結合設定>>を参照してください。
+詳細は<<spreadsheet_featureflags_merge,セル結合設定>>を参照してください。
 |===
 
 [[spreadsheet_featureflags_merge]]
 ==== セル結合設定
 
-結合許可（enableMergeCells）を有効にした場合、セル結合の設定は、 `セルレイアウト` または `Expression（ルールベース）` のいずれかで行います。
+結合許可を有効にした場合、セル結合の設定は、 `セルレイアウト` または `Expression（ルールベース）` のいずれかで行います。
 
 [[spreadsheet_merge_celllayout]]
 ===== セルレイアウト（静的設定）
@@ -382,7 +382,7 @@ mapping:: 結合範囲の値を「プロパティ名:値」形式で連結して
 ]
 ----
 
-NOTE: 同値（sameValue）判定では、空の値同士は結合されません。
+NOTE: 同値判定では、空の値同士は結合されません。
 
 NOTE: 多重度表示モードが複数列展開（MULTI_COL）の列は、セル結合の対象外です。
 
@@ -395,24 +395,24 @@ SpreadSheetFilterItemの設定項目は以下となります。
 |===
 |設定項目|設定値
 
-|プロパティ名（propertyName）
+|プロパティ名
 |フィルタ条件の対象となるプロパティ名を指定します。
 
-|表示ラベル（displayLabel）
+|表示ラベル
 |フィルタ条件エリアに表示するラベルを指定します。多言語対応が可能です。
 
-|多言語設定リスト（localizedDisplayLabelList）
+|多言語設定リスト
 |表示ラベルの多言語設定を指定します。
 
-|必須フラグ（required）
+|必須フラグ
 |フィルタ条件として必須の場合はtrueを指定します。
 必須項目は、条件を入力しないと検索できません。
 
-|プロパティエディタ（editor）
+|プロパティエディタ
 |フィルタ条件の入力で使用するエディタを指定します。
 GEM既存のPropertyEditorを使用します。
 
-|利用可能な比較演算子（availableOperator）
+|利用可能な比較演算子
 |フィルタ条件で選択可能な比較演算子を限定する場合に指定します。
 未指定の場合はすべての比較演算子が利用可能です。
 指定できる演算子は、<<operationguide.adoc#spreadsheet_filter_operator,利用可能な比較演算子>>を参照してください。
@@ -427,20 +427,20 @@ SpreadSheetColumnDefinitionの設定項目は以下となります。
 |===
 |設定項目|設定値
 
-|プロパティ名（propertyName）
+|プロパティ名
 |列に表示するプロパティ名を指定します。
 
-|表示ラベル（displayLabel）
+|表示ラベル
 |列ヘッダーに表示するラベルを指定します。多言語対応が可能です。
 
-|多言語設定リスト（localizedDisplayLabelList）
+|多言語設定リスト
 |表示ラベルの多言語設定を指定します。
 
-|幅（width）
+|幅
 |列の幅をピクセル単位で指定します。
 未指定の場合はグリッドオプションのデフォルト列幅が適用されます。
 
-|配置（align）
+|配置
 |列内のテキストの配置を指定します。
 
 left:: 左寄せで表示します（デフォルト）。
@@ -449,31 +449,31 @@ center:: 中央寄せで表示します。
 
 right:: 右寄せで表示します。
 
-|ソート可能（sortable）
+|ソート可能
 |この列でソートを許可するかどうかを指定します。
 ソートするには、機能フラグのソート許可も有効である必要があります。
 
-|編集可能（editable）
+|編集可能
 |この列を編集可能にするかどうかを指定します。
 編集するには、グリッドオプションの編集許可も有効である必要があります。
 
-|必須（required）
+|必須
 |この列に値が必須かどうかを指定します。
 
-|多重度（multiplicity）
+|多重度
 |プロパティの多重度を指定します。
 1は単一、2以上は複数、0は無制限です。
 
-|多重度表示モード（multiValueDisplayMode）
+|多重度表示モード
 |多重度プロパティの表示方法を指定します。 +
-詳細は<<definition.adoc#spreadsheet_columndefinition_multivalue,多重度表示モード>>を参照してください。
+詳細は<<spreadsheet_columndefinition_multivalue,多重度表示モード>>を参照してください。
 
-|カスタムスタイル（customStyle）
+|カスタムスタイル
 |セルに適用するカスタムCSSクラス名を指定します。
 
-|エディタ定義（spreadsheetEditor）
+|エディタ定義
 |列の編集で使用するエディタの設定を指定します。 +
-詳細は<<definition.adoc#spreadsheet_editor,エディタ設定>>を参照してください。
+詳細は<<spreadsheet_editor,エディタ設定>>を参照してください。
 |===
 
 [[spreadsheet_columndefinition_multivalue]]
@@ -503,7 +503,7 @@ NOTE: 複数列展開（MULTI_COL）を指定した列は、セル結合の対�
 image::images/spreadsheet_def_editor.png[]
 
 [[spreadsheet_editor_string]]
-===== 文字列エディタ（SpreadSheetStringEditor）
+===== SpreadSheetStringEditor
 
 文字列型のプロパティに適用されるエディタです。
 
@@ -511,15 +511,15 @@ image::images/spreadsheet_def_editor.png[]
 |===
 |設定項目|設定値
 
-|最大長（maxLength）
+|最大長
 |許容される最大文字数を指定します。
 
-|パターン（pattern）
+|パターン
 |検証用の正規表現パターンを指定します。
 |===
 
 [[spreadsheet_editor_longtext]]
-===== 長文エディタ（SpreadSheetLongTextEditor）
+===== SpreadSheetLongTextEditor
 
 長文型のプロパティに適用されるエディタです。
 
@@ -527,18 +527,18 @@ image::images/spreadsheet_def_editor.png[]
 |===
 |設定項目|設定値
 
-|行数（rows）
+|行数
 |テキストエリアの行数を指定します。
 
-|列数（cols）
+|列数
 |テキストエリアの列数を指定します。
 
-|最大文字数（maxLength）
+|最大文字数
 |入力可能な最大文字数を指定します。
 |===
 
 [[spreadsheet_editor_integer]]
-===== 整数エディタ（SpreadSheetIntegerEditor）
+===== SpreadSheetIntegerEditor
 
 整数型のプロパティに適用されるエディタです。
 
@@ -546,18 +546,18 @@ image::images/spreadsheet_def_editor.png[]
 |===
 |設定項目|設定値
 
-|桁区切り表示（numberGroupSeparator）
+|桁区切り表示
 |数値を桁区切りで表示します。
 
-|最小値（min）
+|最小値
 |入力可能な最小値を指定します。
 
-|最大値（max）
+|最大値
 |入力可能な最大値を指定します。
 |===
 
 [[spreadsheet_editor_float]]
-===== 浮動小数点エディタ（SpreadSheetFloatEditor）
+===== SpreadSheetFloatEditor
 
 浮動小数点型のプロパティに適用されるエディタです。
 
@@ -565,22 +565,22 @@ image::images/spreadsheet_def_editor.png[]
 |===
 |設定項目|設定値
 
-|最小値（min）
+|最小値
 |入力可能な最小値を指定します。
 
-|最大値（max）
+|最大値
 |入力可能な最大値を指定します。
 
-|小数点以下桁数（scale）
+|小数点以下桁数
 |表示時の小数点以下の桁数を指定します。
 未設定の場合、実際の値の桁数がそのまま表示されます。
 
-|桁区切り表示（numberGroupSeparator）
+|桁区切り表示
 |数値を桁区切りで表示します。
 |===
 
 [[spreadsheet_editor_decimal]]
-===== 小数エディタ（SpreadSheetDecimalEditor）
+===== SpreadSheetDecimalEditor
 
 小数型のプロパティに適用されるエディタです。
 
@@ -588,21 +588,21 @@ image::images/spreadsheet_def_editor.png[]
 |===
 |設定項目|設定値
 
-|最小値（min）
+|最小値
 |入力可能な最小値を指定します。
 
-|最大値（max）
+|最大値
 |入力可能な最大値を指定します。
 
-|小数点以下桁数（scale）
+|小数点以下桁数
 |小数点以下の桁数を指定します。
 
-|桁区切り表示（numberGroupSeparator）
+|桁区切り表示
 |数値を桁区切りで表示します。
 |===
 
 [[spreadsheet_editor_date]]
-===== 日付エディタ（SpreadSheetDateEditor）
+===== SpreadSheetDateEditor
 
 日付型のプロパティに適用されるエディタです。
 
@@ -610,18 +610,18 @@ image::images/spreadsheet_def_editor.png[]
 |===
 |設定項目|設定値
 
-|表示フォーマット（displayFormat）
+|表示フォーマット
 |日付の表示フォーマットを指定します。
 
-|最小日付（minDate）
+|最小日付
 |許容される最小日付を指定します。
 
-|最大日付（maxDate）
+|最大日付
 |許容される最大日付を指定します。
 |===
 
 [[spreadsheet_editor_datetime]]
-===== 日時エディタ（SpreadSheetDateTimeEditor）
+===== SpreadSheetDateTimeEditor
 
 日時型のプロパティに適用されるエディタです。
 
@@ -629,10 +629,10 @@ image::images/spreadsheet_def_editor.png[]
 |===
 |設定項目|設定値
 
-|表示フォーマット（displayFormat）
+|表示フォーマット
 |日時の表示フォーマット（例：yyyy/MM/dd HH:mm:ss）を指定します。
 
-|時間表示範囲（timeDispRange）
+|時間表示範囲
 |時間の表示範囲を指定します。
 
 SEC:: 秒まで表示します。
@@ -643,7 +643,7 @@ HOUR:: 時まで表示します。
 
 HIDDEN:: 時間を表示しません。
 
-|分の間隔（minInterval）
+|分の間隔
 |分の入力間隔を指定します。
 
 _1MIN:: 1分間隔です。
@@ -656,15 +656,15 @@ _15MIN:: 15分間隔です。
 
 _30MIN:: 30分間隔です。
 
-|最小日時（minDateTime）
+|最小日時
 |選択可能な最小日時を指定します。
 
-|最大日時（maxDateTime）
+|最大日時
 |選択可能な最大日時を指定します。
 |===
 
 [[spreadsheet_editor_time]]
-===== 時刻エディタ（SpreadSheetTimeEditor）
+===== SpreadSheetTimeEditor
 
 時刻型のプロパティに適用されるエディタです。
 
@@ -672,20 +672,20 @@ _30MIN:: 30分間隔です。
 |===
 |設定項目|設定値
 
-|表示フォーマット（displayFormat）
+|表示フォーマット
 |時刻の表示フォーマット（例：HH:mm:ss）を指定します。
 
-|時間表示範囲（timeDispRange）
+|時間表示範囲
 |時間の表示範囲を指定します。
 指定できる値は日時エディタの時間表示範囲と同じです。
 
-|分の間隔（minInterval）
+|分の間隔
 |分の入力間隔を指定します。
 指定できる値は日時エディタの分の間隔と同じです。
 |===
 
 [[spreadsheet_editor_boolean]]
-===== 真偽値エディタ（SpreadSheetBooleanEditor）
+===== SpreadSheetBooleanEditor
 
 真偽値型のプロパティに適用されるエディタです。
 
@@ -693,21 +693,21 @@ _30MIN:: 30分間隔です。
 |===
 |設定項目|設定値
 
-|真値ラベル（trueLabel）
+|真値ラベル
 |真値に表示するラベルを指定します。多言語対応が可能です。
 
-|真値ラベル多言語設定リスト（localizedTrueLabelList）
+|真値ラベル多言語設定リスト
 |真値ラベルの多言語設定を指定します。
 
-|偽値ラベル（falseLabel）
+|偽値ラベル
 |偽値に表示するラベルを指定します。多言語対応が可能です。
 
-|偽値ラベル多言語設定リスト（localizedFalseLabelList）
+|偽値ラベル多言語設定リスト
 |偽値ラベルの多言語設定を指定します。
 |===
 
 [[spreadsheet_editor_select]]
-===== 選択エディタ（SpreadSheetSelectEditor）
+===== SpreadSheetSelectEditor
 
 選択型のプロパティに適用されるエディタです。
 
@@ -715,15 +715,15 @@ _30MIN:: 30分間隔です。
 |===
 |設定項目|設定値
 
-|選択値（values）
+|選択値
 |選択肢となる値と表示名のリストを指定します。
 
-|選択肢のソート（sortValues）
+|選択肢のソート
 |選択肢をアルファベット順にソートして表示します。
 |===
 
 [[spreadsheet_editor_reference]]
-===== 参照エディタ（SpreadSheetReferenceEditor）
+===== SpreadSheetReferenceEditor
 
 参照型のプロパティに適用されるエディタです。
 
@@ -731,48 +731,48 @@ _30MIN:: 30分間隔です。
 |===
 |設定項目|設定値
 
-|参照先Entity定義名（objectName）
+|参照先Entity定義名
 |参照先のEntity定義名を指定します。
 
-|表示方式（displayType）
+|表示方式
 |参照先の値の選択方式を指定します。
 
 SELECT:: プルダウンで選択します。
 
 LINK:: 検索ダイアログで選択します。
 
-|表示ラベルプロパティ（displayLabelItem）
+|表示ラベルプロパティ
 |表示ラベルに使用するプロパティ名を指定します。
 未指定の場合はnameが使用されます。
 
-|フィルタ条件（condition）
+|フィルタ条件
 |候補を絞り込むEQL WHERE句条件を指定します。
 
-|ソートキー（sortItem）
+|ソートキー
 |候補リストのソートに使用するプロパティ名を指定します。
 
-|ソート順（sortType）
+|ソート順
 |候補リストのソート順を指定します。
 
 ASC:: 昇順にソートします。
 
 DESC:: 降順にソートします。
 
-|ビュー名（viewName）
+|ビュー名
 |検索ダイアログで使用するEntityViewのビュー名を指定します。
 
-|選択アクション（selectActionName）
+|選択アクション
 |検索ダイアログの代わりに使用する選択アクション名を指定します。
 
-|詳細表示アクション（viewrefActionName）
+|詳細表示アクション
 |詳細表示に使用するアクション名を指定します。
 
-|URLパラメータ（urlParameter）
+|URLパラメータ
 |詳細表示アクション呼び出し時に追加するURLパラメータを指定します。
 |===
 
 [[spreadsheet_editor_expression]]
-===== 式エディタ（SpreadSheetExpressionEditor）
+===== SpreadSheetExpressionEditor
 
 式型のプロパティに適用されるエディタです。
 式の値はシステムにより自動計算されるため、常に読み取り専用です。
@@ -781,19 +781,19 @@ DESC:: 降順にソートします。
 |===
 |設定項目|設定値
 
-|結果型（resultType）
+|結果型
 |式の結果型を指定します。
 STRING（文字列）、INTEGER（整数）、DECIMAL（小数）、FLOAT（浮動小数点）、DATE（日付）、DATETIME（日時）、BOOLEAN（真偽値）が指定できます。
 |===
 
 [[spreadsheet_editor_autonumber]]
-===== 自動採番エディタ（SpreadSheetAutoNumberEditor）
+===== SpreadSheetAutoNumberEditor
 
 自動採番型のプロパティに適用されるエディタです。
 自動採番の値はシステムによって採番されるため、常に読み取り専用です。設定項目はありません。
 
 [[spreadsheet_editor_binary]]
-===== バイナリエディタ（SpreadSheetBinaryEditor）
+===== SpreadSheetBinaryEditor
 
 バイナリ型のプロパティに適用されるエディタです。
 
@@ -801,7 +801,7 @@ STRING（文字列）、INTEGER（整数）、DECIMAL（小数）、FLOAT（浮�
 |===
 |設定項目|設定値
 
-|アップロード可能（uploadEnabled）
+|アップロード可能
 |この列のファイルアップロードを許可します。
 |===
 
@@ -809,7 +809,7 @@ STRING（文字列）、INTEGER（整数）、DECIMAL（小数）、FLOAT（浮�
 === カスタム処理の組み込み
 
 SpreadSheetの保存処理（登録・更新・削除）にカスタム処理を組み込むことができます。
-カスタム処理クラスは `org.iplass.mtp.view.spreadsheet.SpreadSheetRegistrationInterrupter` インターフェースを実装して作成し、基本設定のカスタム登録処理クラス名（interrupterName）にUtility Class名を指定します。
+カスタム処理クラスは `org.iplass.mtp.view.spreadsheet.SpreadSheetRegistrationInterrupter` インターフェースを実装して作成し、基本設定のカスタム登録処理クラス名にUtility Class名を指定します。
 
 [[spreadsheet_interrupter_methods]]
 ==== SpreadSheetRegistrationInterrupterのメソッド
