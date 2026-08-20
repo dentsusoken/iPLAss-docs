@@ -2,8 +2,8 @@
 [[spreadsheet_definition]]
 == Definition定義の詳細
 
-SpreadSheet定義（ `org.iplass.mtp.view.spreadsheet` パッケージ）の設定項目について説明します。
-AdminConsoleの編集画面で設定する項目と対応しています。
+Spreadsheet定義（ `org.iplass.mtp.view.spreadsheet` パッケージ）の設定項目について説明します。
+Admin Consoleの編集画面で設定する項目と対応しています。
 
 [[spreadsheet_basic]]
 === 基本設定
@@ -27,7 +27,7 @@ SpreadSheetDefinitionの設定項目は以下となります。
 |定義の概要を指定します。
 
 |対象Entity
-|SpreadSheetの対象となるEntityを選択します。
+|Spreadsheetの対象となるEntityを選択します。
 
 |グリッドオプション
 |グリッドの表示・操作に関する設定を指定します。 +
@@ -189,7 +189,7 @@ SpreadSheetGridOptionsの設定項目は以下となります。
 
 |検索件数上限
 |初期表示およびフィルタ検索時の取得件数上限を指定します。
-未指定の場合はSpreadSheetサービスのデフォルト値（20）を使用します。
+未指定の場合はSpreadsheetサービスのデフォルト値（20）を使用します。
 
 |列幅自動調整
 |列幅をグリッド幅に自動的に合わせます。
@@ -808,7 +808,7 @@ STRING（文字列）、INTEGER（整数）、DECIMAL（小数）、FLOAT（浮�
 [[spreadsheet_interrupter]]
 === カスタム処理の組み込み
 
-SpreadSheetの保存処理（登録・更新・削除）にカスタム処理を組み込むことができます。
+Spreadsheetの保存処理（登録・更新・削除）にカスタム処理を組み込むことができます。
 カスタム処理クラスは `org.iplass.mtp.view.spreadsheet.SpreadSheetRegistrationInterrupter` インターフェースを実装して作成し、基本設定のカスタム登録処理クラス名にUtility Class名を指定します。
 
 [[spreadsheet_interrupter_methods]]

@@ -3,10 +3,10 @@
 == Spreadsheetの管理
 
 [[spreadsheet_create]]
-=== SpreadSheetの作成
+=== Spreadsheetの作成
 
-SpreadSheet定義は、AdminConsoleのメタデータ管理から作成します。
-メタデータツリーの `SpreadSheet` アイコン配下の対象フォルダを右クリックし、 `SpreadSheetを作成する` を選択します。
+Spreadsheet定義は、Admin Consoleのメタデータ管理から作成します。
+メタデータツリーの `Spreadsheet` アイコン配下の対象フォルダを右クリックし、 `Spreadsheetを作成する` を選択します。
 表示されたダイアログで、定義名・表示名・概要を入力して作成します。
 
 image::images/spreadsheet_set_create.png[]
@@ -19,7 +19,7 @@ NOTE: 対象Entityを変更すると、設定済みのフィルタ項目と列�
 [[spreadsheet_setting]]
 === 設定
 
-SpreadSheet定義の編集画面の `SpreadSheet属性` タブでは、以下のセクションを設定します。
+Spreadsheet定義の編集画面の `Spreadsheet属性` タブでは、以下のセクションを設定します。
 各設定項目の詳細は、<<spreadsheet_definition,Definition定義の詳細>>を参照してください。
 
 image::images/spreadsheet_set_edit.png[]
@@ -51,7 +51,7 @@ image::images/spreadsheet_set_edit.png[]
 |設定項目|説明
 
 |対象Entity
-|SpreadSheetの対象となるEntityを選択します。
+|Spreadsheetの対象となるEntityを選択します。
 
 |デフォルト検索条件
 |画面表示時に初期適用する検索条件をGroovyスクリプトで指定します。
@@ -116,7 +116,7 @@ image::images/spreadsheet_set_column.png[]
 [[spreadsheet_menu]]
 ==== メニューへの登録
 
-SpreadSheet画面を表示するにはメニューにActionMenuItemを登録します。
+Spreadsheet画面を表示するにはメニューにActionMenuItemを登録します。
 
 ActionMenuItemには雛型として `gem/template/spreadsheet/ViewSpreadSheetAction` というメニューアイテムがあります。
 このActionMenuItemをコピーしてメニューアイテムを編集してください。
@@ -129,7 +129,7 @@ ActionMenuItemには雛型として `gem/template/spreadsheet/ViewSpreadSheetAct
 |Execute Action| `gem/spreadsheet/view` を指定してください。
 |Parameter| `definitionName=XXX`
 
-definitionName:: 作成したSpreadSheetメタデータ名を指定します。
+definitionName:: 作成したSpreadsheetメタデータ名を指定します。
 |===
 
-NOTE: TopViewのパーツとしては未対応です。SpreadSheet画面はメニューから表示してください。
+NOTE: TopViewのパーツとしては未対応です。Spreadsheet画面はメニューから表示してください。
