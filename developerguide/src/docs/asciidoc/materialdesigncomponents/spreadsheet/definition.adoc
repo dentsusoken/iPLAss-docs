@@ -1,14 +1,14 @@
 
-[[spreadsheet_definition]]
+[[mdc_spreadsheet_definition]]
 == Definition定義の詳細
 
-Spreadsheet定義（ `org.iplass.mtp.view.spreadsheet` パッケージ）の設定項目について説明します。
+MDCのSpreadsheet定義（ `org.iplass.mtp.mdc.view.spreadsheet.definition` パッケージ）の設定項目について説明します。
 Admin Consoleの編集画面で設定する項目と対応しています。
 
-[[spreadsheet_basic]]
+[[mdc_spreadsheet_basic]]
 === 基本設定
 
-SpreadSheetDefinitionの設定項目は以下となります。
+MdcSpreadSheetDefinitionの設定項目は以下となります。
 
 [cols="1,5a", options="header"]
 |===
@@ -31,42 +31,48 @@ SpreadSheetDefinitionの設定項目は以下となります。
 
 |グリッドオプション
 |グリッドの表示・操作に関する設定を指定します。 +
-詳細は<<spreadsheet_gridoptions,グリッドオプション>>を参照してください。
+詳細は<<mdc_spreadsheet_gridoptions,グリッドオプション>>を参照してください。
 
 |機能フラグ
 |グリッド上で許可する操作を指定します。 +
-詳細は<<spreadsheet_featureflags,機能フラグ>>を参照してください。
+詳細は<<mdc_spreadsheet_featureflags,機能フラグ>>を参照してください。
 
 |デフォルト検索条件
+|画面には表示されず、検索時に自動的に付与される検索条件を指定します。 +
+EQLのWHERE句に指定する条件をPreparedQuery形式で指定します。
+
+|デフォルト検索条件スクリプト
 |画面表示時にフィルタ条件エリアへ初期設定する検索条件をGroovyスクリプトで指定します。 +
-詳細は<<spreadsheet_basic_defaultcond,デフォルト検索条件スクリプト>>を参照してください。
+詳細は<<mdc_spreadsheet_basic_defaultcond,デフォルト検索条件スクリプト>>を参照してください。
 
 |グリッド初期化スクリプト
-|グリッド生成後に実行する初期化JavaScriptをGroovyテンプレートで指定します。 +
-詳細は<<spreadsheet_basic_init,グリッド初期化スクリプト>>を参照してください。
+|グリッド生成後に実行する初期化JavaScriptを指定します。 +
+詳細は<<mdc_spreadsheet_basic_init,グリッド初期化スクリプト>>を参照してください。
 
 |フィルタ項目リスト
 |フィルタ条件エリアに表示する項目を指定します。 +
-詳細は<<spreadsheet_filteritem,フィルタ項目>>を参照してください。
+詳細は<<mdc_spreadsheet_filteritem,フィルタ項目>>を参照してください。
 
 |列定義リスト
 |グリッドに表示する列を指定します。列定義は1つ以上必要です。 +
-詳細は<<spreadsheet_columndefinition,列定義>>を参照してください。
+詳細は<<mdc_spreadsheet_columndefinition,列定義>>を参照してください。
 
-|デフォルトソート条件
-|画面表示時に適用するソート条件を指定します。
-ソート対象のプロパティ名とソート方向（ascまたはdesc）をカンマ区切りで指定します（例： `name asc, age desc`）。
-ソート方向を省略した場合は昇順になります。
+|デフォルト並べ替えフィールド
+|画面表示時に適用する並べ替え対象のプロパティ名を指定します。
+
+|ソート降順
+|チェックをオンにすると降順、オフにすると昇順で並べ替えます。
+未指定の場合は昇順になります。
 
 |カスタム登録処理クラス名
 |データ登録時のカスタム処理クラスを指定します。 +
-詳細は<<spreadsheet_interrupter,カスタム処理の組み込み>>を参照してください。
+詳細は<<mdc_spreadsheet_interrupter,カスタム処理の組み込み>>を参照してください。
 |===
 
-[[spreadsheet_basic_defaultcond]]
+[[mdc_spreadsheet_basic_defaultcond]]
 ==== デフォルト検索条件スクリプト
 
-デフォルト検索条件は、画面表示時にフィルタ条件エリアへ初期値を設定するためのGroovyスクリプトです。
+デフォルト検索条件スクリプトは、画面表示時にフィルタ条件エリアへ初期値を設定するためのGroovyスクリプトです。
 リクエストパラメータで指定された条件を引き継いだ上で、スクリプト内で条件を追加・変更できます。
 
 スクリプト内では以下の変数が利用できます。
@@ -94,9 +100,6 @@ initCondMapのキーは、フィルタ項目のプロパティ名をプレフィ
 [cols="1,5a", options="header"]
 |===
 |キー|説明
-
-|{プロパティ名}ConditionCount
-|同一プロパティに対する条件の件数を指定します。
 
 |{プロパティ名}_ope_{index}
 |比較演算子を指定します。EQ、NE、LT、GT など。
@@ -130,11 +133,13 @@ initCondMap.put("name_ope_0", "IC")
 initCondMap.put("name_0", "サンプル")
 ----
 
-[[spreadsheet_basic_init]]
+[[mdc_spreadsheet_basic_init]]
 ==== グリッド初期化スクリプト
 
-グリッド初期化スクリプトは、グリッド生成後にクライアント側で実行する初期化JavaScriptを、Groovyテンプレートで記述します。
-Groovyテンプレートはサーバサイドで評価され、その出力結果がクライアント側のグリッド初期化スクリプトとして実行されます。
+グリッド初期化スクリプトは、グリッド生成後にクライアント側で実行する初期化JavaScriptの関数本体を、そのまま記述します。
+設定したスクリプトは、グリッドの生成後に `grid` と `options` を引数として実行されます。
+
+NOTE: Admin Consoleの編集画面のヒントにはGroovyテンプレートによる指定と記載されていますが、MDCでは設定したスクリプトはサーバサイドで評価されず、そのままクライアント側で実行されます。JavaScriptの関数本体を指定してください。
 
 クライアント側では以下の変数が利用できます。
 
@@ -171,10 +176,10 @@ return {
 
 NOTE: SlickGridの詳細は https://ghiscoding.gitbook.io/slickgrid-universal[SlickGrid Universal] のリファレンスを参照してください。
 
-[[spreadsheet_gridoptions]]
+[[mdc_spreadsheet_gridoptions]]
 === グリッドオプション
 
-SpreadSheetGridOptionsの設定項目は以下となります。
+MdcSpreadSheetGridOptionsの設定項目は以下となります。
 
 [cols="1,5a", options="header"]
 |===
@@ -189,7 +194,7 @@ SpreadSheetGridOptionsの設定項目は以下となります。
 
 |検索件数上限
 |初期表示およびフィルタ検索時の取得件数上限を指定します。
-未指定の場合はSpreadsheetサービスのデフォルト値（20）を使用します。
+未指定の場合はシステム既定値（20件）を使用します。
 
 |列幅自動調整
 |列幅をグリッド幅に自動的に合わせます。
@@ -240,12 +245,17 @@ multiple:: 複数選択です。CtrlキーやShiftキーを併用して複数選
 
 |セル内テキスト選択有効
 |セル操作と競合しない範囲でセル内テキストの選択を有効にします。
+
+|初期検索有効
+|チェックをオンにした場合、画面の初期表示時に自動で検索を実行し、結果を表示します。
 |===
 
-[[spreadsheet_featureflags]]
+NOTE: 自動ツールチップ有効を未指定のまま定義を作成した場合、画面ではツールチップは自動表示されません。
+
+[[mdc_spreadsheet_featureflags]]
 === 機能フラグ
 
-SpreadSheetFeatureFlagsの設定項目は以下となります。
+MdcSpreadSheetFeatureFlagsの設定項目は以下となります。
 
 [cols="1,5a", options="header"]
 |===
@@ -253,40 +263,49 @@ SpreadSheetFeatureFlagsの設定項目は以下となります。
 
 |行追加許可
 |新しい行の追加を許可します。
+未指定の場合は許可されます。
 
 |行削除許可
 |行の削除を許可します。
+未指定の場合は許可されます。
 
 |エクスポート許可
 |データのエクスポートを許可します。
+未指定の場合は許可されます。
 
 |コピー許可
 |データのコピーを許可します。
+未指定の場合は許可されます。
 
 |貼り付け許可
 |データの貼り付けを許可します。
+未指定の場合は許可されます。
 
 |ソート許可
 |列のソートを許可します。
+未指定の場合は許可されます。
 
 |結合許可
 |セルの結合機能を有効にします。
+未指定の場合は無効です。
 
-|セル結合静的設定
+|結合設定JSON
 |結合するセル範囲をJSON形式で定義します。 +
-詳細は<<spreadsheet_featureflags_merge,セル結合設定>>を参照してください。
+詳細は<<mdc_spreadsheet_featureflags_merge,セル結合設定>>を参照してください。
 
-|セル結合式設定
+|結合Expression
 |ルールベースで結合条件をJSON形式で定義します。 +
-詳細は<<spreadsheet_featureflags_merge,セル結合設定>>を参照してください。
+詳細は<<mdc_spreadsheet_featureflags_merge,セル結合設定>>を参照してください。
 |===
 
-[[spreadsheet_featureflags_merge]]
+NOTE: ソート許可は、MDCの画面では未対応です。設定を保存することはできますが、画面のソート可否には反映されません。ソートの可否は、列定義のソート可能で制御されます。
+
+[[mdc_spreadsheet_featureflags_merge]]
 ==== セル結合設定
 
 結合許可を有効にした場合、セル結合の設定は、 `セルレイアウト` または `Expression（ルールベース）` のいずれかで行います。
 
-[[spreadsheet_merge_celllayout]]
+[[mdc_spreadsheet_merge_celllayout]]
 ===== セルレイアウト（静的設定）
 
 結合するセル範囲を固定値として定義します。
@@ -323,7 +342,7 @@ JSON配列形式で、各結合範囲を以下の要素で指定します。
 ]
 ----
 
-[[spreadsheet_merge_expression]]
+[[mdc_spreadsheet_merge_expression]]
 ===== Expression（式設定）
 
 ルールベースで結合条件を定義します。
@@ -386,10 +405,10 @@ NOTE: 同値判定では、空の値同士は結合されません。
 
 NOTE: 多重度表示モードが複数列展開（MULTI_COL）の列は、セル結合の対象外です。
 
-[[spreadsheet_filteritem]]
+[[mdc_spreadsheet_filteritem]]
 === フィルタ項目
 
-SpreadSheetFilterItemの設定項目は以下となります。
+MdcSpreadSheetFilterItemの設定項目は以下となります。
 
 [cols="1,5a", options="header"]
 |===
@@ -404,24 +423,45 @@ SpreadSheetFilterItemの設定項目は以下となります。
 |多言語設定リスト
 |表示ラベルの多言語設定を指定します。
 
-|必須フラグ
+|必須項目
 |フィルタ条件として必須の場合はtrueを指定します。
 必須項目は、条件を入力しないと検索できません。
 
 |プロパティエディタ
 |フィルタ条件の入力で使用するエディタを指定します。
-GEM既存のPropertyEditorを使用します。
+プロパティの型に応じた既定のエディタが自動的に設定されます。
 
 |利用可能な比較演算子
 |フィルタ条件で選択可能な比較演算子を限定する場合に指定します。
 未指定の場合はすべての比較演算子が利用可能です。
-指定できる演算子は、<<spreadsheet_filter_operator,利用可能な比較演算子>>を参照してください。
+指定できる演算子は、<<mdc_spreadsheet_filter_operator,利用可能な比較演算子>>を参照してください。
 |===
 
-[[spreadsheet_columndefinition]]
+フィルタ項目のプロパティエディタでは、プロパティの型に応じて以下の設定が可能です。
+
+[cols="1,5a", options="header"]
+|===
+|プロパティの型|プロパティエディタの設定項目
+
+|真偽値
+|表示タイプ、真値ラベル、偽値ラベルを指定します。
+真値ラベル・偽値ラベルを省略した場合は、 `有効` ・ `無効` が使用されます。
+
+|日時・時刻
+|時間表示範囲、分の間隔、分の丸めモードを指定します。
+分の丸めモードには、切り上げ、切り捨て、なしを指定できます。
+
+|参照
+|表示タイプ、ビュー名、表示ラベルアイテム、リストのフィルタ条件、ソートアイテム、ソート種別を指定します。
+
+|文字列・選択・式
+|表示タイプを指定します。式の場合は、結果型を指定します。
+|===
+
+[[mdc_spreadsheet_columndefinition]]
 === 列定義
 
-SpreadSheetColumnDefinitionの設定項目は以下となります。
+MdcSpreadSheetColumnDefinitionの設定項目は以下となります。
 
 [cols="1,5a", options="header"]
 |===
@@ -451,7 +491,6 @@ right:: 右寄せで表示します。
 
 |ソート可能
 |この列でソートを許可するかどうかを指定します。
-ソートするには、機能フラグのソート許可も有効である必要があります。
 
 |編集可能
 |この列を編集可能にするかどうかを指定します。
@@ -460,23 +499,21 @@ right:: 右寄せで表示します。
 |必須
 |この列に値が必須かどうかを指定します。
 
-|多重度
-|プロパティの多重度を指定します。
-1は単一、2以上は複数、0は無制限です。
-
 |多重度表示モード
 |多重度プロパティの表示方法を指定します。 +
-詳細は<<spreadsheet_columndefinition_multivalue,多重度表示モード>>を参照してください。
+詳細は<<mdc_spreadsheet_columndefinition_multivalue,多重度表示モード>>を参照してください。
 
 |カスタムスタイル
 |セルに適用するカスタムCSSクラス名を指定します。
 
-|エディタ定義
+|エディタ設定
 |列の編集で使用するエディタの設定を指定します。 +
-詳細は<<spreadsheet_editor,エディタ設定>>を参照してください。
+詳細は<<mdc_spreadsheet_editor,エディタ設定>>を参照してください。
 |===
 
-[[spreadsheet_columndefinition_multivalue]]
+NOTE: 列の多重度は、対象Entityのプロパティ定義の設定に従います。列定義で変更することはできません。
+
+[[mdc_spreadsheet_columndefinition_multivalue]]
 ==== 多重度表示モード
 
 多重度が複数のプロパティをグリッドで表示する場合の表示方法を指定します。
@@ -494,15 +531,17 @@ right:: 右寄せで表示します。
 
 NOTE: 複数列展開（MULTI_COL）を指定した列は、セル結合の対象外です。
 
-[[spreadsheet_editor]]
+[[mdc_spreadsheet_editor]]
 ==== エディタ設定
 
 列定義のエディタタイプは、対象プロパティの型から自動的に決定されます。
+エディタの設定は、 `org.iplass.mtp.mdc.view.spreadsheet.definition` パッケージの `MdcSpreadSheetXxxEditor` クラスとして定義されます。
+以下の節では、GEMのSpreadsheetと共通のエディタ名（ `SpreadSheetXxxEditor` ）を見出しとして示します。
 エディタごとの設定項目は以下となります。
 
 image::images/spreadsheet_def_editor.png[]
 
-[[spreadsheet_editor_string]]
+[[mdc_spreadsheet_editor_string]]
 ===== SpreadSheetStringEditor
 
 文字列型のプロパティに適用されるエディタです。
@@ -518,7 +557,7 @@ image::images/spreadsheet_def_editor.png[]
 |検証用の正規表現パターンを指定します。
 |===
 
-[[spreadsheet_editor_longtext]]
+[[mdc_spreadsheet_editor_longtext]]
 ===== SpreadSheetLongTextEditor
 
 長文型のプロパティに適用されるエディタです。
@@ -537,7 +576,7 @@ image::images/spreadsheet_def_editor.png[]
 |入力可能な最大文字数を指定します。
 |===
 
-[[spreadsheet_editor_integer]]
+[[mdc_spreadsheet_editor_integer]]
 ===== SpreadSheetIntegerEditor
 
 整数型のプロパティに適用されるエディタです。
@@ -556,7 +595,7 @@ image::images/spreadsheet_def_editor.png[]
 |入力可能な最大値を指定します。
 |===
 
-[[spreadsheet_editor_float]]
+[[mdc_spreadsheet_editor_float]]
 ===== SpreadSheetFloatEditor
 
 浮動小数点型のプロパティに適用されるエディタです。
@@ -579,7 +618,7 @@ image::images/spreadsheet_def_editor.png[]
 |数値を桁区切りで表示します。
 |===
 
-[[spreadsheet_editor_decimal]]
+[[mdc_spreadsheet_editor_decimal]]
 ===== SpreadSheetDecimalEditor
 
 小数型のプロパティに適用されるエディタです。
@@ -596,12 +635,13 @@ image::images/spreadsheet_def_editor.png[]
 
 |小数点以下桁数
 |小数点以下の桁数を指定します。
+未指定の場合、対象Entityのプロパティ定義のスケール値が初期値として設定されます。
 
 |桁区切り表示
 |数値を桁区切りで表示します。
 |===
 
-[[spreadsheet_editor_date]]
+[[mdc_spreadsheet_editor_date]]
 ===== SpreadSheetDateEditor
 
 日付型のプロパティに適用されるエディタです。
@@ -620,7 +660,7 @@ image::images/spreadsheet_def_editor.png[]
 |許容される最大日付を指定します。
 |===
 
-[[spreadsheet_editor_datetime]]
+[[mdc_spreadsheet_editor_datetime]]
 ===== SpreadSheetDateTimeEditor
 
 日時型のプロパティに適用されるエディタです。
@@ -663,7 +703,7 @@ _30MIN:: 30分間隔です。
 |選択可能な最大日時を指定します。
 |===
 
-[[spreadsheet_editor_time]]
+[[mdc_spreadsheet_editor_time]]
 ===== SpreadSheetTimeEditor
 
 時刻型のプロパティに適用されるエディタです。
@@ -684,7 +724,7 @@ _30MIN:: 30分間隔です。
 指定できる値は日時エディタの分の間隔と同じです。
 |===
 
-[[spreadsheet_editor_boolean]]
+[[mdc_spreadsheet_editor_boolean]]
 ===== SpreadSheetBooleanEditor
 
 真偽値型のプロパティに適用されるエディタです。
@@ -706,7 +746,7 @@ _30MIN:: 30分間隔です。
 |偽値ラベルの多言語設定を指定します。
 |===
 
-[[spreadsheet_editor_select]]
+[[mdc_spreadsheet_editor_select]]
 ===== SpreadSheetSelectEditor
 
 選択型のプロパティに適用されるエディタです。
@@ -722,17 +762,15 @@ _30MIN:: 30分間隔です。
 |選択肢をアルファベット順にソートして表示します。
 |===
 
-[[spreadsheet_editor_reference]]
+[[mdc_spreadsheet_editor_reference]]
 ===== SpreadSheetReferenceEditor
 
 参照型のプロパティに適用されるエディタです。
+参照先のEntity定義名は、対象Entityの参照プロパティの定義から自動的に設定されます。
 
 [cols="1,5a", options="header"]
 |===
 |設定項目|設定値
-
-|参照先Entity定義名
-|参照先のEntity定義名を指定します。
 
 |表示方式
 |参照先の値の選択方式を指定します。
@@ -751,7 +789,7 @@ LINK:: 検索ダイアログで選択します。
 |ソートキー
 |候補リストのソートに使用するプロパティ名を指定します。
 
-|ソート順
+|ソート方向
 |候補リストのソート順を指定します。
 
 ASC:: 昇順にソートします。
@@ -760,18 +798,9 @@ DESC:: 降順にソートします。
 
 |ビュー名
 |検索ダイアログで使用するEntityViewのビュー名を指定します。
-
-|選択アクション
-|検索ダイアログの代わりに使用する選択アクション名を指定します。
-
-|詳細表示アクション
-|詳細表示に使用するアクション名を指定します。
-
-|URLパラメータ
-|詳細表示アクション呼び出し時に追加するURLパラメータを指定します。
 |===
 
-[[spreadsheet_editor_expression]]
+[[mdc_spreadsheet_editor_expression]]
 ===== SpreadSheetExpressionEditor
 
 式型のプロパティに適用されるエディタです。
@@ -786,13 +815,13 @@ DESC:: 降順にソートします。
 STRING（文字列）、INTEGER（整数）、DECIMAL（小数）、FLOAT（浮動小数点）、DATE（日付）、DATETIME（日時）、BOOLEAN（真偽値）が指定できます。
 |===
 
-[[spreadsheet_editor_autonumber]]
+[[mdc_spreadsheet_editor_autonumber]]
 ===== SpreadSheetAutoNumberEditor
 
 自動採番型のプロパティに適用されるエディタです。
 自動採番の値はシステムによって採番されるため、常に読み取り専用です。設定項目はありません。
 
-[[spreadsheet_editor_binary]]
+[[mdc_spreadsheet_editor_binary]]
 ===== SpreadSheetBinaryEditor
 
 バイナリ型のプロパティに適用されるエディタです。
@@ -805,14 +834,14 @@ STRING（文字列）、INTEGER（整数）、DECIMAL（小数）、FLOAT（浮�
 |この列のファイルアップロードを許可します。
 |===
 
-[[spreadsheet_interrupter]]
+[[mdc_spreadsheet_interrupter]]
 === カスタム処理の組み込み
 
-Spreadsheetの保存処理（登録・更新・削除）にカスタム処理を組み込むことができます。
-カスタム処理クラスは `org.iplass.mtp.view.spreadsheet.SpreadSheetRegistrationInterrupter` インターフェースを実装して作成し、基本設定のカスタム登録処理クラス名にUtility Class名を指定します。
+MDCのSpreadsheetの保存処理（登録・更新・削除）にカスタム処理を組み込むことができます。
+カスタム処理クラスは `org.iplass.mtp.mdc.view.spreadsheet.definition.MdcSpreadSheetRegistrationInterrupter` インターフェースを実装して作成し、基本設定のカスタム登録処理クラス名にUtility Class名を指定します。
 
-[[spreadsheet_interrupter_methods]]
-==== SpreadSheetRegistrationInterrupterのメソッド
+[[mdc_spreadsheet_interrupter_methods]]
+==== MdcSpreadSheetRegistrationInterrupterのメソッド
 
 実装可能なメソッドは以下となります。
 すべてのメソッドはdefaultメソッドのため、必要なメソッドのみオーバーライドしてください。
@@ -845,7 +874,7 @@ isSpecifyAllPropertiesの設定により対象範囲が変わります。
 
 NOTE: 登録処理の種類はRegistrationType（INSERT：新規追加、UPDATE：更新、DELETE：削除）として引数で渡されます。
 
-[[spreadsheet_interrupter_example]]
+[[mdc_spreadsheet_interrupter_example]]
 ==== 実装例
 
 カスタム処理の典型的なユースケースを2つの例で示します。
@@ -866,17 +895,17 @@ import java.util.Map;
 import org.iplass.mtp.auth.AuthContext;
 import org.iplass.mtp.command.RequestContext;
 import org.iplass.mtp.entity.Entity;
-import org.iplass.mtp.entity.EntityDefinition;
 import org.iplass.mtp.entity.ValidateError;
-import org.iplass.mtp.view.spreadsheet.SpreadSheetDefinition;
-import org.iplass.mtp.view.spreadsheet.SpreadSheetRegistrationInterrupter;
-import org.iplass.mtp.view.spreadsheet.SpreadSheetRegistrationInterrupter.RegistrationType;
+import org.iplass.mtp.entity.definition.EntityDefinition;
+import org.iplass.mtp.mdc.view.spreadsheet.definition.MdcSpreadSheetDefinition;
+import org.iplass.mtp.mdc.view.spreadsheet.definition.MdcSpreadSheetRegistrationInterrupter;
+import org.iplass.mtp.mdc.view.spreadsheet.definition.MdcSpreadSheetRegistrationInterrupter.RegistrationType;
 
-public class SampleSpreadSheetInterrupter implements SpreadSheetRegistrationInterrupter {
+public class SampleSpreadSheetInterrupter implements MdcSpreadSheetRegistrationInterrupter {
 
     @Override
     public void dataMapping(Entity entity, RequestContext request,
-            EntityDefinition definition, SpreadSheetDefinition spreadSheetDefinition,
+            EntityDefinition definition, MdcSpreadSheetDefinition spreadSheetDefinition,
             Map<String, Object> row) {
         // 登録用Entityに対する値の加工や追加設定を行います
         entity.setValue("updateUser", AuthContext.getCurrentContext().getUser().getName());
@@ -884,7 +913,7 @@ public class SampleSpreadSheetInterrupter implements SpreadSheetRegistrationInte
 
     @Override
     public List<ValidateError> beforeRegister(Entity entity, RequestContext request,
-            EntityDefinition definition, SpreadSheetDefinition spreadSheetDefinition,
+            EntityDefinition definition, MdcSpreadSheetDefinition spreadSheetDefinition,
             RegistrationType registrationType) {
         // 登録前のバリデーションを行います
         // エラーがある場合はValidateErrorを返却し、登録処理を中断します
@@ -911,15 +940,15 @@ import org.iplass.mtp.command.RequestContext;
 import org.iplass.mtp.entity.Entity;
 import org.iplass.mtp.entity.ValidateError;
 import org.iplass.mtp.entity.definition.EntityDefinition;
-import org.iplass.mtp.view.spreadsheet.SpreadSheetDefinition;
-import org.iplass.mtp.view.spreadsheet.SpreadSheetRegistrationInterrupter;
-import org.iplass.mtp.view.spreadsheet.SpreadSheetRegistrationInterrupter.RegistrationType;
+import org.iplass.mtp.mdc.view.spreadsheet.definition.MdcSpreadSheetDefinition;
+import org.iplass.mtp.mdc.view.spreadsheet.definition.MdcSpreadSheetRegistrationInterrupter;
+import org.iplass.mtp.mdc.view.spreadsheet.definition.MdcSpreadSheetRegistrationInterrupter.RegistrationType;
 
-public class SampleValidationInterrupter implements SpreadSheetRegistrationInterrupter {
+public class SampleValidationInterrupter implements MdcSpreadSheetRegistrationInterrupter {
 
     @Override
     public List<ValidateError> beforeRegister(Entity entity, RequestContext request,
-            EntityDefinition definition, SpreadSheetDefinition spreadSheetDefinition,
+            EntityDefinition definition, MdcSpreadSheetDefinition spreadSheetDefinition,
             RegistrationType registrationType) {
         List<ValidateError> errors = new ArrayList<>();
         // 価格が未設定の行は登録を拒否します
@@ -934,7 +963,7 @@ public class SampleValidationInterrupter implements SpreadSheetRegistrationInter
 
     @Override
     public void dataMapping(Entity entity, RequestContext request,
-            EntityDefinition definition, SpreadSheetDefinition spreadSheetDefinition,
+            EntityDefinition definition, MdcSpreadSheetDefinition spreadSheetDefinition,
             Map<String, Object> row) {
     }
 }
