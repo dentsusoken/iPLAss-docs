@@ -136,4 +136,6 @@ definitionName:: 作成したSpreadsheetメタデータ名を指定します。
 
 image::images/spreadsheet_set_menu.png[]
 
+NOTE: ActionMenuItemの具体的な登録方式は、<<../menu/index.adoc#menu, Menu>>を参照してください。
+
 NOTE: TopViewのパーツとしては未対応です。詳細は、<<spreadsheet_limitations,SpreadsheetとExcelの違い・制限事項>>を参照してください。
