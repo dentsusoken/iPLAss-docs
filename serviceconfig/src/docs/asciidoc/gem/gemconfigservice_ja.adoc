@@ -82,6 +82,7 @@ CAUTION: 後方互換性のための設定フラグです。将来のバージ�
 
 検証対象となる MIME Type の決定方法については、<<WebFrontendService, WebFrontendService uploadFileTypeDetector>>, <<FileTypeDetector, FileTypeDetector>> を参照してください。
 | selectFilterSearchPageSizeDefault | int | 参照型選択フィルターの毎回検索件数。未指定の場合のデフォルト値は40です。
+| spreadsheetSelectCandidateLimit | int | SpreadsheetのSELECTモードでの参照候補事前取得件数上限。デフォルト値は1000です。
 | richTextLibrary | String | StringPropertyEditorの `RichText` タイプで利用するデフォルトのリッチテキストライブラリ。 `QUILL` または `CKEDITOR` を指定します。デフォルト値は `QUILL` です。
 | imageColors | <<ImageColorSetting>>、複数指定可 | 検索画面や詳細画面、メニュー等に設定するイメージカラーの設定。
 | skins | <<Skin>>、複数指定可 | スキン。
@@ -580,5 +581,7 @@ classにorg.iplass.gem.EnterpriseEntityViewHelperImplを指定します。
 		<property name="displayName" value="橙" />
 	</property>
 	<property name="entityViewHelper" class="org.iplass.gem.EnterpriseEntityViewHelperImpl" />
+	<!-- SpreadsheetのSELECTモードでの参照候補事前取得件数上限 -->
+	<property name="spreadsheetSelectCandidateLimit" value="1000" />
 </service>
 ----

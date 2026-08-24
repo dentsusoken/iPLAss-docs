@@ -1,0 +1,35 @@
+[[SpreadSheetService]]
+=== [.eeonly]#SpreadSheetService#
+Spreadsheetの定義（メタデータ）を管理するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.view.spreadsheet.SpreadSheetService
+----
+
+==== 実装クラス名
+----
+org.iplass.mtp.impl.view.spreadsheet.SpreadSheetService
+----
+
+==== SpreadSheetServiceの設定
+SpreadSheetServiceを設定します。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| searchLimit | int | Spreadsheet画面の初期表示およびフィルタ検索時の取得件数上限。デフォルト値は20です。 +
+ Spreadsheet定義のグリッドオプションで検索件数上限が未指定の場合に使用されます。
+|===
+
+===== 設定例
+[source,xml]
+----
+<service final="true">
+	<interface>org.iplass.mtp.impl.view.spreadsheet.SpreadSheetService</interface>
+	<class>org.iplass.mtp.impl.view.spreadsheet.SpreadSheetService</class>
+	<!-- Spreadsheet画面の検索件数上限 -->
+	<property name="searchLimit" value="20" />
+</service>
+----

@@ -151,6 +151,8 @@ include::core/securerandomservice_en.adoc[]
 
 include::core/smsservice_en.adoc[]
 
+include::gem/spreadsheetservice_en.adoc[]
+
 include::tools/storagespaceservice_en.adoc[]
 
 include::core/storeservice_en.adoc[]
