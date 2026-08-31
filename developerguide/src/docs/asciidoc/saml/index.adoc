@@ -222,7 +222,7 @@ https://example.dentsusoken.com/app/tenantA/saml/ssoar/DEF1
 SAML Response Binding(通常 IdP -> SP)のメッセージ送信方式としてPOST Bindingを利用する場合、セッションID(`JSESSIONID`)CookieのSameSite属性が `None` に設定されている必要があります。これを設定しない場合、クロスサイトリクエストでCookieが欠落し、認証が正常に動作しないことがあります。
 
 * *[underline]#iPLAssの SAML Request Binding の設定とは異なります。#*
-* SAML Response の特性上、メッセージ送信方式は既定でPOST Binding方式が採用されていることが多いです。その確認・設定方法については、対象IdP(Entra ID / Okta etc.)のドキュメントを参照してください。
+* SAML Responseの特性上、メッセージ送信方式は既定でPOST Binding方式が採用されていることが多いです。その確認・設定方法については、対象のIdP（Entra ID / Okta など）のドキュメントを参照してください。
 ====
 
 ==== iPLAssをIdPとして動作させる
