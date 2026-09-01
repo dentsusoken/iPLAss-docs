@@ -241,7 +241,7 @@ https://example.dentsusoken.com/app/tenantA/saml/sso/idpi/DEF2?entityId=http%3A%
 
 [NOTE]
 ====
-SP側から送信されるSAMLメッセージでPOST Bindingを利用する場合はセッションCookie設定の考慮が必要です。前述の[iPLAssをSPとして動作させる - NOTE] と同様になるので詳細はそちらを確認してください。
-SP側の設定の確認、方法はそのドキュメントを参照してください。
+SP側から送信されるSAMLメッセージでPOST Bindingを利用する場合はセッションCookie設定の考慮が必要です。前述の「iPLAssをSPとして動作させる」のNOTEと同様となるため、そちらを参照してください。
+SP側の設定の確認方法は、対象のSPのドキュメントを参照してください。
 ====
 
