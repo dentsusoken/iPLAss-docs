@@ -219,10 +219,10 @@ https://example.dentsusoken.com/app/tenantA/saml/ssoar/DEF1
 
 [NOTE]
 ====
-SAML Response Binding(通常 IdP -> SP)のメッセージ送信方式としてPOST Bindingを利用する場合、セッションID(`JSESSIONID`)CookieのSameSite属性が `None` に設定されている必要があります。これを設定しない場合、クロスサイトリクエストでCookieが欠落し、認証が正常に動作しないことがあります。
+IdP側から送信されるSAMLメッセージでPOST Bindingを利用する場合、iPLAss側のセッションID(`JSESSIONID`)CookieのSameSite属性が `None` に設定されている必要があります。これを設定しない場合、クロスサイトリクエストでCookieが欠落し、認証が正常に動作しないことがあります。
 
-* *[underline]#iPLAssの SAML Request Binding の設定とは異なります。#*
-* SAML Responseの特性上、メッセージ送信方式は既定でPOST Binding方式が採用されていることが多いです。その確認・設定方法については、対象のIdP（Entra ID / Okta など）のドキュメントを参照してください。
+* *[underline]#iPLAssの設定SAML Request Bindingは、iPLAss側からメッセージ送信する際のバインディングであり、IdP側から送信されるSAMLメッセージではありません。#* IdP側からの送信方式はIdP側で指定されます。
+* IdP側から送信されるSAMLメッセージの代表がSAML Responseです。その特性上、メッセージ送信方式は既定でPOST Binding方式が採用されていることが多いです。その確認・設定方法については、対象のIdP（Entra ID / Okta など）のドキュメントを参照してください。
 ====
 
 ==== iPLAssをIdPとして動作させる
@@ -241,6 +241,7 @@ https://example.dentsusoken.com/app/tenantA/saml/sso/idpi/DEF2?entityId=http%3A%
 
 [NOTE]
 ====
-iPLAssの ACS Response Binding としてPOST Bindingを利用する場合はセッションCookie設定の考慮が必要です。前述の[iPLAssをSPとして動作させる - NOTE] と同様になるので詳細はそちらを確認してください。
+SP側から送信されるSAMLメッセージでPOST Bindingを利用する場合はセッションCookie設定の考慮が必要です。前述の[iPLAssをSPとして動作させる - NOTE] と同様になるので詳細はそちらを確認してください。
+SP側の設定の確認、方法はそのドキュメントを参照してください。
 ====
 
