@@ -1,5 +1,6 @@
 [[Java_JSP]]
 = Java／JSP版
+:lang: {_buildLang}
 :_hreflang-path: sample/ec/javajsp/index.html
 :_relative-root-path: ../../../
 :example-caption!:

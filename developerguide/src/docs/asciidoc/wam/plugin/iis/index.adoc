@@ -1,3 +1,4 @@
+:lang: {_buildLang}
 === IIS版
 
 include::iis.adoc[]

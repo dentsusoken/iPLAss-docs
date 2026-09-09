@@ -1,4 +1,5 @@
 = MCP（Model Context Protocol）
+:lang: {_buildLang}
 :_hreflang-path: developerguide/mcp/index.html
 :_relative-root-path: ../../
 :_menu-title-ee-only: true

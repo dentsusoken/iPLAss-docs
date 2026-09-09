@@ -1,4 +1,5 @@
 = メタデータ管理
+:lang: {_buildLang}
 :_hreflang-path: developerguide/metadata/index.html
 :_relative-root-path: ../../
 

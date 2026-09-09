@@ -1,4 +1,5 @@
 = Material Design Components (TreeGrid)
+:lang: {_buildLang}
 :_hreflang-path: developerguide/materialdesigncomponents/treegrid/index.html
 :_relative-root-path: ../../../
 

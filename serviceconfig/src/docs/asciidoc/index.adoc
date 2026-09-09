@@ -1,3 +1,4 @@
+:lang: {_buildLang}
 :_hreflang-path: serviceconfig/index.html
 :table-caption!:
 :_relative-root-path: ../

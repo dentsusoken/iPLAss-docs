@@ -1,4 +1,5 @@
 = セキュリティ対策
+:lang: {_buildLang}
 :_hreflang-path: developerguide/securitycoding/index.html
 :_relative-root-path: ../../
 

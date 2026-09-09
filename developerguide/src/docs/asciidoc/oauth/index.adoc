@@ -1,4 +1,5 @@
 = OAuth / OpenID Connect
+:lang: {_buildLang}
 :_hreflang-path: developerguide/oauth/index.html
 :_relative-root-path: ../../
 :toclevels: 2
@@ -318,7 +319,7 @@ https://localhost/app/tenantA/oauth/authorize
 - promptは `none` `login` `consent` をサポートします
 - response_modeは  `query` `fragment` `form_post` をサポートします
 - display、ui_locales、id_token_hint、login_hint、acr_values、claims_locales、claims、registrationパラメータは無視されます
-- RefreshTokenを必要とする場合、scopeに `offline_access` を指定します 
+- RefreshTokenを必要とする場合、scopeに `offline_access` を指定します
 
 ==== OAuth2.0 Token Endpoint
 ----
@@ -454,7 +455,7 @@ https://localhost/app/tenantA/oidc/connect/Google
 ====
 
 - 呼び出す場合、CSRF対策用の固定トークンをパラメータに設定する必要があります。
-詳細は <<../customizing/index.adoc#Action-Admin,Action定義（AdminConsole）>> 
+詳細は <<../customizing/index.adoc#Action-Admin,Action定義（AdminConsole）>>
 のToken Checkの項を参照ください。
 
 また、IdP側にリダイレクト先として以下のURLを設定してください。

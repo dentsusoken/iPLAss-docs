@@ -1,4 +1,5 @@
 = 汎用検索（Entity Listing）
+:lang: {_buildLang}
 :_hreflang-path: developerguide/entitylisting/index.html
 :_relative-root-path: ../../
 :_menu-title-ee-only: true

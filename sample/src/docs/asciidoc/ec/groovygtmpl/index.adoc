@@ -1,5 +1,6 @@
 [[Groovy_Gtmpl]]
 = Groovy／GroovyTemplate版
+:lang: {_buildLang}
 :_hreflang-path: sample/ec/groovygtmpl/index.html
 :_relative-root-path: ../../../
 :example-caption!:

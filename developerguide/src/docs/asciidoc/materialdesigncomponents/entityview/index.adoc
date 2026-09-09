@@ -1,4 +1,5 @@
 = Material Design Components (EntityView)
+:lang: {_buildLang}
 :_hreflang-path: developerguide/materialdesigncomponents/entityview/index.html
 :_relative-root-path: ../../../
 :_menu-title-ee-only: true

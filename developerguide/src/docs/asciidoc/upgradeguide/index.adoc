@@ -1,4 +1,5 @@
 = アップグレードガイド（from 3.2 to 4.0）
+:lang: {_buildLang}
 :_hreflang-path: developerguide/upgradeguide/index.html
 :_relative-root-path: ../../
 
@@ -348,11 +349,11 @@ MdcSortSettingにクラス名変更
 [options="header"]
 |===
 |クラス名  | 4.0での変更点
-|org.iplass.mtp.mdc.view. + 
+|org.iplass.mtp.mdc.view. +
 entityview.search.definition.MdcSearchViewDefinition  | 一部プロパティの型をMdcSearchCustomSectionからMdcSearchSectionに変更
-|org.iplass.mtp.mdc.view. + 
+|org.iplass.mtp.mdc.view. +
 entityview.search.definition.element.section.MdcSearchConditionSection  | elementsプロパティの型をMdcSearchConditionPropertyからMdcSearchConditionElementに変更
-|org.iplass.mtp.mdc.view. + 
+|org.iplass.mtp.mdc.view. +
 entityview.search.definition.element.section.MdcSearchResultSection | elementsプロパティの型をMdcSearchResultPropertyからMdcSearchResultElementに変更
 |===
 +
@@ -376,20 +377,20 @@ entityview.search.definition.element.section.MdcSearchResultSection | elements�
 |===
 |クラス名  | 4.0での変更点
 |org.iplass.mtp.mdc.view. +
-entityview.detail.definition.MdcDetailViewDefinitionManager  | 
-org.iplass.mtp.mdc.view. + 
+entityview.detail.definition.MdcDetailViewDefinitionManager  |
+org.iplass.mtp.mdc.view. +
 entityview.detail.MdcDetailViewManagerに一部の機能を分離
 |org.iplass.mtp.mdc.view. +
-entityview.search.definition.MdcSearchViewDefinitionManager  | 
-org.iplass.mtp.mdc.view. + 
+entityview.search.definition.MdcSearchViewDefinitionManager  |
+org.iplass.mtp.mdc.view. +
 entityview.search.MdcSearchViewManagerに一部の機能を分離
 |org.iplass.mtp.mdc.view. +
-navigation.definition.MdcNavigationDefinitionManager  | 
-org.iplass.mtp.mdc.view. + 
+navigation.definition.MdcNavigationDefinitionManager  |
+org.iplass.mtp.mdc.view. +
 navigation.MdcNavigationManagerに一部の機能を分離
 |org.iplass.mtp.mdc.view. +
-topview.definition.MdcTopViewDefinitionManager  | 
-org.iplass.mtp.mdc.view. + 
+topview.definition.MdcTopViewDefinitionManager  |
+org.iplass.mtp.mdc.view. +
 topview.MdcTopViewManagerに一部の機能を分離
 |===
 

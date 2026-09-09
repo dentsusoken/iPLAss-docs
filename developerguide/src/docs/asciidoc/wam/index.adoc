@@ -1,4 +1,5 @@
 = WAM（Web Account Manager）
+:lang: {_buildLang}
 :_hreflang-path: developerguide/wam/index.html
 :_relative-root-path: ../../
 :_menu-title-ee-only: true

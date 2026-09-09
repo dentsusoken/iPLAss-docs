@@ -1,4 +1,5 @@
 = Material Design Components (Spreadsheet)
+:lang: {_buildLang}
 :_hreflang-path: developerguide/materialdesigncomponents/spreadsheet/index.html
 :_relative-root-path: ../../../
 :_menu-title-ee-only: true

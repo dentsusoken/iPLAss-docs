@@ -1,4 +1,5 @@
 = Generic Entity Manager (権限制御)
+:lang: {_buildLang}
 :_hreflang-path: developerguide/genericentitymanager/gemauth/index.html
 :_relative-root-path: ../../../
 

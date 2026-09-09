@@ -1,4 +1,5 @@
 = Web API
+:lang: {_buildLang}
 :_hreflang-path: developerguide/webapi/index.html
 :_relative-root-path: ../../
 

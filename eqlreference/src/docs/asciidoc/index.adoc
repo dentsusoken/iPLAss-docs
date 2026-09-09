@@ -1,3 +1,4 @@
+:lang: {_buildLang}
 :_hreflang-path: eqlreference/index.html
 :toclevels: 3
 

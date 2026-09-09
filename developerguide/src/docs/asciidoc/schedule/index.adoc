@@ -1,5 +1,6 @@
 [[schedule]]
 = スケジューラ
+:lang: {_buildLang}
 :_hreflang-path: developerguide/schedule/index.html
 :_relative-root-path: ../../
 :_menu-title-ee-only: true

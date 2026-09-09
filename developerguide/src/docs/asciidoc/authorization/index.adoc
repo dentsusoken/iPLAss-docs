@@ -1,4 +1,5 @@
 = 認可
+:lang: {_buildLang}
 :_hreflang-path: developerguide/authorization/index.html
 :_relative-root-path: ../../
 

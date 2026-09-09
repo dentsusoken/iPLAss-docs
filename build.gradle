@@ -1,9 +1,11 @@
 plugins {
-	id "org.asciidoctor.jvm.convert" version "3.3.2" apply false
+	id "org.asciidoctor.jvm.convert" version '4.0.5' apply false
 }
 apply plugin: 'base'
 
 defaultTasks "clean", "asciidoctor"
+
+def asciidocLangValue = providers.gradleProperty("asciidoc_lang").get()
 
 allprojects {
 	repositories {
@@ -25,11 +27,10 @@ allprojects {
 		}
 		logDocuments = true
 		baseDirFollowsSourceFile()
-		outputDir = file("${rootDir}/build/asciidoc/${asciidoc_lang}")
-		attributes(
-			"lang": asciidoc_lang
-		)
+		outputDir = file("${rootDir}/build/asciidoc/${asciidocLangValue}")
+		attributes "_buildLang": asciidocLangValue
 	}
+
 	build {
 		dependsOn asciidoctor
 	}
@@ -47,10 +48,8 @@ subprojects {
 			}
 		}
 		//サブプロジェクトはサブプロジェクトフォルダ配下に生成
-		outputDir = file("${rootDir}/build/asciidoc/${asciidoc_lang}/${project.name}")
-		attributes(
-			"_relative-root-path": "../@"
-		)
+		outputDir = file("${rootDir}/build/asciidoc/${asciidocLangValue}/${project.name}")
+		attributes "_relative-root-path": "../@"
 	}
 }
 
@@ -65,8 +64,5 @@ asciidoctor {
 			include "NOTICE"
 		}
 	}
-	attributes(
-		"_relative-root-path": "./@"
-	)
+	attributes "_relative-root-path": "./@"
 }
-

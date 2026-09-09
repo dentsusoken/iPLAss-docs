@@ -1,4 +1,5 @@
 = GEM(Generic Entity Manager)
+:lang: {_buildLang}
 :_hreflang-path: developerguide/genericentitymanager/index.html
 :_relative-root-path: ../../
 
