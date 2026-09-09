@@ -18,12 +18,12 @@ allprojects {
 	}
 
 	asciidoctor {
-		parallelMode false
+		parallelMode = false
 		outputOptions {
 			separateOutputDirs = false
 			backends = ["html5"]
 		}
-		logDocuments true
+		logDocuments = true
 		baseDirFollowsSourceFile()
 		outputDir = file("${rootDir}/build/asciidoc/${asciidoc_lang}")
 		attributes(
