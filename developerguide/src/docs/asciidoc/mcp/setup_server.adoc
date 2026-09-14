@@ -15,7 +15,7 @@ Gradle を利用している場合は、以下の依存関係を build.gradle �
 [source,groovy]
 ----
 dependencies {
-    runtimeOnly 'org.iplass.ee:iplass-ee-mcp' <!--1-->
+    runtimeOnly 'org.iplass.ee:iplass-ee-mcp' // <1>
 }
 ----
 <1> iplass-ee-bom で指定されているバージョンのモジュールを利用します。 +
