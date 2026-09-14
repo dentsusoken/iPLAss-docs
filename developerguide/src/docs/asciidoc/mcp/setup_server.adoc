@@ -15,9 +15,10 @@ Gradle を利用している場合は、以下の依存関係を build.gradle �
 [source,groovy]
 ----
 dependencies {
-    implementation "org.iplass.ee:iplass-ee-mcp:${iPLAssVersion}"
+    runtimeOnly 'org.iplass.ee:iplass-ee-mcp' <!--1-->
 }
 ----
+<1> iplass-ee-bom で指定されているバージョンのモジュールを利用します。iplass-ee-bom を利用しない場合は、明示的にバージョンを指定してください。
 
 [[setup_server_edit_web_xml]]
 === web.xml へ mtp_mcp フラグメントの追加
