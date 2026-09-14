@@ -18,7 +18,8 @@ dependencies {
     runtimeOnly 'org.iplass.ee:iplass-ee-mcp' <!--1-->
 }
 ----
-<1> iplass-ee-bom で指定されているバージョンのモジュールを利用します。iplass-ee-bom を利用しない場合は、明示的にバージョンを指定してください。
+<1> iplass-ee-bom で指定されているバージョンのモジュールを利用します。 +
+iplass-ee-bom を利用しない場合は、明示的にバージョンを指定してください。
 
 [[setup_server_edit_web_xml]]
 === web.xml へ mtp_mcp フラグメントの追加
