@@ -97,7 +97,7 @@ A data connectivity feature for delivering entity data to AI services is also pr
 ==== [.eeonly]#MCP Server#
 Provides server functionality compliant with MCP (Model Context Protocol).
 By defining MCP Tools as metadata, functions on iPLAss can be invoked from MCP clients.
-In addition, MCP Tools for browsing and updating metadata (design-time information) are provided out of the box, supporting AI-driven development with AI agents.
+In addition, MCP Tools for browsing and updating metadata (design-time information) and for searching, creating, updating and deleting entity data are provided out of the box, supporting AI-driven development and data operations with AI agents.
 
 === Multi-Language
 ==== Multi-Language
