@@ -1,4 +1,5 @@
 = MDC(Material Design Components)
+:lang: {_buildLang}
 :_hreflang-path: developerguide/materialdesigncomponents/index.html
 :_relative-root-path: ../../
 :_menu-title-ee-only: true

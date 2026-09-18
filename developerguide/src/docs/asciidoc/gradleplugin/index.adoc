@@ -1,4 +1,5 @@
 = Gradle Plugin
+:lang: {_buildLang}
 :_hreflang-path: developerguide/gradleplugin/index.html
 :_relative-root-path: ../../
 

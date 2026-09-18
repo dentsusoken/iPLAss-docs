@@ -1,4 +1,5 @@
 = 認証
+:lang: {_buildLang}
 :_hreflang-path: developerguide/authentication/index.html
 :_relative-root-path: ../../
 

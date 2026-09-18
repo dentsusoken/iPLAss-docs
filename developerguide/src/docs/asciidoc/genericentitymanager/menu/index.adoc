@@ -1,4 +1,5 @@
 = Generic Entity Manager (Menu)
+:lang: {_buildLang}
 :_hreflang-path: developerguide/genericentitymanager/menu/index.html
 :_relative-root-path: ../../../
 

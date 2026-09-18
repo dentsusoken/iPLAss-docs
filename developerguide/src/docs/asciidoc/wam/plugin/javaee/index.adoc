@@ -1,3 +1,4 @@
+:lang: {_buildLang}
 === JavaEE版
 
 include::jee.adoc[]
