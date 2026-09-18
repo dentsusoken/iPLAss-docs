@@ -1,4 +1,5 @@
 = カスタムロジック
+:lang: {_buildLang}
 :_hreflang-path: developerguide/customizing/index.html
 :_relative-root-path: ../../
 :toclevels: 2

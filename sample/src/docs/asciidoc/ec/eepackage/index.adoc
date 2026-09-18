@@ -1,5 +1,6 @@
 [[EEPackage]]
 = Enterprise Edition機能の追加パッケージ
+:lang: {_buildLang}
 :_hreflang-path: sample/ec/eepackage/index.html
 :_relative-root-path: ../../../
 :_menu-title-ee-only: true

@@ -1,9 +1,11 @@
 plugins {
-	id "org.asciidoctor.jvm.convert" version "3.3.2" apply false
+	id "org.asciidoctor.jvm.convert" version '4.0.5' apply false
 }
 apply plugin: 'base'
 
-defaultTasks "clean", "asciidoctor"
+defaultTasks = ['clean', 'asciidoctor']
+
+def asciidocLangValue = providers.gradleProperty("asciidoc_lang").get()
 
 allprojects {
 	repositories {
@@ -18,25 +20,6 @@ allprojects {
 	}
 
 	asciidoctor {
-		parallelMode false
-		outputOptions {
-			separateOutputDirs = false
-			backends = ["html5"]
-		}
-		logDocuments true
-		baseDirFollowsSourceFile()
-		outputDir = file("${rootDir}/build/asciidoc/${asciidoc_lang}")
-		attributes(
-			"lang": asciidoc_lang
-		)
-	}
-	build {
-		dependsOn asciidoctor
-	}
-}
-
-subprojects {
-	asciidoctor {
 		sources {
 			include "**/index.adoc"
 		}
@@ -46,27 +29,31 @@ subprojects {
 				include "NOTICE"
 			}
 		}
+
+		parallelMode = false
+		outputOptions {
+			separateOutputDirs = false
+			backends = ["html5"]
+		}
+		logDocuments = true
+		baseDirFollowsSourceFile()
+		attributes "_buildLang": asciidocLangValue
+	}
+
+	build {
+		dependsOn tasks.named('asciidoctor')
+	}
+}
+
+subprojects {
+	asciidoctor {
 		//サブプロジェクトはサブプロジェクトフォルダ配下に生成
-		outputDir = file("${rootDir}/build/asciidoc/${asciidoc_lang}/${project.name}")
-		attributes(
-			"_relative-root-path": "../@"
-		)
+		outputDir = file("${rootDir}/build/asciidoc/${asciidocLangValue}/${project.name}")
+		attributes "_relative-root-path": "../@"
 	}
 }
 
 asciidoctor {
-	sources {
-		include "**/index.adoc"
-	}
-	
-	resources {
-		from(sourceDir) {
-			include "**/images/**"
-			include "NOTICE"
-		}
-	}
-	attributes(
-		"_relative-root-path": "./@"
-	)
+	outputDir = file("${rootDir}/build/asciidoc/${asciidocLangValue}")
+	attributes "_relative-root-path": "./@"
 }
-

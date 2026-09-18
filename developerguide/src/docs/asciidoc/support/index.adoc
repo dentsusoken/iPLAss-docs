@@ -1,4 +1,5 @@
 = 開発・運用サポート
+:lang: {_buildLang}
 :_hreflang-path: developerguide/support/index.html
 :_relative-root-path: ../../
 

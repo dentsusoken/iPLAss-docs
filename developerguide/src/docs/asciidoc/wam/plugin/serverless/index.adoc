@@ -1,3 +1,4 @@
+:lang: {_buildLang}
 === Serverless(JavaScript)版
 
 Fetch APIに対応したJavaScriptランタイムが提供されるサーバーレスなエッジ環境で動作するWAMプラグインモジュール実装です。 +

@@ -1,3 +1,4 @@
+:lang: {_buildLang}
 :_hreflang-path: gettingstarted/docker/index.html
 :table-caption!:
 :_relative-root-path: ../../

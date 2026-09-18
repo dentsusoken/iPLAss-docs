@@ -1,4 +1,5 @@
 = データ管理
+:lang: {_buildLang}
 :_hreflang-path: developerguide/datamanagement/index.html
 :_relative-root-path: ../../
 :toclevels: 3

@@ -1,5 +1,6 @@
-[Report]
+[[Report]]
 = 帳票出力（Jasper/JXLS/POI）
+:lang: {_buildLang}
 :_hreflang-path: developerguide/report/index.html
 :_relative-root-path: ../../
 
@@ -239,7 +240,7 @@ image::images/Report_output_Jasper.png[align="left"]
 
 
 === JXLS設定
-JXLS形式で帳票出力を行うために最低限必要な準備は、JXLS用のExcelテンプレートファイルを用意し、パラメータとして渡す reportData に設定するKeyとValue(値が格納されているRequestContext、またはSessionContextのAttribute名)を設定することです。 
+JXLS形式で帳票出力を行うために最低限必要な準備は、JXLS用のExcelテンプレートファイルを用意し、パラメータとして渡す reportData に設定するKeyとValue(値が格納されているRequestContext、またはSessionContextのAttribute名)を設定することです。
 帳票出力のロジックは、設定しない場合でも標準的な帳票出力処理を実行しますが、独自にカスタマイズすることも可能です。JXLS では式評価エンジンを利用しており、iPLAss では GroovyScript を利用します。
 
 JXLSの仕様については、以下のサイトを参照してください。 +
@@ -462,7 +463,7 @@ import org.jxls.command.GridCommand;
 
 builder
 	// grid コマンドの props に設定 <1>
-	.withAreaBuilder({transformer, clearTemplateCells -> 
+	.withAreaBuilder({transformer, clearTemplateCells ->
 		def areaList = new XlsCommentAreaBuilder().build(transformer, clearTemplateCells);
 		for (area in areaList) {
 			for (commandData in area.getCommandDataList()) {

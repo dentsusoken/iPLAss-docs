@@ -1,5 +1,6 @@
 [[Knowledge_Management]]
 = ナレッジ管理アプリ
+:lang: {_buildLang}
 :_hreflang-path: sample/km/index.html
 :_relative-root-path: ../../
 :example-caption!:

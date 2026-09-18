@@ -1,4 +1,5 @@
 = サンプルアプリケーション
+:lang: {_buildLang}
 :_hreflang-path: sample/index.html
 ifdef::env-github,env-browser[:outfilesuffix: .adoc]
 :_menu-item-name: sample

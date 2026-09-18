@@ -1,4 +1,5 @@
 = infinispan連携
+:lang: {_buildLang}
 :_hreflang-path: developerguide/infinispan/index.html
 :_relative-root-path: ../../
 
