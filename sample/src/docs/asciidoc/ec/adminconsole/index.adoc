@@ -1,5 +1,6 @@
 [[AdminConsole_Sample_EC]]
 = Admin Consoleの共通設定
+:lang: {_buildLang}
 :_hreflang-path: sample/ec/adminconsole/index.html
 :_relative-root-path: ../../../
 :example-caption!:

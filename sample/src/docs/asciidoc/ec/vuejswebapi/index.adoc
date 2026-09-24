@@ -1,5 +1,6 @@
 [[Vuejs_WebAPI]]
 = Vue.js／WebAPI版
+:lang: {_buildLang}
 :_hreflang-path: sample/ec/vuejswebapi/index.html
 :_relative-root-path: ../../../
 :example-caption!:

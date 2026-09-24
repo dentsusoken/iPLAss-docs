@@ -1,3 +1,4 @@
+:lang: {_buildLang}
 :_hreflang-path: overview/index.html
 ifeval::["{lang}" == "ja"]
 include::index_ja.adoc[]

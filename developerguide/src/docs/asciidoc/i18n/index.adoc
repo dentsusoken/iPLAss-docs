@@ -1,5 +1,6 @@
 [[localize]]
 = 国際化
+:lang: {_buildLang}
 :_hreflang-path: developerguide/i18n/index.html
 :_relative-root-path: ../../
 

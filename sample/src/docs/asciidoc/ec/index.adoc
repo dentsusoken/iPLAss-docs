@@ -1,5 +1,6 @@
 [[Sample_EC]]
 = EC サイトアプリ（オンライン書店）
+:lang: {_buildLang}
 :_hreflang-path: sample/ec/index.html
 :_relative-root-path: ../../
 ifdef::env-github,env-browser[:outfilesuffix: .adoc]
