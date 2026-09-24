@@ -516,6 +516,8 @@ Gotenbergはコンテナイメージとして配布されており、iPLAssで�
 ----
 docker run --rm -p 3000:3000 gotenberg/gotenberg:8
 ----
++
+NOTE: 上記コマンド例の `8` はメジャーバージョンのtagであるため、Gotenbergのリリース時に同一tagのままでイメージの内容が更新されます。開発での利用を想定した例です。本番環境で利用する場合は、動作確認済みのバージョンの固定tag（ `gotenberg/gotenberg:8.x.y` の形式）を指定してください。
 
 * Kubernetes／Amazon ECS
 +
