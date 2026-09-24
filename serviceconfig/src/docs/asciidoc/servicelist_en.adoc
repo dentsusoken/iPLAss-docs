@@ -72,6 +72,7 @@ Such as Action and WebApi, these Web related services are managed.
 | <<index.adoc#ODataService, [.eeonly]#ODataService#>> | The service to control the behavior of OData Service.
 | <<index.adoc#OpenApiService, OpenApiService>> | The service for managing OpenAPI-related functions.
 | <<index.adoc#OpenIdConnectService, OpenIdConnectService>> | The service for managing the functions of OpenID Connect Relying Party.
+| <<index.adoc#PdfConversionService, PdfConversionService>> | A service that converts Excel to PDF, used for PDF (PDF_JXLS) output of JXLS reports.
 | <<index.adoc#ReportingEngineService, ReportingEngineService>> | This service manages report output(such as receipts).
 | <<index.adoc#SamlService, [.eeonly]#SamlService#>> | A service for SAML authentication.
 | <<index.adoc#ScimIdentityProviderService, [.eeonly]#ScimIdentityProviderService#>> | This service manages the operation of the SCIM Identity Provider function.

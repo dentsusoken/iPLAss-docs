@@ -72,6 +72,7 @@ ActionやWebApi、Web全般に関するサービス群です。
 | <<index.adoc#ODataService, [.eeonly]#ODataService#>> | ODataサービスの動作を管理するサービスです。
 | <<index.adoc#OpenApiService, OpenApiService>> | OpenAPIに関連する機能を管理するためのサービスです。
 | <<index.adoc#OpenIdConnectService, OpenIdConnectService>> | OpenID Connect Relying Partyの機能を管理するためのサービスです。
+| <<index.adoc#PdfConversionService, PdfConversionService>> | JXLS帳票のPDF（PDF_JXLS）出力で利用する、ExcelからPDFへの変換サービスです。
 | <<index.adoc#ReportingEngineService, ReportingEngineService>> | 帳票出力を管理するサービスです。
 | <<index.adoc#SamlService, [.eeonly]#SamlService#>> | SAML認証を行うためのサービスです。
 | <<index.adoc#ScimIdentityProviderService, [.eeonly]#ScimIdentityProviderService#>> | SCIM Identity Provider 機能の動作を管理するサービスです。

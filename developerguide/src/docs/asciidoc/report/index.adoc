@@ -12,7 +12,7 @@ Templateの編集画面でExcelやPDFの出力定義を設定することで帳�
 帳票出力機能を利用するために、Template定義に以下の設定を行わなければなりません。
 
 . 帳票定義のTemplateを呼び出すActionクラスを作成します。
-. JasperReports(PDF)、JXLS(Excel)、またはApache POI(Excel)用のテンプレートファイルを作成しておきます。
+. JasperReports(PDF)、JXLS(Excel/PDF)、またはApache POI(Excel)用のテンプレートファイルを作成しておきます。
 . Template定義の編集画面でテンプレートタイプに `Report` を選択、 `Report Type` に `JasperReports`、 `JXLS`、または `POI` のいずれかを選択し、作成したテンプレートファイルをアップロードします。
 ** JasperReportsを利用する場合、Template定義で `DataSource`、`Parameters` の設定項目 にRequestContextまたはSessionContextに値をセットしたAttribute名を設定します。
 ** JXLSを利用する場合、Template定義で `Context Parameter Mappings` の設定項目にテンプレートファイルに設定したパラメータ名、RequestContextまたはSessionContextに値をセットしたAttribute名を設定します。また、帳票出力処理をカスタマイズしたい場合、JavaまたはGroovyを利用してOutput Logicを実装し、 `Custom Output Logic` に設定します。
@@ -48,14 +48,15 @@ XLSX(Jasper)
 JXlSの場合 ::
 XLS(JXLS) +
 XLSX(JXLS) +
-XLSX(JXLS Streaming) ※POIのSXSSFWorkbook形式のWorkbookを生成します。
+XLSX(JXLS Streaming) ※POIのSXSSFWorkbook形式のWorkbookを生成します。 +
+PDF(JXLS) ※JXLSテンプレートで生成したExcel(XLSX)を、PDF変換サービスでPDFに変換して出力します。変換環境の詳細は、<<Report-PdfConversionService,後述の「PDF変換サービス（Gotenberg）」>>を参照してください。
 
 POIの場合 ::
 XLS(POI)			※POIのHSSFWorkbook形式のWorkbookを生成します。 +
 XLSX(POI)			※POIのXSSFWorkbook形式のWorkbookを生成します。 +
 XLSX(POI Streaming)	※POIのSXSSFWorkbook形式のWorkbookを生成します。
 
-※PDF出力はJasperReports形式のみ対応しています。
+※PDF出力は、JasperReports形式（PDF(Jasper)）またはJXLS形式（PDF(JXLS)）で対応しています。PDF(JXLS)を利用する場合、PDF変換サービス（変換環境）が必要です。XLS(JXLS)／XLSX(JXLS)出力のみを利用する場合、変換環境は不要です。
 |File|
 各ReportTypeに対応したテンプレートファイルを設定します。 +
 テンプレートファイルを変更する必要がない場合は選択する必要はありません。 +
@@ -68,6 +69,8 @@ XLSX(POI Streaming)	※POIのSXSSFWorkbook形式のWorkbookを生成します。
 
 ※PDF形式においては、Passwordにセットした値はPDFファイルのUser Passwordとして設定されます。また、Passwordのみセットし、後述のOwner Passwordをセットしていない場合、PDFファイルのOwner PasswordもPasswordにセットした値に設定されます。
 
+※PDF(JXLS)形式においても、JasperReports形式のPDFと同様にパスワードが設定されます。暗号化（AES-256）はPDF変換後にiPLAss（JVM）内で実施されるため、パスワードがPDF変換サービスへ送信されることはありません。パスワードとオーナーパスワードのいずれも設定しない場合、暗号化されないPDFとして出力されます。
+
 ※パスワードは、いずれのReportTypeにおいてもXLS形式には対応していません。Excelに対してパスワード指定する場合はXLSX形式を利用してください。
 
 |Owner Password Attribute Name|
@@ -76,6 +79,8 @@ XLSX(POI Streaming)	※POIのSXSSFWorkbook形式のWorkbookを生成します。
 設定方法は `Password Attribute Name` と同様です。
 
 ※Owner Passwordのみをセットし、Passwordをセットしていない場合、PDFファイルのOwner Passwordのみ設定され、User Passwordは設定されません。
+
+※JXLS形式（PDF(JXLS)出力）においても利用可能です。オーナーパスワードは、この項目で指定したAttribute名からRequestのAttributeとして取得します。
 
 |DataSource Attribute Name|
 Report Typeが `JasperReports` 形式用の設定です。 +
@@ -489,6 +494,50 @@ http://hostname:port/{コンテキスト名}/{テナント名}/test/report/order
 * 出力結果
 +
 image::images/Report_output_Custom_JXLS.png[align="left"]
+
+[[Report-PdfConversionService]]
+=== PDF変換サービス（Gotenberg）
+PDF(JXLS)形式の出力では、JXLSテンプレートから生成したExcel(XLSX)をPDF変換サービスへ送信し、PDFに変換した結果を出力します。
+ExcelからPDFへの変換処理はiPLAss（JVM）の外部で実行されるため、変換の負荷に応じて、変換サービスを単独でスケールアウトすることが可能です。
+なお、XLS(JXLS)／XLSX(JXLS)の出力のみを利用する場合、PDF変換サービスは不要です。
+
+PDF変換サービスとしては、HTTP APIを提供するOSSのドキュメント変換サービスである link:https://gotenberg.dev[Gotenberg^] を利用します。
+Gotenbergはコンテナイメージとして配布されており、iPLAssでは8.xでの動作を検証しています。
+
+パスワードによる暗号化は、変換後にiPLAss（JVM）内で実施されるため、パスワードが変換サービスへ送信されることはありません。
+パスワードの設定については、「<<Report-Settings,設定>>」を参照してください。
+
+実行環境に応じて、以下のような構成で利用することができます。
+
+* ローカル環境（Docker）
++
+開発環境などでは、Dockerコンテナとして起動して利用します。docker composeへの組込みも可能です。
++
+----
+docker run --rm -p 3000:3000 gotenberg/gotenberg:8
+----
++
+NOTE: 上記コマンド例の `8` はメジャーバージョンのtagであるため、Gotenbergのリリース時に同一tagのままでイメージの内容が更新されます。開発での利用を想定した例です。本番環境で利用する場合は、動作確認済みのバージョンの固定tag（ `gotenberg/gotenberg:8.x.y` の形式）を指定してください。
+
+* Kubernetes／Amazon ECS
++
+レプリカを増やすことでスケールアウトすることができます。
+
+* Google Cloud Run／AWS App Runner
++
+マネージド環境で、リクエストに応じた自動的なスケールアウトを利用することができます。
+
+WARNING: Gotenbergは認証機構を持たないため、インターネットへ直接公開しないでください。iPLAssからアクセス可能なプライベートネットワーク上に配置してください。
+
+WARNING: 変換対象のファイルは、PDF変換サービスへ送信されます。データの機密度を考慮した配置を行ってください。
+
+NOTE: Gotenbergのコンテナイメージのバージョンはtagで固定してください。バージョンを変更した場合には、帳票レイアウトを再確認してください。
+
+NOTE: 変換サービスが障害などで利用できない場合でも、失敗するのはPDF(JXLS)形式の出力のみです。他の出力タイプ（XLS／XLSX、JasperReportsのPDFなど）への影響はありません。
+
+NOTE: 変換サービスの稼働状況を確認できるよう、ヘルスチェックなどの監視の仕組みへの組込みを推奨します。
+
+変換サービスの接続先（baseUrl）などのservice-config（PdfConversionService）の設定の詳細は、<<../../serviceconfig/index.adoc#PdfConversionService,PdfConversionService>>を参照してください。
 
 === Apache POI設定
 
