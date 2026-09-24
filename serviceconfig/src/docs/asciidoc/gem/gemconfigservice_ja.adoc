@@ -52,6 +52,8 @@ NOTE: 3.0.20までの互換設定です。今後は詳細画面に遷移する�
 | showSeachCondResetButton | boolean | 検索画面でリセットボタンを表示するか。デフォルト値はtrueです。
 | searchResultDispRowCount | int | 検索画面で表示する検索結果の件数。デフォルト値は10です。
 個別のEntityView定義の<<../developerguide/genericentitymanager/entityview/index#searchresult_setting,検索結果の設定>>で上書きすることが可能です。
+| searchResultAutoHeightAdjustMode | AutoHeightAdjustMode | 検索画面のテーブル高さ自動調節モード。`FIT_TO_ROW_COUNT` `FIT_TO_VIEWPORT` から指定します。デフォルト値は `FIT_TO_ROW_COUNT` です。
+個別のEntityView定義の<<../developerguide/genericentitymanager/entityview/index#searchresult_setting,検索結果の設定>>で上書きすることが可能です。
 | maxOfDetailSearchItems | int | 詳細検索画面における検索項目の上限数。デフォルト値は100です。
 | searchInterval | int | 検索処理のインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
 | csvDownloadInterval | int | ダウンロードのインターバル。0を設定した場合は無期限となります。デフォルト値は60000（1分）です。
@@ -340,6 +342,9 @@ classにorg.iplass.gem.EnterpriseEntityViewHelperImplを指定します。
 
 	<!-- 検索画面で表示する検索結果の件数 -->
 	<property name="searchResultDispRowCount" value="10"/>
+
+	<!-- 検索画面のテーブル高さ自動調節モード -->
+	<property name="searchResultAutoHeightAdjustMode" value="FIT_TO_ROW_COUNT"/>
 
 	<!-- 詳細検索画面における検索項目の上限数 -->
 	<property name="maxOfDetailSearchItems" value="100"/>
