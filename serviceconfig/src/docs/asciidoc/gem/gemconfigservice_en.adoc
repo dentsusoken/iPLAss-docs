@@ -54,7 +54,7 @@ NOTE: Compatible setting up to 3.0.20. In the future, we plan to unify the opera
 | searchResultDispRowCount | int | Number of search results to be displayed on the search screen. The default value is 10.
 It can be overwritten by <<../developerguide/genericentitymanager/entityview/index#searchresult_setting, search results The settings of>> of individual EntityView definitions.
 | searchResultAutoHeightAdjustMode | AutoHeightAdjustMode | Mode of automatic height adjustment of the table on the search screen. Specify from `FIT_TO_ROW_COUNT` `FIT_TO_VIEWPORT`. The default value is `FIT_TO_ROW_COUNT`.
-It can be overwritten by <<../developerguide/genericentitymanager/entityview/index#searchresult_setting, search results The settings of>> of individual EntityView definitions.
+It can be overwritten by <<../developerguide/genericentitymanager/entityview/index#searchresult_setting, search result settings>> of individual EntityView definitions.
 | maxOfDetailSearchItems | int | Maximum number of search items in detail search screen. The default value is 100.
 | searchInterval | int | Set the search interval to prevent redundant requests. If 0 is set, it will be infinite.(cannot click the search button until the result was retrieved and presented) The default value is 60000 (1 minute).
 | csvDownloadInterval | int | Set the file download interval to prevent redundant requests. If 0 is set, it will be infinite.(cannot click the download button until the result was retrieved and presented) The default value is 60000 (1 minute).
