@@ -3010,6 +3010,11 @@ HIDDEN:: ロードや更新対象とするが画面には表示しない
 |選択したAIプロンプト定義にJSON Schemaが設定されている場合に、AI応答のJSONからメッセージテキストを取得するためのキーを設定します。（例：`message`）
 |===
 
+[IMPORTANT]
+====
+Structured Outputを利用する場合は、利用するAIプラットフォームが対応している必要があります。また、JSON Schemaには `データキー` と、指定した場合は `メッセージデータキー` に対応する項目を定義してください。
+====
+
 image::images/detaillayout_ai_chat_autocomplete.png[]
 
 .AIチャット入力補完の動作
