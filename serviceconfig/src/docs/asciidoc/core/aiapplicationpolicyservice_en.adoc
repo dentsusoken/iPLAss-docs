@@ -24,6 +24,9 @@ Configure usage policies for AI features.
 | aiChatAutoCompletionUserMessageMaxLength | int | Maximum length of the user message for AI chat auto-completion. The default value is 5000.
 | aiChatAutoCompletionMaxConversationTurns | int | Maximum number of conversation history turns for AI chat auto-completion. The default value is 20.
 | aiAutocompleteErrorClearTimeout | int | Timeout for clearing AI auto-completion errors (milliseconds). The default value is 5000.
+| aiAgentUserMessageMaxLength | int | Maximum length of a user message in AI agent chat. The default value is 5000.
+| aiAgentMaxConversationTurns | int | Maximum number of conversation turns in AI agent chat. The default value is 20. Messages cannot be sent after the limit is reached.
+| aiAgentSessionDialogPageSize | int | Number of sessions displayed per page in the AI agent chat session list. The default value is 10.
 |===
 
 ===== Example
@@ -40,5 +43,14 @@ Configure usage policies for AI features.
 
 	<!-- Timeout for clearing AI auto-completion errors (milliseconds) -->
 	<property name="aiAutocompleteErrorClearTimeout" value="5000" />
+
+	<!-- Maximum length of a user message in AI agent chat -->
+	<property name="aiAgentUserMessageMaxLength" value="5000" />
+
+	<!-- Maximum number of conversation turns in AI agent chat -->
+	<property name="aiAgentMaxConversationTurns" value="20" />
+
+	<!-- Page size of the session list in AI agent chat -->
+	<property name="aiAgentSessionDialogPageSize" value="10" />
 </service>
 ----

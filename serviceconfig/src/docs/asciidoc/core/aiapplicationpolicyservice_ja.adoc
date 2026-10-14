@@ -24,6 +24,9 @@ AI機能の利用ポリシーを設定します。
 | aiChatAutoCompletionUserMessageMaxLength | int | AIチャット自動補完のユーザーメッセージ最大長。デフォルト値は5000です。
 | aiChatAutoCompletionMaxConversationTurns | int | AIチャット自動補完の会話履歴最大ターン数。デフォルト値は20です。
 | aiAutocompleteErrorClearTimeout | int | AI自動補完のエラークリアタイムアウト（ミリ秒）。デフォルト値は5000です。
+| aiAgentUserMessageMaxLength | int | AIエージェントチャットのユーザーメッセージ最大長。デフォルト値は5000です。
+| aiAgentMaxConversationTurns | int | AIエージェントチャットの最大会話ターン数。デフォルト値は20です。上限に達すると、それ以上メッセージを送信できません。
+| aiAgentSessionDialogPageSize | int | AIエージェントチャットのセッション一覧に表示する1ページあたりの件数。デフォルト値は10です。
 |===
 
 ===== 設定例
@@ -40,5 +43,14 @@ AI機能の利用ポリシーを設定します。
 
 	<!-- AI自動補完のエラークリアタイムアウト（ミリ秒） -->
 	<property name="aiAutocompleteErrorClearTimeout" value="5000" />
+
+	<!-- AIエージェントチャットのユーザーメッセージ最大長 -->
+	<property name="aiAgentUserMessageMaxLength" value="5000" />
+
+	<!-- AIエージェントチャットの最大会話ターン数 -->
+	<property name="aiAgentMaxConversationTurns" value="20" />
+
+	<!-- AIエージェントチャットのセッション一覧のページサイズ -->
+	<property name="aiAgentSessionDialogPageSize" value="10" />
 </service>
 ----
