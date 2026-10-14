@@ -76,7 +76,7 @@ Addボタンで追加すると `I` 、画面定義や `AutoGenerate` を変更�
 
 [[entityview_ai_agent_chat]]
 === AIエージェントチャット設定
-[.eeonly]#EntityViewからAIエージェントとの会話を行う機能です。#
+EntityViewからAIエージェントとの会話を行う機能です。
 
 AI Agent Settingsは、SearchLayout、DetailLayout、BulkLayoutの各画面定義で個別に設定します。同じView名でも、各画面の設定は独立しています。詳細画面と詳細ダイアログでは、対象のDetailLayoutの設定を使用します。
 
