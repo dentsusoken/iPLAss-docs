@@ -17,6 +17,11 @@ mtp-service-configに以下を追記し、MDCモジュールの設定ファイ�
 <inherits>/mdc-service-config.xml</inherits>
 ----
 
+また、テナント作成時にMDC Navigationの初期設定を行うため、mtp-tools-service-configに以下があることを確認してください。
+----
+<inherits>/mtp-tools-service-config.xml</inherits>
+----
+
 また、「iplass-ee-skeleton」を利用している場合は<<../../../serviceconfig/index.adoc#WebFrontendService, WebFrontendService>>の以下箇所のコメント化を解除します。 +
 GEM画面の場合にはGEM用のエラー画面を、MDC画面の場合にはMDC用のエラー画面を表示するための設定です。
 
@@ -56,6 +61,21 @@ iplass-ee-skeletonを利用している場合は該当箇所のコメント化�
 
 	・・・・・
 </absolute-ordering>
+----
+
+.MDCモジュールを利用しない場合
+MDCを利用せずにGEMのみを利用する場合はmtp-service-configから以下を削除し、MDCモジュールの設定ファイルを読み込まないようにします。 +
+「iplass-ee-skeleton」を利用している場合は該当箇所をコメント化します。
+
+----
+<inherits>/mdc-service-config.xml</inherits>
+----
+
+また、テナント作成時にMDC Navigationの初期設定を行わないようにするため、mtp-tools-service-configの以下を置き換えてください。
+----
+<inherits>/mtp-tools-service-config.xml</inherits>
+　↓
+<inherits>/mtp-tools-service-config-gem.xml</inherits>
 ----
 
 === ロール / 権限設定
