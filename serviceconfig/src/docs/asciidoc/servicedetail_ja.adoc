@@ -9,6 +9,8 @@ include::admin/adminconsoleservice_ja.adoc[]
 
 include::core/aidataconnectservice_ja.adoc[]
 
+include::core/aipromptasyncservice_ja.adoc[]
+
 include::core/aiintegrationservice_ja.adoc[]
 
 include::core/aipromptservice_ja.adoc[]

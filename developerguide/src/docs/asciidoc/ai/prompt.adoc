@@ -110,7 +110,7 @@ NOTE: 対応するデータ種別について、AIサービスで利用するモ
 
 .レスポンス
 プロンプトを利用してAIサービスにリクエストを行うと、レスポンスが返却されます。 +
-レスポンスには、AIサービスからの応答テキストや、状態などが含まれます。
+レスポンスには、プロンプト実行追跡情報、AIサービスからの応答テキストや、状態などが含まれます。
 
 応答テキストは JSON などに構造化されている場合があります。 +
 この場合は、レスポンスからテキストを取得し、JSON などの形式でパースして利用してください。
@@ -133,6 +133,12 @@ Service-Config を設定してください。
 ==== 基本的なプロンプト利用
 基本的なプロンプトの利用方法は、以下の例の通りです。
 
+[IMPORTANT]
+====
+AiManager#request メソッドは 4.1.4 で非推奨となりました。 +
+AiManager#requestPrompt メソッドを利用してください。
+====
+
 [[prompt_usage_basic_example]]
 .基本的なプロンプト利用例
 [source,java]
@@ -154,7 +160,12 @@ public class ExamplePrompt {
         // prompt_definition_name という名前のプロンプトメタデータを利用してリクエストを作成する例
         var request = aiManager.createRequest(PROMPT_NAME, state, AiPlatformPayload.text("プロンプトテキスト"));
         // prompt_definition_name という名前のプロンプトメタデータを利用してリクエストを実行する例
-        var response = aiManager.request(PROMPT_NAME, request);
+        var promptResponse = aiManager.requestPrompt(PROMPT_NAME, request);
+        var response = promptResponse.getPlatformResponse();
+
+        // <1>
+        // リクエストの追跡情報を取得する例
+        var trackingInfo = promptResponse.getTrackingInformation();
 
         // 次のリクエストで利用できるように状態を保存する
         saveState(response.getState());
@@ -177,7 +188,12 @@ public class ExamplePrompt {
         // DEFAULT という名前のプロンプトメタデータを利用してリクエストを作成する例
         var request = aiManager.createRequest(state, AiPlatformPayload.text("プロンプトテキスト"));
         // DEFAULT という名前のプロンプトメタデータを利用してリクエストを実行する例
-        var response = aiManager.request(request);
+        var promptResponse = aiManager.requestPrompt(request);
+        var response = promptResponse.getPlatformResponse();
+
+        // <1>
+        // リクエストの追跡情報を取得する例
+        var trackingInfo = promptResponse.getTrackingInformation();
 
         // 次のリクエストで利用できるように状態を保存する
         saveState(response.getState());
@@ -203,6 +219,7 @@ public class ExamplePrompt {
     }
 }
 ----
+<1> リクエストの追跡情報には、プロンプト実行時に生成される一意のキー情報を含みます。このキーでログ情報などを確認することが可能です。
 
 [[prompt_usage_placeholder]]
 ==== プレースホルダーの利用
@@ -236,7 +253,8 @@ public class ExamplePrompt {
             "placeholder_name2", "プレースホルダーの値2"
         ));
 
-        var response = aiManager.request(request);
+        var promptResponse = aiManager.requestPrompt(request);
+        var response = promptResponse.getPlatformResponse();
 
         // レスポンステキストの取得
         var responseText = response.getText();
@@ -282,7 +300,8 @@ public class ExamplePrompt {
 
         // プロンプトのリクエストの作成と実行
         var request = aiManager.createRequest(AiPlatformPayload.text("プロンプトテキスト"));
-        var response = aiManager.request(request);
+        var promptResponse = aiManager.requestPrompt(request);
+        var response = promptResponse.getPlatformResponse();
 
         // ここからレスポンスの情報を取得する例
 
@@ -310,3 +329,64 @@ public class ExamplePrompt {
     }
 }
 ----
+
+
+[[prompt_usage_async_prompt_request]]
+==== 非同期でのプロンプトリクエスト
+
+// FIXME 非同期リクエストの AsyncCallback の説明を記載する必要がある
+// FIXME trackingInformation には、診断コンテキストの aiPromptRequestId と同じ値を取得できることを記載する。
+
+[[prompt_usage_async_prompt_request_example]]
+.非同期でのプロンプトリクエスト実装例
+[source,java]
+----
+public class ExampleAsyncPrompt {
+    /** プロンプトメタデータの定義名 */
+    private static final String PROMPT_NAME = "prompt_definition_name";
+
+    /**
+     * プロンプトの利用例
+     * プロンプト名を指定してプロンプトを利用する例です。
+     */
+    public void exampleUseSpecificPrompt() {
+        var aiManager = ManagerLocator.manager(AiManager.class);
+
+        // prompt_definition_name という名前のプロンプトメタデータを利用してリクエストを作成する例
+        var request = aiManager.createRequest(PROMPT_NAME, AiPlatformPayload.text("プロンプトテキスト"));
+
+        // <1>
+        // prompt_definition_name という名前のプロンプトメタデータを利用して非同期リクエストを実行する例
+        var trackingInfo = aiManager.requestPromptAsync(PROMPT_NAME, request, promptResponse -> {
+            // レスポンステキストの取得
+            var response = promptResponse.getPlatformResponse();
+            var responseText = response.getText();
+            // コールバック内での処理
+            // :
+            // :
+        });
+    }
+
+    /**
+     * プロンプトの利用例
+     * DEFAULT を指定してプロンプトを利用する例です。
+     */
+    public void exampleUseDefaultPrompt() {
+        var aiManager = ManagerLocator.manager(AiManager.class);
+
+        // DEFAULT という名前のプロンプトメタデータを利用してリクエストを作成する例
+        var request = aiManager.createRequest(AiPlatformPayload.text("プロンプトテキスト"));
+        // <1>
+        // DEFAULT という名前のプロンプトメタデータを利用して非同期リクエストを実行する例
+        var trackingInfo = aiManager.requestPromptAsync(request, promptResponse -> {
+            // レスポンステキストの取得
+            var response = promptResponse.getPlatformResponse();
+            var responseText = response.getText();
+            // コールバック内での処理
+            // :
+            // :
+        });
+    }
+}
+----
+<1> promptResponse の内容は、同期リクエストのレスポンスと同様の内容となります。
