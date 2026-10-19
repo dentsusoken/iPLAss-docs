@@ -11,6 +11,8 @@ include::core/aidataconnectservice_en.adoc[]
 
 include::core/aiintegrationservice_en.adoc[]
 
+include::core/aipromptasyncservice_en.adoc[]
+
 include::core/aipromptservice_en.adoc[]
 
 include::core/aisystempromptservice_en.adoc[]
