@@ -65,7 +65,8 @@ iplass-ee-skeletonを利用している場合は該当箇所のコメント化�
 
 .MDCモジュールを利用しない場合
 MDCを利用せずにGEMのみを利用する場合はmtp-service-configから以下を削除し、MDCモジュールの設定ファイルを読み込まないようにします。 +
-「iplass-ee-skeleton」を利用している場合は該当箇所をコメント化します。
+「iplass-ee-skeleton」を利用している場合は該当箇所をコメント化します。 +
+build.gradle, web.xmlの設定についても同様にMDCモジュールの設定を削除またはコメント化してください。
 
 ----
 <inherits>/mdc-service-config.xml</inherits>
