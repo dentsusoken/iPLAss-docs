@@ -1,0 +1,89 @@
+[[AiPromptAsyncService]]
+=== [.eeonly]#AiPromptAsyncService#
+Asynchronous processing service for AI prompt requests.
+
+==== Interface Name
+----
+org.iplass.mtp.impl.ai.prompt.AiPromptAsyncService
+----
+
+==== Implementing Class Name
+.Asynchronous processing using in-memory queue
+----
+org.iplass.mtp.impl.ai.prompt.AiPromptAsyncInMemoryQueueService
+----
+
+==== Settings of AiPromptAsyncInMemoryQueueService
+In the in-memory queue, asynchronous processing is performed using an asynchronous service queue prepared within the server. +
+The queue exists on a per-server basis and is not shared between servers. +
+Also, queues that have not started processing exist only in memory, so they are lost when the server is restarted. +
+When the server shuts down, requests still being processed are interrupted if they do not complete within the waiting period configured by `terminationTimeoutSeconds`.
+
+===== Configurable Items
+[cols="1,1,3", options="header"]
+|===
+| Item
+| Value
+| Description
+
+| mdcContextKey
+| String, Multiple
+| Sets the key name for the MDC context. Used when propagating the MDC context to asynchronous processing. The default value is `traceId`.
+
+| coreConcurrency
+| int
+| Sets the core concurrency for asynchronous processing. The specified number of threads is always reserved for asynchronous processing. The default value is 1.
+
+| maxConcurrency
+| int
+| Sets the maximum concurrency for asynchronous processing. The default value is 3.
+
+| queueSize
+| int
+| Sets the queue size for asynchronous processing. Specifies the maximum number of requests that can be stored in the queue. The default value is 30.
+
+| keepAliveSeconds
+| long
+| Sets the time (in seconds) that asynchronous processing threads are kept idle. Threads are terminated if the specified time is exceeded. Threads for the number specified by coreConcurrency are always reserved. The default value is 60.
+
+| terminationTimeoutSeconds
+| long
+| Sets the termination timeout (in seconds) for asynchronous processing threads to terminate when the server shuts down. Threads are forcibly terminated if the specified time is exceeded. The default value is 20.
+|===
+
+===== Example
+[source,xml]
+----
+<!-- Example configuration for AiPromptAsyncService -->
+<service>
+    <interface>org.iplass.mtp.impl.ai.prompt.AiPromptAsyncService</interface>
+    <class>org.iplass.mtp.impl.ai.prompt.AiPromptAsyncInMemoryQueueService</class>
+
+    <!-- MDC context key (multiple keys can be specified) -->
+    <!--
+    <property name="mdcContextKey" value="traceId" />
+    <property name="mdcContextKey" value="someMdcKey" />
+    -->
+
+    <!--  Core concurrency threads -->
+    <!--
+    <property name="coreConcurrency" value="1" />
+    -->
+    <!--  Maximum concurrency threads -->
+    <!--
+    <property name="maxConcurrency" value="3" />
+    -->
+    <!--  Queue size -->
+    <!--
+    <property name="queueSize" value="30" />
+    -->
+    <!-- Thread keep-alive -->
+    <!--
+    <property name="keepAliveSeconds" value="60" />
+    -->
+    <!-- Termination timeout -->
+    <!--
+    <property name="terminationTimeoutSeconds" value="20" />
+    -->
+</service>
+----

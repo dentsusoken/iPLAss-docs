@@ -10,6 +10,7 @@ iPLAssの中心となる機能に関するサービス群です。
 | <<index.adoc#AiApplicationPolicyService, [.eeonly]#AiApplicationPolicyService#>> | AI機能におけるアプリケーションポリシー設定を管理するサービスです。
 | <<index.adoc#AiDataConnectService>> | AIデータ連携のサービスです。
 | <<index.adoc#AiIntegrationService>> | AI統合のサービスです。データ連携、プロンプトで利用可能な統合的なサービスです。
+| <<index.adoc#AiPromptAsyncService>> | AIプロンプトの非同期処理を管理するサービスです。
 | <<index.adoc#AiPromptService>> | AIプロンプトのサービスです。
 | <<index.adoc#AiSystemPromptService>> | AIシステムプロンプトのサービスです。
 | <<index.adoc#AsyncTaskService, AsyncTaskService>> | 基盤内部でタスクを非同期実行するためのサービスです。

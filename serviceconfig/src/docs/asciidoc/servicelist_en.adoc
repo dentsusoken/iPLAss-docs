@@ -10,6 +10,7 @@ The Services for iPLAss core features.
 | <<index.adoc#AiApplicationPolicyService, [.eeonly]#AiApplicationPolicyService#>> | This service manages application policy settings for AI features.
 | <<index.adoc#AiDataConnectService>> | A service for AI data connection.
 | <<index.adoc#AiIntegrationService>> | A service for AI integration. This is an integrated service available for data connection and prompts.
+| <<index.adoc#AiPromptAsyncService>> | A service for managing asynchronous processing of AI prompts.
 | <<index.adoc#AiPromptService>> | A service for AI prompts.
 | <<index.adoc#AiSystemPromptService>> | A service for AI system prompts.
 | <<index.adoc#AsyncTaskService, AsyncTaskService>> | A service for executing tasks asynchronously inside the platform.

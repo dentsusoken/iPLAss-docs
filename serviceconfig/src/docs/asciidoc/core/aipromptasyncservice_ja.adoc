@@ -1,0 +1,89 @@
+[[AiPromptAsyncService]]
+=== [.eeonly]#AiPromptAsyncService#
+AIプロンプトリクエストの非同期処理を提供するサービスです。
+
+==== インタフェース名
+----
+org.iplass.mtp.impl.ai.prompt.AiPromptAsyncService
+----
+
+==== 実装クラス名
+.インメモリキューを利用した非同期処理
+----
+org.iplass.mtp.impl.ai.prompt.AiPromptAsyncInMemoryQueueService
+----
+
+==== AiPromptAsyncInMemoryQueueService の設定
+インメモリキューでは、サーバー内に用意した非同期サービスキューを利用して非同期処理を行います。 +
+キューはサーバー単位で存在し、サーバー間で共有されません。 +
+また、処理が開始されていないキューは、メモリ上にのみ存在するためサーバーが再起動すると失われます。 +
+サーバー終了時に処理中のキューは待機時間（`terminationTimeoutSeconds` で設定された時間）を経過するとタイムアウトとなり、処理は中断されます。
+
+===== 設定項目
+[cols="1,1,3", options="header"]
+|===
+| 項目
+| 値
+| 説明
+
+| mdcContextKey
+| String、複数指定可
+| MDCコンテキストのキー名を設定します。非同期処理にMDCコンテキストを引き継ぐ場合に利用されます。デフォルトでは `traceId` が設定されます。
+
+| coreConcurrency
+| int
+| 非同期処理のコア同時実行数を設定します。指定されたスレッドは常に確保され、非同期処理の実行に利用されます。デフォルト値は1です。
+
+| maxConcurrency
+| int
+| 非同期処理の最大同時実行数を設定します。デフォルト値は3です。
+
+| queueSize
+| int
+| 非同期処理のキューサイズを設定します。キューに格納可能なリクエストの最大数を指定します。デフォルト値は30です。
+
+| keepAliveSeconds
+| long
+| 非同期処理のスレッドがアイドル状態のまま保持される時間（秒）を設定します。指定された時間を超えるとスレッドは終了されます。 coreConcurrency で指定した数のスレッドは常に確保されます。デフォルト値は60です。
+
+| terminationTimeoutSeconds
+| long
+| サーバー終了時に非同期処理のスレッドが終了する際のタイムアウト時間（秒）を設定します。指定された時間を超えると強制的にスレッドは終了されます。デフォルト値は20です。
+|===
+
+===== 設定例
+[source,xml]
+----
+<!-- AiPromptAsyncService の設定例 -->
+<service>
+    <interface>org.iplass.mtp.impl.ai.prompt.AiPromptAsyncService</interface>
+    <class>org.iplass.mtp.impl.ai.prompt.AiPromptAsyncInMemoryQueueService</class>
+
+    <!-- MDCコンテキストキー -->
+    <!--
+    <property name="mdcContextKey" value="traceId" />
+    <property name="mdcContextKey" value="someMdcKey" />
+    -->
+
+    <!--  コア並列スレッド -->
+    <!--
+    <property name="coreConcurrency" value="1" />
+    -->
+    <!--  最大並列スレッド -->
+    <!--
+    <property name="maxConcurrency" value="3" />
+    -->
+    <!--  キューサイズ -->
+    <!--
+    <property name="queueSize" value="30" />
+    -->
+    <!-- スレッドキープアライブ -->
+    <!--
+    <property name="keepAliveSeconds" value="60" />
+    -->
+    <!-- 終了時タイムアウト -->
+    <!--
+    <property name="terminationTimeoutSeconds" value="20" />
+    -->
+</service>
+----

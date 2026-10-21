@@ -82,6 +82,7 @@ Output for file download operations ( `mtp.audit.admin.download` ) and AuditLog 
 | org.iplass.mtp.impl.rdb.connection | Logs of SQL execution time and warning.
 |===
 
+[[logback_mdc]]
 === diagnostic context
 In iPLAss, the following information is logged by the diagnostic context (MDC).
 
