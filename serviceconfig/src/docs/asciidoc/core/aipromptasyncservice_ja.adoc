@@ -26,6 +26,10 @@ org.iplass.mtp.impl.ai.prompt.AiPromptAsyncInMemoryQueueService
 | 値
 | 説明
 
+| mdcContextKey
+| String、複数指定可
+| MDCコンテキストのキー名を設定します。非同期処理にMDCコンテキストを引き継ぐ場合に利用されます。デフォルトでは `traceId` が設定されます。
+
 | coreConcurrency
 | int
 | 非同期処理のコア同時実行数を設定します。指定されたスレッドは常に確保され、非同期処理の実行に利用されます。デフォルト値は1です。
@@ -54,6 +58,12 @@ org.iplass.mtp.impl.ai.prompt.AiPromptAsyncInMemoryQueueService
 <service>
     <interface>org.iplass.mtp.impl.ai.prompt.AiPromptAsyncService</interface>
     <class>org.iplass.mtp.impl.ai.prompt.AiPromptAsyncInMemoryQueueService</class>
+
+    <!-- MDCコンテキストキー -->
+    <!--
+    <property name="mdcContextKey" value="traceId" />
+    <property name="mdcContextKey" value="someMdcKey" />
+    -->
 
     <!--  コア並列スレッド -->
     <!--

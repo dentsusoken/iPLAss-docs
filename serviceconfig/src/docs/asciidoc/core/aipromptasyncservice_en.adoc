@@ -26,6 +26,10 @@ When the server shuts down, requests still being processed are interrupted if th
 | Value
 | Description
 
+| mdcContextKey
+| String, Multiple
+| Sets the key name for the MDC context. Used when propagating the MDC context to asynchronous processing. The default value is `traceId`.
+
 | coreConcurrency
 | int
 | Sets the core concurrency for asynchronous processing. The specified number of threads is always reserved for asynchronous processing. The default value is 1.
@@ -54,6 +58,12 @@ When the server shuts down, requests still being processed are interrupted if th
 <service>
     <interface>org.iplass.mtp.impl.ai.prompt.AiPromptAsyncService</interface>
     <class>org.iplass.mtp.impl.ai.prompt.AiPromptAsyncInMemoryQueueService</class>
+
+    <!-- MDC context key (multiple keys can be specified) -->
+    <!--
+    <property name="mdcContextKey" value="traceId" />
+    <property name="mdcContextKey" value="someMdcKey" />
+    -->
 
     <!--  Core concurrency threads -->
     <!--
