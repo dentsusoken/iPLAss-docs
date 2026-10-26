@@ -76,13 +76,14 @@ OFFにした場合は、条件として保存されます。
 a|保存リストの一覧画面から直接File Downloadを許可するかを設定します（デフォルト：不可） +
 可能とした場合は、ポップアップに `Download` が表示されます。 +
 ダウンロード時のファイル形式は、対象となる
-<<../aggregation/index.adoc#aggregation_common_setting, Aggregation定義>> や
-<<setting.adoc#entitylisting_defaultsetting, EntityListing定義>> の `File type` 設定に従います。 +
+<<../aggregation/index.adoc#aggregation_common_setting, Aggregation定義>>、
+<<setting.adoc#entitylisting_defaultsetting, EntityListing定義>> や
+<<../genericentitymanager/spreadsheet/definition.adoc#spreadsheet_definition, Spreadsheet定義>> の `File type` 設定に従います。 +
 `File type` が `SPECIFY` の場合は、ファイル形式を選択するダイアログが表示されます。 +
 またCSV Download時に文字コードを指定する場合は、TopViewの
 <<../genericentitymanager/topview/index.adoc#csvdownload, CsvDownload Settings>> で設定します。
 
-CAUTION: 保存リストの詳細画面では、対象となるAggregationやEntityListing定義のDownload可否設定をチェックして
+CAUTION: 保存リストの詳細画面では、対象となるAggregation、EntityListingまたはSpreadsheet定義のDownload可否設定をチェックして
 Downloadボタンの表示を制御していますが、保存リスト一覧上ではこのチェックは行いません
 (それぞれの保存データをロードする必要があるためパフォーマンスを考慮してチェックしていません)。
 許可されていない保存リストについてはWARNログを出力後、空のファイルが出力されます。

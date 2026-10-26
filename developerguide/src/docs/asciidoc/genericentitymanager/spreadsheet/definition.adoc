@@ -279,6 +279,9 @@ SpreadSheetFeatureFlagsの設定項目は以下となります。
 |セル結合式設定
 |ルールベースで結合条件をJSON形式で定義します。 +
 詳細は<<spreadsheet_featureflags_merge,セル結合設定>>を参照してください。
+
+|保存リストを使用する
+|保存リストの利用を許可します。
 |===
 
 [[spreadsheet_featureflags_merge]]
