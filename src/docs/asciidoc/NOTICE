@@ -50,3 +50,21 @@ This software includes third party components, as follows:
   Copyright (c) JS Foundation and other contributors.
   Licensed under the MIT License.
   https://github.com/jquery/jquery
+
+- Quill
+  Copyright (c) 2017-2024, Slab.
+  Copyright (c) 2014, Jason Chen.
+  Copyright (c) 2013, salesforce.com.
+  Licensed under the BSD-3-Clause License.
+  https://github.com/slab/quill
+
+- quill-table-up
+  Copyright (c) 2024 zzxming.
+  Licensed under the MIT License.
+  https://github.com/quill-modules/quill-table-up
+
+- quill-resize-module
+  Copyright © 2018.
+  Author: mudoo <mudoo@qq.com>
+  Licensed under the MIT License.
+  https://github.com/mudoo/quill-resize-module
