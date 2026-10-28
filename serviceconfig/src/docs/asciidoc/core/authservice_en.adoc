@@ -3,6 +3,9 @@
 This is the service for authentication.
 Various kind of authentications can be achieve by switching authentication providers.
 
+The validity period of the `User` entity is checked during credential-based login and re-authentication.
+If `startDate` or `endDate` is set, authentication fails and the user cannot log in when the current date and time is before `startDate` or at or after `endDate`.
+
 ==== Interface Name
 ----
 org.iplass.mtp.impl.auth.AuthService
