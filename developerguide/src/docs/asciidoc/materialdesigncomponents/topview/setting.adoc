@@ -1760,9 +1760,10 @@ a|保存リストの一覧画面から直接File ダウンロードを許可す�
 ダウンロード時のファイル形式は、対象となる
 <<../aggregation/index.adoc#aggregation_common_setting, Aggregation定義>> や
 <<../entitylisting/index.adoc#mdc_entitylisting_defaultsetting, EntityListing定義>> の `File type` 設定に従います。 +
-`File type` が `SPECIFY` の場合は、ファイル形式を選択するダイアログが表示されます。
+`File type` が `SPECIFY` の場合は、ファイル形式を選択するダイアログが表示されます。 +
+Spreadsheet定義から保存したデータの場合は、ファイル形式はExcel（xlsx）形式です。 +
 
-CAUTION: 保存リストの詳細画面では、対象となるAggregationやEntityListing定義のDownload可否設定をチェックして
+CAUTION: 保存リストの詳細画面では、対象となるAggregation、EntityListingまたはSpreadsheet定義のDownload可否設定をチェックして
 Downloadボタンの表示を制御していますが、保存リスト一覧上ではこのチェックは行いません
 (それぞれの保存データをロードする必要があるためパフォーマンスを考慮してチェックしていません)。
 許可されていない保存リストについてはWARNログを出力後、空のファイルが出力されます。
