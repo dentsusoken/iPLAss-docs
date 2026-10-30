@@ -83,7 +83,7 @@ Spreadsheet定義から保存したデータの場合は、ファイル形式は
 またCSV Download時に文字コードを指定する場合は、TopViewの
 <<../genericentitymanager/topview/index.adoc#csvdownload, CsvDownload Settings>> で設定します。
 
-CAUTION: 保存リストの詳細画面では、対象となるAggregation、EntityListingまたはSpreadsheet定義のDownload可否設定をチェックして
+CAUTION: 保存リストの詳細画面では、対象となるAggregation、EntityListingまたはSpreadsheet定義のダウンロード可否設定をチェックして
 Downloadボタンの表示を制御していますが、保存リスト一覧上ではこのチェックは行いません
 (それぞれの保存データをロードする必要があるためパフォーマンスを考慮してチェックしていません)。
 許可されていない保存リストについてはWARNログを出力後、空のファイルが出力されます。
