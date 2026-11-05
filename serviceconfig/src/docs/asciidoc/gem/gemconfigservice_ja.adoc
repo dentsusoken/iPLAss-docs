@@ -66,6 +66,7 @@ CAUTION: 後方互換性のための設定フラグです。将来のバージ�
 
 CAUTION: 後方互換性のための設定フラグです。将来のバージョンでは本設定項目は削除されます。
 | showPulldownPleaseSelectLabel | boolean | プルダウンの未選択時のラベル「選択してください」を表示するか。デフォルト値はtrueです。
+| referenceModal | <<ReferenceModal>> | ReferencePropertyEditorで参照データを選択するモーダルの初期表示サイズを設定します。ReferencePropertyEditorの個別設定がある場合は、個別設定が優先されます。
 | binaryUploadAsync | boolean | binaryファイルアップロードを非同期処理で行うか。デフォルト値はtrueです。
 | datePickerDefaultOption | String | Datepickerのデフォルトオプション。デフォルト値は以下です。 +
  `changeMonth:true,changeYear:true,yearRange:"c-10:c+10"`
@@ -105,6 +106,28 @@ CAUTION: 後方互換性のための設定フラグです。将来のバージ�
 | permitRolesToNoView | String、複数指定可 | GemAuthでのEntityViewが未定義の場合の許可ロール。
 デフォルト値は `AppAdmin` です。
 |===
+
+[[ReferenceModal]]
+.ReferenceModal
+classは `org.iplass.gem.GemConfigService$ReferenceModal` を指定します。
+
+ReferencePropertyEditorで参照データを選択するモーダルの初期表示サイズをピクセル単位で設定します。幅、高さはそれぞれ個別に設定できます。
+未設定または0以下の場合は、該当する寸法にモーダルの既定値（幅750、高さ735）が使用されます。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| width | Integer | モーダルの初期表示幅（ピクセル）。未設定または0以下の場合は既定値750です。
+| height | Integer | モーダルの初期表示高さ（ピクセル）。未設定または0以下の場合は既定値735です。
+|===
+
+設定例
+[source,xml]
+----
+<property name="referenceModal" class="org.iplass.gem.GemConfigService$ReferenceModal">
+	<property name="width" value="1200" />
+	<property name="height" value="900" />
+</property>
+----
 
 [[EnterpriseGemConfigService]]
 ==== [.eeonly]#EnterpriseGemConfigServiceの設定#
@@ -446,6 +469,12 @@ classにorg.iplass.gem.EnterpriseEntityViewHelperImplを指定します。
 
 	<!-- プルダウンの「選択してください」を表示するか -->
 	<property name="showPulldownPleaseSelectLabel" value="true" />
+
+	<!-- ReferencePropertyEditorのモーダル初期サイズ設定 -->
+	<property name="referenceModal" class="org.iplass.gem.GemConfigService$ReferenceModal">
+		<property name="width" value="1200" />
+		<property name="height" value="900" />
+	</property>
 
 	<!-- binaryファイルアップロード非同期設定 -->
 	<property name="binaryUploadAsync" value="true" />

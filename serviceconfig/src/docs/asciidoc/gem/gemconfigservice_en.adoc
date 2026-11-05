@@ -67,6 +67,7 @@ CAUTION: Setting flag for backward compatibility. This setting flag will be dele
 
 CAUTION: Setting flag for backward compatibility. This setting flag will be deleted in a future version.
 | showPulldownPleaseSelectLabel | boolean | Whether to display the label "Please select" when the pull-down menu is not selected. The default value is true.
+| referenceModal | <<ReferenceModal>> | Sets the initial size of the reference selection dialog opened by ReferencePropertyEditor. Individual ReferencePropertyEditor settings take precedence.
 | binaryUploadAsync | boolean | Whether to perform the binary file upload asynchronously. The default value is true.
 | datePickerDefaultOption | String | Datepicker default options. The default value is. +
  `changeMonth:true,changeYear:true,yearRange:"c-10:c+10"`
@@ -108,6 +109,28 @@ The default value is `GemUser` and `AppAdmin` .
 | permitRolesToNoView | String, Multiple | Permit roles in GemAuth when EntityView is undefined.
 The default value is `AppAdmin` .
 |===
+
+[[ReferenceModal]]
+.ReferenceModal
+Specify `org.iplass.gem.GemConfigService$ReferenceModal` as the class.
+
+Sets the initial size, in pixels, of the modal dialog used to select referenced data in ReferencePropertyEditor. Width and height can be configured independently.
+If a value is omitted or is 0 or less, the default size for that dimension is used (width: 750, height: 735).
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| width | Integer | Initial dialog width in pixels. If omitted or set to 0 or less, the default is 750.
+| height | Integer | Initial dialog height in pixels. If omitted or set to 0 or less, the default is 735.
+|===
+
+Configuration example
+[source,xml]
+----
+<property name="referenceModal" class="org.iplass.gem.GemConfigService$ReferenceModal">
+	<property name="width" value="1200" />
+	<property name="height" value="900" />
+</property>
+----
 
 [[EnterpriseGemConfigService]]
 ==== [.eeonly]#The settings of EnterpriseGemConfigService#
@@ -444,6 +467,12 @@ There is no configurable items.
 
 	<!-- Whether to display the "Please select" pull-down box-->
 	<property name="showPulldownPleaseSelectLabel" value="true" />
+
+	<!-- Initial size settings for ReferencePropertyEditor dialogs -->
+	<property name="referenceModal" class="org.iplass.gem.GemConfigService$ReferenceModal">
+		<property name="width" value="1200" />
+		<property name="height" value="900" />
+	</property>
 
 	<!-- Binary file upload asynchronous setting -->
 	<property name="binaryUploadAsync" value="true" />

@@ -1191,6 +1191,36 @@ NestTable
 |各アクション実行時に表示する画面のView定義名を設定します。
 未指定の場合は `default` のView定義を使用します。
 
+|参照ダイアログ初期表示幅（px）
+|検索条件 +
+検索結果 +
+詳細・編集画面 +
+一括更新画面
+|Link +
+NestTable +
+Unique
+|ReferencePropertyEditorで参照データを選択するダイアログの初期表示幅を指定します。未指定または0以下の場合は、<<../../../serviceconfig/index.adoc#GemConfigService, GemConfigService>> の `referenceModal` 設定を使用します。
+
+|参照ダイアログ初期表示高さ（px）
+|検索条件 +
+検索結果 +
+詳細・編集画面 +
+一括更新画面
+|Link +
+NestTable +
+Unique
+|ReferencePropertyEditorで参照データを選択するダイアログの初期表示高さを指定します。未指定または0以下の場合は、<<../../../serviceconfig/index.adoc#GemConfigService, GemConfigService>> の `referenceModal` 設定を使用します。
+
+|参照ダイアログ初期表示時に最大化
+|検索条件 +
+検索結果 +
+詳細・編集画面 +
+一括更新画面
+|Link +
+NestTable +
+Unique
+|ReferencePropertyEditorで参照データを選択するダイアログを、初期表示時に最大化します。
+
 |URLパラメータ
 |検索条件 +
 詳細・編集画面
