@@ -901,6 +901,18 @@ CHECKBOX
 |選択フィルターの設定を行います。
 詳細は<<bulklayout_reference_property_editor_select_filter_config, 選択フィルター設定>>を参照してください。
 
+|ダイアログ初期表示幅
+|LINK
+|LINKタイプで、選択ボタンが有効なときに開く参照選択ダイアログの初期表示幅をピクセル単位で指定します。未指定または0以下の場合は、<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `referenceModal` 設定値を使用します。サービス設定も未指定または0以下の場合はMDCの既定値を使用します。
+
+|ダイアログ初期表示高さ
+|LINK
+|LINKタイプで、選択ボタンが有効なときに開く参照選択ダイアログの初期表示高さをピクセル単位で指定します。未指定または0以下の場合は、<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `referenceModal` 設定値を使用します。サービス設定も未指定または0以下の場合はMDCの既定値を使用します。
+
+|ダイアログを最大化して表示
+|LINK
+|チェックした場合、LINKタイプで選択ボタンが有効なときに開く参照選択ダイアログを初期表示時に最大化します。最大化は幅・高さの設定より優先されます。
+
 |===
 
 

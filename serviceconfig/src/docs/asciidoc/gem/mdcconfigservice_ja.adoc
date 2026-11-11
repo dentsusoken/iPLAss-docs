@@ -49,6 +49,7 @@ CAUTION: 後方互換性のための設定フラグです。将来のバージ�
 `true` の場合、実体のコピーは行わず、コピー元と同じデータを参照します。
 `false` の場合、実体のコピーを行い、コピー後のデータを参照します。
 | selectFilterSearchPageSize | int | 参照型選択フィルターの毎回検索件数。未指定の場合のデフォルト値は40です。
+| referenceModal | <<ReferenceModal>> | ReferencePropertyEditorで参照データを選択するダイアログの初期表示サイズを設定します。ReferencePropertyEditorの個別設定がある場合は、個別設定が優先されます。
 | displayBreakpoint | <<DisplayBreakpoint>> | ディスプレイブレイクポイント。各デバイスサイズの幅を設定します。
 | permitRolesToMdc | String、複数指定可 | MdcAuthでのMdc許可ロール。
 デフォルト値は `MdcUser` と `AppAdmin` です。
@@ -80,6 +81,28 @@ CAUTION: 後方互換性のための設定フラグです。将来のバージ�
 | entityListingFileDownloadFooter | String | EntityListingのファイルダウンロードのフッター文言。 `entityListingFileDownloadWithFooter` が `true` の場合に有効です。
 
 |===
+
+[[ReferenceModal]]
+.ReferenceModal
+classは `org.iplass.mtp.mdc.MdcConfigService$ReferenceModal` を指定します。
+
+ReferencePropertyEditorで参照データを選択するダイアログの初期表示サイズをピクセル単位で設定します。幅と高さはそれぞれ個別に設定できます。
+ReferencePropertyEditor側の `dialogWidth` / `dialogHeight` に正の値が指定されている場合は、その個別設定が寸法ごとに優先されます。個別設定が未設定または0以下の場合は本設定を使用し、本設定も未設定または0以下の場合はMDCの既定サイズが使用されます。
+[cols="1,1,3", options="header"]
+|===
+| 項目 | 値 | 説明
+| width | Integer | ダイアログの初期表示幅（ピクセル）。未設定または0以下の場合はMDCの既定値を使用します。
+| height | Integer | ダイアログの初期表示高さ（ピクセル）。未設定または0以下の場合はMDCの既定値を使用します。
+|===
+
+設定例（mdc-service-config.xml）
+[source,xml]
+----
+<property name="referenceModal" class="org.iplass.mtp.mdc.MdcConfigService$ReferenceModal">
+	<property name="width" value="1200" />
+	<property name="height" value="900" />
+</property>
+----
 
 [[DisplayBreakpoint]]
 .DisplayBreakpoint
@@ -197,6 +220,12 @@ classはorg.iplass.mtp.mdc.BinaryDownloadLoggingTargetPropertyを指定します
 
 	<!-- 参照型選択フィルターの検索件数 -->
 	<property name="selectFilterSearchPageSize" value="40" />
+
+	<!-- ReferencePropertyEditorの参照選択ダイアログ初期サイズ（単位: px） -->
+	<property name="referenceModal" class="org.iplass.mtp.mdc.MdcConfigService$ReferenceModal">
+		<property name="width" value="1200" />
+		<property name="height" value="900" />
+	</property>
 
 	<!-- ディスプレイ設定  -->
 	<property name="displayBreakpoint" class="org.iplass.mtp.mdc.DisplayBreakpoint">

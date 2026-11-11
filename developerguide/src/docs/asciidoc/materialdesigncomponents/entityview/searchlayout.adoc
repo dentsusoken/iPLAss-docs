@@ -2159,6 +2159,18 @@ CHECKBOX
 
 NOTE: 「値なし」を選択する場合、値として「isNull」が使用されるため、他の選択肢にはこのキーワードを値として使用しないでください。
 
+|ダイアログ初期表示幅
+|LINK
+|LINKタイプで開く参照選択ダイアログの初期表示幅をピクセル単位で指定します。未指定または0以下の場合は、<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `referenceModal` 設定値を使用します。サービス設定も未指定または0以下の場合はMDCの既定値を使用します。
+
+|ダイアログ初期表示高さ
+|LINK
+|LINKタイプで開く参照選択ダイアログの初期表示高さをピクセル単位で指定します。未指定または0以下の場合は、<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `referenceModal` 設定値を使用します。サービス設定も未指定または0以下の場合はMDCの既定値を使用します。
+
+|ダイアログを最大化して表示
+|LINK
+|チェックした場合、LINKタイプで開く参照選択ダイアログを初期表示時に最大化します。最大化は幅・高さの設定より優先されます。
+
 |参照先のViewName
 |
 |参照先エンティティのView定義名を設定します。
