@@ -29,7 +29,7 @@ To actually collect the metrics, you need to add the Micrometer module's <<Entit
 To actually collect the metrics, you need to add the Micrometer module's <<ActionMetricsInterceptor>> to the `interceptor` of the ActionMappingService (it is added by default).
 | actionConfig | <<TimerConfig>> | The histograms and percentiles setting for the metrics of the Action Latency.
 | enableWebApiLatencyMetrics | boolean | Specify whether to record the latency and number of calls of the WebAPI as metrics. The default value is true. +
-To actually collect the metrics, you need to add the Micrometer module <<WebApiMetricsInterceptor>> to the InterceptorService `webApi, soap` (it is added by default). 
+To actually collect the metrics, you need to add the Micrometer module <<WebApiMetricsInterceptor>> to the InterceptorService `webApi, soap` (it is added by default).
 | webApiConfig | <<TimerConfig>> | The histograms and percentiles setting for the metrics of the WebAPI Latency.
 | enableSqlExecutionMetrics | boolean | Specify whether to record the number of times SQL is executed as a metric when calling Action or WebAPI. The default value is true. +
 To actually collect the metrics, you need to add the Micrometer module's <<ActionMetricsInterceptor>> to the `interceptor` of the ActionMappingService ,and the Micrometer module <<WebApiMetricsInterceptor>> to the InterceptorService `webApi, soap` (it is added by default).
@@ -59,6 +59,10 @@ To actually collect the metrics, the `listener` of the SmsService must include t
 | customTagWebApiPathResolver | <<PathResolver>>, in format of Map | The tag and <<PathResolver>> class that resolves that value can be specified to WebAPI metrics in format of Map by custom.
 | customizerClass | <<MeterRegistryCustomizer>> | This can be specified when you want to write your own logic to customize the metrics settings.
 | meterRegistryFactory | <<MeterRegistryFactory>> | The Factory class that generates a MeterRegistry that manages and holds metrics.
+| isSanitizePathResolver | boolean | Specify whether to enable sanitization of paths resolved by PathResolver. The default value is true. +
+If this value is enabled, the paths resolved by the service properties `actionPathResolver`, `webApiPathResolver`, `customTagActionPathResolver` and `customTagWebApiPathResolver` will be sanitized.
+| sanitizePathResolverPattern | String | A regular expression that matches text to be sanitized in paths resolved by PathResolver. The default value is `[\r\n]`.
+| sanitizePathResolverReplaceValue | String | Specify the replacement value for the string detected by the property `sanitizePathResolverPattern`. The default value is `_`.
 |===
 
 [[TimerConfig]]
@@ -200,8 +204,8 @@ Please specify org.iplass.mtp.impl.micrometer.metrics.web.webapi.DefaultWebApiPa
 
 This is a Resolver class that resolves the path of GEM standard WebAPI and Entity CRUD API. There are no configurable items.
 
-* For the GEM standard WebAPI, if the definition name is specified in the parameter mapping, "WebAPI name + definition name" is returned. 
-* For Entity CRUD API, if SubPath exists, return "WebAPI name + the first path of SubPath". 
+* For the GEM standard WebAPI, if the definition name is specified in the parameter mapping, "WebAPI name + definition name" is returned.
+* For Entity CRUD API, if SubPath exists, return "WebAPI name + the first path of SubPath".
 
 [[ActionHierarchicalPathResolver]]
 .ActionHierarchicalPathResolver
@@ -312,7 +316,7 @@ HttpSender implementation class for Amazon OpenSearch Service. Access key, secre
 | Item | Value | Description
 | serviceName | String | Service Name. The service name is implemented in the AWS Service Client. +
 Specify `es` if you are using the Amazon OpenSearch Service managed cluster.
-| region | String | Set the region for the AWS service. 
+| region | String | Set the region for the AWS service.
 | clientConfig | <<aws2_AWSSetting_AWSClientConfig>> | Configure AWS client settings, including AWS regions and communication settings.
 | defaultCharset | String | Default character set for response parsing. Used when Content-Type is not present in the response. The default value is "UTF-8".
 |====================
@@ -495,7 +499,7 @@ For details of all the possible settings, please see JavaDoc of the  link:https:
 		<property name="publishPercentiles" value="0.99" />
 		-->
 	</property>
-	
+
 	<!-- Http request count, latency, and http connection pool metrics in HttpClient -->
 	<property name="enableHttpClientMetrics" value="true" />
 
@@ -569,19 +573,33 @@ For details of all the possible settings, please see JavaDoc of the  link:https:
 	</property>
 	-->
 
+	<!-- PathResolver sanitize settings -->
+	<!-- Enable sanitization of PathResolver results? -->
+	<!--
+	<property name="isSanitizePathResolver" value="true" />
+	-->
+	<!-- Pattern for sanitizing PathResolver results -->
+	<!--
+	<property name="sanitizePathResolverPattern" value="[\r\n]" />
+	-->
+	<!-- Replacement value for sanitized PathResolver results -->
+	<!--
+	<property name="sanitizePathResolverReplaceValue" value="_" />
+	-->
+
 	<!-- ■ PathResolver Settings ■ -->
 	<property name="actionPathResolver" class="org.iplass.mtp.impl.micrometer.metrics.web.action.DefaultActionPathResolver" />
 	<property name="webApiPathResolver" class="org.iplass.mtp.impl.micrometer.metrics.web.webapi.DefaultWebApiPathResolver" />
 
 	<!-- ■ Custom PathResolver Settings ■ -->
 	<!--
-	<property name="customTagActionPathResolver"> 
+	<property name="customTagActionPathResolver">
 		<property name="customHierarchicalUri1" class="org.iplass.mtp.impl.micrometer.metrics.web.action.ActionHierarchicalPathResolver">
 			<property name="depth" value="1" />
 		</property>
 	</property>
-	
-	<property name="customTagWebApiPathResolver"> 
+
+	<property name="customTagWebApiPathResolver">
 		<property name="customHierarchicalUri1" class="org.iplass.mtp.impl.micrometer.metrics.web.webapi.WebApiHierarchicalPathResolver">
 			<property name="depth" value="1" />
 		</property>
@@ -644,7 +662,7 @@ For details of all the possible settings, please see JavaDoc of the  link:https:
 		</property>
 	</property>
 	-->
-	
+
 	<!-- (Deprecated) for CloudWatch -->
 	<!-- Functions using AWS SDK for Java 1.x are deprecated; please change to functions using AWS SDK for Java 2.x. -->
 	<!--
@@ -670,7 +688,7 @@ For details of all the possible settings, please see JavaDoc of the  link:https:
 
 	<!-- for New Relic -->
 	<!--
-	<property name="meterRegistryFactory" class="org.iplass.mtp.impl.micrometer.registry.newrelic.NewRelicMeterRegistryFactory"> 
+	<property name="meterRegistryFactory" class="org.iplass.mtp.impl.micrometer.registry.newrelic.NewRelicMeterRegistryFactory">
 		<property name="configMap" >
 			<property name="step" value="1m" />
 			<property name="apiKey" value="yourApiKey" />
