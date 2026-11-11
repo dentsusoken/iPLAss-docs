@@ -59,6 +59,10 @@ AWS SDK for Java 1.x 用の機能では、実際にメトリクスを収集す�
 | customTagWebApiPathResolver | <<PathResolver>>、Map形式 | カスタムでWebAPIのメトリクスにタグ名とその値を解決する<<PathResolver>>クラスをMap形式で指定することができます。
 | customizerClass | <<MeterRegistryCustomizer>> | メトリクスの設定を独自にカスタマイズするロジックを記述したい場合に指定可能です。
 | meterRegistryFactory | <<MeterRegistryFactory>> | メトリクスを管理・保持するMeterRegistryを生成するFactoryクラス。
+| isSanitizePathResolver | boolean | PathResolver によって解決されたパスのサニタイズを有効にするかどうかを指定します。デフォルト値は true です。 +
+この値を有効にすると、本サービスのプロパティ `actionPathResolver`、 `webApiPathResolver`、 `customTagActionPathResolver` および `customTagWebApiPathResolver` によって解決されたパスがサニタイズされます。
+| sanitizePathResolverPattern | String | PathResolver によって解決されたパスをサニタイズするパターンを指定します。サニタイズパターンは、正規表現で指定しサニタイズする文字列を定義します。デフォルト値は `[\r\n]` です。
+| sanitizePathResolverReplaceValue | String | プロパティ `sanitizePathResolverPattern` で検知した文字列の置換値を指定します。デフォルト値は `_` です。
 |===
 
 [[TimerConfig]]
@@ -499,7 +503,7 @@ classは、org.iplass.mtp.impl.micrometer.registry.logging.LoggingMeterRegistryF
 		<property name="publishPercentiles" value="0.99" />
 		-->
 	</property>
-	
+
 	<!-- HttpClientのリクエスト発行回数、レイテンシ、ConnectionManagerメトリクス -->
 	<property name="enableHttpClientMetrics" value="true" />
 
@@ -573,19 +577,33 @@ classは、org.iplass.mtp.impl.micrometer.registry.logging.LoggingMeterRegistryF
 	</property>
 	-->
 
+	<!-- PathResolver sanitize settings -->
+	<!-- PathResolver の値をサニタイズするか -->
+	<!--
+	<property name="isSanitizePathResolver" value="true" />
+	-->
+	<!-- PathResolver の値のサニタイズパターン -->
+	<!--
+	<property name="sanitizePathResolverPattern" value="[\r\n]" />
+	-->
+	<!-- PathResolver の値のサニタイズ後の値 -->
+	<!--
+	<property name="sanitizePathResolverReplaceValue" value="_" />
+	-->
+
 	<!-- ■ PathResolver Settings ■ -->
 	<property name="actionPathResolver" class="org.iplass.mtp.impl.micrometer.metrics.web.action.DefaultActionPathResolver" />
 	<property name="webApiPathResolver" class="org.iplass.mtp.impl.micrometer.metrics.web.webapi.DefaultWebApiPathResolver" />
 
 	<!-- ■ Custom PathResolver Settings ■ -->
 	<!--
-	<property name="customTagActionPathResolver"> 
+	<property name="customTagActionPathResolver">
 		<property name="customHierarchicalUri1" class="org.iplass.mtp.impl.micrometer.metrics.web.action.ActionHierarchicalPathResolver">
 			<property name="depth" value="1" />
 		</property>
 	</property>
-	
-	<property name="customTagWebApiPathResolver"> 
+
+	<property name="customTagWebApiPathResolver">
 		<property name="customHierarchicalUri1" class="org.iplass.mtp.impl.micrometer.metrics.web.webapi.WebApiHierarchicalPathResolver">
 			<property name="depth" value="1" />
 		</property>
@@ -648,7 +666,7 @@ classは、org.iplass.mtp.impl.micrometer.registry.logging.LoggingMeterRegistryF
 		</property>
 	</property>
 	-->
-	
+
 	<!-- (Deprecated) for CloudWatch -->
 	<!-- AWS SDK for Java 1.x を利用した機能は非推奨となります。AWS SDK for Java 2.x を利用した機能に変更してください。 -->
 	<!--
@@ -674,7 +692,7 @@ classは、org.iplass.mtp.impl.micrometer.registry.logging.LoggingMeterRegistryF
 
 	<!-- for New Relic -->
 	<!--
-	<property name="meterRegistryFactory" class="org.iplass.mtp.impl.micrometer.registry.newrelic.NewRelicMeterRegistryFactory"> 
+	<property name="meterRegistryFactory" class="org.iplass.mtp.impl.micrometer.registry.newrelic.NewRelicMeterRegistryFactory">
 		<property name="configMap" >
 			<property name="step" value="1m" />
 			<property name="apiKey" value="yourApiKey" />
