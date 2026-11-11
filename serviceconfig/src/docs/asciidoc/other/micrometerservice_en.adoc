@@ -309,7 +309,7 @@ This is the implementation class of HttpSender used by default. Please specify t
 
 [[JmxMeterRegistryFactory]]
 .JmxMeterRegistryFactory
-Please specify org.iplass.mtp.impl.micrometer.registry.jms.JmxMeterRegistryFactory to the class.
+Please specify org.iplass.mtp.impl.micrometer.registry.jmx.JmxMeterRegistryFactory to the class.
 
 Factory class of io.micrometer.jmx.JmxMeterRegistry that supports JMX. To specify this class, please add `io.micrometer:micrometer-registry-jmx` to a runtime dependency. The following items can be configured.
 

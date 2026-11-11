@@ -308,7 +308,7 @@ classは、io.micrometer.core.ipc.http.HttpUrlConnectionSenderです。
 
 [[JmxMeterRegistryFactory]]
 .JmxMeterRegistryFactory
-classは、org.iplass.mtp.impl.micrometer.registry.jms.JmxMeterRegistryFactoryを指定します。
+classは、org.iplass.mtp.impl.micrometer.registry.jmx.JmxMeterRegistryFactoryを指定します。
 
 JMXに対応したio.micrometer.jmx.JmxMeterRegistryのFactoryクラスです。このクラスを指定する場合は、 `io.micrometer:micrometer-registry-jmx` を実行時の依存関係に追加してください。以下の項目を設定可能です。
 
