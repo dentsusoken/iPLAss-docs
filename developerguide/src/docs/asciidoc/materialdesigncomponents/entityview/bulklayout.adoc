@@ -859,7 +859,7 @@ LABEL:: 数値の入力フィールドを表示
 
 [[bulklayout_reference_property_editor]]
 ==== ReferencePropertyEditor
-Reference型用のプロパティエディタです。一括更新画面の参照選択ダイアログにおける初期サイズの設定優先順位は、<<../../../serviceconfig/index.adoc#ReferenceModal, MdcConfigServiceのReferenceModal>>を参照してください。
+Reference型用のプロパティエディタです。
 
 [cols="1,1,6a", options="header"]
 |===
@@ -915,6 +915,7 @@ CHECKBOX
 
 |===
 
+NOTE: 一括更新画面で使用する参照選択ダイアログの初期サイズの決定方法は、<<../../../serviceconfig/index.adoc#ReferenceModal, MdcConfigServiceのReferenceModal>>を参照してください。
 
 [[bulklayout_reference_property_editor_link_config]]
 ===== Link設定
