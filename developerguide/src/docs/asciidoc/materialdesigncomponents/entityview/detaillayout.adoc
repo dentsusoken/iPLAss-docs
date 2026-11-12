@@ -1925,7 +1925,7 @@ HIDDEN:: ロードや更新対象とするが画面には表示しない
 
 [[detaillayout_reference_property_editor]]
 ==== ReferencePropertyEditor
-Reference型用のプロパティエディタです。
+Reference型用のプロパティエディタです。編集画面で使用する参照選択ダイアログの初期サイズの決定方法は、<<../../../serviceconfig/index.adoc#ReferenceModal, MdcConfigServiceのReferenceModal>>を参照してください。
 
 [cols="1,1,6a", options="header"]
 |===
@@ -1994,11 +1994,11 @@ CHECKBOX
 
 |ダイアログ初期表示幅
 |LINK（編集画面）
-|編集画面表示タイプが `LINK` で、Link設定の選択ボタンが有効な場合に開く参照選択ダイアログの初期表示幅をピクセル単位で指定します。未指定または0以下の場合は、<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `referenceModal` 設定値を使用します。サービス設定も未指定または0以下の場合はMDCの既定値を使用します。
+|編集画面表示タイプが `LINK` で、Link設定の選択ボタンが有効な場合に開く参照選択ダイアログの初期表示幅をピクセル単位で指定します。
 
 |ダイアログ初期表示高さ
 |LINK（編集画面）
-|編集画面表示タイプが `LINK` で、Link設定の選択ボタンが有効な場合に開く参照選択ダイアログの初期表示高さをピクセル単位で指定します。未指定または0以下の場合は、<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `referenceModal` 設定値を使用します。サービス設定も未指定または0以下の場合はMDCの既定値を使用します。
+|編集画面表示タイプが `LINK` で、Link設定の選択ボタンが有効な場合に開く参照選択ダイアログの初期表示高さをピクセル単位で指定します。
 
 |ダイアログを最大化して表示
 |LINK（編集画面）

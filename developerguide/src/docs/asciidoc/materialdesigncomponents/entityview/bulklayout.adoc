@@ -859,7 +859,7 @@ LABEL:: 数値の入力フィールドを表示
 
 [[bulklayout_reference_property_editor]]
 ==== ReferencePropertyEditor
-Reference型用のプロパティエディタです。
+Reference型用のプロパティエディタです。一括更新画面の参照選択ダイアログにおける初期サイズの設定優先順位は、<<../../../serviceconfig/index.adoc#ReferenceModal, MdcConfigServiceのReferenceModal>>を参照してください。
 
 [cols="1,1,6a", options="header"]
 |===
@@ -903,11 +903,11 @@ CHECKBOX
 
 |ダイアログ初期表示幅
 |LINK
-|LINKタイプで、選択ボタンが有効なときに開く参照選択ダイアログの初期表示幅をピクセル単位で指定します。未指定または0以下の場合は、<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `referenceModal` 設定値を使用します。サービス設定も未指定または0以下の場合はMDCの既定値を使用します。
+|LINKタイプで選択ボタンが有効な場合に開く参照選択ダイアログの初期表示幅をピクセル単位で指定します。
 
 |ダイアログ初期表示高さ
 |LINK
-|LINKタイプで、選択ボタンが有効なときに開く参照選択ダイアログの初期表示高さをピクセル単位で指定します。未指定または0以下の場合は、<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `referenceModal` 設定値を使用します。サービス設定も未指定または0以下の場合はMDCの既定値を使用します。
+|LINKタイプで選択ボタンが有効な場合に開く参照選択ダイアログの初期表示高さをピクセル単位で指定します。
 
 |ダイアログを最大化して表示
 |LINK

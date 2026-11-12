@@ -2106,7 +2106,7 @@ OR ( Fromプロパティ = 入力値 AND Toプロパティ = 入力値 )
 
 [[searchconditionreferencepropertyeditor]]
 ===== ReferencePropertyEditor
-検索条件のReference型用のプロパティエディタです。
+検索条件のReference型用のプロパティエディタです。LINKタイプで開く参照選択ダイアログの初期表示サイズに関する設定の優先順位は、<<../../../serviceconfig/index.adoc#ReferenceModal, MdcConfigServiceのReferenceModal>>を参照してください。
 [cols="1,1,6a", options="header"]
 |===
 |設定項目
@@ -2161,11 +2161,11 @@ NOTE: 「値なし」を選択する場合、値として「isNull」が使用�
 
 |ダイアログ初期表示幅
 |LINK
-|LINKタイプで開く参照選択ダイアログの初期表示幅をピクセル単位で指定します。未指定または0以下の場合は、<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `referenceModal` 設定値を使用します。サービス設定も未指定または0以下の場合はMDCの既定値を使用します。
+|LINKタイプで開く参照選択ダイアログの初期表示幅をピクセル単位で指定します。
 
 |ダイアログ初期表示高さ
 |LINK
-|LINKタイプで開く参照選択ダイアログの初期表示高さをピクセル単位で指定します。未指定または0以下の場合は、<<../../../serviceconfig/index.adoc#MdcConfigService, MdcConfigService>> の `referenceModal` 設定値を使用します。サービス設定も未指定または0以下の場合はMDCの既定値を使用します。
+|LINKタイプで開く参照選択ダイアログの初期表示高さをピクセル単位で指定します。
 
 |ダイアログを最大化して表示
 |LINK
