@@ -2267,7 +2267,7 @@ REFCOMBO
 
 |===
 
-NOTE: 検索画面で使用する参照選択ダイアログの初期サイズの決定方法は、<<../../../serviceconfig/index.adoc#ReferenceModal, MdcConfigServiceのReferenceModal>>を参照してください。
+注記： 検索画面で使用する参照選択ダイアログの初期サイズの決定方法は、<<../../../serviceconfig/index.adoc#ReferenceModal, MdcConfigServiceのReferenceModal>>を参照してください。
 
 [[searchlayout_reference_property_editor_link_property_config]]
 ===== 連動プロパティ設定

@@ -2006,7 +2006,7 @@ CHECKBOX
 
 |===
 
-NOTE: 編集画面で使用する参照選択ダイアログの初期サイズの決定方法は、<<../../../serviceconfig/index.adoc#ReferenceModal, MdcConfigServiceのReferenceModal>>を参照してください。
+注記： 編集画面で使用する参照選択ダイアログの初期サイズの決定方法は、<<../../../serviceconfig/index.adoc#ReferenceModal, MdcConfigServiceのReferenceModal>>を参照してください。
 
 [[detaillayout_reference_property_editor_link_config]]
 ===== Link設定
