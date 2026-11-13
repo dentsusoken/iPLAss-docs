@@ -49,6 +49,7 @@ When asynchronous is selected, please set `useQueue` of <<RdbQueueService>> to t
 If `true`, it refers to the same data as the copy source without copying the entity.
 If `false`, copy the entity and refer to the data after copying.
 | selectFilterSearchPageSize | int | The number of records retrieved per search/page for the reference-type selection filter (SELECTFILTER). If not specified, the default value is 40.
+| referenceModal | <<ReferenceModal>> | Sets the initial size of the dialog opened by ReferencePropertyEditor to select referenced data. Individual ReferencePropertyEditor settings take precedence when specified.
 | displayBreakpoint | <<DisplayBreakpoint>> | Display breakpoint. Set the width for each device size.
 | permitRolesToMdc | String, Multiple | Mdc permit roles in MdcAuth.
 The default value is `MdcUser` and `AppAdmin` .
@@ -81,6 +82,28 @@ See <<WebFrontendService, WebFrontendService uploadFileTypeDetector>>, <<FileTyp
 | entityListingFileDownloadFooter | String | Footer wording for EntityListing file download. Effective when `entityListingFileDownloadWithFooter` is `true`.
 
 |===
+
+[[ReferenceModal]]
+.ReferenceModal
+Specify `org.iplass.mtp.mdc.MdcConfigService$ReferenceModal` as the class.
+
+Sets the initial size, in pixels, of the dialog used to select referenced data in ReferencePropertyEditor. Width and height can be configured independently.
+If a positive `dialogWidth` / `dialogHeight` is specified in ReferencePropertyEditor, that individual value takes precedence for the corresponding dimension. If the individual value is unset or less than or equal to 0, this service setting is used. If this setting is also unset or less than or equal to 0, the MDC default size is used.
+[cols="1,1,3", options="header"]
+|===
+| Item | Value | Description
+| width | Integer | Initial dialog width in pixels. If unset or less than or equal to 0, the MDC default is used.
+| height | Integer | Initial dialog height in pixels. If unset or less than or equal to 0, the MDC default is used.
+|===
+
+Configuration example (`mdc-service-config.xml`)
+[source,xml]
+----
+<property name="referenceModal" class="org.iplass.mtp.mdc.MdcConfigService$ReferenceModal">
+	<property name="width" value="1200" />
+	<property name="height" value="900" />
+</property>
+----
 
 [[DisplayBreakpoint]]
 .DisplayBreakpoint
@@ -197,6 +220,12 @@ This property is the output target of the binary download log. The following ite
 
 	<!-- Number of records fetched per search/page for the reference type selection filter -->
 	<property name="selectFilterSearchPageSize" value="40" />
+
+	<!-- Initial size (px) of the reference selection dialog used by ReferencePropertyEditor -->
+	<property name="referenceModal" class="org.iplass.mtp.mdc.MdcConfigService$ReferenceModal">
+		<property name="width" value="1200" />
+		<property name="height" value="900" />
+	</property>
 
 	<!-- Display Setting  -->
 	<property name="displayBreakpoint" class="org.iplass.mtp.mdc.DisplayBreakpoint">

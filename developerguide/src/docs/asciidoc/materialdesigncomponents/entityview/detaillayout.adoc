@@ -1992,7 +1992,21 @@ CHECKBOX
 ラベル設定は<<detaillayout_property_editor_common_setting, 共通設定項目>>の
 ラベル設定と同じ項目です。
 
+|ダイアログ初期表示幅
+|LINK（編集画面）
+|編集画面表示タイプが `LINK` で、Link設定の選択ボタンが有効な場合に開く参照選択ダイアログの初期表示幅をピクセル単位で指定します。
+
+|ダイアログ初期表示高さ
+|LINK（編集画面）
+|編集画面表示タイプが `LINK` で、Link設定の選択ボタンが有効な場合に開く参照選択ダイアログの初期表示高さをピクセル単位で指定します。
+
+|ダイアログを最大化して表示
+|LINK（編集画面）
+|チェックした場合、編集画面表示タイプが `LINK` で、Link設定の選択ボタンが有効な場合に開く参照選択ダイアログを初期表示時に最大化します。最大化は幅・高さの設定より優先されます。
+
 |===
+
+注記： 編集画面で使用する参照選択ダイアログの初期サイズの決定方法は、<<../../../serviceconfig/index.adoc#ReferenceModal, MdcConfigServiceのReferenceModal>>を参照してください。
 
 [[detaillayout_reference_property_editor_link_config]]
 ===== Link設定

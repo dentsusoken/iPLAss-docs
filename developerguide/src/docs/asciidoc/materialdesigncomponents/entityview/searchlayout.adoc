@@ -2159,6 +2159,18 @@ CHECKBOX
 
 NOTE: 「値なし」を選択する場合、値として「isNull」が使用されるため、他の選択肢にはこのキーワードを値として使用しないでください。
 
+|ダイアログ初期表示幅
+|LINK
+|LINKタイプで開く参照選択ダイアログの初期表示幅をピクセル単位で指定します。
+
+|ダイアログ初期表示高さ
+|LINK
+|LINKタイプで開く参照選択ダイアログの初期表示高さをピクセル単位で指定します。
+
+|ダイアログを最大化して表示
+|LINK
+|チェックした場合、LINKタイプで開く参照選択ダイアログを初期表示時に最大化します。最大化は幅・高さの設定より優先されます。
+
 |参照先のViewName
 |
 |参照先エンティティのView定義名を設定します。
@@ -2254,6 +2266,8 @@ REFCOMBO
 |<<searchview_propertyeditor_setting, 共通設定項目>>を参照してください。
 
 |===
+
+注記： 検索画面で使用する参照選択ダイアログの初期サイズの決定方法は、<<../../../serviceconfig/index.adoc#ReferenceModal, MdcConfigServiceのReferenceModal>>を参照してください。
 
 [[searchlayout_reference_property_editor_link_property_config]]
 ===== 連動プロパティ設定
