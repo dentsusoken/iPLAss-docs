@@ -510,6 +510,8 @@ MdcSpreadSheetFilterItemの設定項目は以下となります。
 |表示タイプを指定します。式の場合は、結果型を指定します。
 |===
 
+NOTE: 表示タイプに `HIDDEN` を指定したフィルタ項目は画面に表示されませんが、URLパラメータまたは<<mdc_spreadsheet_basic_defaultcond,デフォルト検索条件スクリプト>>で初期条件が設定されている場合は、検索条件として適用されます。
+
 [[mdc_spreadsheet_columndefinition]]
 === 列定義
 
