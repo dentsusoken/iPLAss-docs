@@ -42,7 +42,7 @@ MdcSpreadSheetDefinitionの設定項目は以下となります。
 EQLのWHERE句に指定する条件をPreparedQuery形式で指定します。
 
 |デフォルト検索条件スクリプト
-|画面表示時にフィルタ条件エリアへ初期設定する検索条件をGroovyスクリプトで指定します。 +
+|画面表示時にフィルタ条件エリアへ設定する初期検索条件をGroovyスクリプトで指定します。URLパラメータまたはスクリプトにより、初期検索の実行も制御できます。 +
 詳細は<<mdc_spreadsheet_basic_defaultcond,デフォルト検索条件スクリプト>>を参照してください。
 
 |グリッド初期化スクリプト
@@ -69,11 +69,49 @@ EQLのWHERE句に指定する条件をPreparedQuery形式で指定します。
 詳細は<<mdc_spreadsheet_interrupter,カスタム処理の組み込み>>を参照してください。
 |===
 
+
+[[mdc_spreadsheet_basic_defaultcondition]]
+==== デフォルト検索条件
+
+デフォルト検索条件は、検索画面には表示されず、Spreadsheetのデータ取得時および検索実行時に自動的に適用される条件です。
+EQLのWHERE句に指定する条件をPreparedQuery形式で記述します。
+
+以下の変数がバインドされています。
+
+[cols="1,5a", options="header"]
+|===
+|変数|説明
+
+|request
+|リクエスト情報です。
+
+|session
+|セッション情報です。
+
+|user、date、sysdate、sysdatetime、systime
+|PreparedQueryで利用できる標準のバインド変数です。
+その他の標準変数・関数は<<../entityview/searchlayout.adoc#default_search_cond,EntityViewのデフォルト検索条件>>を参照してください。
+|===
+
+設定例：
+
+[source,sql]
+----
+status = 'ACTIVE'
+----
+
+NOTE: この設定は検索条件の初期値をフィルタ条件エリアに表示するものではありません。初期値の設定には、次の<<mdc_spreadsheet_basic_defaultcond,デフォルト検索条件スクリプト>>を使用してください。
+
+
 [[mdc_spreadsheet_basic_defaultcond]]
 ==== デフォルト検索条件スクリプト
 
-デフォルト検索条件スクリプトは、画面表示時にフィルタ条件エリアへ初期値を設定するためのGroovyスクリプトです。
-リクエストパラメータで指定された条件を引き継いだ上で、スクリプト内で条件を追加・変更できます。
+デフォルト検索条件スクリプトは、Spreadsheet画面の初期化時にフィルタ条件エリアの初期検索条件を設定するためのGroovyスクリプトです。
+EntityViewの<<../entityview/searchlayout.adoc#defaultconditionscript,デフォルトプロパティ条件設定スクリプト>>と同様にリクエストパラメータを利用できますが、Spreadsheetでは既存のConditionCount／ope／value形式で条件を設定します。
+また、画面表示時に初期検索を即実行する場合は、URLパラメータに `es=t` を指定するか、スクリプトで `initCondMap.put("es", "t")` を設定します。
+
+画面URLに指定されたパラメータのうち、定義名（`defName`）、保存リストID（`listedId`）、トークン（`_t`）を除くものが初期化APIへ引き継がれ、`initCondMap` の初期値に設定されます。
+任意のパラメータは `request.getParam("パラメータ名")` で取得できます。取得した値を検索条件として利用する場合は、`initCondMap` に下記の形式で設定してください。
 
 スクリプト内では以下の変数が利用できます。
 
@@ -82,11 +120,12 @@ EQLのWHERE句に指定する条件をPreparedQuery形式で指定します。
 |変数|説明
 
 |initCondMap
-|フィルタ条件を保持する `Map<String, String>` です。
-このMapの内容がフィルタ条件エリアの初期表示に使用されます。
+|初期フィルタ条件を保持する `Map<String, String>` です。
+リクエストパラメータの値が初期値として設定され、スクリプトから条件を追加・変更できます。
+検索条件として解釈されるキー形式は、下表を参照してください。
 
 |request
-|リクエスト情報です。
+|リクエスト情報です。任意のURLパラメータは `request.getParam("パラメータ名")` で取得できます。
 
 |session
 |セッション情報です。
@@ -95,11 +134,15 @@ EQLのWHERE句に指定する条件をPreparedQuery形式で指定します。
 |ログインユーザー情報です。
 |===
 
-initCondMapのキーは、フィルタ項目のプロパティ名をプレフィックスとした以下の形式で指定します。
+`initCondMap` のキーは、フィルタ項目のプロパティ名をプレフィックスとした以下の形式で指定します。
+`index` は0から始まります。
 
 [cols="1,5a", options="header"]
 |===
 |キー|説明
+
+|{プロパティ名}ConditionCount
+|同一プロパティに対する条件の件数を指定します。条件を1件設定する場合は `1` を指定します。
 
 |{プロパティ名}_ope_{index}
 |比較演算子を指定します。EQ、NE、LT、GT など。
@@ -120,15 +163,20 @@ initCondMapのキーは、フィルタ項目のプロパティ名をプレフィ
 |相対範囲でカスタム範囲を使用する場合の範囲名を指定します。
 |===
 
+任意のURLパラメータは `request.getParam("パラメータ名")` で取得できます。検索条件に利用する場合は、フィルタ項目に定義したプロパティ名を使い、ConditionCount／ope／value形式で `initCondMap` に設定してください。
+表示タイプが `HIDDEN` の項目も、初期条件を設定すれば画面に表示されずに検索条件として利用できます。
+
 記述例：
 
 [source,groovy]
 ----
 // 検索日（dateプロパティ）の初期条件として、現在日時以降を設定する例
+initCondMap.put("startDateConditionCount", "1")
 initCondMap.put("startDate_ope_0", "GE")
 initCondMap.put("startDate_0", new java.text.SimpleDateFormat("yyyyMMdd").format(new Date()))
 
 // nameプロパティに初期値を設定する例
+initCondMap.put("nameConditionCount", "1")
 initCondMap.put("name_ope_0", "IC")
 initCondMap.put("name_0", "サンプル")
 ----
