@@ -88,14 +88,14 @@ EQLのWHERE句に指定する条件をPreparedQuery形式で記述します。
 |session
 |セッション情報です。
 
-|user、date、sysdate、sysdatetime、systime
+|user, date, sysdate, sysdatetime, systime
 |PreparedQueryで利用できる標準のバインド変数です。
 その他の標準変数・関数は<<../entityview/searchlayout.adoc#default_search_cond,EntityViewのデフォルト検索条件>>を参照してください。
 |===
 
 設定例：
 
-[source,sql]
+[source, sql]
 ----
 status = 'ACTIVE'
 ----
