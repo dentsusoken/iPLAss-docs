@@ -14,6 +14,8 @@ Know Narratorプラットフォームでは、以下のプラットフォーム�
 ** Know Narrator Chat API を利用し、チャット形式のリクエストを行います。
 * <<prompt_setting_platform_knownarrator_search>>
 ** Know Narrator Search API を利用し、ナレッジ（データソース）を検索した上でリクエストを行います。
+* <<prompt_setting_platform_knownarrator_knowledge_agent>>
+** Know Narrator のマルチ業務ナレッジエージェントAPI を利用し、エージェントに対して非同期でリクエストを行います。
 
 
 [[prompt_setting_platform_knownarrator_chat]]
@@ -102,3 +104,146 @@ Groovy Script 形式でカスタマイズ処理を実装します。
 |===
 
 レスポンスからは、回答テキストに加えて、回答の根拠となった参照ドキュメントの一覧（参照ID、ファイル名、スコア）や、検索結果に関する警告情報を取得することができます。
+
+
+[[prompt_setting_platform_knownarrator_knowledge_agent]]
+===== Know Narrator マルチ業務ナレッジエージェント
+Know Narrator のマルチ業務ナレッジエージェントAPI を利用し、Know Narrator で定義したエージェントに対してリクエストを行うことができます。 +
+Know Narrator マルチ業務ナレッジエージェントを利用する場合は、プラットフォームタイプを `KNOW_NARRATOR_KNOWLEDGE_AGENT` に設定してください。 +
+利用する<<service_provider>>には、Know Narrator 用のサービスプロバイダ設定を指定してください。 +
+マルチ業務ナレッジエージェントAPI の詳細については、link:https://knownarratordocs-api.dentsusoken.com/[Know Narrator のドキュメント^]を参照してください。
+
+状態に対応しており、保持する値は以下の通りです。
+
+.状態に保存する内容
+* エージェントID
+* 対話ID
+
+対話IDを引き継ぐことで、前回の対話の内容を引き継いだ継続的な対話を行うことができます。 +
+継続した対話を行う場合は、レスポンスの `next` メソッドを利用して、対話IDを引き継いだ次のリクエストを作成してください。
+
+設定項目は次の通りです。
+
+[cols="1,3", options="header,autowidth"]
+|===
+|項目
+|説明
+
+|Agent ID
+|Know Narrator で定義したマルチ業務ナレッジエージェントのIDを設定します。必須項目です。
+
+|Provider ID
+|Know Narrator のAIプロバイダリソースIDを設定します。必須項目です。
+
+|Model ID
+|Know Narrator で利用するモデルのIDを設定します。必須項目です。
+
+|Tools
+|エージェントが利用するサーバーツールを JSON 形式で設定します。任意項目です。 +
+`[{"type":"web_search"}]`（Web検索）、`[{"type":"code_interpreter"}]`（Code Interpreter）のように設定します。
+
+|Include Citations
+|応答に引用情報を付与するかを設定します。任意項目です。
+
+|Polling Interval (ms)
+|非同期実行の完了を待機する際の、ステータス取得の間隔（ミリ秒）を設定します。500 から 60000 の範囲の整数を設定してください。 +
+未設定の場合は 2000 ミリ秒となります。任意項目です。
+
+|Polling Timeout (ms)
+|非同期実行の完了を待機する際のタイムアウト（ミリ秒）を設定します。1000 から 3600000 の範囲の整数を設定してください。 +
+未設定の場合は 600000 ミリ秒（10分）となります。任意項目です。
+
+|Request Before Customize
+|AIリクエストを実行する前に、リクエストの内容をカスタマイズするための設定項目です。 +
+AdminConsole で設定できない内容を設定する場合に利用します。 +
+Groovy Script 形式でカスタマイズ処理を実装します。
+
+カスタマイズするリクエストインスタンスは、`org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder` クラスのインスタンスになります。 +
+Code Interpreter で利用するファイル（`code_interpreter_files`）はリクエストデータとして指定できないため、本設定でリクエストに追加してください。
+|===
+
+リクエストでは、テキストに加えて、画像（JPEG、PNG、WebP）および PDF ドキュメントを添付することができます。添付可能な数は、画像・PDF ドキュメントそれぞれ10件までです。 +
+マルチ業務ナレッジエージェントAPI にはシステムプロンプトを指定するパラメータがないため、システムプロンプトはプロンプトに連結して送信されます。 +
+継続した対話の場合、システムプロンプトは送信されません。
+
+[[prompt_setting_platform_knownarrator_knowledge_agent_async]]
+====== 非同期実行とレスポンスの取得
+マルチ業務ナレッジエージェントAPI は非同期で実行されます。 +
+プロンプトリクエストを行うと、エージェントの実行開始を受け付けた時点で呼び出し元に制御が戻ります。
+
+返却されるレスポンスは `org.iplass.mtp.impl.ai.prompt.knownarrator.AiPlatformKnowNarratorKnowledgeAgentResponse` のインスタンスです。 +
+レスポンスのメソッドは、エージェントの実行完了を待機するかどうかで、以下のように分かれます。
+
+.実行完了を待機しないメソッド
+* `getConversationId()`: 対話IDを取得します。
+* `getRunStatus()`: ステータス取得API を1回呼び出し、実行ステータス（`queued`、`running`、`completed`、`failed`）を取得します。
+* `isDone()`: 実行が終了（`completed` もしくは `failed`）しているかを取得します。
+
+.実行完了を待機するメソッド
+* `getText()` などの応答データ取得メソッド
+* `getConversationDetail()`: 対話詳細を取得します。
+* `getMessages()`: 対話のメッセージ一覧を取得します。
+* `getLatestAssistantMessage()`: 最後のアシスタント応答メッセージを取得します。引用情報、サーバーツールの実行結果、トークン使用量は、このメッセージから参照できます。
+
+実行完了を待機するメソッドは、Polling Interval (ms) の間隔でステータスを確認し、実行が終了したのちに対話詳細を取得します。 +
+待機は呼び出し元のスレッドで行われます。実行時間の長いエージェントの完了を、画面リクエストの処理中に待機しないよう注意してください。 +
+実行ステータスが `failed` となった場合や、Polling Timeout (ms) を超えても実行が終了しない場合は、`SystemException` がスローされます。
+
+別のリクエストで開始した実行の結果のみを取得する場合は、保存した状態から `AiPlatformKnowNarratorKnowledgeAgentRequest.attach(state)` でリクエストを作成してください。 +
+このリクエストでは新たな実行は開始されず、指定した対話のステータスと対話詳細を取得することができます。
+
+[NOTE]
+====
+同じ対話で実行中のジョブがある状態で次のリクエストを行うと、リクエストはエラーとなります（原因例外は `ApplicationException` です）。 +
+継続した対話を行う場合は、前回の実行が終了したことを確認してからリクエストしてください。
+====
+
+.マルチ業務ナレッジエージェントの利用例
+[source,java]
+----
+import org.iplass.mtp.impl.ai.prompt.knownarrator.AiPlatformKnowNarratorKnowledgeAgentRequest;
+import org.iplass.mtp.impl.ai.prompt.knownarrator.AiPlatformKnowNarratorKnowledgeAgentResponse;
+
+public class ExampleKnowledgeAgentPrompt {
+    /** プロンプトメタデータの定義名 */
+    private static final String PROMPT_NAME = "knowledge_agent_prompt";
+
+    /**
+     * 実行を開始し、対話IDを含む状態を返却する例です。
+     */
+    public AiPlatformState start(String inputText) {
+        var aiManager = ManagerLocator.manager(AiManager.class);
+
+        var request = aiManager.createRequest(PROMPT_NAME, AiPlatformPayload.text(inputText));
+        // <1>
+        var response = (AiPlatformKnowNarratorKnowledgeAgentResponse) aiManager.requestPrompt(PROMPT_NAME, request)
+                .getPlatformResponse();
+
+        // 結果の取得や次のリクエストで利用できるように状態を保存する
+        return response.getState();
+    }
+
+    /**
+     * 開始済みの実行に接続し、結果を取得する例です。
+     */
+    public String getResult(AiPlatformState state) {
+        var aiManager = ManagerLocator.manager(AiManager.class);
+
+        // <2>
+        var request = AiPlatformKnowNarratorKnowledgeAgentRequest.attach(state);
+        var response = (AiPlatformKnowNarratorKnowledgeAgentResponse) aiManager.requestPrompt(PROMPT_NAME, request)
+                .getPlatformResponse();
+
+        if (!response.isDone()) {
+            // 実行中の場合は、時間をおいて再度確認する
+            return null;
+        }
+
+        // <3>
+        return response.getText();
+    }
+}
+----
+<1> 実行の開始を受け付けた時点で制御が戻ります。
+<2> 新たな実行は開始せず、状態に保存された対話に接続します。
+<3> 実行が終了していない場合は、終了するまで待機します。
