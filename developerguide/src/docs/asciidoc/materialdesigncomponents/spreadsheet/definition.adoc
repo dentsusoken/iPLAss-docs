@@ -108,7 +108,6 @@ NOTE: この設定は検索条件の初期値をフィルタ条件エリアに�
 
 デフォルト検索条件スクリプトは、Spreadsheet画面の初期化時にフィルタ条件エリアの初期検索条件を設定するためのGroovyスクリプトです。
 EntityViewの<<../entityview/searchlayout.adoc#defaultconditionscript,デフォルトプロパティ条件設定スクリプト>>と同様にリクエストパラメータを利用できますが、Spreadsheetでは既存のConditionCount／ope／value形式で条件を設定します。
-また、画面表示時に初期検索を即実行する場合は、URLパラメータに `es=t` を指定するか、スクリプトで `initCondMap.put("es", "t")` を設定します。
 
 画面URLに指定されたパラメータのうち、定義名（`defName`）、保存リストID（`listedId`）、トークン（`_t`）を除くものが初期化APIへ引き継がれ、`initCondMap` の初期値に設定されます。
 任意のパラメータは `request.getParam("パラメータ名")` で取得できます。取得した値を検索条件として利用する場合は、`initCondMap` に下記の形式で設定してください。
@@ -163,8 +162,50 @@ EntityViewの<<../entityview/searchlayout.adoc#defaultconditionscript,デフォ�
 |相対範囲でカスタム範囲を使用する場合の範囲名を指定します。
 |===
 
-任意のURLパラメータは `request.getParam("パラメータ名")` で取得できます。検索条件に利用する場合は、フィルタ項目に定義したプロパティ名を使い、ConditionCount／ope／value形式で `initCondMap` に設定してください。
-表示タイプが `HIDDEN` の項目も、初期条件を設定すれば画面に表示されずに検索条件として利用できます。
+初期化APIは、フィルタ項目リストに定義されたプロパティの条件キーを検索条件に変換します。`dept=D001` のような任意のパラメータや、フィルタ項目に定義されていないプロパティの条件キーは検索条件として認識されません。任意のパラメータを検索条件に利用する場合は、Groovyスクリプトで上記の形式に変換してください。
+
+Groovyスクリプトで変換せず、URLパラメータで直接初期条件を指定する場合は、フィルタ項目に定義したプロパティ名と上記のキー形式を使用します。たとえば、`department` を `D001` と等しい条件で初期表示し、すぐに検索する場合は、次のパラメータを指定します。
+
+[source,text]
+----
+?departmentConditionCount=1&department_ope_0=EQ&department_0=D001&es=t
+----
+
+任意のURLパラメータを検索条件に利用する例です。画面URLに `?b=xxx&region=JP` を指定した場合、`b` と `region` の値を取得し、既存の検索条件形式に変換します。
+
+[source,groovy]
+----
+def nameValue = request.getParam("b")
+def regionValue = request.getParam("region")
+
+if (nameValue != null && !nameValue.isEmpty()) {
+    initCondMap.put("nameConditionCount", "1")
+    initCondMap.put("name_ope_0", "EQ")
+    initCondMap.put("name_0", nameValue)
+}
+
+if (regionValue != null && !regionValue.isEmpty()) {
+    initCondMap.put("regionConditionCount", "1")
+    initCondMap.put("region_ope_0", "EQ")
+    initCondMap.put("region_0", regionValue)
+}
+----
+
+`name` と `region` はフィルタ項目リストに定義されているプロパティ名に置き換えてください。
+任意のURLパラメータを `initCondMap.put("name", value)` のように設定しただけでは検索条件として解釈されません。
+
+フィルタ項目のプロパティエディタで表示タイプを `HIDDEN` に設定した項目は、フィルタ条件エリアには表示されませんが、初期条件を設定すると通常の項目と同様に検索条件として利用できます。
+`HIDDEN` は表示を抑制する設定であり、条件値を自動設定するものではありません。
+
+.HIDDEN項目に初期条件を設定する例
+[source,groovy]
+----
+initCondMap.put("departmentConditionCount", "1")
+initCondMap.put("department_ope_0", "EQ")
+initCondMap.put("department_0", "SALES")
+----
+
+`department` はフィルタ項目リストに定義されたプロパティ名に置き換えてください。
 
 記述例：
 
@@ -180,6 +221,18 @@ initCondMap.put("nameConditionCount", "1")
 initCondMap.put("name_ope_0", "IC")
 initCondMap.put("name_0", "サンプル")
 ----
+
+===== 初期検索の実行制御
+
+初期検索条件の設定と、画面初期表示時に検索を実行するかどうかは別に判定されます。
+デフォルト検索条件スクリプトの実行後、次の順で初期検索の実行可否を判定します。
+
+. スクリプト実行後の `initCondMap` で `es` が `t` の場合、初期検索を実行します。URLパラメータの `es=t` はスクリプト実行前に `initCondMap` に設定されます。
+. `es` が `t` でない場合、グリッドオプションの<<mdc_spreadsheet_gridoptions,初期検索有効>>を参照します。
+. 「初期検索有効」が有効の場合は初期検索を実行し、無効の場合は初期条件のみ設定して検索を実行しません。
+
+URLパラメータに `es=t` を指定し、スクリプトで値を変更しない場合、またはスクリプト内で `initCondMap.put("es", "t")` を設定した場合は、AdminConsoleの「初期検索有効」が無効でも初期検索を実行できます。
+スクリプト実行後の `es` が `t` でない場合は、「初期検索有効」の設定に従います。
 
 [[mdc_spreadsheet_basic_init]]
 ==== グリッド初期化スクリプト
@@ -511,6 +564,8 @@ MdcSpreadSheetFilterItemの設定項目は以下となります。
 |===
 
 NOTE: 表示タイプに `HIDDEN` を指定したフィルタ項目は画面に表示されませんが、URLパラメータまたは<<mdc_spreadsheet_basic_defaultcond,デフォルト検索条件スクリプト>>で初期条件が設定されている場合は、検索条件として適用されます。
+
+NOTE: `HIDDEN` は画面表示を隠す設定であり、アクセス制御や権限管理の機能ではありません。URLパラメータは利用者が変更できるため、所属部門などのデータアクセス制限を `HIDDEN` やURLから渡す初期条件に依存してはいけません。常に検索へ適用する条件は「デフォルト検索条件」で指定し、アクセス可否はEntity権限などの権限設定で制御してください。
 
 [[mdc_spreadsheet_columndefinition]]
 === 列定義
