@@ -90,14 +90,22 @@ EQLのWHERE句に指定する条件をPreparedQuery形式で記述します。
 
 |user, date, sysdate, sysdatetime, systime
 |PreparedQueryで利用できる標準のバインド変数です。
-その他の標準変数・関数は<<../entityview/searchlayout.adoc#default_search_cond,EntityViewのデフォルト検索条件>>を参照してください。
+その他の標準変数・関数は<<../entityview/index.adoc#default_search_cond,EntityViewのデフォルト検索条件>>を参照してください。
 |===
 
 設定例：
 
-[source,sql]
+指定日時以前に作成され、作成者がログインユーザーであるEntityを検索する例です。
+
+[source,groovy]
 ----
-status = 'ACTIVE'
+<%@import java.sql.Timestamp%>
+<%@import java.text.SimpleDateFormat %>
+<%
+def date = new SimpleDateFormat("yyyy/MM/dd").parse("2026/11/18");
+def timestamp = new Timestamp(date.getTime());
+%>
+createDate<='${timestamp}' and createBy='${user.getAttribute("oid")}'
 ----
 
 NOTE: この設定は検索条件の初期値をフィルタ条件エリアに表示するものではありません。初期値の設定には、次の<<mdc_spreadsheet_basic_defaultcond,デフォルト検索条件スクリプト>>を使用してください。
