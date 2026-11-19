@@ -95,17 +95,11 @@ EQLのWHERE句に指定する条件をPreparedQuery形式で記述します。
 
 設定例：
 
-指定日時以前に作成され、作成者がログインユーザーであるEntityを検索する例です。
+ログインユーザー自身が直近1か月以内に作成したEntityを検索する例です。
 
 [source, groovy]
 ----
-<%@import java.sql.Timestamp%>
-<%@import java.text.SimpleDateFormat %>
-<%
-def date = new SimpleDateFormat("yyyy/MM/dd").parse("2026/11/18");
-def timestamp = new Timestamp(date.getTime());
-%>
-createDate<='${timestamp}' and createBy='${user.getAttribute("oid")}'
+createBy = '${user.oid}' and createDate >= '${toDateTimeString(addMonth(date, -1))}'
 ----
 
 NOTE: この設定は検索条件の初期値をフィルタ条件エリアに表示するものではありません。初期値の設定には、次の<<mdc_spreadsheet_basic_defaultcond,デフォルト検索条件スクリプト>>を使用してください。
@@ -140,7 +134,7 @@ NOTE: この設定は検索条件の初期値をフィルタ条件エリアに�
 |ログインユーザー情報です。
 |===
 
-initCondMap のキーは、{プロパティ名} にはフィルタ項目リストで定義したプロパティ名を指定します。index は 0 から始まり、複数条件を指定する場合は 1、2 のように増やします。
+`initCondMap` の条件キーでは、`{プロパティ名}` にフィルタ項目リストで定義したプロパティ名を指定します。`{index}` は0から始まり、同一プロパティに複数条件を指定する場合は1、2のように増やします。
 
 [cols="1,5a", options="header"]
 |===
@@ -167,7 +161,9 @@ initCondMap のキーは、{プロパティ名} にはフィルタ項目リス�
 
 MDC Spreadsheetは `{プロパティ名}_ope_{index}` に該当するキーを集め、`index` 順に検索条件を生成します。条件を1件設定する場合は、`{プロパティ名}_ope_0` と `{プロパティ名}_0` などを設定します。
 
-初期化APIは、フィルタ項目リストに定義されたプロパティの条件キーを検索条件に変換します。`campaignType=SUMMER` のような任意のパラメータや、フィルタ項目に定義されていないプロパティの条件キーは検索条件として認識されません。任意のパラメータを検索条件に利用する場合は、Groovyスクリプトで上記のキー形式に変換してください。
+初期化APIは、フィルタ項目リストに定義されたプロパティの条件キーを検索条件に変換します。`campaign=summer-campaign` のような任意のパラメータや、フィルタ項目に定義されていないプロパティの条件キーは検索条件として認識されません。任意のパラメータを検索条件に利用する場合は、Groovyスクリプトで上記のキー形式に変換してください。
+
+URLパラメータにフィルタ項目のプロパティ名と条件値を直接指定できる場合、Groovyによる変換は不要です。業務上のパラメータ名を使いたい場合や、パラメータ値をフィルタ項目の選択値に変換したい場合、パラメータがないときに既定値を設定したい場合に、デフォルト検索条件スクリプトを利用します。
 
 ===== URLパラメータの設定場所
 
@@ -177,7 +173,7 @@ MDC Spreadsheetは `{プロパティ名}_ope_{index}` に該当するキーを�
 
 [source, text]
 ----
-?defName=DEFAULT&promotionType_ope_0=EQ&promotionType_0=SUMMER&es=t
+?defName=ProductCampaignSheet&promotionType_ope_0=EQ&promotionType_0=SUMMER&es=t
 ----
 
 `ActionMenuItem` の `Parameter` に同じ値を設定する場合は、先頭の `?` を除きます。
@@ -186,18 +182,22 @@ MDC Spreadsheetは `{プロパティ名}_ope_{index}` に該当するキーを�
 
 商品担当者が「夏季キャンペーン商品」メニューを開くと、キャンペーン区分が `SUMMER` の商品一覧を表示し、初期検索も実行する例です。URLの業務パラメータを、Spreadsheetのフィルタ項目のプロパティ条件に変換します。
 
-. AdminConsoleでMDC Spreadsheet定義 `DEFAULT` を作成し、対象Entityのフィルタ項目リストに `promotionType` を追加します。この例では表示タイプを `HIDDEN` にします。`HIDDEN` は検索条件を画面に表示しないための設定であり、アクセス制御には使用しません。
-. 基本設定の「デフォルト検索条件スクリプト」に、URLの `campaignType` を `promotionType` の検索条件へ変換するスクリプトを設定します。
+. AdminConsoleでMDC Spreadsheet定義 `ProductCampaignSheet` を作成し、対象Entityのフィルタ項目リストに `promotionType` を追加します。この例では表示タイプを `HIDDEN` にします。`HIDDEN` は検索条件を画面に表示しないための設定であり、アクセス制御には使用しません。
+. 基本設定の「デフォルト検索条件スクリプト」に、URLの `campaign` パラメータを `promotionType` の検索条件へ変換する処理を設定します。メニューには業務上分かりやすいパラメータ名と値を指定し、スクリプト内でプロパティの選択値に変換します。パラメータが未指定、または変換表にない場合は `SUMMER` を既定値として使用します。
 
 +
 [source, groovy]
 ----
-def campaignType = request.getParam("campaignType")
+def campaign = request.getParam("campaign")
+def campaignTypeMap = ["summer-campaign": "SUMMER", "winter-campaign": "WINTER"]
+def promotionType = campaignTypeMap.get(campaign)
 
-if (campaignType != null && !campaignType.isEmpty()) {
-    initCondMap.put("promotionType_ope_0", "EQ")
-    initCondMap.put("promotionType_0", campaignType)
+if (promotionType == null) {
+    promotionType = "SUMMER"
 }
+
+initCondMap.put("promotionType_ope_0", "EQ")
+initCondMap.put("promotionType_0", promotionType)
 ----
 
 . Navigationで「夏季キャンペーン商品」用の `ActionMenuItem` を登録します。
@@ -211,10 +211,10 @@ if (campaignType != null && !campaignType.isEmpty()) {
 |`mdc/spreadsheet/index`
 
 |Parameter
-|`defName=DEFAULT&campaignType=SUMMER&es=t`
+|`defName=ProductCampaignSheet&campaign=summer-campaign&es=t`
 |===
 
-`campaignType` は業務パラメータ、`promotionType` はフィルタ項目リストに定義したプロパティ名です。画面を開くと、スクリプトが `promotionType = SUMMER` の検索条件を設定します。`promotionType` は `HIDDEN` のため条件エリアには表示されませんが、検索に適用されます。これは商品分類による絞り込みの例であり、データアクセス制限を行うものではありません。
+`campaign` はメニューで使う業務パラメータ、`promotionType` はフィルタ項目リストに定義したプロパティ名です。`summer-campaign` は選択値 `SUMMER` に、`winter-campaign` は `WINTER` に変換されます。パラメータが未指定、または変換表にない場合は `SUMMER` が設定されます。`promotionType` は `HIDDEN` のため条件チップには表示されず、利用者は画面上で条件を確認したり削除したりできません。条件を検索に適用する一方、データアクセス制限には使用しないでください。
 
 ===== 初期検索の実行制御
 
