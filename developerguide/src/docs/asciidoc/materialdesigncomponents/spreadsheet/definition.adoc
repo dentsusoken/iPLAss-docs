@@ -183,8 +183,7 @@ URLパラメータにフィルタ項目のプロパティ名と条件値を直�
 商品担当者が「夏季キャンペーン商品」メニューを開くと、キャンペーン区分が `SUMMER` の商品一覧を表示し、初期検索も実行する例です。URLの業務パラメータを、Spreadsheetのフィルタ項目のプロパティ条件に変換します。
 
 . AdminConsoleでMDC Spreadsheet定義 `ProductCampaignSheet` を作成し、対象Entityのフィルタ項目リストに `promotionType` を追加します。この例では表示タイプを `HIDDEN` にします。`HIDDEN` は検索条件を画面に表示しないための設定であり、アクセス制御には使用しません。
-. 基本設定の「デフォルト検索条件スクリプト」に、URLの `campaign` パラメータを `promotionType` の検索条件へ変換する処理を設定します。メニューには業務上分かりやすいパラメータ名と値を指定し、スクリプト内でプロパティの選択値に変換します。パラメータが未指定、または変換表にない場合は `SUMMER` を既定値として使用します。
-
+. 基本設定の「デフォルト検索条件スクリプト」に、URLの `campaign` パラメータを `promotionType` の検索条件へ変換する処理を設定します。メニューには業務上分かりやすいパラメータ名と値を指定し、スクリプト内でプロパティの選択値に変換します。変換表にない値やパラメータ未指定の場合は、検索条件を追加しません。
 +
 [source, groovy]
 ----
@@ -192,16 +191,13 @@ def campaign = request.getParam("campaign")
 def campaignTypeMap = ["summer-campaign": "SUMMER", "winter-campaign": "WINTER"]
 def promotionType = campaignTypeMap.get(campaign)
 
-if (promotionType == null) {
-    promotionType = "SUMMER"
+if (promotionType != null) {
+    initCondMap.put("promotionType_ope_0", "EQ")
+    initCondMap.put("promotionType_0", promotionType)
 }
-
-initCondMap.put("promotionType_ope_0", "EQ")
-initCondMap.put("promotionType_0", promotionType)
 ----
 
 . Navigationで「夏季キャンペーン商品」用の `ActionMenuItem` を登録します。
-
 +
 [cols="1,5a", options="header"]
 |===
@@ -214,7 +210,7 @@ initCondMap.put("promotionType_0", promotionType)
 |`defName=ProductCampaignSheet&campaign=summer-campaign&es=t`
 |===
 
-`campaign` はメニューで使う業務パラメータ、`promotionType` はフィルタ項目リストに定義したプロパティ名です。`summer-campaign` は選択値 `SUMMER` に、`winter-campaign` は `WINTER` に変換されます。パラメータが未指定、または変換表にない場合は `SUMMER` が設定されます。`promotionType` は `HIDDEN` のため条件チップには表示されず、利用者は画面上で条件を確認したり削除したりできません。条件を検索に適用する一方、データアクセス制限には使用しないでください。
+`campaign` はメニューで使う業務パラメータ、`promotionType` はフィルタ項目リストに定義したプロパティ名です。`summer-campaign` は選択値 `SUMMER` に、`winter-campaign` は `WINTER` に変換されます。パラメータが未指定、または変換表にない場合は `promotionType` の条件を追加しません。この場合、初期検索が実行されてもキャンペーン区分では絞り込まれません。`promotionType` は `HIDDEN` のため条件チップには表示されず、利用者は画面上で条件を確認したり削除したりできません。条件を検索に適用する一方、データアクセス制限には使用しないでください。
 
 ===== 初期検索の実行制御
 
