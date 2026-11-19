@@ -97,7 +97,7 @@ EQLのWHERE句に指定する条件をPreparedQuery形式で記述します。
 
 指定日時以前に作成され、作成者がログインユーザーであるEntityを検索する例です。
 
-[source,groovy]
+[source, groovy]
 ----
 <%@import java.sql.Timestamp%>
 <%@import java.text.SimpleDateFormat %>
@@ -175,7 +175,7 @@ MDC Spreadsheetは `{プロパティ名}_ope_{index}` に該当するキーを�
 
 画面URLを直接指定する場合は、MDC Spreadsheet画面のURLにクエリ文字列を付けます。たとえば、フィルタ項目リストに `promotionType` が定義されている場合、`promotionType` を `SUMMER` と等しい条件で初期表示し、初期検索も行うクエリ文字列は次のとおりです。
 
-[source,text]
+[source, text]
 ----
 ?defName=DEFAULT&promotionType_ope_0=EQ&promotionType_0=SUMMER&es=t
 ----
@@ -190,7 +190,7 @@ MDC Spreadsheetは `{プロパティ名}_ope_{index}` に該当するキーを�
 . 基本設定の「デフォルト検索条件スクリプト」に、URLの `campaignType` を `promotionType` の検索条件へ変換するスクリプトを設定します。
 
 +
-[source,groovy]
+[source, groovy]
 ----
 def campaignType = request.getParam("campaignType")
 
@@ -220,7 +220,7 @@ if (campaignType != null && !campaignType.isEmpty()) {
 
 初期検索条件の設定と、画面初期表示時に検索を実行するかどうかは別に判定されます。デフォルト検索条件スクリプトの実行後、次の順で初期検索の実行可否を判定します。
 
-. スクリプト実行後の `initCondMap` で `es` が `t` の場合、初期検索を実行します。URLパラメータの `es=t` はスクリプト実行前に設定されるため、スクリプトで変更しない場合も初期検索が実行されます。スクリプトから `initCondMap.put("es", "t")` を設定することもできます。
+. スクリプト実行後の `initCondMap` で `es` が `t` の場合、初期検索を実行します。URLパラメータの `es=t` はあらかじめこのMapに設定されるため、値を変更しない場合も初期検索が実行されます。Groovy内で `initCondMap.put("es", "t")` と設定した場合も同様です。
 . `es` が `t` でない場合は、グリッドオプションの<<mdc_spreadsheet_gridoptions,初期検索有効>>を参照します。有効の場合は初期検索を実行し、無効の場合は初期条件のみ設定して検索を実行しません。
 
 [[mdc_spreadsheet_basic_init]]
@@ -247,7 +247,7 @@ NOTE: Admin Consoleの編集画面のヒントにはGroovyテンプレートに�
 
 記述例：
 
-[source,groovy]
+[source, groovy]
 ----
 // オプションを初期化する場合
 grid.setOptions({ autoEdit: true });
@@ -428,7 +428,7 @@ JSON配列形式で、各結合範囲を以下の要素で指定します。
 
 記述例：
 
-[source,json]
+[source, json]
 ----
 [
   { "row": 0, "col": 0, "rowspan": 2, "colspan": 1 },
@@ -483,7 +483,7 @@ mapping:: 結合範囲の値を「プロパティ名:値」形式で連結して
 
 記述例：
 
-[source,json]
+[source, json]
 ----
 [
   {
@@ -982,7 +982,7 @@ NOTE: 登録処理の種類はRegistrationType（INSERT：新規追加、UPDATE�
 ユースケース：画面から入力させずに、保存処理を実行したユーザーを更新ユーザーとして自動的に設定します。
 次の `SampleSpreadSheetInterrupter` は、`dataMapping` のタイミングで実行ユーザーのアカウント情報をEntityにセットします。
 
-[source,java]
+[source, java]
 ----
 package your.package;
 
@@ -1026,7 +1026,7 @@ public class SampleSpreadSheetInterrupter implements MdcSpreadSheetRegistrationI
 次の `SampleValidationInterrupter` は、`beforeRegister` で価格が未設定の行をチェックします。
 戻り値のリストにValidateErrorが含まれる場合、該当行の登録処理は中断されます。
 
-[source,java]
+[source, java]
 ----
 package your.package;
 
