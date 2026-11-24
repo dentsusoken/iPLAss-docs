@@ -38,7 +38,11 @@ SpreadSheetDefinitionの設定項目は以下となります。
 詳細は<<spreadsheet_featureflags,機能フラグ>>を参照してください。
 
 |デフォルト検索条件
-|画面表示時にフィルタ条件エリアへ初期設定する検索条件をGroovyスクリプトで指定します。 +
+|画面には表示されず、検索時に自動的に付与される検索条件を指定します。 +
+EQLのWHERE句に指定する条件をPreparedQuery形式で指定します。
+
+|デフォルト検索条件スクリプト
+|画面表示時にフィルタ条件エリアへ設定する初期検索条件をGroovyスクリプトで指定します。URLパラメータまたはスクリプトにより、初期検索の実行も制御できます。 +
 詳細は<<spreadsheet_basic_defaultcond,デフォルト検索条件スクリプト>>を参照してください。
 
 |グリッド初期化スクリプト
@@ -63,11 +67,48 @@ SpreadSheetDefinitionの設定項目は以下となります。
 詳細は<<spreadsheet_interrupter,カスタム処理の組み込み>>を参照してください。
 |===
 
+[[spreadsheet_basic_defaultcondition]]
+==== デフォルト検索条件
+
+デフォルト検索条件は、検索画面には表示されず、Spreadsheetのデータ取得時および検索実行時に自動的に適用される条件です。
+EQLのWHERE句に指定する条件をPreparedQuery形式で記述します。
+
+以下の変数がバインドされています。
+
+[cols="1,5a", options="header"]
+|===
+|変数|説明
+
+|request
+|リクエスト情報です。
+
+|session
+|セッション情報です。
+
+|user, date, sysdate, sysdatetime, systime
+|PreparedQueryで利用できる標準のバインド変数です。
+その他の標準変数・関数は<<../entityview/index.adoc#default_search_cond,EntityViewのデフォルト検索条件>>を参照してください。
+|===
+
+設定例：
+
+ログインユーザー自身が直近1か月以内に作成したEntityを検索する例です。
+
+[source, groovy]
+----
+createBy = '${user.oid}' and createDate >= '${toDateTimeString(addMonth(date, -1))}'
+----
+
+NOTE: この設定は検索条件の初期値をフィルタ条件エリアに表示するものではありません。初期値の設定には、次の<<spreadsheet_basic_defaultcond,デフォルト検索条件スクリプト>>を使用してください。
+
 [[spreadsheet_basic_defaultcond]]
 ==== デフォルト検索条件スクリプト
 
-デフォルト検索条件は、画面表示時にフィルタ条件エリアへ初期値を設定するためのGroovyスクリプトです。
-リクエストパラメータで指定された条件を引き継いだ上で、スクリプト内で条件を追加・変更できます。
+デフォルト検索条件スクリプトは、Spreadsheet画面の初期化時にフィルタ条件エリアへ初期条件を設定するGroovyスクリプトです。
+画面の初期条件と初期検索の実行を制御します。
+
+画面URLのリクエストパラメータは、定義名（`definitionName`）を除き、`initCondMap` の初期値になります。
+ただし、任意のパラメータがそのまま検索条件になるわけではありません。検索条件として利用するには、`initCondMap` に下記のキー形式で設定してください。
 
 スクリプト内では以下の変数が利用できます。
 
@@ -76,11 +117,11 @@ SpreadSheetDefinitionの設定項目は以下となります。
 |変数|説明
 
 |initCondMap
-|フィルタ条件を保持する `Map<String, String>` です。
-このMapの内容がフィルタ条件エリアの初期表示に使用されます。
+|初期フィルタ条件を保持する `Map<String, String>` です。
+リクエストパラメータの値が初期値として設定され、スクリプトから条件を追加・変更できます。
 
 |request
-|リクエスト情報です。
+|リクエスト情報です。任意のURLパラメータは `request.getParam("パラメータ名")` で取得できます。
 
 |session
 |セッション情報です。
@@ -89,37 +130,45 @@ SpreadSheetDefinitionの設定項目は以下となります。
 |ログインユーザー情報です。
 |===
 
-initCondMapのキーは、フィルタ項目のプロパティ名をプレフィックスとした以下の形式で指定します。
+`initCondMap` の条件キーでは、`{プロパティ名}` にフィルタ項目リストで定義したプロパティ名を指定します。`{index}` は0から始まり、同一プロパティに複数条件を指定する場合は1、2のように増やします。
 
 [cols="1,5a", options="header"]
 |===
 |キー|説明
 
-|{プロパティ名}ConditionCount
+|`{プロパティ名}ConditionCount`
 |同一プロパティに対する条件の件数を指定します。
 
-|{プロパティ名}_ope_{index}
+|`{プロパティ名}_ope_{index}`
 |比較演算子を指定します。EQ、NE、LT、GT など。
 
-|{プロパティ名}_{index}
+|`{プロパティ名}_{index}`
 |条件値を指定します。
 
-|{プロパティ名}_to_{index}
+|`{プロパティ名}_to_{index}`
 |範囲指定（RG）の終了値を指定します。
 
-|{プロパティ名}_in_{index}
+|`{プロパティ名}_in_{index}`
 |いずれかと等しい（IN）の条件値を指定します。
 
-|{プロパティ名}_dateRange_{index}
+|`{プロパティ名}_dateRange_{index}`
 |相対範囲（RD/RDT）の範囲種別を指定します。
 
-|{プロパティ名}_relativeRangeName_{index}
+|`{プロパティ名}_relativeRangeName_{index}`
 |相対範囲でカスタム範囲を使用する場合の範囲名を指定します。
 |===
 
+条件は、`{プロパティ名}_ope_{index}` に該当するキーを `index` 順に集めて生成します。`{プロパティ名}ConditionCount` を指定した場合は、その件数の条件を生成します。どちらの形式でも指定できるため、`ConditionCount` を使用する従来のスクリプトもそのまま利用できます。条件を1件設定する場合は、`{プロパティ名}_ope_0` と `{プロパティ名}_0` などを設定します。
+
+検索時に処理される条件は、1プロパティあたり最大100件です。デフォルト検索条件スクリプトで上限を超える条件を設定した場合、超過分は検索に適用されず、エラーや警告も表示されません。
+
+初期化処理は、フィルタ項目リストに定義されたプロパティの条件キーを検索条件に変換します。`campaign=summer-campaign` のような任意のパラメータや、フィルタ項目に定義されていないプロパティの条件キーは検索条件として認識されません。任意のパラメータを検索条件に利用する場合は、Groovyスクリプトで上記のキー形式に変換してください。
+
+URLパラメータにフィルタ項目のプロパティ名と条件値を直接指定できる場合、Groovyによる変換は不要です。業務上分かりやすいパラメータ名を使いたい場合や、パラメータ値をフィルタ項目の選択値に変換したい場合に、デフォルト検索条件スクリプトを利用します。
+
 記述例：
 
-[source,groovy]
+[source, groovy]
 ----
 // 検索日（dateプロパティ）の初期条件として、現在日時以降を設定する例
 initCondMap.put("startDate_ope_0", "GE")
@@ -129,6 +178,57 @@ initCondMap.put("startDate_0", new java.text.SimpleDateFormat("yyyyMMdd").format
 initCondMap.put("name_ope_0", "IC")
 initCondMap.put("name_0", "サンプル")
 ----
+
+===== URLパラメータの設定場所
+
+メニューから開く場合は、Navigationの `ActionMenuItem` にパラメータを設定します。`Parameter` には `?` を付けず、パラメータを `&` で連結します。Spreadsheetの定義名は `definitionName` で指定します。
+
+画面URLを直接指定する場合は、Spreadsheet画面のURLにクエリ文字列を付けます。たとえば、フィルタ項目リストに `promotionType` が定義されている場合、`promotionType` を `SUMMER` と等しい条件で初期表示し、初期検索も行うクエリ文字列は次のとおりです。
+
+[source, text]
+----
+?definitionName=ProductCampaignSheet&promotionType_ope_0=EQ&promotionType_0=SUMMER&es=t
+----
+
+`ActionMenuItem` の `Parameter` に同じ値を設定する場合は、先頭の `?` を除きます。
+
+===== 業務シナリオ例：キャンペーン対象商品の一覧
+
+商品担当者が「夏季キャンペーン商品」メニューを開くと、キャンペーン区分が `SUMMER` の商品一覧を表示し、初期検索も実行する例です。URLの業務パラメータを、Spreadsheetのフィルタ項目のプロパティ条件に変換します。
+
+. AdminConsoleでSpreadsheet定義 `ProductCampaignSheet` を作成し、対象Entityのフィルタ項目リストに `promotionType` を追加します。この例では表示タイプを `HIDDEN` にします。`HIDDEN` は検索条件を画面に表示しないための設定であり、アクセス制御には使用しません。
+. 基本設定の「デフォルト検索条件」に、URLの `campaign` パラメータを `promotionType` の検索条件へ変換する処理を設定します。メニューには業務上分かりやすいパラメータ名と値を指定し、スクリプト内でプロパティの選択値に変換します。変換表にない値やパラメータ未指定の場合は、検索条件を追加しません。
++
+[source, groovy]
+----
+def campaign = request.getParam("campaign")
+def campaignTypeMap = ["summer-campaign": "SUMMER", "winter-campaign": "WINTER"]
+def promotionType = campaignTypeMap.get(campaign)
+
+if (promotionType != null) {
+    initCondMap.put("promotionType_ope_0", "EQ")
+    initCondMap.put("promotionType_0", promotionType)
+}
+----
+
+. Navigationで「夏季キャンペーン商品」用の `ActionMenuItem` を登録します。
++
+[cols="1,5a", options="header"]
+|===
+|項目|設定値
+
+|Execute Action
+|`gem/spreadsheet/view`
+
+|Parameter
+|`definitionName=ProductCampaignSheet&campaign=summer-campaign&es=t`
+|===
+
+`campaign` はメニューで使う業務パラメータ、`promotionType` はフィルタ項目リストに定義したプロパティ名です。`summer-campaign` は選択値 `SUMMER` に、`winter-campaign` は `WINTER` に変換されます。パラメータが未指定、または変換表にない場合は `promotionType` の条件を追加しません。この場合、初期検索が実行されてもキャンペーン区分では絞り込まれません。`promotionType` は `HIDDEN` のため条件チップには表示されず、利用者は画面上で条件を確認したり削除したりできません。条件を検索に適用する一方、データアクセス制限には使用しないでください。
+
+===== 初期検索の実行制御
+
+初期条件の設定と、画面初期表示時に検索を実行するかどうかは別に判定されます。デフォルト検索条件スクリプトの実行後の `initCondMap` で `es` が `t` の場合、初期検索を実行します。URLパラメータの `es=t` はあらかじめこのMapに設定されるため、値を変更しない場合も初期検索が実行されます。デフォルト検索条件スクリプト内で `initCondMap.put("es", "t")` と設定した場合も同様です。
 
 [[spreadsheet_basic_init]]
 ==== グリッド初期化スクリプト
@@ -420,6 +520,12 @@ GEM既存のPropertyEditorを使用します。
 未指定の場合はすべての比較演算子が利用可能です。
 指定できる演算子は、<<spreadsheet_filter_operator,利用可能な比較演算子>>を参照してください。
 |===
+
+NOTE: 表示タイプに `HIDDEN` を指定したフィルタ項目は画面に表示されませんが、URLパラメータまたは<<spreadsheet_basic_defaultcond,デフォルト検索条件スクリプト>>で初期条件が設定されている場合は、検索条件として適用されます。
+
+NOTE: `HIDDEN` は入力欄を非表示にする設定であり、必須チェックの対象外にはなりません。表示タイプに `HIDDEN` を指定し、必須フラグを有効にする場合は、呼び出し側がURLパラメータやデフォルト検索条件スクリプトなどで必須値を設定してください。値が設定されていない場合は検索エラーとなり、検索は実行されません。
+
+NOTE: `HIDDEN` は画面表示を隠す設定であり、アクセス制御や権限管理の機能ではありません。URLパラメータは利用者が変更できるため、所属部門などのデータアクセス制限を `HIDDEN` やURLから渡す初期条件に依存してはいけません。アクセス可否はEntity権限などの権限設定で制御してください。
 
 [[spreadsheet_columndefinition]]
 === 列定義
