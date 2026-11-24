@@ -477,6 +477,7 @@ false:: 汎用登録処理が自動で設定した更新対象に `getAdditional
 
 |===
 
+[[MdcCustomize_Save_order]]
 .登録処理の順序
 カスタム登録処理の各メソッドは以下のように呼ばれます。
 
